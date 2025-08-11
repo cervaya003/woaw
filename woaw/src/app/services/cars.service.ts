@@ -269,7 +269,6 @@ export class CarsService {
           `${environment.api_key}/cars/vehiculos/${carId}`,
           {
             headers,
-            // body: { carId },
           }
         );
       }),

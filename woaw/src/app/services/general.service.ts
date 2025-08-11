@@ -150,7 +150,7 @@ export class GeneralService {
   async alert(
     header: string,
     message: string,
-    type: 'success' | 'danger' | 'warning' | 'info' = 'success',
+    type: 'success' | 'danger' | 'warning' | 'info' = 'danger',
     status: boolean = true
   ) {
     await this.dismissAlert();
