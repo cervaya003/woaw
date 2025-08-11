@@ -1,0 +1,44 @@
+<!-- vehiculos.html -->
+<div class="ficha-lote">
+  <div class="ficha-lote__info">
+    <h3 class="ficha-lote__titulo"><strong>{{ lote.nombre }}</strong></h3>
+    <h3 class="ficha-lote__titulo">{{ lote.descripcion }}</h3>
+    <p class="ficha-lote__campo">
+      <strong>Teléfono:</strong> {{ lote.telefonoContacto }}
+    </p>
+    <p class="ficha-lote__campo">
+      <strong>Dirección:</strong> {{ direccionCompleta }}
+    </p>
+
+    <!-- Botones sin funcionalidad por ahora -->
+    <div class="ficha-lote__actions">
+      <button class="btn btn-edit" (click)="editarLote()">Editar</button>
+      <button class="btn btn-delete">Eliminar</button>
+    </div>
+  </div>
+
+  <img class="ficha-lote__imagen" [src]="lote.imagenPrincipal" alt="Imagen de {{ lote.nombre }}" />
+</div>
+
+<!-- listamos los carros del lote -->
+<!-- <ng-container>
+  <div *ngFor="let carro of carrosDelLote" class="ficha-carro">
+    <div class="ficha-carro__info">
+      <p><strong>Marca:</strong> {{ carro.marca }}</p>
+      <p><strong>Modelo:</strong> {{ carro.modelo }}</p>
+      <p><strong>Año:</strong> {{ carro.anio }}</p>
+    </div>
+    <img
+      class="ficha-carro__imagen"
+      [src]="carro.imagenPrincipal"
+      alt="Imagen de {{ carro.marca }} {{ carro.modelo }}"
+      width="80"
+    />
+  </div>
+</ng-container> -->
+<div class="catalogo-autos">
+  <ng-container *ngFor="let auto of carrosDelLote">
+    <app-cartas [auto]="auto" [ubicacion]="'seminuevos'">
+    </app-cartas>
+  </ng-container>
+</div>

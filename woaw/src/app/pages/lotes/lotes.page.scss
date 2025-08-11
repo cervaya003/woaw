@@ -1,0 +1,264 @@
+.ocntenedor_css_lotes {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 5px;
+}
+
+.mi-boton {
+  background: linear-gradient(135deg, #ff4b2b, #ff9f00);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  border: none;
+}
+
+.mi-boton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px; /* Espacio entre icono y texto */
+  background: linear-gradient(135deg, #ff4b2b, #ff9f00);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  border: none;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.mi-boton ion-icon {
+  font-size: 18px;
+}
+
+.header-lotes-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 15px;
+
+  @media (max-width: 768px) {
+    gap: 5px;
+  }
+}
+
+.buscador-lotes {
+  flex: 1;
+  max-width: 400px;
+
+  @media (max-width: 768px) {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.titulo-lotes {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
+  color: #222;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+}
+
+/* ================== LOTE CARD ================== */
+/* Altura fija + layout flexible para que el texto no se monte ni se corte */
+.lote-card {
+  width: 100%;
+  height: 300px;                /* <<< altura consistente */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;             /* evita que algo sobresalga */
+  margin: auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.057);
+  transition: transform 0.2s ease-in-out;
+
+  &:hover { transform: scale(1.01); }
+
+  .lote-img-container {
+    flex: 0 0 auto;
+    height: 170px;              /* espacio reservado para la imagen */
+    background: #f2f2f2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;      /* no recorta logos/fotos */
+    }
+  }
+
+  ion-card-header {
+    flex: 1 1 auto;             /* el texto ocupa el resto del alto */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+    padding: 12px 14px;
+  }
+
+  /* Títulos y subtítulos: que envuelvan líneas y no se recorten */
+  ion-card-title,
+  ion-card-subtitle {
+    display: flex;              /* icono + texto alineados */
+    align-items: center;
+    gap: 6px;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    -webkit-line-clamp: unset !important;
+    line-clamp: unset !important;
+    -webkit-box-orient: unset !important;
+    line-height: 1.25;
+    overflow-wrap: anywhere;    /* rompe palabras largas si hace falta */
+    word-break: break-word;
+  }
+
+  ion-card-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #c62828;
+  }
+
+  ion-card-subtitle {
+    font-size: 13px;
+    color: #666;
+  }
+}
+
+/* Versión móvil: un poco más compacta */
+@media (max-width: 768px) {
+  .lote-card {
+    max-width: 190px;
+    height: 220px;
+
+    .lote-img-container { height: 115px; }
+    ion-card-title       { font-size: 13px; }
+    ion-card-subtitle    { font-size: 11px; }
+  }
+}
+
+.no-lotes {
+  text-align: center;
+  padding: 40px 20px;
+  color: #888;
+  font-size: 16px;
+
+  p {
+    margin-top: 10px;
+    font-weight: 500;
+  }
+
+  .no-icon {
+    font-size: 50px;
+    color: #ccc;
+  }
+}
+
+.back-button {
+  --padding-start: 0;
+  --padding-end: 0;
+  --background: transparent;
+  --ion-color-base: transparent;
+
+  ion-icon {
+    font-size: 28px; /* ajusta a tu gusto */
+    color: #000;
+  }
+}
+
+/* Utilidad de clamp multi-línea (por si la necesitas en otro lado) */
+.clamp {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+
+  line-clamp: var(--lc, 2);         /* estándar */
+  -webkit-line-clamp: var(--lc, 2); /* webkit */
+}
+/* Grid/row */
+.lotes-row {
+  align-items: stretch;
+  --ion-grid-column-padding: 8px;
+}
+.lote-col {
+  display: flex;
+}
+
+/* Card fija y consistente */
+.lote-card {
+  width: 100%;
+  height: 340px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Imagen fija arriba */
+.lote-img {
+  width: 100%;
+  height: 160px;
+  background: #f3f3f3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+/* Contenido */
+.lote-header {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px;
+}
+
+.lote-title {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: #c62828;
+  line-height: 1.25;
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+
+  ion-icon { margin-top: 2px; }
+}
+
+.lote-subtitle {
+  margin: 0;
+  font-size: 10px;
+  color: #666;
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+
+  ion-icon { margin-top: 2px; }
+}
+
+/* Texto multi-línea sin cortar (máx 2 líneas) */
+.ellipsis-2 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+
+  /* compat extra */
+  line-clamp: 2;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}

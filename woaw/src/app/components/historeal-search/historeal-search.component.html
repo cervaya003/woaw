@@ -1,0 +1,14 @@
+<div class="encabezado-historial">
+  <span class="titulo">Historial de búsqueda</span>
+  <button class="btn-cerrar" (click)="dismiss()">×</button>
+</div>
+
+<ul *ngIf="historialFiltrado.length > 0; else sinHistorial" class="sugerencias">
+  <li *ngFor="let sugerencia of historialFiltrado" (click)="seleccionar(sugerencia)">
+    {{ sugerencia }}
+  </li>
+</ul>
+
+<ng-template #sinHistorial>
+  <div class="sin-historial">No tienes historial de búsqueda.</div>
+</ng-template>

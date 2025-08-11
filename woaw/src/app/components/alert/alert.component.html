@@ -1,0 +1,14 @@
+<div class="alert-content {{ type }}">
+  <div class="top-bar"></div>
+
+  <div class="icon-container">
+    <ion-icon [name]="iconMap[type]" class="icon"></ion-icon>
+  </div>
+
+  <h2>{{ header }}</h2>
+  <p>{{ message }}</p>
+
+  <ion-button class="btn-ok" (click)="cerrar()" fill="solid">
+    OK
+  </ion-button>
+</div>

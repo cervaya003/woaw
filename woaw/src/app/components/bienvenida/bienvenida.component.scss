@@ -1,0 +1,194 @@
+ion-content {
+  --background: transparent;
+  position: relative;
+}
+
+.home-bg {
+  background-color: black;
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; // ✅ permite alinear el contenido arriba
+  padding-top: 5vh;        // ✅ aquí controlas qué tan arriba/bajo
+  overflow: hidden;
+}
+
+.home-bg::before {
+  // animation: fadeBackground 1s ease-in forwards;
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  // background: url('/assets/icon/splas.jpg') no-repeat center center / cover;
+  background: url('/assets/icon/splas.webp') no-repeat center center / cover;
+  opacity: 0.3;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.overlay {
+  z-index: 10;
+  position: relative;
+  text-align: center;
+  color: white;
+  padding: 20px;
+  margin-top: 0rem !important;
+  animation: fadeOverlay 1s ease-out 1s forwards;
+  opacity: 0;
+  transform: translateY(-30px);
+
+  .logo {
+    width: 220px;
+    height: auto;
+    margin-bottom: 30px;
+    z-index: 11;
+    animation: scaleLogo 1.2s ease-out 1.5s forwards;
+    transform: scale(0.8);
+    opacity: 0;
+  }
+
+  .bienvenido {
+    font-size: 68px;
+    font-weight: bold;
+    color: #e6e6e6;
+  }
+
+  .mensaje {
+    font-size: 38px;
+    line-height: 1.6;
+    color: #f2f2f2;
+  }
+
+  .bienvenido,
+  .mensaje {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeUp 1s ease-out 2.2s forwards;
+  }
+}
+
+.barras-animadas {
+  position: relative;
+  width: 100%;
+  height: 2px;
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+
+  .barra {
+    display: block;
+    height: 2px;
+    background-color: #ffffffaa;
+    position: absolute;
+    top: 0;
+    width: 0;
+    animation-duration: 3s;
+    animation-fill-mode: forwards;
+  }
+
+  .izquierda {
+    left: 50%;
+    transform: translateX(-50%);
+    animation-name: expandLeft;
+  }
+
+  .derecha {
+    right: 50%;
+    transform: translateX(50%);
+    animation-name: expandRight;
+  }
+}
+
+
+@keyframes fadeBackground {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 0.3;
+  }
+}
+
+@keyframes fadeOverlay {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleLogo {
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fadeUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes expandLeft {
+  from {
+    width: 0;
+  }
+
+  to {
+    width: 50%;
+    left: 0;
+  }
+}
+
+@keyframes expandRight {
+  from {
+    width: 0;
+  }
+
+  to {
+    width: 50%;
+    right: 0;
+  }
+}
+
+// Teléfonos pequeños (hasta 480px)
+@media (max-width: 480px) {
+  .overlay {
+    .logo {
+      width: 140px;
+      margin-bottom: 20px;
+    }
+
+    .bienvenido {
+      font-size: 42px;
+    }
+
+    .mensaje {
+      font-size: 28px;
+    }
+  }
+}
+
+// Tablets (481px a 768px)
+@media (min-width: 481px) and (max-width: 768px) {
+  .overlay {
+    .logo {
+      width: 160px;
+    }
+
+    .bienvenido {
+      font-size: 52px;
+    }
+
+    .mensaje {
+      font-size: 34px;
+    }
+  }
+}
+

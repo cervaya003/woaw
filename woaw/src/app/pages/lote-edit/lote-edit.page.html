@@ -1,0 +1,116 @@
+<app-navbar></app-navbar>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <ion-button class="btn-icon-clear" fill="clear" (click)="irLotes()">
+    <ion-icon name="arrow-back-outline" slot="icon-only"></ion-icon>
+  </ion-button>
+
+  <ion-card *ngIf="isLoggedIn" class="formulario-lote">
+    <ion-card-header>
+      <ion-card-title>Editar lote de coches</ion-card-title>
+      <ion-card-subtitle>Modifica la información y guarda los cambios</ion-card-subtitle>
+    </ion-card-header>
+
+    <ion-card-content>
+      <form [formGroup]="formLote" (ngSubmit)="actualizarLote()">
+        <ion-grid>
+          <ion-row>
+            <!-- Nombre -->
+            <ion-col size="12" size-md="6">
+              <ion-item>
+                <ion-label position="stacked">
+                  Nombre del Lote <ion-text color="danger">*</ion-text>
+                </ion-label>
+                <ion-input formControlName="nombre"></ion-input>
+              </ion-item>
+            </ion-col>
+
+            <!-- Teléfono -->
+            <ion-col size="12" size-md="6">
+              <ion-item>
+                <ion-label position="stacked">
+                  Teléfono <ion-text color="danger">*</ion-text>
+                </ion-label>
+                <ion-input type="tel" formControlName="telefono"></ion-input>
+              </ion-item>
+            </ion-col>
+
+            <!-- Correo -->
+            <ion-col size="12" size-md="6">
+              <ion-item>
+                <ion-label position="stacked">
+                  Correo electrónico <ion-text color="medium">(opcional)</ion-text>
+                </ion-label>
+                <ion-input type="email" formControlName="email"></ion-input>
+              </ion-item>
+            </ion-col>
+
+            <!-- Imagen principal -->
+            <ion-col size="12" size-md="6">
+              <ion-label position="stacked">
+                Imagen principal
+              </ion-label>
+              <div class="area-subida" (click)="seleccionarImagenPrincipal()">
+                <ion-icon name="camera-outline" [class.oculto]="previewImagenPrincipal"></ion-icon>
+                <div *ngIf="previewImagenPrincipal" class="preview-container">
+                  <img [src]="previewImagenPrincipal" alt="Principal" />
+                  <button type="button" class="btn-eliminar-img"
+                    (click)="eliminarImagenPrincipal(); $event.stopPropagation()">
+                    ✕
+                  </button>
+                </div>
+              </div>
+            </ion-col>
+
+            <!-- Ubicación -->
+            <ion-col size="12">
+              <ion-item lines="none" class="ubicacion-item">
+                <ion-label position="stacked">
+                  Ubicación <ion-text color="danger">*</ion-text>
+                </ion-label>
+
+                <button type="button" class="btn-ubicacion" (click)="seleccionarUbicacion()">
+                  <ion-icon name="location-outline"></ion-icon>
+                  <span>Cambiar ubicación</span>
+                </button>
+              </ion-item>
+            </ion-col>
+
+            <!-- Lista de ubicaciones -->
+            <ion-col size="12" *ngIf="ubicacionesSeleccionadas.length > 0">
+              <ion-list>
+                <ion-item *ngFor="let u of ubicacionesSeleccionadas; let i = index">
+                  <ion-label>
+                    <p><strong>{{ direccionesTraducidas[i] }}</strong></p>
+                  </ion-label>
+                  <ion-button color="danger" fill="clear" slot="end" size="small" (click)="eliminarUbicacion(i)">
+                    <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+                  </ion-button>
+                </ion-item>
+              </ion-list>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+
+        <div class="boton-publicar-container">
+          <button type="submit" class="btn-pill btn-guardar">
+            <ion-icon name="save-outline"></ion-icon>
+            Guardar cambios
+          </button>
+          <button type="button" class="btn-pill btn-cancelar" (click)="cancelar()">
+            <ion-icon name="close-outline"></ion-icon>
+            Cancelar
+          </button>
+        </div>
+
+      </form>
+    </ion-card-content>
+  </ion-card>
+
+  <div *ngIf="!isLoggedIn" class="mensaje-autenticacion">
+    Para editar un <strong>Lote</strong>, primero debes iniciar sesión o crear una cuenta.
+    <button class="btn-acceso" (click)="irAInicio()">Acceder</button>
+  </div>
+
+  <app-footer></app-footer>
+</ion-content>

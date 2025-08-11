@@ -1,0 +1,110 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="dark">
+    <ion-buttons slot="start">
+      <div class="perfil-header">
+        <img src="/assets/icon/goautos1.webp" alt="Go Autos" class="logo" />
+        <span class="titulo-perfil">Mi perfil</span>
+      </div>
+    </ion-buttons>
+
+    <ion-buttons slot="end">
+      <ion-button (click)="cerrarModal()">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-card>
+    <ion-list lines="none">
+      <ion-item>
+        <ion-icon slot="start" name="person-circle-outline"></ion-icon>
+        <ion-label>
+          <h2>{{ usuario?.nombre }} {{ usuario?.apellidos }}</h2>
+          <p>Nombre completo</p>
+        </ion-label>
+      </ion-item>
+
+      <ion-item>
+        <ion-icon slot="start" name="mail-outline"></ion-icon>
+        <ion-label>
+          <h2>{{ usuario?.email }}</h2>
+          <p>Correo electrónico</p>
+        </ion-label>
+      </ion-item>
+
+      <ion-item>
+        <ion-icon slot="start" name="call-outline"></ion-icon>
+        <ion-label>
+          <h2>{{ usuario?.lada }} {{ usuario?.telefono }}</h2>
+          <p>Teléfono</p>
+        </ion-label>
+      </ion-item>
+
+      <ion-item>
+        <ion-icon slot="start" name="accessibility-outline"></ion-icon>
+        <ion-label>
+          <h2>{{ usuario?.rol | titlecase }}</h2>
+          <p>Rol</p>
+        </ion-label>
+      </ion-item>
+    </ion-list>
+  </ion-card>
+  <!-- ## ----- ----- -->
+  <ion-card class="card-cambio">
+    <ion-card-header (click)="mostrarCambio = !mostrarCambio" class="cabecera-acordeon">
+      <ion-card-title class="ion-align-items-center ion-justify-content-between">
+        <div class="titulo-acordeon">
+          Cambiar contraseña
+          <ion-icon name="lock-closed-outline"></ion-icon>
+        </div>
+        <ion-icon [name]="mostrarCambio ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
+      </ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content *ngIf="mostrarCambio">
+      <form [formGroup]="formCambio" (ngSubmit)="cambiarPassword()">
+        <p>Contreseña minimo de 8 caracteres</p>
+        <!-- Contraseña actual -->
+        <ion-item>
+          <ion-label position="stacked">Contraseña actual</ion-label>
+          <ion-input [type]="verActual ? 'text' : 'password'" formControlName="password" required></ion-input>
+          <ion-icon slot="end" [name]="verActual ? 'eye-off-outline' : 'eye-outline'" (click)="verActual = !verActual"
+            class="icono-ojito">
+          </ion-icon>
+        </ion-item>
+
+        <!-- Nueva contraseña -->
+        <ion-item>
+          <ion-label position="stacked">Nueva contraseña</ion-label>
+          <ion-input [type]="verNuevas ? 'text' : 'password'" formControlName="newPassword" required></ion-input>
+          <ion-icon slot="end" [name]="verNuevas ? 'eye-off-outline' : 'eye-outline'" (click)="verNuevas = !verNuevas"
+            class="icono-ojito">
+          </ion-icon>
+        </ion-item>
+
+        <ion-text color="danger"
+          *ngIf="formCambio.get('nueva')?.hasError('passwordInvalida') && formCambio.get('nueva')?.touched">
+          <small>
+            La contraseña debe tener mínimo 8 caracteres, una mayúscula, un número y un carácter especial.
+          </small>
+        </ion-text>
+
+        <!-- Confirmar nueva contraseña -->
+        <ion-item>
+          <ion-label position="stacked">Confirmar nueva contraseña</ion-label>
+          <ion-input [type]="verNuevas ? 'text' : 'password'" formControlName="newPasswordconf" required></ion-input>
+        </ion-item>
+
+
+
+        <ion-button color="danger" expand="block" type="submit" [disabled]="formCambio.invalid">
+          Actualizar contraseña
+        </ion-button>
+      </form>
+    </ion-card-content>
+  </ion-card>
+
+
+</ion-content>

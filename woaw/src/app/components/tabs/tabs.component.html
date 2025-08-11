@@ -1,0 +1,28 @@
+<ion-tab-bar slot="bottom" color="dark">
+
+  <ion-tab-button (click)="redirecion('home')" [ngClass]="{ 'activo': isActive('home') }">
+    <ion-icon name="home"></ion-icon>
+    <ion-label>Home</ion-label>
+  </ion-tab-button>
+
+  <ion-tab-button (click)="abrirPopover($event, 'Autos')">
+    <ion-icon name="car-outline"></ion-icon>
+    <ion-label>Autos</ion-label>
+  </ion-tab-button>
+
+  <ion-tab-button (click)="redirecion('arrendamiento')" [ngClass]="{ 'activo': isActive('arrendamiento') }">
+    <ion-icon name="car-sport"></ion-icon>
+    <ion-label>Arrendar</ion-label>
+  </ion-tab-button>
+
+  <ion-tab-button (click)="redirecion('seguros')" [ngClass]="{ 'activo': isActive('seguros') }">
+    <ion-icon name="shield-checkmark-outline"></ion-icon>
+    <ion-label>Seguros</ion-label>
+  </ion-tab-button>
+
+  <ion-tab-button (click)="redirecion('renta-coches')" [ngClass]="{ 'activo': isActive('renta-coches') }">
+    <ion-icon name="document-lock-outline"></ion-icon>
+    <ion-label>Renta</ion-label>
+  </ion-tab-button>
+
+</ion-tab-bar>

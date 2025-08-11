@@ -1,0 +1,37 @@
+
+:host {
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 999;
+}
+
+ion-tab-bar {
+  --background: #1e1e1e;
+  color: white;
+}
+
+ion-badge {
+  position: absolute;
+  top: 2px;
+  right: 10px;
+  font-size: 9px;
+}
+
+ion-tab-button.activo {
+  color: #e53935 !important;
+  font-weight: bold;
+  background-color: #1a1a1a;
+
+  ion-icon {
+    color: #e53935 !important;
+    transform: scale(1.15);
+    transition: transform 0.2s;
+  }
+
+  ion-label {
+    color: #e53935 !important;
+  }
+}
+
+

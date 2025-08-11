@@ -1,0 +1,88 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+ion-content {
+  height: 100%;
+}
+
+.logo {
+  width: 15%;
+  margin-left: 7px;
+
+  @media (max-width: 768px) {
+    width: 25%;
+  }
+}
+
+.titulo-perfil {
+  margin-left: 5px;
+}
+
+
+.perfil-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  .logo {
+    width: 24px;
+    height: auto;
+  }
+
+  .titulo-perfil {
+    font-size: 18px;
+    font-weight: 600;
+    color: white;
+  }
+}
+
+.card-perfil {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  padding: 12px;
+}
+
+ion-item h2 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+}
+
+ion-item p {
+  font-size: 13px;
+  color: gray;
+  margin: 2px 0 0;
+}
+
+.card-cambio {
+  .cabecera-acordeon {
+    cursor: pointer;
+
+    ion-card-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .titulo-acordeon {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+  }
+
+  ion-card-content {
+    padding-top: 8px;
+  }
+}
+
+
+.icono-ojito {
+  font-size: 22px;
+  margin-right: 8px;
+  cursor: pointer;
+  color: #888;
+}

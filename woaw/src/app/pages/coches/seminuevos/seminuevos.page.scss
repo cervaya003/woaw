@@ -1,0 +1,75 @@
+.btn-fav {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+.filtros-row {
+  gap: 0.5rem;
+}
+
+.btn-filtro {
+  font-weight: 500;
+  border-radius: 20px;
+}
+
+
+
+.filtros-row {
+  --ion-grid-column-padding: 4px;
+  --ion-grid-padding: 0;
+  row-gap: 8px;
+  column-gap: 8px;
+}
+
+
+
+
+
+
+.filtros-pestana {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  background: #ffffff;
+  padding: 10px 10px;
+  width: fit-content;
+  margin: 0 auto;
+  border-radius: 0 0 20px 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.047);
+
+  position: sticky;
+  top: 0px;
+  z-index: 10;
+}
+
+
+
+.filtro-btn {
+  background-color: transparent;
+  color: red;
+  padding: 10px;
+}
+
+.estado-vehiculo {
+  display: inline-block;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: bold;
+  border-radius: 12px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  width: fit-content;
+
+  &.disponible {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+  }
+
+  &.vendido {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+  }
+}

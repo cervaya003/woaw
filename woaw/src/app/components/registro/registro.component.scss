@@ -1,0 +1,442 @@
+@keyframes fadeBackground {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 0.3;
+  }
+}
+
+@keyframes fadeOverlay {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleLogo {
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fadeUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.overlay {
+  z-index: 10;
+  position: relative;
+  text-align: center;
+  color: white;
+  padding: 20px;
+  animation: fadeOverlay 0.2s ease-out 0.2s forwards;
+  opacity: 0;
+  transform: translateY(30px);
+
+  .logo-registro {
+    width: 50px;
+    height: auto;
+    z-index: 11;
+    animation: scaleLogo 0.2s ease-out 0.5s forwards;
+    transform: scale(0.8);
+    opacity: 0;
+  }
+
+  .titulo {
+    font-size: 17px;
+    // font-weight: bold;
+    color: #ff0000;
+  }
+
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+
+  .input-wrapper {
+    width: 100%;
+    max-width: 280px;
+    border: 0.5px solid rgba(189, 189, 189, 0.369);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    margin-bottom: 16px;
+    color: rgb(74, 74, 74);
+
+    ion-input {
+      color: rgb(74, 74, 74);
+      padding-left: 10px;
+    }
+
+    .eye-icon {
+      color: rgb(74, 74, 74);
+      font-size: 20px;
+      margin-right: 10px;
+      cursor: pointer;
+    }
+
+  }
+
+  // El imput personalizado de teléfono
+  .telefono-input-wrapper {
+    display: flex;
+    width: 100%;
+    max-width: 280px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 0.5px solid rgba(90, 90, 90, 0.369);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+
+    ion-item.lada-box {
+      --background: transparent !important;
+      background-color: rgba(255, 255, 255, 0.15) !important;
+      padding: 0px;
+      font-weight: bold;
+      border-right: 1px solid rgba(67, 67, 67, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      min-width: 70px;
+      max-width: 90px;
+      border-top-left-radius: 8px;
+      border-bottom-left-radius: 8px;
+      cursor: pointer;
+
+      p {
+        margin: 0;
+        color: rgb(74, 74, 74);
+        font-size: 10px;
+      }
+    }
+
+    .flag-img {
+      width: 20px;
+      height: 15px;
+      object-fit: cover;
+      margin-right: 8px;
+    }
+
+    .opcion-bandera {
+      display: flex;
+      align-items: center;
+    }
+
+    .telefono-input {
+      flex: 1;
+      --background: transparent;
+      --padding-start: 10px;
+      color: rgb(74, 74, 74);
+
+      ion-input {
+        color: rgb(74, 74, 74);
+        padding-left: 0;
+      }
+    }
+  }
+
+  .ion-note {
+    margin-top: 2px !important;
+  }
+
+  ion-note {
+    font-size: 10px;
+    // font-weight: bold;
+    margin-top: -15px;
+    margin-bottom: 10px;
+    --color: #e00000;
+
+    letter-spacing: 0.08em; // Espaciado entre letras
+    word-spacing: 0.3em; // Espaciado entre palabras
+    // line-height: 1.5; //separación entre lineas vetialmente
+  }
+
+  .botones-acciones {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-top: 15px;
+    margin-bottom: 10px;
+    flex-wrap: nowrap;
+
+    @media (max-width: 480px) {
+      flex-wrap: nowrap;
+    }
+  }
+
+
+  .btn-login {
+    width: 220px;
+    background: var(--ion-color-danger);
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    border: none;
+    padding: 22px;
+    border-radius: 30px;
+    margin-top: 12px;
+    font-size: 16px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+
+    &:disabled {
+      background: rgba(255, 0, 0, 0.268);
+      cursor: not-allowed;
+    }
+  }
+
+  .btn-login-dos {
+    width: 150px;
+    background: var(--ion-color-danger);
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    border: none;
+    padding: 20px;
+    border-radius: 30px;
+    margin-top: 5px;
+    font-size: 16px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+
+    &:disabled {
+      background: rgba(255, 0, 0, 0.268);
+      cursor: not-allowed;
+    }
+
+    @media (max-width: 480px) {
+      width: 125px;
+      font-size: 13px;
+    }
+  }
+
+  .btn-google {
+    width: 220px;
+    background: #ffffff;
+    border: none;
+    padding: 28px 28px 28px 48px;
+    border-radius: 30px;
+    margin-top: 0px;
+    position: relative;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+
+    img {
+      position: absolute;
+      top: 50%;
+      left: 45%;
+      width: 20px;
+      height: auto;
+      transform: translateY(-50%);
+    }
+  }
+}
+
+.checkbox-custom {
+  --background: transparent;
+  --ion-item-background: transparent;
+  --inner-border-width: 0;
+  padding-left: 0;
+  margin-left: 0;
+  // position:absolute;
+  width: 100%;
+  max-width: 280px;
+
+  display: flex;
+  justify-content: flex-start !important;
+  align-items: center;
+  gap: 2px;
+
+  ion-label {
+    color: rgb(231, 0, 0);
+    font-size: 12px;
+    margin: 0;
+  }
+
+  .check-rojo {
+    --checkbox-background: transparent;
+    --border-color: var(--ion-color-danger);
+    --checkmark-color: white;
+    --background-checked: var(--ion-color-danger);
+  }
+}
+
+ion-list {
+  padding: 0 10px;
+
+  ion-item {
+    --inner-border-width: 0px;
+    --background: transparent;
+    --padding-start: 0;
+    --padding-end: 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+
+    img {
+      width: 30px;
+      height: 20px;
+      object-fit: cover;
+      margin-right: 10px;
+      border-radius: 4px;
+    }
+
+    ion-label {
+      font-size: 16px;
+      color: #000;
+    }
+  }
+}
+
+.politicas-label {
+  color: #ee0808;
+  font-size: 10px;
+
+  a.enlace-politica {
+    color: #da0909;
+    font-weight: bold;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+}
+
+
+ion-label {
+  span {
+    font-weight: bold;
+    text-decoration: underline;
+  }
+}
+
+.popup {
+  font-size: 14px;
+  color: #f50000;
+}
+
+.politicas-container {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px 0;
+}
+
+.acepto-label {
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.instrucciones {
+  color: #3c3c3c;
+
+  @media (max-width: 820px) {
+    font-size: 11;
+  }
+}
+
+
+.fila-revisar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5px;
+  margin-top: 10px;
+  padding: 8px 10px;
+  background-color: #f4f4f4;
+  border-radius: 8px;
+
+
+  .correo-preview {
+    flex: 1;
+    color: #333;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 12px;
+    max-width: 100%;
+    cursor: default;
+
+    @media (max-width: 820px) {
+      font-size: 10px;
+    }
+  }
+
+
+  .btn-revisar-codigo {
+    background-color: #ff0000;
+    color: white;
+    padding: 5px 8px;
+    border: none;
+    border-radius: 6px;
+    // font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    font-size: 11px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.349);
+
+    @media (max-width: 820px) {
+      font-size: 9px;
+    }
+
+    &:hover {
+      background-color: #d55b0a;
+    }
+  }
+
+}
+
+
+.advertencia {
+  background-color: #fff3cd;
+  color: #030303;
+  border: 1px solid #ffeeba;
+  padding: 14px 18px;
+  border-radius: 8px;
+  // font-weight: 500;
+  font-size: 12px;
+  box-shadow: 0 0 8px #ffeeba;
+  margin-top: 16px;
+  animation: latido 2s infinite ease-in-out;
+  display: inline-block;
+  max-width: 100%;
+  text-align: center;
+
+  strong {
+    color: #d63384;
+    font-weight: bold;
+    animation: resaltar 1.2s infinite alternate;
+  }
+}
+
+@keyframes latido {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.02);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes resaltar {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0.5;
+  }
+}

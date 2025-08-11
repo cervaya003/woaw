@@ -1,0 +1,332 @@
+/*
+ * App Global CSS
+ * ----------------------------------------------------------------------------
+ * Put style rules here that you want to apply globally. These styles are for
+ * the entire app and not just one component. Additionally, this file can be
+ * used as an entry point to import other CSS/Sass files to be included in the
+ * output CSS.
+ * For more information on global stylesheets, visit the documentation:
+ * https://ionicframework.com/docs/layout/global-stylesheets
+ */
+
+/* Core CSS required for Ionic components to work properly */
+@import "@ionic/angular/css/core.css";
+
+/* Basic CSS for apps built with Ionic */
+@import "@ionic/angular/css/normalize.css";
+@import "@ionic/angular/css/structure.css";
+@import "@ionic/angular/css/typography.css";
+@import "@ionic/angular/css/display.css";
+
+/* Optional CSS utils that can be commented out */
+@import "@ionic/angular/css/padding.css";
+@import "@ionic/angular/css/float-elements.css";
+@import "@ionic/angular/css/text-alignment.css";
+@import "@ionic/angular/css/text-transformation.css";
+@import "@ionic/angular/css/flex-utils.css";
+
+/**
+ * Ionic Dark Mode
+ * -----------------------------------------------------
+ * For more info, please see:
+ * https://ionicframework.com/docs/theming/dark-mode
+ */
+
+/* @import "@ionic/angular/css/palettes/dark.always.css"; */
+/* @import "@ionic/angular/css/palettes/dark.class.css"; */
+// @import "@ionic/angular/css/palettes/dark.system.css";
+
+ion-refresher {
+  --color: red !important;
+
+  .refresher-pulling-text,
+  .refresher-refreshing-text {
+    color: red !important;
+    font-weight: 500;
+    display: block;
+    text-align: center;
+    width: 100%;
+  }
+
+  ion-spinner {
+    color: red !important;
+  }
+}
+
+ion-header {
+  box-shadow: none !important;
+}
+
+ion-toolbar {
+  box-shadow: none !important;
+  --box-shadow: none !important;
+  --ion-box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+}
+
+
+
+//      ______
+//  ___//__|__\\___
+// |  _     _     |
+// '-(_)---(_)--'
+//
+
+
+
+// .custom-alert .alert-head {
+//   display: flex;
+//   justify-content: justify;
+//   width: 100%;
+// }
+
+// .custom-alert .alert-title {
+//   font-size: 18px;
+//   font-weight: 600;
+//   margin-bottom: 8px;
+//   width: 100%;
+//   text-align: center;
+// }
+
+// .custom-alert .alert-message {
+//   font-size: 14px;
+//   color: #555;
+//   line-height: 1.4;
+//   margin-bottom: 10px;
+//   width: 100%;
+//   text-align: center;
+// }
+
+// .custom-alert .alert-button-group {
+//   display: flex;
+//   justify-content: center;
+//   width: 100%;
+// }
+
+// ## ----- ----
+//  .:::.   .:::.
+// :::::::.:::::::
+// :::::::::::::::
+//  '::::::::::::'
+//    '::::::::'
+//      '::::'
+//        ':'
+
+
+.custom-alert.danger .alert-wrapper {
+  --background: #fff;
+  --border-radius: 16px;
+  --width: 90%;
+  --max-width: 320px;
+  padding: 5px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+.custom-alert.danger .alert-head {
+  color: #d32f2f;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.custom-alert.danger .alert-message {
+  color: #555;
+  font-size: 14px;
+  margin: 8px 0 16px;
+}
+
+.custom-alert.danger .alert-button-group {
+  justify-content: center;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+
+.custom-alert.danger .alert-button {
+  background-color: #d32f2f;
+  margin: 0 6px;
+  color: #fff;
+  border-radius: 8px;
+  padding: 6px 16px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.custom-alert.danger .alert-button.role-cancel {
+  background-color: #eee;
+  color: #444;
+}
+
+
+
+
+
+
+
+
+// ## ------
+
+::ng-deep .popover-wrapper,
+::ng-deep .popover-viewport {
+  overflow-x: hidden !important;
+  max-width: 340px;
+}
+
+.no-scroll-popover .popover-viewport {
+  overflow-x: hidden !important;
+  max-width: 340px;
+}
+
+ion-checkbox {
+  // Variables por defecto
+  --checkbox-background: transparent;
+  --border-color: rgb(230, 0, 0);
+  --checkmark-color: white;
+  --background-checked: rgb(230, 0, 0);
+  ; // Para iOS
+}
+
+// Forzar el estilo visual también en modo md
+ion-checkbox::part(container) {
+  background-color: transparent;
+  border: 2px solid rgb(230, 0, 0);
+  ;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+ion-checkbox[aria-checked="true"]::part(container) {
+  background-color: rgb(230, 0, 0);
+  ;
+  border: 2px solid rgb(230, 0, 0);
+  ;
+}
+
+ion-checkbox[aria-checked="true"] {
+  --checkmark-color: white; // check blanco
+}
+
+
+
+
+
+
+
+
+
+.radio-personalizado ion-radio {
+  --border-radius: 50% !important;
+  --size: 20px;
+  --inner-border-radius: 50%;
+  --color-checked: #ffffff;
+
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  visibility: visible !important;
+  opacity: 1 !important;
+  transform: scale(1.2);
+}
+
+.radio-personalizado ion-radio::part(container) {
+  border: 2px solid #666;
+  background: #fff;
+  border-radius: 50% !important;
+  box-sizing: border-box;
+}
+
+.radio-personalizado ion-radio[aria-checked="true"]::part(container) {
+  border-color: var(--ion-color-danger);
+  background: var(--ion-color-danger);
+}
+
+
+.modal-consentimiento {
+  --width: 470px;
+  --height: 470px;
+  --border-radius: 8px;
+  --background: #ffffff;
+
+  &::part(content) {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  }
+
+  ion-footer {
+    box-shadow: none !important;
+
+    ion-toolbar.footer-toolbar {
+      box-shadow: none !important;
+      background: #fff; // O el color que estés usando para el modal
+    }
+  }
+
+  ion-header {
+    box-shadow: none !important;
+
+    ion-toolbar {
+      box-shadow: none !important;
+      background: #fff; // O el color que estés usando para el modal
+    }
+  }
+
+}
+
+
+.modal-imagen-personalizado {
+  --width: 100%;
+  --height: 100%;
+  --border-radius: 0px;
+  --background: #000000db;
+
+  &::part(content) {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  }
+}
+
+.popover-historial {
+  --width: 100% !important;
+  --max-width: 380px;
+  // --box-shadow: none;
+  --border-radius: 0px;
+  padding: 0;
+  margin-top: 7px;
+  background: transparent !important;
+  --box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+
+  @media (max-width: 820px) {
+    --max-width: 250px;
+  }
+}
+
+app-tabs {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 9999;
+  background: #000; // o el color que uses
+}
+
+
+// .menu_tabs {
+//   --background: #f1f1f1; // Gris claro como fondo principal
+//   --ion-background-color: #f1f1f1;
+
+//   .modal-wrapper {
+//     background: #f1f1f1 !important;
+//     border-radius: 16px;
+//   }
+
+//   // Si tu componente tiene un ion-content dentro
+//   ion-content {
+//     --background: #f1f1f1;
+//     background: #f1f1f1;
+//   }
+// }
+
+

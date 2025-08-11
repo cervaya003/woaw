@@ -1,0 +1,389 @@
+ion-toolbar {
+  height: 72px;
+  --min-height: 72px;
+  padding: 0 16px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+
+  ion-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    text-align: center;
+    width: 100%;
+  }
+
+  @media (max-width: 768px) {
+    height: 55px;
+    --min-height: 55px;
+    padding: 0 8px;
+
+    ion-buttons {
+      padding: 0;
+      margin: 0;
+    }
+
+    ion-button {
+      margin: 0;
+      padding: 0 6px;
+    }
+  }
+}
+
+
+.custom-toolbar {
+  --background: #2c2727;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: auto;
+
+  ion-buttons {
+    display: flex;
+    align-items: center;
+  }
+
+  .search-bar {
+    flex: 1;
+    margin: 0 5px;
+    display: flex;
+    align-items: center;
+
+    @media (max-width: 768px) {
+      margin: 3px;
+    }
+  }
+
+  .custom-search {
+    width: 50%;
+    --color: var(--ion-color-danger);
+    --placeholder-color: #cccccc;
+    --icon-color: #cccccc;
+    --border-radius: 10px;
+
+    // height: 10px;
+    @media (max-width: 768px) {
+      --border-radius: 10px;
+    }
+  }
+
+  ion-button {
+    font-size: 10px;
+    color: white;
+
+    &:hover {
+      border-bottom: #ff0000 solid 2px;
+    }
+
+    ion-icon {
+      font-size: 25px;
+      color: white;
+      margin-right: 2px;
+    }
+  }
+}
+
+.titulo-movil {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1rem;
+  font-weight: 900;
+  color: #d3d0d3;
+  letter-spacing: 0.5px;
+  margin-left: 15px;
+  white-space: nowrap;
+  text-transform: uppercase;
+
+  @media (max-width: 768px) {
+    font-size: 9px;
+  }
+}
+
+
+.submenu-coches {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  background: #1a1a1a;
+  border-radius: 8px;
+  padding: 10px;
+  z-index: 999;
+  top: 60px; // ajusta según tu barra
+  right: 160px; // ajusta según tus botones
+
+  ion-button {
+    --color: white;
+    --background: transparent;
+    --padding-start: 10px;
+    --padding-end: 10px;
+    font-size: 14px;
+
+    &:hover {
+      --background: #2a2a2a;
+    }
+  }
+}
+
+ion-buttons[slot="end"] {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-wrap: nowrap;
+
+  ion-button {
+    white-space: nowrap;
+    font-size: 8px;
+    height: 10px;
+    padding: 0 9px;
+
+    ion-icon {
+      font-size: 18px;
+    }
+  }
+
+  .activo {
+    font-weight: bold;
+    color: #f83a37 !important;
+    border-bottom: 2px solid #fb2b28;
+    transition: all 0.2s ease-in-out;
+    border-radius: 0;
+
+    ion-icon {
+      color: #fb2b28;
+    }
+  }
+
+  .usuario-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: 15px;
+    padding-left: 15px;
+    cursor: pointer;
+    border-left: 1px solid #444;
+
+    &:hover {
+      border-left: 1px solid #ff0000;
+    }
+
+    .icono-bandera {
+      width: 20px;
+      height: auto;
+      border-radius: 2px;
+    }
+
+    .contenedor-nombre {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .icono-user {
+      font-size: 12px;
+      color: #ffffff;
+
+      @media (max-width: 820px) {
+        font-size: 10px;
+      }
+    }
+
+    .nombre-usuario {
+      font-size: 9px;
+      color: #fff;
+      white-space: nowrap;
+
+      @media (max-width: 820px) {
+        font-size: 7px;
+      }
+    }
+  }
+
+
+}
+
+.btn-vender {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  background: linear-gradient(90deg, #ff0000, #ff4d00);
+  color: #fff;
+  font-weight: 600;
+  font-size: 9px;
+  padding: 0 16px;
+  height: 38px;
+
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.4s ease, transform 0.2s ease;
+  animation: pulse 1.6s infinite;
+  box-shadow: 0 0 0 1px rgba(255, 0, 0, 0.2);
+
+  ion-icon {
+    font-size: 18px;
+    margin-right: 8px;
+    display: flex;
+    align-items: center;
+  }
+
+  &:hover {
+    background: linear-gradient(90deg, #ff4d00, #ff0000);
+    transform: scale(1.03);
+    animation: none;
+  }
+
+}
+
+.activo-btn-new {
+  position: relative;
+  background: transparent;
+  animation: none;
+  overflow: hidden;
+  border-radius: 0px;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    height: 2px;
+    width: 100%;
+    background: linear-gradient(270deg, transparent, #f40303, transparent);
+    animation: animateGlow 1.5s linear infinite;
+    animation-delay: 0.5s;
+  }
+}
+
+@keyframes animateGlow {
+  0% {
+    right: -100%;
+  }
+
+  50% {
+    right: 50%;
+  }
+
+  100% {
+    right: 100%;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 77, 0, 0.5);
+  }
+
+  70% {
+    box-shadow: 0 0 0 8px rgba(255, 77, 0, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 77, 0, 0);
+  }
+}
+
+
+
+
+.buscador-container {
+  margin-left: 5px;
+
+  ion-searchbar {
+    --height: 12px; // MÁS delgado 🔥
+    --background: #1a1a1a;
+    --color: #ffffff;
+    --placeholder-color: #aaaaaa;
+    --placeholder-font-size: 10px; // ✅ Esto controla el placeholder (CUSTOM)
+    --icon-color: #ffffff;
+    --clear-button-color: #ffffff;
+    --box-shadow: none;
+
+    border: 1px solid #333;
+    border-radius: 4px;
+
+    .searchbar-input {
+      font-size: 13px !important; // 📝 Solo lo que escribe el usuario
+    }
+
+    input::placeholder {
+      font-size: 12px !important; // ✅ Este es el ajuste exacto del placeholder
+    }
+
+    .searchbar-search-icon {
+      font-size: 16px;
+      top: 5px;
+    }
+
+    &.sc-ion-searchbar-ios-h,
+    &.sc-ion-searchbar-md-h {
+      padding: 0;
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+.logo_content {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+
+  .btn-buscar {
+    --color: white;
+    font-size: 18px;
+    padding: 0;
+  }
+
+  .logo {
+    width: 100px;
+    flex: none;
+    margin-left: 7px;
+    cursor: pointer;
+
+    @media (max-width: 768px) {
+      width: 70px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+
+  .custom-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    height: 55px;
+
+    .custom-search {
+      width: 100%;
+    }
+
+    ion-buttons[slot="start"],
+    ion-buttons[slot="end"] {
+      justify-content: center;
+    }
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+
+  .custom-search {
+    width: 100%;
+  }
+
+  .search-bar {
+    width: 100%;
+  }
+}

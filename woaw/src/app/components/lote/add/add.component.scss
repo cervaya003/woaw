@@ -1,0 +1,120 @@
+.formulario-lote {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+ion-input {
+  --padding-start: 0px;
+  --padding-end: 0px;
+  border-bottom: 0.5px solid #c0c0c09f;
+  padding-bottom: 0.5px;
+  transition: border-color 0.3s ease;
+
+  &:focus-within {
+    border-bottom: 0.5px solid #e53935;
+  }
+}
+
+
+.preview-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+  max-width: 100%;
+  position: relative;
+
+  div {
+    position: relative;
+    width: 80px;
+    height: 80px;
+  }
+
+  img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 2px solid #ccc;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    display: block;
+  }
+
+  .btn-eliminar-img {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background-color: rgba(255, 0, 0, 0.85);
+    border: none;
+    border-radius: 50%;
+    color: white;
+    width: 20px;
+    height: 20px;
+    font-size: 14px;
+    text-align: center;
+    line-height: 20px;
+    cursor: pointer;
+    z-index: 10;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  }
+}
+
+.area-subida {
+  width: 80%;
+  height: 100px;
+  border: 2px dashed #e2d3d3;
+  background-color: #e3313100;
+  border-radius: 8px;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background 0.3s;
+
+  .oculto {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  ion-icon {
+    font-size: 40px;
+    color: #d0dce7;
+  }
+
+  &:hover {
+    background-color: #37373708;
+  }
+
+  @media (max-width: 1090px) {
+    width: 100%;
+  }
+}
+
+
+.mensaje-autenticacion {
+  font-size: 15px;
+  color: #222;
+  margin: 16px 0;
+  padding: 16px;
+  background-color: #fff4f0;
+  border-left: 5px solid #ff3c00;
+  border-radius: 8px;
+}
+
+.btn-acceso {
+  margin-top: 12px;
+  padding: 10px 20px;
+  font-size: 14px;
+  background: linear-gradient(to right, #ff3c00, #ff6600);
+  border: none;
+  border-radius: 6px;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: scale(1.05);
+  }
+}

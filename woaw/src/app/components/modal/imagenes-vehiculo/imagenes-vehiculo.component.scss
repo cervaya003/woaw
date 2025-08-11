@@ -1,0 +1,88 @@
+.modal-container {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  overflow: hidden;
+}
+
+.imagen-wrapper {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.contenedor-rotado {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+.imagen-grande {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  transition: transform 0.4s ease;
+}
+
+.header-botones {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 999;
+
+  .btn-cerrar {
+    font-size: 36px;
+    color: rgb(192, 67, 67);
+    cursor: pointer;
+  }
+
+  .btn-girar {
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    transition: transform 0.4s ease;
+  }
+}
+
+
+
+
+
+
+
+.nav {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 56px;
+  height: 100px;
+  background: transparent;
+  color: rgb(255, 118, 118);
+  border: none;
+  font-size: 3rem;
+  z-index: 1000;
+  padding: 0.5rem;
+  cursor: pointer;
+
+  @media (max-width: 868px) {
+    font-size: 2rem;
+  }
+
+  &.izquierda {
+    left: 1rem;
+  }
+
+  &.derecha {
+    right: 1rem;
+  }
+}

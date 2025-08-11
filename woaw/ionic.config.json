@@ -1,0 +1,7 @@
+{
+  "name": "joli",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

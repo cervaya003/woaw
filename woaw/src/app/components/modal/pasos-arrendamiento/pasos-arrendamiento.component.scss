@@ -1,0 +1,154 @@
+.header-toolbar {
+  --background: #ffffff;
+  box-shadow: none;
+  padding: 0;
+}
+
+.header-flex {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 2px 5px;
+}
+
+.logo-titulo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  img {
+    height: 18px;
+    width: auto;
+
+    @media (max-width: 768px) {
+      height: 14px;
+    }
+  }
+
+}
+
+ion-button {
+  font-size: 14px;
+}
+
+
+.modal-arrendamiento {
+  --background: #f9f9f9; // fondo claro neutro
+  font-family: 'Poppins', sans-serif;
+  padding: 1.5rem;
+
+  h4 {
+    font-size: 17px !important;
+    font-weight: 700;
+    color: #e00909;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    ion-icon {
+      color: #e00909;
+      font-size: 1.5rem;
+    }
+  }
+
+  h5 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #333;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+
+    ion-icon {
+      color: #e00909;
+      font-size: 1.2rem;
+    }
+  }
+
+  p {
+    color: #444;
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+
+  ul {
+    list-style: none;
+    padding-left: 0;
+
+    li {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.95rem;
+      color: #222;
+      background-color: #f2f2f2;
+      padding: 0.6rem 1rem;
+      border-radius: 8px;
+      margin-bottom: 0.5rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+
+      ion-icon {
+        color: #e00909;
+        font-size: 1.1rem;
+      }
+
+      &:hover {
+        background-color: #e0090920;
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+
+    h4,
+    h5 {
+      font-size: 1.1rem;
+    }
+
+    p,
+    ul li {
+      font-size: 0.9rem;
+    }
+  }
+}
+
+
+.contenedor-boton-final {
+  margin-top: 32px;
+  display: flex;
+  justify-content: center;
+}
+
+.btn-interesado {
+  background: linear-gradient(90deg, #ff6f00, #e00909);
+  color: #fff;
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 12px 24px;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 300px;
+  box-shadow: 0 4px 12px rgba(224, 9, 9, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+
+  ion-icon {
+    font-size: 18px;
+    vertical-align: middle;
+  }
+
+  &:hover {
+    filter: brightness(1.1);
+  }
+
+  @media (max-width: 768px) {
+    font-size: 14px;
+    padding: 10px 20px;
+  }
+}

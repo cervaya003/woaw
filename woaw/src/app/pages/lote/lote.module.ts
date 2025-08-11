@@ -1,0 +1,23 @@
+// src/app/pages/lote/lote.module.ts
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { IonicModule } from '@ionic/angular';
+import { FormsModule } from '@angular/forms';
+
+import { LotePageRoutingModule } from './lote-routing.module';
+import { LotePage } from './lote.page';
+
+// CartasComponent es standalone → se importa directamente
+import { CartasComponent } from '../../components/cartas/cartas.component';
+
+@NgModule({
+  imports: [
+    CommonModule,
+    FormsModule,
+    IonicModule,
+    LotePageRoutingModule,
+    CartasComponent
+  ],
+  declarations: [LotePage],
+})
+export class LotePageModule {}

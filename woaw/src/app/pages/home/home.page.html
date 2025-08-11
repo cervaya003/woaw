@@ -1,0 +1,98 @@
+<app-navbar></app-navbar>
+
+<ion-content [fullscreen]="true">
+
+  <div class="goautos-bg">
+    <div class="overlay" [ngStyle]="{
+    'background-image':
+    'linear-gradient(to bottom, rgba(255, 255, 255, 0) 75%, #ffffff00 100%), url(' + fondoActualCarrucelPrinecipal + ')',
+    'background-size': 'cover',
+    'background-position': 'center center',
+    'background-repeat': 'no-repeat'
+     }" [class.trancicion]="aplicandoTransicionCarrucelPrincipal">
+
+      <!-- Logo centrado -->
+      <img src="/assets/icon/goautos.webp" alt="Logo Go Autos" class="logo-goautos" loading="lazy" />
+      <div class="contenido-principal">
+        <div class="bloque-contenido">
+          <h1 class="titulo typing">{{ textoAnimado }}</h1>
+          <p class="descripcion">
+            Consigue tu auto ideal, fácil y seguro, con un solo clic.
+          </p>
+
+          <div class="buscador-container">
+            <ion-searchbar [(ngModel)]="terminoBusqueda" (ionInput)="onInputChange($event)"
+              (keyup.enter)="irABusqueda(terminoBusqueda)" placeholder="Busca por marca, modelo o año" animated="true"
+              class="buscador">
+            </ion-searchbar>
+
+            <!-- <button class="btn-buscar" (click)="irABusqueda(terminoBusqueda)">
+              <ion-icon name="search-outline"></ion-icon>
+            </button> -->
+          </div>
+
+          <div class="tipos-vehiculos">
+            <div class="lista-tipos">
+              <div class="tipo-card" *ngFor="let tipo of TiposVeiculo" (click)="buscarPorTipo(tipo)">
+                {{ tipo }}
+              </div>
+            </div>
+          </div>
+
+          <div class="top-marcas">
+            <img src="https://storage.googleapis.com/goautos191/uploads/marcas/nissan-1752250741191.png"  (click)="irABusqueda('nissan')" alt="Nissan" loading="lazy" />
+            <img src="https://storage.googleapis.com/goautos191/uploads/marcas/chevrolet-1752250726132.png"
+               (click)="irABusqueda('Chevrolet')" alt="Chevrolet" loading="lazy" />
+            <img src="https://storage.googleapis.com/goautos191/uploads/marcas/honda-1752250731294.png"
+               (click)="irABusqueda('Honda')" alt="Honda" loading="lazy" />
+            <img src="https://storage.googleapis.com/goautos191/uploads/marcas/volkswagen-1752250719366.png"
+               (click)="irABusqueda('Volkswagen')" alt="Volkswagen" loading="lazy" />
+            <img src="https://storage.googleapis.com/goautos191/uploads/marcas/kia-1752250740506.png"  (click)="irABusqueda('Kia')" alt="Kia" loading="lazy" />
+            <img src="https://storage.googleapis.com/goautos191/uploads/marcas/hyundai-1752250721333.png"
+               (click)="irABusqueda('Hyundai')" alt="Hyundai" loading="lazy" />
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <app-principal></app-principal>
+
+  <a class="titulo-arrendamiento" href="/arrendamiento">
+    ARRENDAMIENTO PURO
+  </a>
+  <a href="/arrendamiento">
+    <div class="banner-img">
+      <img src='/assets/autos/publicidad/AR5.jpg' alt="banner" loading="lazy"/>
+    </div>
+  </a>
+  <!-- <div class="banner-img" [class.fade-in]="aplicandoTransicion">
+    <img [src]="fondoActual" alt="banner" />
+  </div> -->
+
+  <br><br>
+
+  <section class="tipos-vehiculos">
+    <h2>Tipos de Vehículos</h2>
+    <div class="lista-tipos">
+      <div class="tipo-card" *ngFor="let tipo of TiposVeiculo" (click)="buscarPorTipo(tipo)">
+        {{ tipo }}
+      </div>
+    </div>
+  </section>
+
+
+  <section class="seccion-app-mensaje">
+    <div class="contenedor-app-mensaje">
+      <h2 class="titulo-app">
+        Go Autos te ayuda a <br />
+        comprar o vender tu auto <br />
+        desde la <span>palma de tu mano</span><br />
+        de forma segura
+      </h2>
+    </div>
+  </section>
+
+  <app-footer></app-footer>
+</ion-content>

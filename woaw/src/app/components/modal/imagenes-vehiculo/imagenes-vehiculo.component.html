@@ -1,0 +1,20 @@
+<div class="modal-container" (click)="cerrar()">
+  <div class="header-botones">
+    <img src="assets/icon/girar.png" alt="Girar" class="btn-girar" (click)="rotarImagen($event)" />
+    <ion-icon name="close-circle" class="btn-cerrar" (click)="cerrar()"></ion-icon>
+  </div>
+
+  <div class="imagen-wrapper" (click)="$event.stopPropagation()" (touchstart)="onTouchStart($event)" (touchend)="onTouchEnd($event)">
+    <button class="nav izquierda" (click)="anterior()" *ngIf="indice > 0">
+      <ion-icon name="chevron-back-outline"></ion-icon>
+    </button>
+
+    <div class="contenedor-rotado">
+      <img [src]="actual" alt="Foto vehículo" class="imagen-grande" [ngStyle]="estilosImagenRotada" />
+    </div>
+
+    <button class="nav derecha" (click)="siguiente()" *ngIf="indice < imagenes.length - 1">
+      <ion-icon name="chevron-forward-outline"></ion-icon>
+    </button>
+  </div>
+</div>

@@ -1,0 +1,81 @@
+<app-navbar></app-navbar>
+
+<ion-content [fullscreen]="true">
+
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content pullingIcon="arrow-down-outline" refreshingSpinner="crescent"
+      pullingText="Desliza para actualizar" refreshingText="Actualizando...">
+    </ion-refresher-content>
+  </ion-refresher>
+
+
+  <div class="ocntenedor_css_lotes">
+
+    <div class="boton-container" *ngIf="!mostrarAuto">
+      <div class="header-lotes-bar">
+
+        <ion-searchbar *ngIf="!addLote" [(ngModel)]="terminoBusqueda" (ionInput)="filtrarLotes()"
+          placeholder="Buscar lote..." debounce="300" class="buscador-lotes">
+        </ion-searchbar>
+
+        <!-- Título -->
+        <h2 class="titulo-lotes">{{ totalLotes }} Resultados</h2>
+
+      </div>
+    </div>
+
+    <!-- mostrar lotes ...  -->
+    <ion-grid *ngIf="!addLote && !mostrarAuto">
+      <ion-row class="lotes-row">
+        <ion-col size="12" size-md="3" size-lg="2" *ngFor="let lote of lotesFiltrados" class="lote-col">
+
+          <ion-card class="lote-card" (click)="mostrarAutos(lote)">
+            <div class="lote-img">
+              <img [src]="lote.imagenPrincipal" alt="Imagen del lote" />
+            </div>
+
+            <ion-card-header class="lote-header">
+              <ion-card-title class="lote-title ellipsis-2">
+                <ion-icon name="business-outline" color="danger"></ion-icon>
+                {{ lote.nombre }}
+              </ion-card-title>
+
+              <ion-card-subtitle *ngIf="lote.direccion?.length" class="lote-subtitle">
+                <ion-icon name="location-outline" color="medium"></ion-icon>
+                <span class="ellipsis-2">
+                  {{ lote.direccion[0].ciudad }}, {{ lote.direccion[0].estado }}
+                </span>
+              </ion-card-subtitle>
+
+              <ion-card-subtitle class="lote-subtitle">
+                <ion-icon name="car-sport-outline" color="medium"></ion-icon>
+                <span class="ellipsis-2">
+                  Total: {{ lote.conteoCoches.total }} ·
+                  Disponibles: {{ lote.conteoCoches.disponibles }} ·
+                  Vendidos: {{ lote.conteoCoches.vendidos }}
+                </span>
+              </ion-card-subtitle>
+            </ion-card-header>
+          </ion-card>
+
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+
+
+    <div class="no-lotes" *ngIf="!addLote && lotesFiltrados.length === 0">
+      <ion-icon name="business-outline" class="no-icon"></ion-icon>
+      <p>No hay lotes disponibles</p>
+    </div>
+
+    <ion-button *ngIf="mostrarAuto" fill="clear" size="large" class="back-button" (click)="BackLote()">
+      <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
+    </ion-button>
+
+    <app-vehiculos [lote]="loteSelect" *ngIf="mostrarAuto"></app-vehiculos>
+
+  </div>
+
+  <app-footer></app-footer>
+</ion-content>

@@ -1,0 +1,43 @@
+<div class="overlay">
+  <img src="assets/icon/goautos.webp" loading="lazy" alt="Go Autos" class="logo" />
+  <h1 class="titulo">Inicia sesión</h1>
+
+  <form class="login-form" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+
+    <ion-item lines="none" class="input-wrapper">
+      <ion-input formControlName="email" type="email" placeholder="Correo">
+      </ion-input>
+    </ion-item>
+    <ion-note *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+      <ng-container *ngIf="loginForm.get('email')?.errors?.['required']">
+        El email es obligatorio.
+      </ng-container>
+      <ng-container *ngIf="loginForm.get('email')?.errors?.['email']">
+        Email inválido
+      </ng-container>
+    </ion-note>
+
+    <ion-item lines="none" class="input-wrapper">
+      <ion-input [type]="showPassword ? 'text' : 'password'" formControlName="password" placeholder="Contraseña">
+      </ion-input>
+      <ion-icon [name]="showPassword ? 'eye-off' : 'eye'" slot="end" (click)="showPassword = !showPassword"
+        class="eye-icon">
+      </ion-icon>
+    </ion-item>
+    <ion-note *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+      <ng-container>
+        La contraseña es obligatoria.
+      </ng-container>
+    </ion-note>
+
+
+    <button type="submit" class="btn-login">Iniciar sesión</button>
+    <br>
+    <div id="google-button"></div>
+
+
+
+  </form>
+</div>
+
+<!-- fill="outline" -->

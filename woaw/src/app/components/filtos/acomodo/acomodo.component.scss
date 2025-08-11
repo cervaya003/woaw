@@ -1,0 +1,142 @@
+.barra-superior {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px;
+  flex-wrap: wrap;
+  background-color: #f9f9f9;
+  border: solid 1px #0000001b;
+
+  @media (max-width: 768px) {
+    min-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+
+
+.resultado-cantidad {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #000000;
+
+  span {
+    font-size: 14px;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 13px;
+
+    span {
+      font-size: 8px;
+      color: #3c3c3c;
+    }
+  }
+}
+
+.controles-derecha {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.botones-vista {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.icono-vista {
+  font-size: 16px;
+  color: #999;
+  cursor: pointer;
+  padding: 0.4rem;
+  border-radius: 6px;
+  transition: background 0.3s ease;
+
+  @media (max-width: 768px) {
+    font-size: 12px;
+  }
+
+  &.activo {
+    color: #ff0000;
+    background: rgba(255, 98, 0, 0.232);
+  }
+}
+
+
+.ordenador {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  border-radius: 5px;
+  padding: 0.25rem 0.75rem;
+  font-size: 13px;
+  white-space: nowrap;
+
+  @media (max-width: 768px) {
+    padding: 2px 1px;
+    font-size: 11px;
+  }
+
+  ion-label {
+    font-weight: 500;
+    font-size: 13px;
+    color: #444;
+    margin: 0;
+    white-space: nowrap;
+
+    @media (max-width: 768px) {
+      font-size: 11px;
+    }
+  }
+
+  ion-select {
+    min-width: 130px;
+    font-size: 13px;
+    --padding-start: 8px;
+    --padding-end: 8px;
+
+    --placeholder-color: #999;
+    --color: #c10000;
+    --placeholder-opacity: 1;
+
+    --highlight-color-focused: #c10000;
+    --highlight-color: #c10000;
+    --placeholder-font-weight: 400;
+
+    --indicator-color: #c10000;
+    --border-color: transparent;
+
+    --icon-color: #c10000;
+
+    @media (max-width: 768px) {
+      font-size: 11px;
+    }
+  }
+}
+
+
+
+.acomodo_titulo {
+  font-family: 'Poppins', sans-serif;
+  font-size: 25px;
+  font-weight: 900;
+  color: #a2a2a2bb;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  text-transform: uppercase;
+
+
+  @media (max-width: 820px) {
+    font-size: 14px;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 10px;
+  }
+}

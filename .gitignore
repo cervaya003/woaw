@@ -1,0 +1,26 @@
+# Ignorar toda la carpeta de Ionic
+/logo/
+/back/
+/joli/
+/joli_backend/
+
+# Ignorar todos los node_modules en cualquier subcarpeta
+**/node_modules/
+
+# Ignorar salidas de producción de Angular/Ionic
+GoAutos/www/
+
+# Ignorar archivos de entorno
+**/.env
+**/.env.*
+
+# Ignorar archivos de sistema y del editor
+.vscode/
+*.log
+.DS_Store
+Thumbs.db
+
+# Ignorar archivos de pruebas temporales
+*.tgz
+temp/
+tmp/

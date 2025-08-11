@@ -1,0 +1,60 @@
+<!-- src/app/pages/lote/lote.page.html -->
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button fill="clear" (click)="volver()">
+        <ion-icon name="arrow-back-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Lote</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+
+  <!-- Ficha del lote -->
+  <div class="ficha-lote" *ngIf="lote">
+    <div class="ficha-lote__info">
+      <h2 class="ficha-lote__titulo">
+        <ion-icon name="business-outline" color="danger"></ion-icon>
+        {{ lote.nombre }}
+      </h2>
+
+      <p class="ficha-lote__campo">
+        <ion-icon name="call-outline"></ion-icon>
+        <strong>Teléfono:</strong>
+        <span (click)="copiarTelefono()">{{ lote.telefonoContacto }}</span>
+      </p>
+
+      <p class="ficha-lote__campo">
+        <ion-icon name="location-outline"></ion-icon>
+        <strong>Dirección:</strong> {{ direccionCompleta }}
+      </p>
+
+      <div class="ficha-lote__actions">
+        <ion-button color="primary" size="small" (click)="editarLote()">
+          <ion-icon name="create-outline" slot="start"></ion-icon>
+          Editar
+        </ion-button>
+      </div>
+    </div>
+
+    <img class="ficha-lote__imagen" [src]="previewImagenPrincipal || ''" alt="Imagen de {{ lote.nombre }}" />
+  </div>
+
+  <!-- Catálogo de autos del lote -->
+  <ion-grid class="catalogo-autos" *ngIf="carrosDelLote?.length">
+    <ion-row style="align-items:stretch; --ion-grid-column-padding: 8px;">
+      <ion-col size="12" size-md="4" size-lg="3" *ngFor="let auto of carrosDelLote">
+        <!-- CartasComponent es standalone, se puede usar directo -->
+        <app-cartas [auto]="auto" [ubicacion]="'seminuevos'"></app-cartas>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <div class="sin-autos" *ngIf="carrosDelLote?.length === 0">
+    <ion-icon name="car-sport-outline"></ion-icon>
+    <p>Este lote aún no tiene autos publicados.</p>
+  </div>
+
+</ion-content>

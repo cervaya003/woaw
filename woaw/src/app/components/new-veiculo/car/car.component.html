@@ -1,0 +1,339 @@
+<section>
+  <div class="resumen-estado" *ngIf="seccionFormulario == 2 && Pregunta == 'no'">
+    <!-- Botón arriba -->
+    <button type="button" class="btn-guardar" (click)="EnviarVeiculo()">
+      <ion-icon name="save-outline" class="icono-guardar"></ion-icon>
+      Publicar
+    </button>
+
+    <!-- Fila de texto en horizontal -->
+    <div class="fila-info">
+      <p>Año: <strong>{{ anio }}</strong></p>
+      <p>Marca: <strong>{{ marca }}</strong></p>
+      <p>Modelo: <strong>{{ modelo }}</strong></p>
+      <p class="estilo_unico">{{ estadoVehiculo }}</p>
+    </div>
+    <!-- <p>{{tipoSeleccionado}}</p> -->
+  </div>
+
+  <!-- # ------ PREGUNTA COMO SUBIR SI LOTE O PARTICULAR -----  -->
+  <div class="tipo-vehiculo-container" *ngIf="Pregunta == 'si'">
+    <h2 class="titulo-tipo">¿Qué tipo de vehículo quieres subir?</h2>
+
+    <div class="opciones-vehiculo">
+      <!-- Particular -->
+      <div class="casilla" [class.activa]="tipoSeleccionado === 'particular'" (click)="seleccionarTipo('particular')">
+        <img src="assets/img/particular.png" alt="Particular" />
+        <p>Particular</p>
+        <ion-icon *ngIf="tipoSeleccionado === 'particular'" name="checkmark-circle-outline"
+          class="icono-check"></ion-icon>
+      </div>
+
+      <!-- Lote -->
+      <div class="casilla" [class.activa]="tipoSeleccionado === 'lote'" (click)="seleccionarTipo('lote')">
+        <img src="assets/img/lote.png" alt="Lote" />
+        <p>Lote</p>
+        <ion-icon *ngIf="tipoSeleccionado === 'lote'" name="checkmark-circle-outline" class="icono-check"></ion-icon>
+      </div>
+    </div>
+    <!-- Botón de continuar -->
+    <div class="contenedor-boton">
+      <button class="btn-continuar" [disabled]="!tipoSeleccionado" (click)="continuar()">
+        Continuar
+        <ion-icon name="arrow-forward-outline"></ion-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- # ------ PREGUNTA SI QUIERE VENDERLO EL MISMO  -----  -->
+  <div *ngIf="tipoSeleccionado == 'particular' && MyRole !== 'admin' && seccionFormulario == 1"
+    class="pregunta-vendedor">
+    <p class="texto-pregunta">
+      ¿Cómo quieres vender tu auto?
+    </p>
+
+    <div class="botones-vendedor">
+      <button class="btn-vender-yo" (click)="quienLovende(0)">Lo vendo yo</button>
+      <button class="btn-vende-go" (click)="quienLovende(1)">
+        Que lo venda
+        <img src="assets/icon/goautos1.webp" alt="Go Autos" class="logo-boton" />
+      </button>
+    </div>
+  </div>
+
+  <div
+    *ngIf="tipoSeleccionado === 'particular' && seccionFormulario === 3 && (MyRole === 'cliente' || MyRole === 'vendedor')"
+    class="formulario-publicacion">
+    <p class="info-texto">
+      <strong>¡Nosotros nos encargamos!</strong> Publicamos tu auto y agendamos citas con interesados.
+      <br />
+      <strong>Contáctanos por WhatsApp y te ayudamos.</strong>
+    </p>
+
+    <ion-item>
+      <ion-label position="stacked">¿Qué auto es?</ion-label>
+      <ion-input placeholder="Ej. Nissan Versa 2020" [(ngModel)]="nombreAuto"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Año</ion-label>
+      <ion-select [(ngModel)]="anioAuto" placeholder="Selecciona un año">
+        <ion-select-option *ngFor="let year of listaAnios" [value]="year">{{ year }}</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Precio estimado (opcional)</ion-label>
+      <ion-input type="number" placeholder="Solo números" [(ngModel)]="precioEstimado"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Tipo de factura (opcional)</ion-label>
+      <ion-select [(ngModel)]="tipoFactura" placeholder="Selecciona una opción">
+        <ion-select-option value="original">Original</ion-select-option>
+        <ion-select-option value="refacturada">Refacturada</ion-select-option>
+        <ion-select-option value="sin-factura">Sin factura</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <div class="btn-wsp-container">
+      <button class="btn-wsp" (click)="contactosService.contactarPorPublicacionParticular(
+      nombreAuto,
+      anioAuto!,
+      precioEstimado!,
+      tipoFactura)">
+        <ion-icon name="logo-whatsapp" slot="start"></ion-icon>
+        Contáctanos por WhatsApp
+      </button>
+    </div>
+
+  </div>
+
+  <!-- # ------ FORMULARIO -----  -->
+  <div class="formulario" *ngIf="Pregunta == 'no' && seccionFormulario == 2">
+
+    <div class="estado-vehiculo" *ngIf="MyRole === 'admin'" >
+      <label>
+        <input type="radio" name="estado" value="Nuevo" [(ngModel)]="estadoVehiculo" (change)="cambiarEstado('Nuevo')">
+        Nuevo
+      </label>
+      <label>
+        <input type="radio" name="estado" value="Seminuevo" [(ngModel)]="estadoVehiculo"
+          (change)="cambiarEstado('Seminuevo')">
+        Seminuevo
+      </label>
+    </div>
+
+    <!-- Ubicación  -->
+    <div class="contenedor-botones">
+
+      <div class="bloque-imagenes" *ngIf="tipoSeleccionado == 'particular'">
+        <button type="button" (click)="seleccionarUbicacion()">
+          <ion-icon name="location-outline" class="icono"></ion-icon>
+          Seleccionar ubicación
+        </button>
+
+        <div *ngIf="ubicacionSeleccionada" class="ubicacion-mostrada">
+          <ion-icon name="location-outline"></ion-icon>
+          {{ direccionCompleta }}
+        </div>
+      </div>
+
+      <div class="bloque-imagenes" *ngIf="tipoSeleccionado === 'lote'">
+        <!-- Select de lote -->
+        <label for="loteSelect">Selecciona tu lote:</label>
+        <select id="loteSelect" [(ngModel)]="loteSeleccionado" class="select-lote" (change)="onLoteSeleccionado()">
+          <option [ngValue]="null" disabled selected>Selecciona un lote</option>
+          <option *ngFor="let lote of lotes" [ngValue]="lote._id">
+            {{ lote.nombre }}
+          </option>
+        </select>
+
+        <!-- Select de ubicación si hay más de una -->
+        <div *ngIf="ubicacionesLoteSeleccionado!.length > 1" class="bloque-direcciones">
+          <label for="direccionSelect">Selecciona una ubicación:</label>
+          <select id="direccionSelect" [(ngModel)]="direccionSeleccionada" class="select-lote">
+            <option style="font-size: 12px;" [ngValue]="null" disabled selected>Selecciona una ubicación</option>
+            <option style="font-size: 12px;" *ngFor="let dir of ubicacionesLoteSeleccionado; let i = index"
+              [ngValue]="dir">
+              {{ ubicacionesLoteLegibles[i] || 'Obteniendo dirección...' }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Mostrar ubicación seleccionada -->
+        <div *ngIf="direccionSeleccionada && ubicacionesLoteSeleccionado.length === 1" class="ubicacion-mostrada">
+          <ion-icon name="location-outline"></ion-icon>
+          <span style="font-size: 12px;">
+            {{ direccionCompleta }}
+          </span>
+        </div>
+      </div>
+
+
+      <div class="bloque-imagenes">
+        <button class="btn-imagenes" type="button" (click)="seleccionarImagenes()">
+          <ion-icon name="image-outline"></ion-icon>
+          Seleccionar Imágenes
+          <label class="radio-validacion" [class.activo]="imagenesValidas" [class.inactivo]="!imagenesValidas">
+            <span class="radio-custom"></span>
+            <ion-icon name="checkmark-outline"></ion-icon>
+          </label>
+        </button>
+
+        <button *ngIf="imagenesIntentadas" class="btn-limpiar" type="button" (click)="limpiarImagenes()">
+          <ion-icon name="trash-outline"></ion-icon>
+          Imagenes
+        </button>
+      </div>
+    </div>
+
+
+    <!-- Para vehículo NUEVO:  -->
+    <div *ngIf="estadoVehiculo_logico === 'nuevo'">
+      <label>Selecciona las versiones disponibles y asigna un precio:</label>
+      <div *ngFor="let version of versiones; let i = index" class="version-item">
+        <ion-checkbox [checked]="versionSeleccionada[i]" (ionChange)="toggleVersion(i, version)"></ion-checkbox>
+        <span>{{ version }}</span>
+        <input *ngIf="versionSeleccionada[i]" type="number" min="0" placeholder="Precio"
+          [(ngModel)]="preciosVersiones[version]" name="precio_{{ i }}" />
+      </div>
+      <div class="grid-form">
+        <!-- Descripción (obligatorio) -->
+        <div class="campo" style="grid-column: span 2;">
+          <label>Descripción del vehículo: <span class="requerido">*</span></label>
+          <textarea rows="4" placeholder="Ej. Auto en excelente estado, único dueño..." required
+            [(ngModel)]="descripcion"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Para Seminuevo o Usado: -->
+    <div class="grid-form"
+      *ngIf="estadoVehiculo_logico === 'seminuevo' || estadoVehiculo_logico === 'usado' || estadoVehiculo_logico === 'viejito'">
+
+      <div class="campo">
+        <label>Versión: <span class="requerido">*</span></label>
+
+        <!-- Mostrar <select> si no es "Usado antiguo" -->
+        <select *ngIf="!esUsadoAntiguo && versionesDisponibles" [(ngModel)]="versionSeleccionadaTexto"
+          (ngModelChange)="onSeleccionVersion($event)">
+          <option disabled selected value="">Selecciona una versión</option>
+          <option *ngFor="let version of versiones" [value]="version">{{ version }}</option>
+        </select>
+
+        <!-- Mostrar <input> si es usado y año < 2008 -->
+        <input *ngIf="esUsadoAntiguo || !versionesDisponibles" type="text" [(ngModel)]="versionSeleccionadaTexto"
+          placeholder="Escribe la versión manualmente" />
+      </div>
+
+      <div class="campo">
+        <label>Precio: <span class="requerido">*</span></label>
+        <input type="number" min="0" placeholder="Precio del vehículo" [(ngModel)]="precio" />
+      </div>
+
+      <!-- Placas (opcional) -->
+      <div class="campo">
+        <label>Placas: <span class="opcional_css">(opcional)</span></label>
+        <input type="text" placeholder="Ej. UVY-123-A" [(ngModel)]="placas" />
+      </div>
+
+      <!-- Kilometraje (obligatorio) -->
+      <div class="campo">
+        <label>Kilometraje: <span class="requerido">*</span></label>
+        <input type="number" min="0" placeholder="Ej. 45000" required [(ngModel)]="kilometraje" />
+      </div>
+
+      <!-- Color (obligatorio) -->
+      <div class="campo">
+        <label>Color: <span class="requerido">*</span></label>
+        <select required [(ngModel)]="colorSeleccionado" name="color">
+          <option value="" disabled selected>Selecciona un color</option>
+          <option *ngFor="let opcion of opciones" [value]="opcion.label">
+            {{ opcion.label }}
+          </option>
+        </select>
+      </div>
+
+      <!-- Moneda (obligatorio o informativo) -->
+      <div class="campo">
+        <label>Moneda:</label>
+        <select [(ngModel)]="moneda" name="moneda">
+          <option value="MXN">MXN - Pesos mexicanos</option>
+          <option value="USD">USD - Dólares estadounidenses</option>
+        </select>
+      </div>
+
+      <!-- Descripción (obligatorio) -->
+      <div class="campo" style="grid-column: span 2;">
+        <label>Descripción del vehículo: <span class="requerido">*</span></label>
+        <textarea rows="4" placeholder="Ej. Auto en excelente estado, único dueño..." required
+          [(ngModel)]="descripcion"></textarea>
+      </div>
+    </div>
+
+    <!-- 📍 📄 -->
+    <div class="grid-info">
+      <!-- Ficha técnica 📄 -->
+      <div class="columna-ficha"
+        *ngIf="versionesDisponibles && (estadoVehiculo_logico === 'seminuevo' || estadoVehiculo_logico === 'usado')">
+        <div class="card-especificaciones" *ngIf="especificacionesVersion">
+          <h4>Ficha técnica</h4>
+          <ul>
+            <li *ngIf="especificacionesVersion.motor"><strong>Motor:</strong> {{ especificacionesVersion.motor }}</li>
+            <li *ngIf="especificacionesVersion.potencia"><strong>Potencia:</strong> {{ especificacionesVersion.potencia
+              }}</li>
+            <li *ngIf="especificacionesVersion.cilindros"><strong>Cilindros:</strong> {{
+              especificacionesVersion.cilindros }}</li>
+            <li *ngIf="especificacionesVersion.transmision"><strong>Transmisión:</strong> {{
+              especificacionesVersion.transmision }}</li>
+            <li *ngIf="especificacionesVersion.traccion"><strong>Tracción:</strong> {{ especificacionesVersion.traccion
+              }}</li>
+            <li *ngIf="especificacionesVersion.combustible"><strong>Combustible:</strong> {{
+              especificacionesVersion.combustible }}</li>
+            <li *ngIf="especificacionesVersion.pasajeros"><strong>Pasajeros:</strong> {{
+              especificacionesVersion.pasajeros }}</li>
+            <li *ngIf="especificacionesVersion.puertas"><strong>Puertas:</strong> {{ especificacionesVersion.puertas }}
+            </li>
+            <li *ngIf="especificacionesVersion.rines"><strong>Rines:</strong> {{ especificacionesVersion.rines }}</li>
+            <li *ngIf="especificacionesVersion.tipoVehiculo"><strong>Tipo de vehículo:</strong> {{
+              especificacionesVersion.tipoVehiculo }}</li>
+            <li *ngIf="especificacionesVersion.extra?.length > 0">
+              <strong>Extras:</strong>
+              <ul class="sublista">
+                <li *ngFor="let extra of especificacionesVersion.extra">{{ extra }}</li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ficha técnica 📄 VIEJITO-->
+    <div class="grid-form" *ngIf="estadoVehiculo_logico === 'viejito' || !versionesDisponibles">
+      <!-- <h4>Ficha técnica (editable)</h4> -->
+      <div class="campo" *ngFor="let campo of camposEspecificaciones">
+        <label>{{ etiquetasCampos[campo] }}: <span class="opcional_css">(opcional)</span></label>
+        <input type="text" [placeholder]="'Ej. ' + ejemplosCampos[campo]" [(ngModel)]="camposViejito[campo]" />
+      </div>
+      <!-- Campo especial para extras -->
+      <div class="campo">
+        <label>Extras: <span class="opcional_css">(opcional)</span></label>
+        <textarea [(ngModel)]="extrasTexto" placeholder="Ej. Quemacocos, GPS, Cámara de reversa..." rows="2"></textarea>
+      </div>
+    </div>
+
+    <!-- <div class="grid-form"
+      *ngIf="estadoVehiculo_logico === 'seminuevo' || estadoVehiculo_logico === 'usado' || estadoVehiculo_logico === 'viejito'">
+      <div class="campo">
+        <label>Nombre completo del lotero: <span class="opcional_css">(opcional)</span></label>
+        <input type="text" placeholder="Ej. Juan Pérez García" [(ngModel)]="nombreLotero" required />
+      </div>
+      <div class="campo">
+        <label>Teléfono del lotero: <span class="opcional_css">(opcional)</span></label>
+        <input type="number" placeholder="Ej. 4421234567" [(ngModel)]="telefonoLotero" required />
+      </div>
+    </div> -->
+
+  </div>
+</section>

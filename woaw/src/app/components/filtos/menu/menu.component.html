@@ -1,0 +1,52 @@
+<div class="filtros-lateral-estilo-nuevo">
+
+  <div class="titulo-filtros-nuevo">
+    <span class="texto-filtro">Filtros</span>
+    <ion-icon name="filter-outline" class="icono-filtro"></ion-icon>
+
+    <div class="boton-limpiar-filtros" *ngIf="tieneFiltrosAplicados()" (click)="onLimpiarFiltros()">
+      Limpiar
+      <ion-icon name="close-outline"></ion-icon>
+    </div>
+  </div>
+
+  <div class="grupo-filtros-nuevo">
+    <div *ngFor="let filtro of filtros" class="bloque-filtro">
+
+      <button class="encabezado-filtro" (click)="onFiltroClick($event, filtro.tipo)">
+        <span>{{ filtro.label }}</span>
+        <ion-icon name="chevron-down-outline"></ion-icon>
+      </button>
+
+      <div class="contenido-filtro" *ngIf="filtrosAplicados[filtro.tipo]">
+        <!-- Imagen y texto si es marca -->
+        <ng-container *ngIf="filtro.tipo === 'marca' && filtrosAplicados[filtro.tipo]?.imageUrl; else textoOColor">
+          <div class="filtro-activo marca">
+            <img [src]="filtrosAplicados[filtro.tipo].imageUrl"
+              [alt]="filtrosAplicados[filtro.tipo].label" class="logo-filtro" />
+            <span>{{ filtrosAplicados[filtro.tipo]?.label }}</span>
+          </div>
+        </ng-container>
+
+        <!-- Color -->
+        <ng-template #textoOColor>
+          <ng-container *ngIf="filtro.tipo === 'color'; else soloTexto">
+            <div class="filtro-activo color">
+              <span class="color-dot"
+                [ngStyle]="{ 'background-color': obtenerColorHex(filtrosAplicados[filtro.tipo]?.label) }"></span>
+              <span>{{ filtrosAplicados[filtro.tipo]?.label }}</span>
+            </div>
+          </ng-container>
+          <!-- Texto plano -->
+          <ng-template #soloTexto>
+            <div class="filtro-activo texto">
+              {{ filtrosAplicados[filtro.tipo]?.label }}
+            </div>
+          </ng-template>
+        </ng-template>
+      </div>
+
+    </div>
+  </div>
+
+</div>

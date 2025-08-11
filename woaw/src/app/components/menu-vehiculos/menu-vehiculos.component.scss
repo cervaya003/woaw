@@ -1,0 +1,83 @@
+.estilo-escritorio {
+  background: #000000;
+
+  ion-item {
+    color: #ffffff;
+
+    &:hover {
+      background-color: #ffffff;
+      color: #000000;
+    }
+  }
+}
+
+.estilo-movil {
+  background: #ffffff;
+
+  ion-item {
+    color: #000000;
+
+
+  }
+}
+
+// Reglas comunes
+ion-list {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+
+.item-movil {
+  --background: #fdfdfd;
+}
+
+.item-escritorio {
+  --background: transparent;
+}
+
+ion-item {
+
+  // --background: #fdfdfd;
+  --border-width: 0;
+  --border-color: transparent;
+  border: none !important;
+  box-shadow: none !important;
+  font-size: 12px;
+  margin-bottom: 2px;
+  padding: 1px;
+
+
+  ion-label {
+    margin: 0;
+  }
+}
+
+ion-item::part(native) {
+  border: none !important;
+}
+
+
+.encabezado-consentimiento {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+  padding: 15px 10px;
+
+  img {
+    height: 28px;
+    object-fit: contain;
+
+    @media (max-width: 768px) {
+      height: 18px;
+    }
+  }
+
+  ion-button {
+    --padding-start: 0;
+    --padding-end: 0;
+    margin: 0;
+  }
+}

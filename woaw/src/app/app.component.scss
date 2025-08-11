@@ -1,0 +1,86 @@
+.fab-ajustada {
+  bottom: 25px !important;
+  right: 35px !important;
+
+  // Tablets (entre 768px y 1024px)
+  @media (max-width: 1024px) and (min-width: 768px) {
+    bottom: 65px !important;
+    right: 25px !important;
+  }
+
+  // Teléfonos (menos de 768px)
+  @media (max-width: 767px) {
+    bottom: 65px !important;
+    right: 15px !important;
+  }
+}
+
+::ng-deep .fab-ajustada ion-fab-button {
+  width: 60px;
+  height: 60px;
+
+  ion-icon {
+    font-size: 28px;
+  }
+
+  @media (max-width: 1024px) and (min-width: 768px) {
+    width: 52px;
+    height: 52px;
+
+    ion-icon {
+      font-size: 24px;
+    }
+  }
+
+  @media (max-width: 767px) {
+    width: 40px;
+    height: 40px;
+
+    ion-icon {
+      font-size: 20px;
+    }
+  }
+}
+
+
+// FAB secundarios (whatsapp, facebook, etc.)
+::ng-deep .fab-ajustada ion-fab-list ion-fab-button {
+  width: 60px;
+  height: 60px;
+
+  ion-icon {
+    font-size: 28px;
+  }
+
+  @media (max-width: 1024px) and (min-width: 768px) {
+    width: 52px;
+    height: 52px;
+
+    ion-icon {
+      font-size: 24px;
+    }
+  }
+
+  @media (max-width: 767px) {
+    width: 40px;
+    height: 40px;
+
+    ion-icon {
+      font-size: 20px;
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

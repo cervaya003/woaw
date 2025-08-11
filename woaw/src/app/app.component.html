@@ -1,0 +1,74 @@
+<ion-app>
+
+
+  <!-- <ion-menu side="end" menuId="menuLateral" contentId="main-content">
+    <ion-header>
+      <ion-toolbar color="dark">
+        <ion-title>Menú</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="cerrarMenu()">
+            <ion-icon name="close-outline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="ion-padding">
+      <ion-list>
+        <ion-item *ngIf="isLoggedIn" (click)="abrirModalPerfil()" button>
+          <ion-icon name="person-outline"></ion-icon>
+          Perfil
+        </ion-item>
+        <ion-item *ngIf="isLoggedIn" (click)="redirecion('new-car')" button>
+          <ion-icon name="add-outline"></ion-icon>
+          Vender mi auto
+        </ion-item>
+        <ion-item *ngIf="isLoggedIn && (MyRole == 'admin' || MyRole == 'vendedor')" button
+          (click)="redirecion('mis-autos')">
+          <ion-icon name="car-sport-outline"></ion-icon>
+          Mis autos
+        </ion-item>
+        <ion-item *ngIf="isLoggedIn && (MyRole == 'admin' || MyRole == 'vendedor')" button
+          (click)="redirecion('mis-motos')">
+          <ion-icon name="bicycle-outline"></ion-icon>
+          Mis motos
+        </ion-item>
+        <ion-item *ngIf="!isLoggedIn" (click)="redirecion('inicio')" button>
+          <ion-icon name="log-in-outline"></ion-icon>
+          Iniciar sesión
+        </ion-item>
+        <ion-item *ngIf="isLoggedIn" (click)="logout()" button>
+          <ion-icon name="log-out-outline"></ion-icon>
+          Cerrar sesión
+        </ion-item>
+      </ion-list>
+    </ion-content>
+  </ion-menu> -->
+
+
+  <ion-router-outlet id="main-content"></ion-router-outlet>
+  <app-menulateral></app-menulateral>
+
+  <!-- Contacto  -->
+  <ion-fab *ngIf="mostrarBtnAll" vertical="bottom" horizontal="end" slot="fixed" class="fab-ajustada">
+    <ion-fab-button size="large" color="danger">
+      <ion-icon name="logo-wechat"></ion-icon>
+    </ion-fab-button>
+    <ion-fab-list side="top">
+      <ion-fab-button color="success" (click)="RedesSociales('whatsapp')">
+        <ion-icon name="logo-whatsapp"></ion-icon>
+      </ion-fab-button>
+      <ion-fab-button color="primary" (click)="RedesSociales('facebook')">
+        <ion-icon name="logo-facebook"></ion-icon>
+      </ion-fab-button>
+      <ion-fab-button color="danger" (click)="RedesSociales('instagram')">
+        <ion-icon name="logo-instagram"></ion-icon>
+      </ion-fab-button>
+      <ion-fab-button color="dark" (click)="RedesSociales('tiktok')">
+        <ion-icon name="logo-tiktok"></ion-icon>
+      </ion-fab-button>
+    </ion-fab-list>
+  </ion-fab>
+  <!-- ----- -----  -->
+  <app-tabs *ngIf="mostrarTabs"></app-tabs>
+</ion-app>

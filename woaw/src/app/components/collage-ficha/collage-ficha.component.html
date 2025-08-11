@@ -1,0 +1,13 @@
+<div class="collage-container">
+  <div class="collage-item" *ngFor="let i of cartasFijas; let idx = index" (click)="abrirModalImagen(imagenes, i)">
+    <!-- Loader -->
+    <div class="loader" *ngIf="!cargadas[i]">
+      <div class="spinner"></div>
+      <span>Cargando...</span>
+    </div>
+
+    <!-- Imagen -->
+    <img *ngIf="imagenes[i]" [src]="imagenes[i]" [alt]="'Imagen ' + (i + 1)" (load)="imagenCargada(i)"
+      [class.oculta]="!cargadas[i]" />
+  </div>
+</div>

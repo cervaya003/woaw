@@ -1,0 +1,103 @@
+<ion-card *ngIf="isLoggedIn" class="formulario-lote">
+  <ion-card-header>
+    <ion-card-title>Registra tu lote de coches</ion-card-title>
+    <ion-card-subtitle>Completa la información del lote</ion-card-subtitle>
+  </ion-card-header>
+
+  <ion-card-content>
+    <form [formGroup]="formLote" (ngSubmit)="registrarLote()">
+
+      <div *ngIf="tipoDispocitivo === 'telefono' && pocicion" class="boton-publicar-container">
+        <ion-button color="danger" size="small" slot="end" type="button" (click)="sigiente()">
+          <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
+          Continuar
+        </ion-button>
+      </div>
+
+      <div *ngIf="!pocicion" class="boton-publicar-container">
+        <ion-button color="dark" size="small" slot="end" type="button" (click)="sigiente()">
+          <ion-icon name="arrow-back-outline" slot="start"></ion-icon>
+          Regresar
+        </ion-button>
+      </div>
+
+      <ion-grid>
+        <ion-row *ngIf="pocicion">
+
+          <ion-col size="12" size-md="6">
+            <ion-label position="stacked">Nombre del Lote: <strong>*</strong></ion-label>
+            <ion-input formControlName="nombre" placeholder="Ej. Autos El Rápido"></ion-input>
+          </ion-col>
+
+          <ion-col size="12" size-md="6">
+            <ion-label position="stacked">Teléfono: <strong>*</strong></ion-label>
+            <ion-input type="tel" formControlName="telefono" placeholder="Ej. 4421234567"></ion-input>
+          </ion-col>
+
+          <ion-col size="12" size-md="6">
+            <ion-label position="stacked">Correo electrónico: <strong>(opcional)</strong></ion-label>
+            <ion-input type="email" formControlName="email" placeholder="Ej. contacto@autosrapido.com"></ion-input>
+          </ion-col>
+
+          <!-- Imagen principal -->
+          <ion-col size="12" size-md="6">
+            <ion-label position="stacked">Imagen principal del lote: *</ion-label>
+
+            <div class="area-subida" (click)="seleccionarImagenPrincipal()">
+              <ion-icon name="camera-outline" [class.oculto]="previewImagenPrincipal"></ion-icon>
+              <div *ngIf="previewImagenPrincipal" class="preview-container">
+                <img [src]="previewImagenPrincipal" alt="Imagen principal" />
+                <button type="button" class="btn-eliminar-img"
+                        (click)="eliminarImagenPrincipal(); $event.stopPropagation()">✕</button>
+              </div>
+            </div>
+          </ion-col>
+        </ion-row>
+
+        <!-- Segunda sección: ubicación -->
+        <ion-row *ngIf="!pocicion">
+          <ion-col size="12" size-md="6">
+            <ion-label position="stacked">Ubicación del lote: *</ion-label>
+            <ion-button expand="block" color="light" (click)="seleccionarUbicacion()">
+              <ion-icon name="location-outline" slot="start"></ion-icon>
+              Seleccionar ubicación
+            </ion-button>
+          </ion-col>
+
+          <ion-col size="12" *ngIf="ubicacionesSeleccionadas.length > 0">
+            <ion-list>
+              <ion-item *ngFor="let u of ubicacionesSeleccionadas; let i = index">
+                <ion-label>
+                  <p><strong>{{ direccionesTraducidas[i] }}</strong></p>
+                </ion-label>
+                <ion-button color="danger" fill="clear" slot="end" size="small" (click)="eliminarUbicacion(i)">
+                  <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+                </ion-button>
+              </ion-item>
+            </ion-list>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+
+      <div class="boton-publicar-container" *ngIf="pocicion">
+        <ion-button color="danger" expand="block" type="button" (click)="sigiente()">
+          <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
+          Continuar
+        </ion-button>
+      </div>
+
+      <div class="boton-publicar-container" *ngIf="!pocicion">
+        <ion-button color="danger" expand="block" type="submit" [disabled]="ubicacionesSeleccionadas.length === 0">
+          <ion-icon name="save-outline" slot="end"></ion-icon>
+          Crear Lote
+        </ion-button>
+      </div>
+
+    </form>
+  </ion-card-content>
+</ion-card>
+
+<div *ngIf="!isLoggedIn" class="mensaje-autenticacion">
+  Para publicar un <strong>Lote</strong>, primero debes iniciar sesión o crear una cuenta.
+  <button class="btn-acceso" (click)="irAInicio()">Acceder</button>
+</div>

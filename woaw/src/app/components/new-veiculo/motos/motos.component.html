@@ -1,0 +1,157 @@
+<section>
+  <div class="resumen-estado">
+    <!-- Botón arriba -->
+    <button type="button" class="btn-guardar" (click)="EnviarVeiculo()">
+      <ion-icon name="save-outline" class="icono-guardar"></ion-icon>
+      Guardar Auto
+    </button>
+
+    <!-- Fila de texto en horizontal -->
+    <div class="fila-info">
+      <p>Año: <strong>{{ anio }}</strong></p>
+      <p>Marca: <strong>{{ marca }}</strong></p>
+      <p>Modelo: <strong>{{ modelo }}</strong></p>
+      <p class="estilo_unico">{{ estadoVehiculo }}</p>
+    </div>
+  </div>
+
+  <div class="formulario">
+    <!-- Para Seminuevo o Usado: -->
+    <div class="grid-form">
+
+      <!-- <div class="campo">
+        <label>Versión: <span class="requerido">*</span></label>
+        <input type="text" [(ngModel)]="version" placeholder="Escribe la versión manualmente" />
+      </div> -->
+
+      <div class="campo">
+        <label>Precio: <span class="requerido">*</span></label>
+        <input type="number" min="0" placeholder="Precio del vehículo" [(ngModel)]="precio" />
+      </div>
+
+      <!-- Placas (opcional) -->
+      <div class="campo">
+        <label>Placas: <span class="opcional_css">(opcional)</span></label>
+        <input type="text" placeholder="Ej. UVY-123-A" [(ngModel)]="placas" />
+      </div>
+
+      <!-- Kilometraje (obligatorio) -->
+      <div class="campo">
+        <label>Kilometraje: <span class="requerido">*</span></label>
+        <input type="number" min="0" placeholder="Ej. 45000" required [(ngModel)]="kilometraje" />
+      </div>
+
+      <!-- Color (obligatorio) -->
+      <div class="campo">
+        <label>Color: <span class="requerido">*</span></label>
+
+        <!-- ✅ Si es Nuevo: checkboxes -->
+        <div *ngIf="estadoVehiculo === 'Nuevo'" class="checkbox-colores">
+          <label *ngFor="let opcion of opciones" class="color-opcion">
+            <input type="checkbox" [value]="opcion.label" (change)="toggleColorSeleccionado(opcion.label)"
+              [checked]="colorSeleccionado.includes(opcion.label)" />
+            {{ opcion.label }}
+          </label>
+        </div>
+
+        <!-- ✅ Si NO es Nuevo: select (pero sigue enviando array) -->
+        <select *ngIf="estadoVehiculo !== 'Nuevo'" [(ngModel)]="colorSeleccionadoUnico" name="color" required>
+          <option value="" disabled selected>Selecciona un color</option>
+          <option *ngFor="let opcion of opciones" [value]="opcion.label">
+            {{ opcion.label }}
+          </option>
+        </select>
+      </div>
+
+
+      <!-- Moneda (obligatorio o informativo) -->
+      <div class="campo">
+        <label>Moneda:</label>
+        <select [(ngModel)]="moneda" name="moneda">
+          <option value="MXN">MXN - Pesos mexicanos</option>
+          <option value="USD">USD - Dólares estadounidenses</option>
+        </select>
+      </div>
+
+      <!-- Descripción (obligatorio) -->
+      <div class="campo" style="grid-column: span 2;">
+        <label>Descripción del vehículo: <span class="requerido">*</span></label>
+        <textarea rows="4" placeholder="Ej. Auto en excelente estado, único dueño..." required
+          [(ngModel)]="descripcion"></textarea>
+      </div>
+
+      <div class="campo">
+        <div class="bloque-imagenes">
+          <button type="button" (click)="seleccionarUbicacion()">
+            <ion-icon name="location-outline" class="icono"></ion-icon>
+            Seleccionar ubicación
+          </button>
+
+          <div *ngIf="ubicacionSeleccionada" class="ubicacion-mostrada">
+            <ion-icon name="location-outline"></ion-icon>
+            <span>
+              {{ ubicacionSeleccionada[0] }}, {{ ubicacionSeleccionada[1] }}<br />
+              Lat: {{ ubicacionSeleccionada[2] }}, Lng: {{ ubicacionSeleccionada[3] }}
+            </span>
+          </div>
+        </div>
+
+        <div class="bloque-imagenes">
+          <button type="button" (click)="seleccionarImagenes()">
+            <ion-icon name="image-outline"></ion-icon>
+            Seleccionar Imágenes
+          </button>
+
+          <label class="radio-validacion" [class.activo]="imagenesValidas" [class.inactivo]="!imagenesValidas">
+            <span class="radio-custom"></span>
+            <ion-icon name="checkmark-outline"></ion-icon>
+          </label>
+          <button *ngIf="imagenesIntentadas" class="btn-limpiar" type="button" (click)="limpiarImagenes()">
+            <ion-icon name="trash-outline"></ion-icon>
+            Imagenes
+          </button>
+        </div>
+      </div>
+
+      <!-- Tipo de Motor (obligatorio) -->
+      <div class="campo">
+        <label>Tipo de Motor: <span class="opcional_css">(opcional)</span></label>
+        <input type="text" required [(ngModel)]="tipoMotor" name="tipoMotor"
+          placeholder="Ej. 4 tiempos, eléctrico..." />
+      </div>
+
+      <!-- Cilindrada (opcional) -->
+      <div class="campo">
+        <label>Cilindrada: <span class="opcional_css">(opcional)</span></label>
+        <input type="text" placeholder="Ej. 1000cc" [(ngModel)]="cilindrada" />
+      </div>
+
+      <!-- Transmisión (obligatorio) -->
+      <div class="campo">
+        <label>Transmisión: <span class="opcional_css">(opcional)</span></label>
+        <input type="text" required [(ngModel)]="transmision" name="transmision" placeholder="Ej. manual, CVT, etc." />
+      </div>
+
+      <!-- Combustible (obligatorio) -->
+      <div class="campo">
+        <label>Combustible: <span class="opcional_css">(opcional)</span></label>
+        <input type="text" required [(ngModel)]="combustible" name="combustible"
+          placeholder="Ej. gasolina, eléctrico..." />
+      </div>
+
+      <!-- Frenos (obligatorio) -->
+      <div class="campo">
+        <label>Frenos: <span class="opcional_css">(opcional)</span></label>
+        <input type="text" required [(ngModel)]="frenos" name="frenos" placeholder="Ej. disco, tambor, ABS..." />
+      </div>
+
+      <!-- Suspensión (opcional) -->
+      <div class="campo">
+        <label>Suspensión: <span class="opcional_css">(opcional)</span></label>
+        <input type="text" placeholder="Ej. Suspensión independiente" [(ngModel)]="suspension" />
+      </div>
+
+
+    </div>
+  </div>
+</section>

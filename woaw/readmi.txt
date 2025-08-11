@@ -1,0 +1,45 @@
+ionic generate component components/resetpassword
+ionic generate component components/modal/avisoPrivasidad
+ionic generate page pages/updateCar
+ionic generate guard guards/auth
+ionic generate service services/motos
+
+
+ ## ESTILOS DE MODAL
+
+  1° Modal normal centrada flotante
+  const modal = await this.modalCtrl.create({
+    component: PerfilComponent,
+    cssClass: 'modal-centrado',
+    backdropDismiss: true,
+    showBackdrop: true,
+    animated: true,
+  });
+  await modal.present();
+
+
+  2° Modal emerge de abajo como pestaña
+  const modal = await this.modalCtrl.create({
+    component: PerfilComponent,
+    breakpoints: [0.25, 0.5, 0.9],
+    initialBreakpoint: 0.5,
+    handle: true,
+    showBackdrop: true,
+    cssClass: 'modal-deslizable',
+  });
+  await modal.present();
+
+
+ const modal = await this.modalCtrl.create({
+        component: FichaComponent,
+        breakpoints: [1],
+        initialBreakpoint: 1,
+        cssClass: 'modal-ancha',
+        handle: false,
+        showBackdrop: false,
+        backdropDismiss: false,
+        componentProps: {
+          auto: auto,
+        },
+      });
+      await modal.present();

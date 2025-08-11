@@ -1,0 +1,91 @@
+<section class="seccion-mapa">
+
+  <div class="seccion_blog">
+    <h2 class="titulo_blog">Blog</h2>
+
+    <div class="contenedor_blog">
+      <div class="card-blog" *ngFor="let post of blog | slice:0:3">
+        <a [href]="post.url" target="_blank" rel="noopener noreferrer">
+          <div class="imagen-blog" [style.backgroundImage]="'url(' + post.imagen + ')'">
+            <div class="contenido-blog">
+              <p class="categoria">{{ post.categoria }}</p>
+              <h3 class="titulo">{{ post.titulo }}</h3>
+              <div class="meta">
+                <span><ion-icon name="calendar-outline"></ion-icon> {{ post.meta }}</span>
+                <span><ion-icon name="person-outline"></ion-icon> GO AUTOS</span>
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <div class="ver-mas-blog" *ngIf="mostrarVerMas">
+      <a href="https://goautos.app/" target="_blank" rel="noopener noreferrer">Ver más artículos</a>
+    </div>
+  </div>
+
+  <div class="separador"></div>
+
+  <div class="contenedor-footer">
+    <!-- Columna 1: Dirección -->
+    <div class="columna-footer">
+      <h2>¿Dónde estamos?</h2>
+      <p><strong>Go Autos S.A. de C.V.</strong></p>
+      <p>Querétaro, México</p>
+
+      <div class="separador"></div>
+
+      <p *ngIf="YaseptePopup" class="lellenda_aviso">
+        He leído el <span class="enlace" (click)="mostrarAviso()">Aviso de Privacidad</span> y los
+        <span class="enlace" (click)="mostrarTerminos()">Términos y condiciones</span><br />
+        estoy consciente del uso de mis datos.
+      </p>
+      <p>
+        <a class="link" [href]="YaseptePopup ? 'mailto:contacto@goautos.mx?subject=Consulta%20desde%20la%20app' : null" target="_blank"
+          [class.disabled]="!YaseptePopup">contacto&#64;goautos.mx</a>
+      </p>
+      <p>
+        <a class="link" [href]="YaseptePopup ? 'tel:+524425516440' : null" [class.disabled]="!YaseptePopup">+52 442 551
+          6440</a>
+      </p>
+
+
+      <ion-item *ngIf="!YaseptePopup" class="checkbox-custom" lines="none">
+        <ion-checkbox [(ngModel)]="aceptoPopup" (ionChange)="onCambioConsentimiento($event)" slot="start"
+          class="check-rojo"></ion-checkbox>
+
+        <ion-label>
+          Consiento que mis Datos Personales, Financieros y/o Patrimoniales proporcionados en esta aplicación
+          sean tratados y transferidos por GO AUTOS conforme a su
+          <span class="link" (click)="mostrarAviso()">Aviso de Privacidad</span>
+        </ion-label>
+      </ion-item>
+
+      <ion-button color="danger" *ngIf="!YaseptePopup" expand="block" (click)="aceptarConsentimiento()" [disabled]="!aceptoPopup">
+        Aceptar
+      </ion-button>
+
+      <p>Lunes a Viernes: 9:00 AM – 6:00 PM</p>
+    </div>
+
+    <!-- Columna 3: Navegación -->
+    <div class="menu-footer">
+      <h3>Explora</h3>
+      <ul class="footer-nav">
+        <li><a (click)="redirecion('home')">Inicio</a></li>
+        <li><a (click)="redirecion('nuevos')">Nuevos</a></li>
+        <li><a (click)="redirecion('seminuevos')">Seminuevos</a></li>
+        <li><a (click)="redirecion('usados')">Usados</a></li>
+      </ul>
+    </div>
+
+    <!-- Columna 2: Mapa -->
+    <div class="columna-footer" *ngIf="mostrarMapa">
+      <iframe loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3732.1842233796044!2d-100.39657472469865!3d20.58802578096088!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85d35a0f1fd238c9%3A0x60e28fc5f05a91ae!2sBlvd.%20Bernardo%20Quintana%20Arrioja%2014%2C%20%C3%81lamos%202da%20Secc%2C%2076160%20Santiago%20de%20Quer%C3%A9taro%2C%20Qro.!5e0!3m2!1ses-419!2smx!4v1715511227795!5m2!1ses-419!2smx"
+        width="100%" height="250" style="border:0;" allowfullscreen></iframe>
+    </div>
+  </div>
+
+</section>

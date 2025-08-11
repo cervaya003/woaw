@@ -1,0 +1,88 @@
+<ion-header>
+  <ion-toolbar color="dark">
+    <ion-buttons slot="start">
+      <div class="perfil-header">
+        <button class="btn-regresar" (click)="regresar()">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+        </button>
+
+        <img src="/assets/icon/goautos1.webp" alt="Go Autos" class="logo" />
+        <span class="titulo-perfil">Mis Autos</span>
+      </div>
+    </ion-buttons>
+
+    <ion-buttons slot="end">
+      <ion-button (click)="regresar()">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content #pageContent  [fullscreen]="true">
+  <app-acomodo [totalAutos]="totalMotos" [titulo]="'Motos'" (ordenCambio)="ordenarAutos($event)">
+  </app-acomodo>
+
+  <ion-grid>
+    <ion-row>
+      <!-- Columna lateral de filtros -->
+      <ion-col size="12" size-md="3">
+
+       <app-menu [filtros]="filtros" [filtrosAplicados]="filtrosAplicados"
+          (mostrarOpciones)="mostrarOpciones($event.event, $event.tipo)" (limpiarFiltros)="resetearFiltros()">
+        </app-menu>
+
+      </ion-col>
+
+      <!-- Columna de catálogo -->
+      <ion-col size="12" size-md="9">
+
+        <div class="catalogo-autos">
+
+          <ng-container *ngFor="let auto of motosPaginadas">
+            <app-cartas [auto]="auto" [autosFavoritosIds]="autosFavoritosIds" [ubicacion]="'mis_motos'"
+              (refrescarAutos)="handleRefrescarAutos($event)" [esMio]="idsMisMotos.includes(auto._id)">
+            </app-cartas>
+          </ng-container>
+
+        </div>
+
+       <!-- Paginación -->
+        <div class="contenedor-paginacion" *ngIf="totalPaginas > 1">
+          <p class="titulo-paginacion">más</p>
+          <div class="paginacion-scroll">
+            <div class="paginacion">
+              <!-- Flecha anterior -->
+              <button class="pagina" (click)="cambiarPagina(paginaActual - 1)"
+                [disabled]="paginaActual === 1">‹</button>
+
+              <!-- Botones dinámicos -->
+              <ng-container *ngFor="let i of paginasReducidas">
+                <button *ngIf="esNumero(i)" class="pagina" [class.activa]="paginaActual === i"
+                  (click)="cambiarPagina(i)">
+                  {{ i }}
+                </button>
+                <span *ngIf="!esNumero(i)" class="ellipsis">...</span>
+              </ng-container>
+
+
+              <!-- Flecha siguiente -->
+              <button class="pagina" (click)="cambiarPagina(paginaActual + 1)"
+                [disabled]="paginaActual === totalPaginas">›</button>
+            </div>
+          </div>
+        </div>
+
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  <br /><br /><br /><br />
+
+
+  <div class="mensaje-vacio" *ngIf="MisMotos.length === 0">
+    <ion-icon name="alert-outline"></ion-icon>
+    <p>No tienes motos agregadas.</p>
+  </div>
+
+  <app-footer></app-footer>
+</ion-content>

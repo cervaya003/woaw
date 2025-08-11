@@ -1,0 +1,23 @@
+<div class="barra-superior">
+  <div class="resultado-cantidad">
+    {{ totalAutos }} <span>Resultados</span>
+  </div>
+
+  <div class="acomodo_titulo" *ngIf="!esDispositivoMovil"> {{ titulo }} </div>
+
+  <div class="controles-derecha">
+    <div class="botones-vista">
+      <ion-icon name="apps" class="icono-vista activo"></ion-icon>
+      <!-- <ion-icon name="reorder-three-outline" class="icono-vista"></ion-icon> -->
+    </div>
+
+    <div class="ordenador">
+      <ion-label>Ordenar por:</ion-label>
+      <ion-select placeholder="Seleccionar" interface="popover" (ionChange)="onOrdenChange($event)">
+        <ion-select-option value="precioAsc">Precio menor</ion-select-option>
+        <ion-select-option value="precioDesc">Precio mayor</ion-select-option>
+      </ion-select>
+    </div>
+    
+  </div>
+</div>

@@ -1,0 +1,258 @@
+<app-navbar></app-navbar>
+
+<ion-content [fullscreen]="true" #contenidoScroll>
+
+  <!-- <div class="banner_img_fondo"></div> -->
+
+  <div class="seccion-pasos" *ngIf="!mostrarModelos">
+    <div class="titulo-pasos">
+      <h2>Arrendamiento Puro</h2>
+    </div>
+
+    <div class="botones-superiores">
+      <div class="boton-seleccion" [class.activo]="tipoSeleccionado === 'coches'" (click)="cambiarTipo('coches')">
+        <img src="assets/img/icon-coche.png" alt="Coche" />
+        <span>Coches</span>
+        <ion-icon *ngIf="tipoSeleccionado === 'coches'" name="checkmark-circle" class="icono-check"></ion-icon>
+      </div>
+
+      <div class="boton-seleccion" [class.activo]="tipoSeleccionado === 'camiones'" (click)="cambiarTipo('camiones')">
+        <img src="assets/img/icon-camion.png" alt="Camión" />
+        <span>Camiones</span>
+        <ion-icon *ngIf="tipoSeleccionado === 'camiones'" name="checkmark-circle" class="icono-check"></ion-icon>
+      </div>
+
+      <!-- <div class="boton-info" (click)="mostrarInfoArrendamiento()">
+        <ion-icon name="information-circle-outline"></ion-icon>
+        <span>Información</span>
+      </div> -->
+    </div>
+  </div>
+
+  <div class="linea-progreso" id="anchor-modelos">
+    <div class="paso" [class.completado]="pasoActual >= 1">
+      <div class="circulo">1</div>
+      <span class="etiqueta">Marca</span>
+    </div>
+    <div class="linea-conector" [class.activa]="pasoActual >= 2"></div>
+    <div class="paso" [class.completado]="pasoActual >= 2">
+      <div class="circulo">2</div>
+      <span class="etiqueta">Datos</span>
+    </div>
+  </div>
+
+  <div *ngIf="!mostrarModelos" id="top-seccion-arrendamiento-marcas" class="contenedor-arrendamiento">
+    <!-- Título e instrucción -->
+    <div class="encabezado-arrendamiento">
+      <p class="texto-guia">Toca una <strong>marca</strong> para continuar</p>
+    </div>
+
+    <!-- Logos -->
+    <div class="contenedor-marcas">
+      <ng-container *ngIf="tipoSeleccionado === 'coches'">
+        <ng-container *ngFor="let marca of opciones">
+          <div class="marca-card" *ngIf="marca.imagenValida" [class.seleccionado]="marca.key === marcaSeleccionada?.key"
+            (click)="seleccionarMarca(marca)">
+            <img [src]="marca.imageUrl" [alt]="marca.nombre" (error)="marca.imagenValida = false" />
+          </div>
+        </ng-container>
+      </ng-container>
+
+      <ng-container *ngIf="tipoSeleccionado === 'camiones'">
+        <ng-container *ngFor="let marca of opcionesCamiones">
+          <div class="marca-card" *ngIf="marca.imagenValida" [class.seleccionado]="marca._id === marcaSeleccionada?._id"
+            (click)="seleccionarMarca(marca)">
+            <img [src]="marca.imageUrl" [alt]="marca.nombre" (error)="marca.imagenValida = false" />
+          </div>
+        </ng-container>
+      </ng-container>
+    </div>
+
+    <div class="contenedor-arrendar-grid">
+      <div class="info-coche" *ngIf="marcaSeleccionada">
+        <img [src]="marcaSeleccionada.imageUrl" [alt]="marcaSeleccionada.nombre" class="logo-marca" />
+        <h4 class="nombre-marca">{{ marcaSeleccionada.nombre }}</h4>
+      </div>
+
+      <div class="cta-arrendar" *ngIf="marcaSeleccionada" (click)="confirmarArrendamiento()">
+        <span class="texto-arrendar">Secciona <strong>Modelo</strong></span>
+        <ion-icon name="arrow-forward-circle-outline" class="icono-flecha"></ion-icon>
+      </div>
+      <div class="cta-arrendar" *ngIf="!marcaSeleccionada" (click)="selecionaMarca()">
+        <span class="texto-arrendar">Secciona una <strong>Marca</strong></span>
+        <ion-icon name="arrow-up-circle-outline" class="icono-flecha-arriba"></ion-icon>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sección de selección de modelo -->
+  <div class="contenedor-modelos" *ngIf="mostrarModelos">
+
+    <div class="encabezado-modelos">
+      <div class="fila-header-modelos">
+        <button class="btn_regresar_arrendar" (click)="regresar()">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+        </button>
+        <h2>Modelos disponibles de {{ marcaSeleccionada?.nombre }}</h2>
+      </div>
+
+      <img [src]="marcaSeleccionada?.imageUrl" [alt]="marcaSeleccionada?.nombre" loading="lazy" />
+      <p>Completa el formulario</p>
+    </div>
+
+    <!-- FORMULARIO NUEVO  -->
+    <form [formGroup]="formArrendamiento" (ngSubmit)="enviarSolicitud('Email')">
+      <ion-grid>
+        <ion-row>
+          <ion-col size="12" size-md="3">
+            <ion-label position="stacked">Nombre completo: <strong>*</strong></ion-label>
+            <ion-input formControlName="nombre" placeholder="Ej. Juan Pérez"></ion-input>
+          </ion-col>
+
+          <ion-col size="12" size-md="3">
+            <ion-label position="stacked">Correo electrónico: <strong>*</strong></ion-label>
+            <ion-input type="email" formControlName="correo" placeholder="Ej. juan@mail.com"></ion-input>
+          </ion-col>
+
+          <ion-col size="12" size-md="3">
+            <ion-label position="stacked">Tipo de persona: <strong>*</strong></ion-label>
+            <ion-select formControlName="tipoPersona" interface="popover" placeholder="Selecciona">
+              <ion-select-option value="Persona Física Actividad Empresarial">Persona Física Actividad
+                Empresarial</ion-select-option>
+              <ion-select-option value="Moral">Persona Moral</ion-select-option>
+            </ion-select>
+          </ion-col>
+
+          <ion-col size="12" size-md="3">
+            <ion-label position="stacked">Plazo: <strong>*</strong></ion-label>
+            <ion-select formControlName="plazo" interface="popover" placeholder="Selecciona plazo">
+              <ion-select-option value="12">12 meses</ion-select-option>
+              <ion-select-option value="24">24 meses</ion-select-option>
+              <ion-select-option value="36">36 meses</ion-select-option>
+              <ion-select-option value="48">48 meses</ion-select-option>
+            </ion-select>
+          </ion-col>
+        </ion-row>
+
+        <ion-col size="12" size-md="6">
+          <ion-label position="stacked">Modelos: <strong>*</strong></ion-label>
+          <ion-select placeholder="Selecciona modelos" multiple="true" interface="popover"
+            [value]="modelosSeleccionados" (ionChange)="onModelosChange($event)">
+            <ion-select-option *ngFor="let modelo of modelos" [value]="modelo">
+              {{ modelo.modelo }}
+            </ion-select-option>
+          </ion-select>
+        </ion-col>
+
+        <ng-container *ngIf="tipoSeleccionado !== 'camiones'">
+          <ion-row *ngIf="modelosConVersiones.length > 0">
+            <ion-col size="12">
+              <ion-card>
+                <ion-card-header>
+                  <ion-card-title>Modelos seleccionados y versiones</ion-card-title>
+                </ion-card-header>
+                <ion-card-content>
+                  <ion-grid>
+                    <ion-row class="ion-text-center">
+                      <ion-col size="6"><strong>Modelo</strong></ion-col>
+                      <ion-col size="6"><strong>Versión</strong></ion-col>
+                    </ion-row>
+                    <ion-row *ngFor="let item of modelosConVersiones; let i = index">
+                      <ion-col size="6">{{ item.modelo.modelo }}</ion-col>
+                      <ion-col size="6">
+
+                        <ion-select [name]="'version-' + i" multiple="true" interface="popover"
+                          placeholder="Selecciona versión" [(ngModel)]="modelosConVersiones[i].versionSeleccionada"
+                          [ngModelOptions]="{ standalone: true }">
+                          <ion-select-option *ngFor="let version of item.versiones" [value]="version">
+                            {{ version }}
+                          </ion-select-option>
+                        </ion-select>
+
+                      </ion-col>
+                    </ion-row>
+                  </ion-grid>
+                </ion-card-content>
+              </ion-card>
+            </ion-col>
+          </ion-row>
+        </ng-container>
+
+        <ion-row class="ion-justify-content-center" style="gap: 12px;">
+          <!-- Botón rojo -->
+          <button type="submit" class="button-native custom-btn danger">
+            <ion-icon name="send" slot="start"></ion-icon>
+            Enviar solicitud
+          </button>
+
+          <!-- Botón verde (WhatsApp) -->
+          <button type="button" class="button-native custom-btn success" (click)="enviarSolicitud('Wh')">
+            <ion-icon name="logo-whatsapp" slot="start"></ion-icon>
+            WhatsApp
+          </button>
+        </ion-row>
+
+
+      </ion-grid>
+    </form>
+
+  </div>
+
+  <div #infoArrendamiento></div>
+  <br>
+  <br>
+  <br>
+  <section class="grid-arrendamiento ion-margin-top">
+    <ion-grid>
+      <ion-row>
+        <!-- ¿Qué es el arrendamiento? -->
+        <ion-col size="12" size-md="4">
+          <div class="tarjeta-arr">
+            <h5><ion-icon name="car-sport-outline"></ion-icon> ¿Qué es?</h5>
+            <p>
+              El arrendamiento puro te permite utilizar un auto nuevo pagando una renta mensual,
+              sin adquirir deuda ni comprometer tu flujo de efectivo. Ideal para empresas y profesionistas con
+              beneficios fiscales.
+            </p>
+          </div>
+        </ion-col>
+
+        <!-- Beneficios -->
+        <ion-col size="12" size-md="4">
+          <div class="tarjeta-arr">
+            <h5><ion-icon name="thumbs-up-outline"></ion-icon> Beneficios</h5>
+            <ul>
+              <li><ion-icon name="checkmark-circle-outline"></ion-icon> 100% deducible en impuestos</li>
+              <li><ion-icon name="cash-outline"></ion-icon> Inversión inicial baja</li>
+              <li><ion-icon name="wallet-outline"></ion-icon> Financiación completa del vehículo</li>
+              <li><ion-icon name="close-circle-outline"></ion-icon> No se registra como deuda</li>
+              <li><ion-icon name="locate-outline"></ion-icon> Incluye GPS de monitoreo</li>
+              <li><ion-icon name="calendar-outline"></ion-icon> Plazos de 12 a 60 meses</li>
+            </ul>
+          </div>
+        </ion-col>
+
+        <!-- Requisitos -->
+        <ion-col size="12" size-md="4">
+          <div class="tarjeta-arr">
+            <h5><ion-icon name="document-text-outline"></ion-icon> Requisitos</h5>
+            <ul>
+              <li><ion-icon name="document-outline"></ion-icon> Llenar solicitud</li>
+              <li><ion-icon name="business-outline"></ion-icon> RFC y constancia de situación fiscal</li>
+              <li><ion-icon name="card-outline"></ion-icon> Identificación oficial</li>
+              <li><ion-icon name="home-outline"></ion-icon> Comprobante de domicilio</li>
+              <li><ion-icon name="bar-chart-outline"></ion-icon> Opinión positiva del SAT</li>
+            </ul>
+          </div>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </section>
+
+  <div class="banner-img">
+    <img src='/assets/autos/arrendamiento.png' alt="banner" loading="lazy" />
+  </div>
+
+  <app-footer></app-footer>
+
+</ion-content>

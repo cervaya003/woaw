@@ -1,0 +1,144 @@
+.alert-content {
+  animation: fadeInScale 100ms ease-out;
+  max-width: 400px;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  padding: 15px 10px;
+  border-radius: 0px;
+  background-color: #fff;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
+  position: relative;
+  text-align: center;
+
+
+  .top-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 6px;
+    width: 100%;
+  }
+
+  .icon-container {
+    animation: bounceIn 2100ms ease-out;
+    margin-top: 5px;
+    margin-bottom: 5px;
+  }
+
+  .icon {
+    font-size: 45px;
+  }
+
+  h2 {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #111;
+  }
+
+  p {
+    font-size: 15px;
+    color: #494949;
+    margin-bottom: 30px;
+  }
+
+  .btn-ok {
+    --border-radius: 10px;
+    width: 120px;
+    height: 40px;
+    font-weight: 600;
+    margin: 0 auto;
+    display: block;
+    color: #fff;
+  }
+
+  &.success {
+    .top-bar {
+      background-color: #28a745;
+    }
+
+    .icon {
+      color: #28a745;
+    }
+
+    .btn-ok {
+      --background: #28a745;
+    }
+  }
+
+  &.danger {
+    .top-bar {
+      background-color: #dc3545;
+    }
+
+    .icon {
+      color: #dc3545;
+    }
+
+    .btn-ok {
+      --background: #dc3545;
+    }
+  }
+
+  &.warning {
+    .top-bar {
+      background-color: #ffc107;
+    }
+
+    .icon {
+      color: #ffc107;
+    }
+
+    .btn-ok {
+      --background: #ffc107;
+      color: #111;
+    }
+  }
+
+  &.info {
+    .top-bar {
+      background-color: #007bff;
+    }
+
+    .icon {
+      color: #007bff;
+    }
+
+    .btn-ok {
+      --background: #007bff;
+    }
+  }
+}
+
+@keyframes fadeInScale {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+
+  80% {
+    transform: scale(0.95);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}

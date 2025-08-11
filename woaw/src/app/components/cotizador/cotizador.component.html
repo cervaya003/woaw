@@ -1,0 +1,65 @@
+<div *ngIf="!edadValida" class="alerta-edad">
+  Este vehículo no es elegible para <strong>crédito</strong> solo aplica pago de contado (<strong>Efectivo</strong>,
+  <strong>transferencia</strong>,
+  <strong>deposito bancario</strong>).
+</div>
+
+<div *ngIf="edadValida" class="cotizador-container">
+  <h2>Consigue tu crédito</h2>
+
+  <!-- Enganche -->
+  <div class="seccion">
+    <p class="seccion-titulo">1. Escoge tu enganche:</p>
+    <div class="slider-container">
+      <div class="label-porcentaje">
+        <strong>{{ enganchePercent }}%</strong> de enganche
+      </div>
+
+      <div class="input-enganche-wrapper">
+        <span>$</span>
+        <input type="number" [value]="enganche" (input)="onEngancheManualChange($event)" [min]="engancheMinimo"
+          [max]="engancheMaximo" step="100" />
+      </div>
+      <div *ngIf="mensajeErrorEnganche" class="mensaje-error">
+        {{ mensajeErrorEnganche }}
+      </div>
+
+      <input type="range" [min]="engancheMinimoPercent" max="90" step="1" [value]="enganchePercent"
+        (input)="onEngancheChange(getInputValueAsNumber($event))" class="slider" />
+
+      <div class="porcentajes">
+        <span>{{ engancheMinimoPercent }}%</span>
+        <span>50%</span>
+        <span>90%</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Mensualidades -->
+  <div class="seccion" *ngIf="!mensajeErrorEnganche">
+    <p class="seccion-titulo">2. Escoge tu mensualidad:</p>
+    <div class="opciones">
+      <label class="opcion" *ngFor="let m of plazosDisponibles">
+        
+        <input type="radio" name="mensualidad" [value]="m" [checked]="plazo === m" (change)="onPlazoChange(m)" />
+        <span>
+          ${{ calcularMensualidad(m) | number:'1.0-0' }} X {{ m }} meses
+          <small style="color:#888;"> Tasa: {{ getTasa(m) | percent:'1.2-2' }}</small>
+        </span>
+
+      </label>
+    </div>
+  </div>
+
+  <button [disabled]="mensajeErrorEnganche" class="btn-solicitar" (click)="enviarCredito()">Solicitar crédito</button>
+
+  <p>
+    Simulación de crédito. El costo del seguro <strong> varía por vehículo</strong>. Solicita tu cotización en
+    <strong>PDF</strong> para
+    conocer el monto
+    exacto.
+  </p>
+
+
+</div>

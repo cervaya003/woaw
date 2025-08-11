@@ -1,0 +1,286 @@
+/* ================================
+   Layout con navbar fija
+   ================================ */
+
+/* Evita que la navbar tape el contenido */
+ion-content {
+  margin-top: 56px; /* ajusta a la altura real de tu navbar */
+}
+
+/* Acolchado seguro (arriba + lados) cuando usas .ion-padding */
+.ion-padding {
+  /* Arriba: padding base + safe-area */
+  padding-top: calc(16px + env(safe-area-inset-top, 0px)) !important;
+
+  /* Lados: evita que se corten botones pegados al borde */
+  padding-left: max(16px, env(safe-area-inset-left, 0px)) !important;
+  padding-right: max(16px, env(safe-area-inset-right, 0px)) !important;
+}
+
+/* ================================
+   Formulario
+   ================================ */
+
+.formulario-lote {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* Inputs limpios con underline animado */
+ion-input {
+  --padding-start: 0px;
+  --padding-end:   0px;
+  border-bottom:   0.5px solid #c0c0c09f;
+  padding-bottom:  0.5px;
+  transition:      border-color 0.3s ease;
+
+  &:focus-within {
+    border-bottom: 0.5px solid #e53935;
+  }
+}
+
+/* ================================
+   Botón "icono solo" transparente
+   ================================ */
+
+.btn-icon-clear {
+  /* Ion button tokens */
+  --background: transparent;
+  --background-hover: transparent;
+  --background-activated: transparent;
+  --box-shadow: none;
+  --padding-start: 0;
+  --padding-end: 0;
+  --color: #000; /* icono negro */
+  --ripple-color: rgba(0,0,0,.15);
+  margin: 0;
+}
+
+/* Por si el tema usa partes nativas, refuerza la transparencia */
+ion-button.btn-icon-clear::part(native) {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* ================================
+   Área de subida / Previews
+   ================================ */
+
+.preview-container {
+  display:      flex;
+  flex-wrap:    wrap;
+  gap:          10px;
+  margin-top:   10px;
+  max-width:    100%;
+  position:     relative;
+
+  div {
+    position: relative;
+    width:    80px;
+    height:   80px;
+  }
+
+  img {
+    width:        80px;
+    height:       80px;
+    object-fit:   cover;
+    border-radius:10px;
+    border:       2px solid #ccc;
+    box-shadow:   0 2px 5px rgba(0, 0, 0, 0.1);
+    display:      block;
+  }
+
+  .btn-eliminar-img {
+    position:         absolute;
+    top:              -6px;
+    right:            -6px;
+    background-color: rgba(255, 0, 0, 0.85);
+    border:           none;
+    border-radius:    50%;
+    color:            #fff;
+    width:            20px;
+    height:           20px;
+    font-size:        14px;
+    text-align:       center;
+    line-height:      20px;
+    cursor:           pointer;
+    z-index:          10;
+    box-shadow:       0 1px 4px rgba(0, 0, 0, 0.4);
+  }
+}
+
+.area-subida {
+  width:            80%;
+  height:           100px;
+  border:           2px dashed #e2d3d3;
+  background-color: transparent;
+  border-radius:    8px;
+  cursor:           pointer;
+  position:         relative;
+  display:          flex;
+  justify-content:  center;
+  align-items:      center;
+  transition:       background 0.3s;
+
+  .oculto {
+    opacity:        0;
+    pointer-events: none;
+  }
+
+  ion-icon {
+    font-size: 40px;
+    color:     #d0dce7;
+  }
+
+  &:hover {
+    background-color: #37373708;
+  }
+
+  @media (max-width: 1090px) {
+    width: 100%;
+  }
+}
+
+/* ================================
+   Mensaje de autenticación
+   ================================ */
+
+.mensaje-autenticacion {
+  font-size:       15px;
+  color:           #222;
+  margin:          16px 0;
+  padding:         16px;
+  background-color:#fff4f0;
+  border-left:     5px solid #ff3c00;
+  border-radius:   8px;
+}
+
+.btn-acceso {
+  margin-top:   12px;
+  padding:      10px 20px;
+  font-size:    14px;
+  background:   linear-gradient(to right, #ff3c00, #ff6600);
+  border:       none;
+  border-radius:6px;
+  color:        #fff;
+  font-weight:  600;
+  cursor:       pointer;
+  transition:   transform 0.2s ease;
+
+  &:hover { transform: scale(1.05); }
+}
+
+/* ================================
+   Botones redondeados lado a lado (opcionales)
+   ================================ */
+
+/* Contenedor para acciones del formulario (si lo usas) */
+.acciones-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: flex-end; /* cambia a space-between si quieres separarlos */
+  margin-top: 16px;
+}
+
+/* Contenedor centrado y responsive */
+.boton-publicar-container {
+  display: flex;
+  justify-content: center;   /* centrado */
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+/* Botones redondeados */
+.btn-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  border-radius: 9999px;
+  padding: 10px 18px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  line-height: 1;
+  transition: transform .06s ease, box-shadow .2s ease, opacity .2s ease;
+  box-shadow: 0 2px 8px rgba(16, 24, 40, .1);
+}
+
+/* Guardar (primario) */
+.btn-guardar {
+  background: linear-gradient(135deg, #4aef44, #26dc26); /* rojo bonito */
+  color: #fff;
+}
+.btn-guardar:hover { opacity: .95; }
+
+/* Cancelar (neutral) */
+.btn-cancelar {
+  background: #ff0000;
+  color: #ffffff;
+  border: 1px solid #e5e7eb;
+}
+//.btn-cancelar:hover { background: #f9fafb; }
+
+/* Full width en móvil */
+@media (max-width: 480px) {
+  .boton-publicar-container {
+    justify-content: stretch;
+    flex-direction: column;
+  }
+  .btn-pill {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ion-item sin líneas y con el label más limpio */
+.ubicacion-item {
+  --inner-padding-end: 0;
+  --padding-start: 0;
+  margin-top: 6px;
+
+  ion-label {
+    margin-bottom: 6px;
+  }
+}
+
+/* Botón estilo campo, no tan redondo */
+.btn-ubicacion {
+  width: 20%;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; /* icono/texto a la izquierda */
+  gap: 10px;
+
+  padding: 10px 14px;
+  border-radius: 12px;          /* antes 9999px */
+  background: #fff;
+  color: #111827;
+  border: 1px solid #e5e7eb;
+
+  font-weight: 600;
+  cursor: pointer;
+
+  box-shadow: 0 2px 8px rgba(16, 24, 40, .06);
+  transition: box-shadow .2s ease, transform .1s ease, background .2s ease;
+}
+
+.btn-ubicacion:hover {
+  background: #fafafa;
+  box-shadow: 0 4px 16px rgba(16, 24, 40, .10);
+  transform: translateY(-1px);
+}
+
+.btn-ubicacion:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(16, 24, 40, .08);
+}
+
+.btn-ubicacion ion-icon {
+  font-size: 18px;
+  opacity: .85;
+}

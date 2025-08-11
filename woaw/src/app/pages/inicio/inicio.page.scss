@@ -1,0 +1,253 @@
+.home-bg {
+  background-color: rgba(226, 226, 226, 0.7);
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  height: 100%;
+  margin-top: 5rem !important;
+}
+
+ion-content {
+  --background: #fff;
+  position: relative;
+}
+
+.home-bg::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+}
+
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+a.enlace-politica {
+  color: #f5410b;
+  font-weight: bold;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+
+.pantalla-dividida {
+  display: flex;
+  width: 100%;
+  height: 100%;
+
+  .lado-izquierdo {
+    flex: 1.5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+
+
+    video.video-fondo {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+      // opacity: 0.7;
+      pointer-events: none;
+    }
+
+
+    img {
+      max-width: 50%;
+      height: auto;
+      margin-bottom: 1rem;
+      opacity: 0;
+    }
+
+    .texto-izquierdo {
+      opacity: 0;
+
+      h2 {
+        font-size: 4rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+        margin-bottom: 10px;
+      }
+
+      p {
+        font-size: 1.2rem;
+        color: #ffffff;
+        font-weight: bold;
+      }
+    }
+
+    .animar-izquierda {
+      animation: aparecerIzquierda 1s ease forwards;
+    }
+
+    .animar-arriba {
+      animation: aparecerArriba 1s ease forwards;
+    }
+  }
+
+  .lado-derecho {
+    flex: 1;
+    background-color: #ffffff;
+    display: flex;
+    // justify-content: center;
+    // align-items: center;
+
+    .container_vidrio {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 5px auto;
+      width: 100%;
+      max-width: 360px;
+      border-radius: 20px;
+      padding: 12px;
+      padding-bottom: 60px;
+      transform: translateY(8px);
+
+      @media (max-width: 768px) {
+        border-radius: 0px;
+        padding: 7px;
+        margin: 0px auto;
+        // padding-bottom: 100%;
+      }
+
+      .link-registro {
+        margin-top: 0px;
+        font-size: 14px;
+        color: #3e3e3e;
+        text-align: center;
+
+        strong {
+          font-size: 15px;
+          cursor: pointer;
+          color: #ff0000;
+          text-decoration: underline;
+        }
+      }
+    }
+
+    .separador {
+      width: 100%;
+      height: 1px;
+      background-color: #ccc;
+      margin: 16px 0;
+    }
+  }
+}
+
+@media (max-width: 1024px) and (min-width: 769px) {
+  .pantalla-dividida {
+    flex-direction: row;
+
+    .lado-izquierdo {
+      flex: 1; // Reducimos el ancho del lado del video
+      height: auto;
+
+      video.video-fondo {
+        object-position: center;
+      }
+
+      .texto-izquierdo {
+        h2 {
+          font-size: 2rem;
+        }
+
+        p {
+          font-size: 15px;
+        }
+      }
+    }
+
+    .lado-derecho {
+      flex: 2;
+
+      .container_vidrio {
+        transform: translateY(12px) !important;
+      }
+    }
+
+  }
+}
+
+
+@media (max-width: 768px) {
+  .pantalla-dividida {
+    flex-direction: column;
+
+    .lado-izquierdo,
+    .lado-derecho {
+      flex: none;
+      width: 100%;
+      padding: 1rem;
+    }
+
+    .lado-izquierdo {
+      // flex: 1;
+      order: 2;
+      height: 570px;
+    }
+
+    .texto-izquierdo {
+      h2 {
+        font-size: 45px !important;
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+
+      p {
+        font-size: 0.9rem;
+        color: #ffffff;
+        font-weight: bold;
+      }
+    }
+
+    .lado-derecho {
+      order: 1;
+    }
+  }
+}
+
+
+@keyframes aparecerIzquierda {
+  0% {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes aparecerArriba {
+  0% {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

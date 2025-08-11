@@ -1,0 +1,80 @@
+.estado-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px;
+  border: none;
+  border-radius: 6px;
+  font-size: 9px;
+  font-weight: 600;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  font-family: 'Poppins', sans-serif;
+  margin-bottom: 5px;
+
+  .icono-switch {
+    font-size: 18px;
+  }
+
+  &.disponible {
+    background-color: #d4f8d4;
+    color: #28a745;
+
+    .icono-switch {
+      color: #28a745;
+    }
+  }
+
+  &.vendido {
+    background-color: #f8d4d4;
+    color: #dc3545;
+
+    .icono-switch {
+      color: #dc3545;
+    }
+  }
+}
+
+
+
+
+
+
+.detalles-auto {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 8px 0;
+  gap: 0px;
+
+  .item-detalle {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 73.33%;
+    text-align: center;
+
+    ion-icon {
+      font-size: 12px;
+      color: #444;
+      margin-bottom: 4px;
+    }
+
+    span {
+      font-size: 9px;
+      font-weight: 500;
+      color: #333;
+      max-width: 100%;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      display: block;
+
+      @media (max-width: 768px) {
+        font-size: 7px;
+      }
+    }
+  }
+}

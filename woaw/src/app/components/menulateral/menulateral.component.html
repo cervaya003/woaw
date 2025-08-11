@@ -1,0 +1,56 @@
+<ion-menu side="end" menuId="menuLateral" contentId="main-content">
+  <ion-header>
+    <ion-toolbar color="dark">
+      <ion-title>Menú</ion-title>
+      <ion-buttons slot="end">
+        <ion-button (click)="cerrarMenu()">
+          <ion-icon name="close-outline" color="danger"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content class="ion-padding">
+    <ion-list>
+      <ion-item *ngIf="!isLoggedIn" (click)="redirecion('inicio')" button>
+        <ion-icon name="log-in-outline" color="danger"></ion-icon>
+        Iniciar sesión
+      </ion-item>
+      <ion-item *ngIf="isLoggedIn" (click)="abrirModalPerfil()" button>
+        <ion-icon name="person-outline" color="danger"></ion-icon>
+        Perfil
+      </ion-item>
+      <ion-item (click)="redirecion('new-car')" button>
+        <ion-icon name="add-outline" color="danger"></ion-icon>
+        Publicar
+      </ion-item>
+      <ion-item *ngIf="isLoggedIn && (MyRole == 'admin' || MyRole == 'vendedor')" button
+        (click)="redirecion('mis-autos')">
+        <ion-icon name="car-sport-outline" color="danger"></ion-icon>
+        Mis autos
+      </ion-item>
+      <ion-item *ngIf="isLoggedIn && (MyRole == 'admin' || MyRole == 'vendedor')" button
+        (click)="redirecion('mis-motos')">
+        <ion-icon name="bicycle-outline" color="danger"></ion-icon>
+        Mis motos
+      </ion-item>
+      <ion-item *ngIf="isLoggedIn && (MyRole == 'admin' || MyRole == 'lotero')"
+       (click)="redirecion('lotes')" button>
+        <ion-icon name="business-outline" color="danger"></ion-icon>
+        Lotes
+      </ion-item>
+      <ion-item (click)="redirecion('renta-coches')" button>
+        <ion-icon name="document-lock-outline" color="danger"></ion-icon>
+        Renta
+      </ion-item>
+      <ion-item (click)="redirecion('seguros')" button>
+        <ion-icon name="shield-checkmark-outline" color="danger"></ion-icon>
+        Seguros de autos
+      </ion-item>
+      <ion-item *ngIf="isLoggedIn" (click)="logout()" button>
+        <ion-icon name="log-out-outline" color="danger"></ion-icon>
+        Cerrar sesión
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-menu>

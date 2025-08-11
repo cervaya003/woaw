@@ -1,0 +1,146 @@
+<ion-header *ngIf="esDispositivoMovil">
+  <ion-toolbar color="dark">
+    <ion-buttons slot="start">
+      <div class="perfil-header">
+        <button class="btn-regresar" (click)="regresar()">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+        </button>
+
+        <img src="/assets/icon/goautos1.webp" alt="Go Autos" class="logo" />
+        <span class="titulo-perfil">vender mi auto</span>
+      </div>
+    </ion-buttons>
+
+    <ion-buttons slot="end">
+      <ion-button (click)="regresar()">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<app-navbar *ngIf="!esDispositivoMovil"></app-navbar>
+
+<ion-content [fullscreen]="true">
+
+  <div class="encabezado-subida">
+    <h1>¡Sube tu vehículo fácilmente!</h1>
+    <p>Selecciona el tipo y cuéntanos todo sobre él. ¡Es tu momento de venderlo como un profesional!</p>
+  </div>
+
+  <div class="contenedor-categorias" *ngIf="!mostrarCarComponent">
+    <div *ngFor="let opcion of opciones" class="categoria-card" [class.activa]="opcion.tipo === seleccion"
+      [class.desactivada]="opcion.proximamente"
+      (click)="!opcion.proximamente && seleccionar(opcion.tipo, opcion.label, opcion.icono)">
+
+      <div class="etiqueta-proximamente" *ngIf="opcion.proximamente">Próximamente</div>
+
+      <div class="icono">
+        <img [src]="opcion.icono" [alt]="opcion.label" />
+        <div *ngIf="opcion.tipo === seleccion" class="check-icono">✔</div>
+      </div>
+      <div class="label">{{ opcion.label }}</div>
+    </div>
+  </div>
+
+  <!-- # ------  -->
+
+  <div class="contenedor_form" *ngIf="seleccion === 'lote' || seleccion === 'auto' || seleccion === 'moto' ">
+    <div *ngIf="!isLoggedIn && seleccion != 'lote'" class="mensaje-autenticacion">
+      Para publicar y vender un vehículo, primero debes iniciar sesión o crear una cuenta.
+      <button class="btn-acceso" (click)="irAInicio()">Acceder</button>
+    </div>
+
+    <div *ngIf="!mostrarCarComponent && isLoggedIn && (seleccion === 'auto' || seleccion === 'moto')" class="fila-inputs">
+      <div class="campo">
+        <label for="anio">Año <span class="requerido">*</span></label>
+
+        <select id="anio" [(ngModel)]="anioSeleccionado" (change)="verificarAnio('select')">
+          <option disabled selected value="">Selecciona un año</option>
+          <option *ngFor="let anio of listaAnios" [value]="anio">{{ anio }}</option>
+          <option value="otro">Otro...</option>
+        </select>
+
+        <input *ngIf="mostrarInputOtroAnio" type="number" min="1800" max="2007" [(ngModel)]="anioManual"
+          placeholder="Escribe el año" class="input-otro-anio" (input)="verificarAnio('escrito')" />
+        <p *ngIf="mostrarInputOtroAnio && mansaje_error !== ''" class="error_msj">
+          {{ mansaje_error }}
+        </p>
+
+      </div>
+
+      <div class="campo">
+        
+        <label for="marca">Marca <span class="requerido">*</span></label>
+        <select id="marca" *ngIf="!marcaEsPersonalizada" [(ngModel)]="marcaSeleccionada"
+          (change)="obtenerModelosSiCorresponde()" [disabled]="!anioValido">
+          <option disabled selected value="">Selecciona una marca</option>
+          <option *ngFor="let marca of marcas" [value]="seleccion === 'auto' ? marca.key : marca._id">
+            {{ marca.nombre }}
+          </option>
+          <option value="otro">Otra marca...</option>
+        </select>
+
+        <input *ngIf="marcaEsPersonalizada" type="text" [(ngModel)]="marcaSeleccionada"
+          (change)="obtenerModelosSiCorresponde()" placeholder="Escribe el modelo manualmente"
+          class="input-personalizado" maxlength="25" />
+
+      </div>
+
+      <div class="campo">
+        <label for="modelo">Modelo <span class="requerido">*</span></label>
+
+        <input *ngIf="esAnioAnteriorA2008()" type="text" id="modelo" [(ngModel)]="modeloSeleccionado"
+          (change)="selecionarModelo()" placeholder="Escribe el modelo" maxlength="25" />
+
+        <select *ngIf="!esAnioAnteriorA2008() && !modeloEsPersonalizado" id="modelo" [(ngModel)]="modeloSeleccionado"
+          (change)="selecionarModelo()" [disabled]="!marcaSeleccionada">
+          <option disabled selected value="">Selecciona un modelo</option>
+          <option *ngFor="let modelo of modelos" [value]="seleccion === 'auto' ? modelo.modelo : modelo.nombre">
+            {{seleccion === 'auto' ? modelo.modelo : modelo.nombre }}
+          </option>
+          <option value="otro">Otro modelo...</option>
+        </select>
+
+        <!-- Input cuando el usuario selecciona "otro" -->
+        <input *ngIf="modeloEsPersonalizado" type="text" [(ngModel)]="modeloSeleccionado" (blur)="validarInputModelo()"
+          placeholder="Escribe el modelo manualmente" class="input-personalizado" maxlength="25" />
+
+      </div>
+    </div>
+
+    <button [disabled]="!formularioValido()" *ngIf="!mostrarCarComponent && isLoggedIn  && (seleccion === 'auto' || seleccion === 'moto')" class="btn-guardar"
+      (click)="mostrarComponente()">
+      Continuar
+      <ion-icon name="arrow-forward-outline"></ion-icon>
+    </button>
+
+    <div *ngIf="mostrarCarComponent" class="fila_select">
+      <!-- Botón de regresar -->
+      <button type="button" class="btn-regresar" (click)="volverAtras()">
+        <ion-icon name="arrow-back-outline" class="icono-regresar"></ion-icon>
+        Regresar
+      </button>
+      <!-- Icono + Texto del tipo seleccionado -->
+      <div class="seleccion-info">
+        <img [src]="mostrarIcono" alt="icono seleccionado" />
+        <p>{{ mostrarSelecion }}</p>
+      </div>
+    </div>
+
+    <!-- Componentes  -->
+    <app-car *ngIf="mostrarCarComponent && seleccion === 'auto'" [anio]="obtenerAnioActual()"
+      [marca]="marcaSeleccionada" [modelo]="modeloSeleccionado" [tipo]="seleccion">
+    </app-car>
+
+    <app-motos *ngIf="mostrarCarComponent && seleccion === 'moto'" [anio]="obtenerAnioActual()"
+      [marca]="getMarcaNombreSeleccionada()" [modelo]="modeloSeleccionado" [tipo]="seleccion">
+    </app-motos>
+
+    <!-- add loter  -->
+    <app-add *ngIf="mostrarCarComponent && seleccion === 'lote'"></app-add>
+
+  </div>
+
+  <app-footer></app-footer>
+
+</ion-content>

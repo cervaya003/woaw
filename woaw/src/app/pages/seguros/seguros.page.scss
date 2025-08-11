@@ -1,0 +1,10 @@
+.imagen-fullscreen {
+  --background: #fff;
+
+  .img-responsiva {
+    display: block;
+    width: 100vw;
+    height: auto;
+    object-fit: contain;
+  }
+}

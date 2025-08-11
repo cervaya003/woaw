@@ -1,0 +1,121 @@
+.etiqueta {
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 4px;
+  display: inline-block;
+}
+
+.preview-container {
+  width: 100%;
+  max-width: 150px;
+  aspect-ratio: 1 / 1;
+  border: 2px dashed #ccc;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f4f4f4;
+  position: relative;
+
+  .icono-borrar-principal {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    font-size: 20px;
+    color: #ff0000;
+    background: white;
+    border-radius: 50%;
+    z-index: 2;
+    cursor: pointer;
+  }
+
+}
+
+.preview-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.preview-img-mini {
+  width: 90px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-right: 8px;
+  border: 1px solid #ccc;
+}
+
+.imagenes-secundarias {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-start;
+  padding: 8px 0;
+  margin-top: 10px;
+
+  .preview-wrapper {
+    position: relative;
+    display: inline-block;
+    width: 100px;
+    height: 100px;
+
+    .preview-img-mini {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 1 / 1;
+      object-fit: contain;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    .icono-borrar {
+      position: absolute;
+      top: 2px;
+      right: 5px;
+      font-size: 18px;
+      color: #ff0000;
+      background: white;
+      border-radius: 50%;
+      cursor: pointer;
+      z-index: 2;
+    }
+  }
+
+}
+
+ion-footer {
+  box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.botones-footer {
+  display: flex;
+  gap: 10px;
+  padding: 8px;
+}
+
+
+.file-input-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #f2f2f2;
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 14px;
+  margin-top: 6px;
+  border: 1px solid #ccc;
+
+  input[type='file'] {
+    display: none;
+  }
+
+  ion-icon {
+    font-size: 18px;
+    color: #ff4d00;
+  }
+}
