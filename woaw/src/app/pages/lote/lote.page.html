@@ -1,12 +1,15 @@
 <!-- src/app/pages/lote/lote.page.html -->
 <ion-header>
-  <ion-toolbar>
+  <ion-toolbar color="dark">
+    <div class="perfil-header">
     <ion-buttons slot="start">
       <ion-button fill="clear" (click)="volver()">
         <ion-icon name="arrow-back-outline" slot="icon-only"></ion-icon>
       </ion-button>
     </ion-buttons>
-    <ion-title>Lote</ion-title>
+    <img src="/assets/icon/logo4.png" alt="Go Autos" class="logo" />
+    <span *ngIf="lote" class="titulo-perfil">{{ lote.nombre }}</span>
+    </div>
   </ion-toolbar>
 </ion-header>
 

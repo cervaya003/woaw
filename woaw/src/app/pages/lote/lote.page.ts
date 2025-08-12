@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, NavigationStart } from '@angular/router';
 import { ToastController } from '@ionic/angular';
-
+import { Subscription, filter } from 'rxjs';
 import { LoteService } from '../../services/lote.service';
 import { GeneralService } from '../../services/general.service';
 
@@ -21,7 +21,7 @@ interface Direccion {
 export class LotePage implements OnInit {
   loteId!: string;
   lote: any | null = null;
-
+  private navSub?: Subscription;
   direccionCompleta = 'Obteniendo ubicación...';
   carrosDelLote: any[] = [];
 
@@ -39,6 +39,11 @@ export class LotePage implements OnInit {
     this.loteId = this.route.snapshot.paramMap.get('id')!;
     this.cargarLote();
     this.cargarCarros();
+    this.navSub = this.router.events
+      .pipe(filter((e): e is NavigationStart => e instanceof NavigationStart))
+      .subscribe(() => {
+        localStorage.removeItem('origenLote');
+      });
   }
 
   private cargarLote(): void {

@@ -191,6 +191,11 @@ export class FichaPage implements OnInit {
       });
   }
   async regresar() {
+    let origenLote = localStorage.getItem('origenLote');
+    if (origenLote !== null) {
+      await this.router.navigate([origenLote]);
+      return;
+    }
     const origen = localStorage.getItem('origenFicha');
 
     if (origen === 'true') {
