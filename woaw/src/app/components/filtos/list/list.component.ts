@@ -157,7 +157,7 @@ export class ListComponent implements OnInit {
     this.carsService.getMarcas_all().subscribe({
       next: (res: any[]) => {
         this.generalService.loadingDismiss();
-
+        // console.log(res)
         this.opciones = res
           .map((marca) => ({
             label: marca.nombre,

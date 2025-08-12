@@ -48,9 +48,9 @@ export class MapaComponent implements OnInit {
     private modalController: ModalController,
     private http: HttpClient,
     private generalService: GeneralService
-  ) {}
+  ) { }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   async ngAfterViewInit() {
     await this.obtenerUbicacion();
@@ -86,6 +86,15 @@ export class MapaComponent implements OnInit {
         this.map = new google.maps.Map(this.mapContainer.nativeElement, {
           center,
           zoom: 15,
+          styles:
+            [
+              {
+                featureType: "poi",
+                elementType: "all",
+                stylers: [{ visibility: "off" }]
+              }
+            ]
+
         });
 
         this.markerActual = new google.maps.Marker({

@@ -152,7 +152,15 @@ export class FichaPage implements OnInit {
     setTimeout(() => {
       this.mapAuto = new google.maps.Map(this.mapAutoContainer.nativeElement, {
         center: position,
-        zoom: this.tipoAlSubir === 'particular' ? 15 : 17,
+        zoom: this.tipoAlSubir === 'particular' ? 14 : 16,
+        styles:
+        [
+          {
+            featureType: "poi",
+            elementType: "all",
+            stylers: [{ visibility: "off" }]
+          }
+        ]
       });
 
       if (this.tipoAlSubir === 'lote') {
@@ -169,13 +177,13 @@ export class FichaPage implements OnInit {
       } else {
         new google.maps.Circle({
           strokeColor: '#FF0000',
-          strokeOpacity: 0.4,
+          strokeOpacity: 0.9,
           strokeWeight: 2,
           fillColor: '#FF0000',
           fillOpacity: 0.2,
           map: this.mapAuto,
           center: position,
-          radius: 200,
+          radius: 250,
         });
       }
     }, 300);

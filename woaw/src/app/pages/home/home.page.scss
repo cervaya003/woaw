@@ -175,10 +175,9 @@ ion-content {
     .logo-goautos {
       position: absolute;
       top: 16px;
-      width: 75px;
+      width: 85px;
       height: auto;
       z-index: 10;
-      filter: drop-shadow(0 2px 4px rgba(232, 9, 9, 0));
 
       @media (max-width: 768px) {
         top: 15px;
