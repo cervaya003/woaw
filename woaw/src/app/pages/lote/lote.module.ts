@@ -9,6 +9,7 @@ import { LotePage } from './lote.page';
 
 // CartasComponent es standalone → se importa directamente
 import { CartasComponent } from '../../components/cartas/cartas.component';
+import { NavbarComponent } from "src/app/components/navbar/navbar.component";
 
 @NgModule({
   imports: [
@@ -16,8 +17,9 @@ import { CartasComponent } from '../../components/cartas/cartas.component';
     FormsModule,
     IonicModule,
     LotePageRoutingModule,
-    CartasComponent
-  ],
+    CartasComponent,
+    NavbarComponent
+],
   declarations: [LotePage],
 })
 export class LotePageModule {}

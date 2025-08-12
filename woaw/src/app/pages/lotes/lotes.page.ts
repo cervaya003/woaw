@@ -108,6 +108,7 @@ export class LotesPage implements OnInit {
   }
   mostrarAutos(lote: any) {
     const nombreURL = encodeURIComponent(lote.nombre || '');
+    localStorage.setItem('origenLote', `/lote/${nombreURL}/${lote._id}`);
     this.router.navigate(['/lote', nombreURL, lote._id]);
   }
 
