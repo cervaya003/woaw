@@ -91,7 +91,7 @@ export class LoginComponent implements OnInit {
     if (!this.googleInitialized) {
       google.accounts.id.initialize({
         client_id:
-          '986017802761-l0d5jsn1k2k0mb8g1okt42ipg84k067d.apps.googleusercontent.com',
+          '507962515113-5ual6shhg89dnor20a86jtp7ktgkrnm6.apps.googleusercontent.com',
         callback: (response: any) => {
           const idToken = response.credential;
           this.procesarLoginGoogle(idToken);

@@ -86,7 +86,7 @@ export class HomePage implements OnInit {
     }, 10000);
     this.gatTiposVeiculos();
     this.carrucelPromocion();
-    this.carrucelPrincipal();
+    // this.carrucelPrincipal();
   }
   ngAfterViewInit(): void {
     this.generalService.aplicarAnimacionPorScroll(

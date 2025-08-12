@@ -6,7 +6,7 @@
           <ion-icon name="arrow-back-outline"></ion-icon>
         </button>
 
-        <img src="/assets/icon/goautos1.webp" alt="Go Autos" class="logo" />
+        <img src="/assets/icon/logo4.png" alt="Go Autos" class="logo" />
         <span class="titulo-perfil">vender mi auto</span>
       </div>
     </ion-buttons>
@@ -50,7 +50,8 @@
       <button class="btn-acceso" (click)="irAInicio()">Acceder</button>
     </div>
 
-    <div *ngIf="!mostrarCarComponent && isLoggedIn && (seleccion === 'auto' || seleccion === 'moto')" class="fila-inputs">
+    <div *ngIf="!mostrarCarComponent && isLoggedIn && (seleccion === 'auto' || seleccion === 'moto')"
+      class="fila-inputs">
       <div class="campo">
         <label for="anio">Año <span class="requerido">*</span></label>
 
@@ -69,7 +70,7 @@
       </div>
 
       <div class="campo">
-        
+
         <label for="marca">Marca <span class="requerido">*</span></label>
         <select id="marca" *ngIf="!marcaEsPersonalizada" [(ngModel)]="marcaSeleccionada"
           (change)="obtenerModelosSiCorresponde()" [disabled]="!anioValido">
@@ -108,7 +109,8 @@
       </div>
     </div>
 
-    <button [disabled]="!formularioValido()" *ngIf="!mostrarCarComponent && isLoggedIn  && (seleccion === 'auto' || seleccion === 'moto')" class="btn-guardar"
+    <button [disabled]="!formularioValido()"
+      *ngIf="!mostrarCarComponent && isLoggedIn  && (seleccion === 'auto' || seleccion === 'moto')" class="btn-guardar"
       (click)="mostrarComponente()">
       Continuar
       <ion-icon name="arrow-forward-outline"></ion-icon>

@@ -32,6 +32,9 @@ export class PrincipalComponent implements OnInit {
   autosSeminuevos: any[] = [];
   autosUsados: any[] = [];
   Dispositivo: 'telefono' | 'tablet' | 'computadora' = 'computadora';
+  public conUsados: number = 0;
+  public conSeminuevos: number = 0;
+  public conNuevos: number = 0;
 
   constructor(
     public carsService: CarsService,
@@ -56,14 +59,14 @@ export class PrincipalComponent implements OnInit {
   getCarsNews() {
     this.carsService.getCarsNews().subscribe({
       next: (res: any) => {
+        this.conNuevos = res.contador;
         const autos = res?.coches || []
         this.autosNuevos = autos.map((car: any) => ({
-            ...car,
-            precioMin: Math.min(...car.version.map((v: any) => v.Precio)),
-          }))
+          ...car,
+          precioMin: Math.min(...car.version.map((v: any) => v.Precio)),
+        }))
           .sort((a: { precioMin: number }, b: { precioMin: number }) => a.precioMin - b.precioMin)
           .slice(0, 4);
-        console.log(this.autosNuevos);
       },
       error: (err) => {
         const mensaje = err?.error?.message || 'Ocurrió un error inesperado';
@@ -74,6 +77,7 @@ export class PrincipalComponent implements OnInit {
   getCarsSeminuevos() {
     this.carsService.getCarsSeminuevos().subscribe({
       next: (res: any) => {
+        this.conSeminuevos = res.contador;
         const autos = res?.coches || []
         this.autosSeminuevos = autos.slice(0, 4);
       },
@@ -86,6 +90,7 @@ export class PrincipalComponent implements OnInit {
   getCarsUsados() {
     this.carsService.getCarsUsados().subscribe({
       next: (res: any) => {
+        this.conUsados = res.contador;
         const autos = res?.coches || []
         this.autosUsados = autos.slice(0, 4);
       },
