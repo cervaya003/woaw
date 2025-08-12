@@ -4,7 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { LotePage } from './lote.page';
 
 const routes: Routes = [
-  { path: ':id', component: LotePage },   // /lote/:id
+  { path: '', component: LotePage },
 ];
 
 @NgModule({

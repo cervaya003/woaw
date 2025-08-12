@@ -42,15 +42,22 @@
     <img class="ficha-lote__imagen" [src]="previewImagenPrincipal || ''" alt="Imagen de {{ lote.nombre }}" />
   </div>
 
-  <!-- Catálogo de autos del lote -->
-  <ion-grid class="catalogo-autos" *ngIf="carrosDelLote?.length">
-    <ion-row style="align-items:stretch; --ion-grid-column-padding: 8px;">
-      <ion-col size="12" size-md="4" size-lg="3" *ngFor="let auto of carrosDelLote">
-        <!-- CartasComponent es standalone, se puede usar directo -->
-        <app-cartas [auto]="auto" [ubicacion]="'seminuevos'"></app-cartas>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+  <div class="catalogo-autos">
+
+    <div *ngIf="carrosDelLote?.length === 0" class="mensaje-vacio">
+      <ion-icon name="car-sport-outline" class="icono-mensaje"></ion-icon><br />
+      No se encontraron autos para esta sección.
+    </div>
+
+    <ng-container *ngFor="let auto of carrosDelLote">
+      <app-cartas [auto]="auto">
+      </app-cartas>
+    </ng-container>
+
+  </div>
+
+
+
 
   <div class="sin-autos" *ngIf="carrosDelLote?.length === 0">
     <ion-icon name="car-sport-outline"></ion-icon>

@@ -107,11 +107,11 @@ export class LotesPage implements OnInit {
     );
   }
   mostrarAutos(lote: any) {
-    const nombre = encodeURIComponent(lote.nombre || '');
-    this.router.navigate(['/lote', nombre, lote._id]);
+    const nombreURL = encodeURIComponent(lote.nombre || '');
+    this.router.navigate(['/lote', nombreURL, lote._id]);
   }
 
   BackLote() {
-    this.mostrarAuto = false;
+    this.router.navigate(['/lotes']);
   }
 }
