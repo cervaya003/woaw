@@ -33,12 +33,12 @@ export class LotePage implements OnInit {
     private loteService: LoteService,
     private generalService: GeneralService,
     private toastCtrl: ToastController
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.loteId = this.route.snapshot.paramMap.get('id')!;
     this.cargarLote();
-     this.cargarCarros();
+    this.cargarCarros();
   }
 
   private cargarLote(): void {
@@ -82,10 +82,10 @@ export class LotePage implements OnInit {
       await navigator.clipboard.writeText(this.lote.telefonoContacto);
       const t = await this.toastCtrl.create({ message: 'Teléfono copiado', duration: 1500 });
       t.present();
-    } catch {}
+    } catch { }
   }
 
   volver(): void {
-    this.router.navigateByUrl('/lotes');
+    this.router.navigate(['/lotes']);
   }
 }
