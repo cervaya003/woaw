@@ -1,4 +1,3 @@
-// src/app/pages/lote/lote.page.ts
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastController } from '@ionic/angular';
@@ -39,7 +38,7 @@ export class LotePage implements OnInit {
   ngOnInit(): void {
     this.loteId = this.route.snapshot.paramMap.get('id')!;
     this.cargarLote();
-    this.cargarCarros();
+     this.cargarCarros();
   }
 
   private cargarLote(): void {
