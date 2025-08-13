@@ -1,8 +1,7 @@
-// src/app/pages/lote/lote.page.ts
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, NavigationStart } from '@angular/router';
 import { ToastController } from '@ionic/angular';
-
+import { Subscription, filter } from 'rxjs';
 import { LoteService } from '../../services/lote.service';
 import { GeneralService } from '../../services/general.service';
 
@@ -22,7 +21,7 @@ interface Direccion {
 export class LotePage implements OnInit {
   loteId!: string;
   lote: any | null = null;
-
+  private navSub?: Subscription;
   direccionCompleta = 'Obteniendo ubicación...';
   carrosDelLote: any[] = [];
 
@@ -34,12 +33,17 @@ export class LotePage implements OnInit {
     private loteService: LoteService,
     private generalService: GeneralService,
     private toastCtrl: ToastController
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.loteId = this.route.snapshot.paramMap.get('id')!;
     this.cargarLote();
     this.cargarCarros();
+    this.navSub = this.router.events
+      .pipe(filter((e): e is NavigationStart => e instanceof NavigationStart))
+      .subscribe(() => {
+        localStorage.removeItem('origenLote');
+      });
   }
 
   private cargarLote(): void {
@@ -83,10 +87,10 @@ export class LotePage implements OnInit {
       await navigator.clipboard.writeText(this.lote.telefonoContacto);
       const t = await this.toastCtrl.create({ message: 'Teléfono copiado', duration: 1500 });
       t.present();
-    } catch {}
+    } catch { }
   }
 
   volver(): void {
-    this.router.navigateByUrl('/lotes');
+    this.router.navigate(['/lotes']);
   }
 }

@@ -136,14 +136,11 @@ const routes: Routes = [
     data: { title: 'lote | woaw.com' },
   },
   {
-    path: 'lote',
+    path: 'lote/:nombre/:id',
     loadChildren: () => import('./pages/lote/lote.module').then( m => m.LotePageModule),
     data: { title: 'lotes | woaw.com' },
   },
-
-
-
-
+  
 ];
 
 @NgModule({

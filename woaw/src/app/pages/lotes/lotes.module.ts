@@ -12,7 +12,6 @@ import { CartasComponent } from '../../components/cartas/cartas.component';
 import { AddComponent } from '../../components/lote/add/add.component';
 import { AcomodoComponent } from '../../components/filtos/acomodo/acomodo.component';
 import { FooterComponent } from '../../components/footer/footer.component';
-import { VehiculosComponent } from '../../components/lote/vehiculos/vehiculos.component';
 @NgModule({
   imports: [
     CommonModule,
@@ -25,7 +24,6 @@ import { VehiculosComponent } from '../../components/lote/vehiculos/vehiculos.co
     AcomodoComponent,
     FooterComponent,
     AddComponent,
-    VehiculosComponent
   ],
   declarations: [LotesPage]
 })

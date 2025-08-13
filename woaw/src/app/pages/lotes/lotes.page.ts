@@ -8,7 +8,7 @@ import { LoteService } from '../../services/lote.service';
 import { ModalController } from '@ionic/angular';
 import imageCompression from 'browser-image-compression';
 import { GeneralService } from '../../services/general.service';
-
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-lotes',
@@ -32,7 +32,9 @@ export class LotesPage implements OnInit {
     private toastCtrl: ToastController,
     private modalController: ModalController,
     private generalService: GeneralService,
-    private loteservice: LoteService
+    private loteservice: LoteService,
+    private route: ActivatedRoute,
+    private router: Router,
   ) { }
 
   ngOnInit() {
@@ -104,12 +106,13 @@ export class LotesPage implements OnInit {
       lote.direccion?.estado?.toLowerCase().includes(termino)
     );
   }
-  mostrarAutos(lote:any) {
-    this.mostrarAuto = !this.mostrarAuto;
-    this.loteSelect = lote;
-
+  mostrarAutos(lote: any) {
+    const nombreURL = encodeURIComponent(lote.nombre || '');
+    localStorage.setItem('origenLote', `/lote/${nombreURL}/${lote._id}`);
+    this.router.navigate(['/lote', nombreURL, lote._id]);
   }
+
   BackLote() {
-    this.mostrarAuto = false;
+    this.router.navigate(['/lotes']);
   }
 }

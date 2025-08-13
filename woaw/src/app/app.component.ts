@@ -43,7 +43,7 @@ export class AppComponent {
     });
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
-        gtag('config', 'G-FXNV2R8E5X', {
+        gtag('config', 'G-9FQLZKFT9Q', {
           page_path: event.urlAfterRedirects,
         });
       }
