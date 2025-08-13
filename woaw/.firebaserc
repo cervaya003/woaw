@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "peppy-aileron-468716-e5"
-  }
+    "default": "peppy-aileron-468716-e5",
+    "leo": "peppy-aileron-468716-e5"
+  },
+  "targets": {},
+  "etags": {}
 }

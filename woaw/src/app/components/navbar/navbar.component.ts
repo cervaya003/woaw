@@ -100,7 +100,7 @@ export class NavbarComponent implements OnInit {
       return this.terminoBusquedaURL ? `"${this.terminoBusquedaURL}"` : '';
     }
 
-    return 'Go Autos';
+    return 'wo-aw';
   }
   redirecion_logo() {
     this.router.navigate(['/home']);

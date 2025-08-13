@@ -1,7 +1,7 @@
 <ion-list [ngClass]="{ 'estilo-escritorio': !esDispositivoMovil, 'estilo-movil': esDispositivoMovil }">
 
   <div *ngIf="esDispositivoMovil" class="encabezado-consentimiento">
-    <img src="assets/icon/goautos2.webp" alt="Go Autos" />
+    <img src="assets/icon/logo2.webp" alt="Go Autos" />
     {{ tipoVehiculo === 'Autos' ? 'Menú de Autos' :
     tipoVehiculo === 'Motos' ? 'Menú de Motos' :
     tipoVehiculo === 'Camiones' ? 'Menú de Camiones' : 'Menú' }}
