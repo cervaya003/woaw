@@ -22,7 +22,7 @@ export class InicioPage implements OnInit {
 
   contenidos = [
     {
-      imagen: '/assets/icon/logo4.png',
+      imagen: '/assets/icon/logo5.png',
       titulo: 'Bienvenido a',
       texto: 'Compra o vende tu auto fácil, rápido y seguro.',
       color: 'blanco',
