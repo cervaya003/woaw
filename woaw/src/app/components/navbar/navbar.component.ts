@@ -95,6 +95,8 @@ export class NavbarComponent implements OnInit {
     if (ruta.includes('/inicio')) return 'Iniciar sesión';
     if (ruta.includes('/mis-autos')) return 'Mis autos';
     if (ruta.includes('/arrendamiento')) return 'Arrendamiento';
+    if (ruta.includes('/renta-coches')) return 'Renda de autos';
+    if (ruta.includes('/seguros')) return 'Seguro de autos';
 
     if (ruta.includes('/search/vehiculos')) {
       return this.terminoBusquedaURL ? `"${this.terminoBusquedaURL}"` : '';
