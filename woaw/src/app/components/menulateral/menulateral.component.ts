@@ -67,7 +67,7 @@ export class MenulateralComponent implements OnInit {
       '¿Deseas salir?',
       '¿Estás seguro de que deseas salir de la aplicación?',
       async () => {
-        await this.generalService.loading('Saliendo...');
+        // await this.generalService.loading('Saliendo...');
         this.generalService.eliminarToken();
         this.cerrarMenu();
         setTimeout(() => {
@@ -77,7 +77,7 @@ export class MenulateralComponent implements OnInit {
             '¡Hasta pronto!',
             'info'
           );
-        }, 1500);
+        }, 1000);
       }
     );
   }
