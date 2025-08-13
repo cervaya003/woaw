@@ -36,26 +36,7 @@ export class HomePage implements OnInit {
   aceptaPoliticas: boolean = false;
   aplicandoTransicion = false;
   aplicandoTransicionCarrucelPrincipal = false;
-  imagenesCarrucelPrincipal: string[] = [
-    '/assets/autos/publicidad/carrucel_4.png',
-    // '/assets/autos/publicidad/carrucel_3.webp',
-  ];
-  indexCarrucelPrinecipal: number = 0;
-  fondoActualCarrucelPrinecipal: string = this.imagenesCarrucelPrincipal[0];
 
-  imagenesFondo: string[] = [
-    // '/assets/autos/publicidad/carrucel_5.png',
-    // '/assets/autos/publicidad/carrucel_6.png',
-    // '/assets/autos/publicidad/carrucel_7.png',
-    // '/assets/autos/publicidad/carrucel_8.png',
-    // '/assets/autos/publicidad/carrucel_9.png',
-    // '/assets/autos/publicidad/carrucel_10.png',
-    // '/assets/autos/publicidad/carrucel_11.png',
-    // '/assets/autos/publicidad/carrucel_12.png',
-    '/assets/autos/publicidad/ARRENDAMIENTO.jpg',
-  ];
-  indexFondoActual: number = 0;
-  fondoActual: string = this.imagenesFondo[0];
 
   TiposVeiculo: string[] = [];
 
@@ -65,15 +46,24 @@ export class HomePage implements OnInit {
   sugerencias: string[] = [];
   // -----
 
+  overlayLoaded = false;
+
   constructor(
     private popoverCtrl: PopoverController,
     private alertCtrl: AlertController,
     private router: Router,
     private generalService: GeneralService,
     public carsService: CarsService
-  ) {}
+  ) { }
 
   async ngOnInit() {
+
+    const img = new Image();
+    img.src = '/assets/autos/publicidad/principal1.webp';
+    img.onload = () => {
+      this.overlayLoaded = true;
+    };
+
     this.generalService.tokenExistente$.subscribe((estado) => {
       this.isLoggedIn = estado;
     });
@@ -85,9 +75,11 @@ export class HomePage implements OnInit {
       this.textoIndex = (this.textoIndex + 1) % this.totalTextos;
     }, 10000);
     this.gatTiposVeiculos();
-    this.carrucelPromocion();
     // this.carrucelPrincipal();
+
+
   }
+
   ngAfterViewInit(): void {
     this.generalService.aplicarAnimacionPorScroll(
       '.titulo-arrendamiento',
@@ -96,30 +88,6 @@ export class HomePage implements OnInit {
   }
 
   // ----- -----
-  carrucelPrincipal() {
-    setInterval(() => {
-      this.aplicandoTransicionCarrucelPrincipal = true;
-      setTimeout(() => {
-        this.indexCarrucelPrinecipal =
-          (this.indexCarrucelPrinecipal + 1) %
-          this.imagenesCarrucelPrincipal.length;
-        this.fondoActualCarrucelPrinecipal =
-          this.imagenesCarrucelPrincipal[this.indexCarrucelPrinecipal];
-        this.aplicandoTransicionCarrucelPrincipal = false;
-      }, 1000);
-    }, 15000);
-  }
-  carrucelPromocion() {
-    setInterval(() => {
-      this.aplicandoTransicion = false;
-      setTimeout(() => {
-        this.indexFondoActual =
-          (this.indexFondoActual + 1) % this.imagenesFondo.length;
-        this.fondoActual = this.imagenesFondo[this.indexFondoActual];
-        this.aplicandoTransicion = false;
-      }, 1000);
-    }, 6000);
-  }
   escribirTexto() {
     let index = 0;
     const intervalo = setInterval(() => {

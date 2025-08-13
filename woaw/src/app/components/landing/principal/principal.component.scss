@@ -41,6 +41,53 @@
   }
 }
 
+
+.contenedor_texto_minicartas2 {
+  margin-left: 5px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+  h2 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 900;
+    color: rgb(255, 255, 255);
+    font-size: 18px;
+    margin: 0;
+
+    @media (min-width: 768px) and (max-width: 1199px) {
+      color: rgb(255, 255, 255);
+    }
+
+    @media (max-width: 767px) {
+      color: rgb(255, 0, 0);
+      margin-top: 10px;
+    }
+  }
+
+  .subrayado-rojo {
+    width: 100%;
+    height: 1px;
+    background-color: red;
+    border-radius: 2px;
+    margin-top: 3px;
+  }
+
+  @media (max-width: 768px) {
+    align-items: center;
+
+    h2 {
+      font-size: 14px;
+      margin-left: 0;
+    }
+
+    .subrayado-rojo {
+      width: 80%;
+    }
+  }
+}
+
 .carrusel-autos_minicartas {
   opacity: 0;
   transform: translateX(-50px);
@@ -147,7 +194,7 @@
     /* Ícono y texto uno debajo del otro */
     align-items: center;
     justify-content: center;
-    background-color: rgba(242, 242, 242, 0.51);
+    background-color: rgb(242, 242, 242);
     /* #f2f2f283 */
     cursor: pointer;
     transition: background-color 0.3s ease;
@@ -157,7 +204,7 @@
 
       h3 {
         margin-bottom: 0.5rem;
-        color: #333;
+        color: #202020;
         font-weight: 500;
       }
 

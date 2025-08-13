@@ -101,7 +101,7 @@ export class LotesPage implements OnInit {
     this.lotesFiltrados = this.lotes.filter((lote) =>
       lote.nombre?.toLowerCase().includes(termino) ||
       lote.direccion?.ciudad?.toLowerCase().includes(termino) ||
-      lote.direccion?.estado?.toLowerCase().includes(termino) 
+      lote.direccion?.estado?.toLowerCase().includes(termino)
     );
   }
   mostrarAutos(lote:any) {

@@ -3,32 +3,32 @@
 <ion-content [fullscreen]="true">
 
   <div class="goautos-bg">
-    <div class="overlay" [ngStyle]="{
-    'background-image':
-    'linear-gradient(to bottom, rgba(255, 255, 255, 0) 75%, #ffffff00 100%), url(/assets/autos/publicidad/carrucel_4.png)',
-    'background-size': 'cover',
-    'background-position': 'center center',
-    'background-repeat': 'no-repeat'
-     }" [class.trancicion]="aplicandoTransicionCarrucelPrincipal">
+    <div class="overlay" [class.loaded]="overlayLoaded" [ngStyle]="overlayLoaded ? {
+      'background-image':
+      'linear-gradient(to bottom, rgba(255, 255, 255, 0) 75%, #ffffff00 100%), url(/assets/autos/publicidad/principal1.webp)',
+      'background-size': 'cover',
+      'background-position': 'center center',
+      'background-repeat': 'no-repeat'
+    } : {}">
 
       <!-- Logo centrado -->
-      <img src="/assets/icon/logo4.png" alt="Logo Go Autos" class="logo-goautos" loading="lazy" />
+      <!-- <img src="/assets/icon/logo4.png" alt="Logo Go Autos" class="logo-goautos" loading="lazy" /> -->
+
       <div class="contenido-principal">
         <div class="bloque-contenido">
+
+          <img src="/assets/icon/logo4.png" alt="Logo Go Autos" class="logo-goautos2" loading="lazy" />
+
           <h1 class="titulo typing">{{ textoAnimado }}</h1>
-          <p class="descripcion">
+          <!-- <p class="descripcion">
             Consigue tu auto ideal, fácil y seguro, con un solo clic.
-          </p>
+          </p> -->
 
           <div class="buscador-container">
             <ion-searchbar [(ngModel)]="terminoBusqueda" (ionInput)="onInputChange($event)"
               (keyup.enter)="irABusqueda(terminoBusqueda)" placeholder="Busca por marca, modelo o año" animated="true"
               class="buscador">
             </ion-searchbar>
-
-            <!-- <button class="btn-buscar" (click)="irABusqueda(terminoBusqueda)">
-              <ion-icon name="search-outline"></ion-icon>
-            </button> -->
           </div>
 
           <div class="tipos-vehiculos">
@@ -40,16 +40,18 @@
           </div>
 
           <div class="top-marcas">
-            <img src="https://storage.googleapis.com/wo-aw/uploads/marcas/nissan-1752250741191.png"  (click)="irABusqueda('nissan')" alt="Nissan" loading="lazy" />
+            <img src="https://storage.googleapis.com/wo-aw/uploads/marcas/nissan-1752250741191.png"
+              (click)="irABusqueda('nissan')" alt="Nissan" loading="lazy" />
             <img src="https://storage.googleapis.com/wo-aw/uploads/marcas/chevrolet-1752250726132.png"
-               (click)="irABusqueda('Chevrolet')" alt="Chevrolet" loading="lazy" />
+              (click)="irABusqueda('Chevrolet')" alt="Chevrolet" loading="lazy" />
             <img src="https://storage.googleapis.com/wo-aw/uploads/marcas/honda-1752250731294.png"
-               (click)="irABusqueda('Honda')" alt="Honda" loading="lazy" />
+              (click)="irABusqueda('Honda')" alt="Honda" loading="lazy" />
             <img src="https://storage.googleapis.com/wo-aw/uploads/marcas/volkswagen-1752250719366.png"
-               (click)="irABusqueda('Volkswagen')" alt="Volkswagen" loading="lazy" />
-            <img src="https://storage.googleapis.com/wo-aw/uploads/marcas/kia-1752250740506.png"  (click)="irABusqueda('Kia')" alt="Kia" loading="lazy" />
+              (click)="irABusqueda('Volkswagen')" alt="Volkswagen" loading="lazy" />
+            <img src="https://storage.googleapis.com/wo-aw/uploads/marcas/kia-1752250740506.png"
+              (click)="irABusqueda('Kia')" alt="Kia" loading="lazy" />
             <img src="https://storage.googleapis.com/wo-aw/uploads/marcas/hyundai-1752250721333.png"
-               (click)="irABusqueda('Hyundai')" alt="Hyundai" loading="lazy" />
+              (click)="irABusqueda('Hyundai')" alt="Hyundai" loading="lazy" />
           </div>
 
         </div>
@@ -57,14 +59,17 @@
     </div>
   </div>
 
+  <!-- <div class="cartas-sobre-imagen"> -->
   <app-principal></app-principal>
+  <!-- </div> -->
 
   <a class="titulo-arrendamiento" href="/arrendamiento">
     ARRENDAMIENTO PURO
   </a>
+
   <a href="/arrendamiento">
     <div class="banner-img">
-      <img src='/assets/autos/publicidad/AR5.jpg' alt="banner" loading="lazy"/>
+      <img src='/assets/autos/publicidad/AR5.jpg' alt="banner" loading="lazy" />
     </div>
   </a>
   <!-- <div class="banner-img" [class.fade-in]="aplicandoTransicion">
