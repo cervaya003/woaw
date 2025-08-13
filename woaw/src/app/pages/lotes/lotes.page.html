@@ -8,7 +8,6 @@
     </ion-refresher-content>
   </ion-refresher>
 
-
   <div class="ocntenedor_css_lotes">
 
     <div class="boton-container" *ngIf="!mostrarAuto">
@@ -25,37 +24,35 @@
     </div>
 
     <!-- mostrar lotes ...  -->
-    <section class="lotes-grid" *ngIf="!addLote && !mostrarAuto">
-      <div class="lote-card" *ngFor="let lote of lotesFiltrados" (click)="mostrarAutos(lote)" tabindex="0" role="button"
-        (keyup.enter)="mostrarAutos(lote)">
-        <div class="lote-img">
-          <img [src]="lote.imagenPrincipal" alt="Imagen del lote" />
-        </div>
+    <ion-grid *ngIf="!addLote && !mostrarAuto" class="ocntenedor_css_lotes">
+      <ion-row class="lotes-row">
+        <ion-col size="6" size-md="4" size-lg="3" size-xl="2" *ngFor="let lote of lotesFiltrados" class="lote-col">
+          <ion-card class="lote-card" (click)="mostrarAutos(lote)" button>
+            <div class="lote-img">
+              <img [src]="lote.imagenPrincipal" alt="Imagen del lote" />
+            </div>
 
-        <header class="lote-header">
-          <h3 class="lote-title ellipsis-2">
-            <img class="icon" src="assets/icons/building.svg" alt="" />
-            {{ lote.nombre }}
-          </h3>
+            <ion-card-header class="lote-header">
+              <ion-card-title class="lote-title clamp-2">
+                <ion-icon name="business-outline"></ion-icon>
+                {{ lote.nombre }}
+              </ion-card-title>
 
-          <p *ngIf="lote.direccion?.length" class="lote-subtitle">
-            <img class="icon" src="assets/icons/location.svg" alt="" />
-            <span class="ellipsis-2">
-              {{ lote.direccion[0].ciudad }}, {{ lote.direccion[0].estado }}
-            </span>
-          </p>
+              <ion-card-subtitle *ngIf="lote.direccion?.length" class="lote-subtitle clamp-2">
+                <ion-icon name="location-outline"></ion-icon>
+                {{ lote.direccion[0].ciudad }}, {{ lote.direccion[0].estado }}
+              </ion-card-subtitle>
 
-          <p class="lote-subtitle">
-            <img class="icon" src="assets/icons/car.svg" alt="" />
-            <span class="ellipsis-2">
-              Total: {{ lote.conteoCoches.total }} ·
-              Disponibles: {{ lote.conteoCoches.disponibles }} ·
-              Vendidos: {{ lote.conteoCoches.vendidos }}
-            </span>
-          </p>
-        </header>
-      </div>
-    </section>
+              <ion-card-subtitle class="lote-subtitle clamp-2">
+                <ion-icon name="car-sport-outline"></ion-icon>
+                Total: {{ lote.conteoCoches.total }}
+              </ion-card-subtitle>
+            </ion-card-header>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
 
 
 
