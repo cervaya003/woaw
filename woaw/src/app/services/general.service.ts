@@ -272,6 +272,42 @@ export class GeneralService {
 
     elementos.forEach((el) => observer.observe(el));
   }
+
+
+  preloadHero(url: string, timeoutMs = 6000): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      // Pistas de rendimiento
+      (img as any).fetchPriority = 'high';
+      img.decoding = 'async';
+      img.src = url;
+
+      const done = (ok: boolean) => (ok ? resolve() : reject(new Error('timeout/error')));
+
+      const timer = setTimeout(() => done(false), timeoutMs);
+
+      img.onload = async () => {
+        try {
+          // Garantiza que el navegador la tenga decodificada antes del swap
+          if (typeof (img as any).decode === 'function') {
+            await img.decode();
+          }
+        } catch {
+          /* si falla decode, igual seguimos */
+        } finally {
+          clearTimeout(timer);
+          done(true);
+        }
+      };
+
+      img.onerror = () => {
+        clearTimeout(timer);
+        done(false);
+      };
+    });
+  }
+
+
   // ## ----- ----- -----
   // Esto nunca se hace ☢️☢️☢️
   // handleRefrescarAutos(ubicacion: string) {
