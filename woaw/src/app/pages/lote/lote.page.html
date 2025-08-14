@@ -2,19 +2,19 @@
 <ion-header>
   <ion-toolbar color="dark">
     <div class="perfil-header">
-    <ion-buttons slot="start">
-      <ion-button fill="clear" (click)="volver()">
-        <ion-icon name="arrow-back-outline" slot="icon-only"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-    <img src="/assets/icon/logo4.png" alt="Go Autos" class="logo" />
-    <span *ngIf="lote" class="titulo-perfil">{{ lote.nombre }}</span>
+      <ion-buttons slot="start">
+        <ion-button fill="clear" (click)="volver()">
+          <ion-icon name="arrow-back-outline" slot="icon-only"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+      <img src="/assets/icon/logo4.png" alt="Go Autos" class="logo" />
+      <span *ngIf="lote" class="titulo-perfil">{{ lote.nombre }}</span>
     </div>
   </ion-toolbar>
 </ion-header>
+<app-acomodo [totalAutos]="totalAutos" (ordenCambio)="ordenarAutos($event)" [titulo]="'Lote'"></app-acomodo>
 
 <ion-content [fullscreen]="true" class="ion-padding">
-
   <!-- Ficha del lote -->
   <div class="ficha-lote" *ngIf="lote">
     <div class="ficha-lote__info">
@@ -25,13 +25,11 @@
 
       <p class="ficha-lote__campo">
         <ion-icon name="call-outline"></ion-icon>
-        <strong>Teléfono:</strong>
-        <span (click)="copiarTelefono()">{{ lote.telefonoContacto }}</span>
+        <span (click)="copiarTelefono()"> (+52){{ lote.telefonoContacto }}</span>
       </p>
 
       <p class="ficha-lote__campo">
-        <ion-icon name="location-outline"></ion-icon>
-        <strong>Dirección:</strong> {{ direccionCompleta }}
+        <ion-icon name="location-outline"></ion-icon> {{ direccionCompleta }}
       </p>
 
       <div class="ficha-lote__actions">
@@ -58,13 +56,5 @@
     </ng-container>
 
   </div>
-
-
-
-
-  <div class="sin-autos" *ngIf="carrosDelLote?.length === 0">
-    <ion-icon name="car-sport-outline"></ion-icon>
-    <p>Este lote aún no tiene autos publicados.</p>
-  </div>
-
+  <app-footer></app-footer>
 </ion-content>
