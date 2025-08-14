@@ -47,7 +47,7 @@ export class AddComponent implements OnInit {
   ngOnInit(): void {
     this.formLote = this.fb.group({
       nombre: ['', Validators.required],
-      telefono: ['', [Validators.required, Validators.pattern('[0-9]{10}')]],
+      telefono: ['', [Validators.required, Validators.pattern('[0-9]{10}'), Validators.maxLength(25)]],
       email: ['', Validators.email],
       imagenPrincipal: [null, Validators.required],
       constancia: [null],
@@ -81,18 +81,21 @@ export class AddComponent implements OnInit {
 
     if (faltantes.length > 0) {
       const mensaje = 'Faltan por llenar: ' + faltantes.join(', ');
-      await this.generalService.alert(
-        'Formulario incorrecto',
-        mensaje,
-        'warning'
-      );
+      await this.generalService.alert('Formulario incorrecto', mensaje, 'warning');
       return;
     }
+
+    // Punto 4: Normalizar nombre antes de enviar (MAYÚSCULAS y máx. 25)
+    const nombreNormalizado = (this.formLote?.value?.nombre ?? '')
+      .toString()
+      .toLocaleUpperCase('es-MX')
+      .slice(0, 25)
+      .trim();
 
     const formData = new FormData();
 
     // Campos básicos
-    formData.append('nombre', this.formLote.value.nombre);
+    formData.append('nombre', nombreNormalizado);
     formData.append('telefonoContacto', this.formLote.value.telefono);
     formData.append('correoContacto', this.formLote.value.email);
 
@@ -103,7 +106,6 @@ export class AddComponent implements OnInit {
         lat: u[2],
         lng: u[3],
       }));
-
       formData.append('direcciones', JSON.stringify(ubicacionesFormateadas));
     }
 
@@ -149,6 +151,15 @@ export class AddComponent implements OnInit {
       this.generalService.loadingDismiss();
       console.error('❌ Error al registrar lote:', error);
       this.mostrarToast('Error al registrar el lote', 'danger');
+    }
+  }
+
+
+  onNombreInput(ev: any) {
+    const value: string = (ev?.detail?.value ?? '').toString();
+    const normalizado = value.toLocaleUpperCase('es-MX').slice(0, 25);
+    if (normalizado !== value) {
+      this.formLote.get('nombre')?.setValue(normalizado, { emitEvent: false });
     }
   }
 

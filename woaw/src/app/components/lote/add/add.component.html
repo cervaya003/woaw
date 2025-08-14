@@ -25,9 +25,20 @@
         <ion-row *ngIf="pocicion">
 
           <ion-col size="12" size-md="6">
-            <ion-label position="stacked">Nombre del Lote: <strong>*</strong></ion-label>
-            <ion-input formControlName="nombre" placeholder="Ej. Autos El Rápido"></ion-input>
+            <ion-label position="stacked">
+              Nombre del Lote: <strong>*</strong>
+            </ion-label>
+
+            <ion-input formControlName="nombre" placeholder="Ej. AUTOS EL RÁPIDO" maxlength="25"
+              autocapitalize="characters" inputmode="text" (ionInput)="onNombreInput($event)"
+              style="text-transform: uppercase;"></ion-input>
+
+            <ion-note *ngIf="formLote.get('nombre')?.hasError('maxlength') && formLote.get('nombre')?.touched"
+              color="danger">
+              Máximo 25 caracteres.
+            </ion-note>
           </ion-col>
+
 
           <ion-col size="12" size-md="6">
             <ion-label position="stacked">Teléfono: <strong>*</strong></ion-label>
@@ -48,7 +59,7 @@
               <div *ngIf="previewImagenPrincipal" class="preview-container">
                 <img [src]="previewImagenPrincipal" alt="Imagen principal" />
                 <button type="button" class="btn-eliminar-img"
-                        (click)="eliminarImagenPrincipal(); $event.stopPropagation()">✕</button>
+                  (click)="eliminarImagenPrincipal(); $event.stopPropagation()">✕</button>
               </div>
             </div>
           </ion-col>
