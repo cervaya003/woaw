@@ -68,23 +68,29 @@ export class SearchPage implements OnInit {
     });
   }
   buscarVehiculos(termino: string) {
-    // this.generalService.alert('Hey', this.tipoBusqueda, 'info');
-    this.carsService.search(termino, this.tipoBusqueda).subscribe({
-      next: (res: any) => {
-        this.resultados = res;
-        this.resultadosFiltrados = [...res];
-        console.log('FILTRADA:', this.resultadosFiltrados);
-        this.totalVehiculos = this.resultados.length;
-        this.calcularPaginacion();
-        this.getCarsFavoritos();
-        this.misAutosid();
-      },
-      error: (err) => {
-        console.warn('Error en búsqueda:', err);
-        this.generalService.alert('Error', 'No se pudo realizar la búsqueda');
-      },
-    });
-  }
+  this.carsService.search(termino, this.tipoBusqueda).subscribe({
+    next: (res: any) => {
+      const coches = res?.coches ?? [];
+      const contador = res?.contador ?? coches.length;
+
+      this.resultados = coches;
+      this.resultadosFiltrados = [...coches];
+      this.totalVehiculos = contador;
+
+      // útil mientras pruebas parser/filtros del back:
+      if (res?.debug) console.log('DEBUG filtro back:', res.debug);
+
+      this.calcularPaginacion();
+      this.getCarsFavoritos();
+      this.misAutosid();
+    },
+    error: (err) => {
+      console.warn('Error en búsqueda:', err);
+      this.generalService.alert('Error', 'No se pudo realizar la búsqueda');
+    },
+  });
+}
+
   getCarsFavoritos() {
     this.carsService.getCarsFavoritos().subscribe({
       next: (res: any) => {
