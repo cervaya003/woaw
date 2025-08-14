@@ -59,7 +59,7 @@ export class HomePage implements OnInit {
   async ngOnInit() {
 
     const img = new Image();
-    img.src = '/assets/autos/publicidad/principal1.webp';
+    img.src = '/assets/autos/publicidad/recortada.png';
     img.onload = () => {
       this.overlayLoaded = true;
     };
