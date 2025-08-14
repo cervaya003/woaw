@@ -93,55 +93,74 @@ export class LoteEditPage implements OnInit {
     });
   }
 
-  async actualizarLote() {
+async actualizarLote() {
 
-    // Si no hubo cambios → alerta y salimos
-    if (!this.formLote.dirty) {
-      await this.generalService.alert(
-        'Sin cambios',
-        'No has modificado nada para guardar.',
-        'warning'
-      );
-      return;
+  // Si no hubo cambios → alerta y salimos
+  if (!this.formLote.dirty) {
+    await this.generalService.alert(
+      'Sin cambios',
+      'No has modificado nada para guardar.',
+      'warning'
+    );
+    return;
+  }
+
+  if (this.formLote.invalid) {
+    this.formLote.markAllAsTouched();
+    return;
+  }
+
+  // Normalizar NOMBRE (MAYÚSCULAS y máx. 25) antes de enviar
+  const nombreNormalizado = (this.formLote?.value?.nombre ?? '')
+    .toString()
+    .toLocaleUpperCase('es-MX')
+    .slice(0, 25)
+    .trim();
+
+  const formData = new FormData();
+  formData.append('nombre', nombreNormalizado);
+  formData.append('telefonoContacto', this.formLote.value.telefono || '');
+  formData.append('correoContacto', this.formLote.value.email || '');
+
+  // direcciones
+  const dirs = this.ubicacionesSeleccionadas.map((u) => ({
+    ciudad: u[0],
+    estado: u[1],
+    lat: u[2],
+    lng: u[3],
+  }));
+  formData.append('direcciones', JSON.stringify(dirs));
+
+  // imagen principal nueva (si el usuario la cambió)
+  if (this.imagenPrincipal) {
+    formData.append('imagenPrincipal', this.imagenPrincipal);
+  }
+
+  this.generalService.loading('Actualizando Lote...');
+  this.loteService.editarLote(this.loteId, formData).subscribe({
+    next: async () => {
+      this.router.navigateByUrl('/lotes');
+      await this.generalService.loadingDismiss();
+      await this.generalService.alert('¡Listo!', 'Lote actualizado correctamente', 'success');
+    },
+    error: async () => {
+      await this.generalService.loadingDismiss();
+      await this.generalService.alert('Error', 'No se pudo actualizar el lote', 'danger');
+    },
+  });
+}
+
+  onNombreInput(ev: any) {
+    const ctrl = this.formLote.get('nombre');
+    if (!ctrl) return;
+
+    const value: string = (ev?.detail?.value ?? '').toString();
+    const normalizado = value.toLocaleUpperCase('es-MX').slice(0, 25);
+
+    // Evita loops y solo corrige si cambió
+    if (normalizado !== value) {
+      ctrl.setValue(normalizado, { emitEvent: false });
     }
-
-
-    if (this.formLote.invalid) {
-      this.formLote.markAllAsTouched();
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append('nombre', this.formLote.value.nombre);
-    formData.append('telefonoContacto', this.formLote.value.telefono);
-    formData.append('correoContacto', this.formLote.value.email || '');
-
-    // direcciones
-    const dirs = this.ubicacionesSeleccionadas.map((u) => ({
-      ciudad: u[0],
-      estado: u[1],
-      lat: u[2],
-      lng: u[3],
-    }));
-    formData.append('direcciones', JSON.stringify(dirs));
-
-    // imagen principal nueva (si el usuario la cambió)
-    if (this.imagenPrincipal) {
-      formData.append('imagenPrincipal', this.imagenPrincipal);
-    }
-
-    this.generalService.loading('Actualizando Lote...');
-    this.loteService.editarLote(this.loteId, formData).subscribe({
-      next: async () => {
-        this.router.navigateByUrl('/lotes');
-        await this.generalService.loadingDismiss();
-        await this.generalService.alert('¡Listo!', 'Lote actualizado correctamente', 'success');
-      },
-      error: async () => {
-        await this.generalService.loadingDismiss();
-        await this.generalService.alert('Error', 'No se pudo actualizar el lote', 'danger');
-      },
-    });
   }
 
   cancelar() {

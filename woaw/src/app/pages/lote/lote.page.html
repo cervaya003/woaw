@@ -12,49 +12,70 @@
     </div>
   </ion-toolbar>
 </ion-header>
-<app-acomodo [totalAutos]="totalAutos" (ordenCambio)="ordenarAutos($event)" [titulo]="'Lote'"></app-acomodo>
+
+<app-acomodo [totalAutos]="totalAutos" (ordenCambio)="ordenarAutos($event)" [titulo]="'Lote'">
+</app-acomodo>
 
 <ion-content [fullscreen]="true" class="ion-padding">
   <!-- Ficha del lote -->
   <div class="ficha-lote" *ngIf="lote">
-    <div class="ficha-lote__info">
-      <h2 class="ficha-lote__titulo">
-        <ion-icon name="business-outline" color="danger"></ion-icon>
-        {{ lote.nombre }}
-      </h2>
+    <div class="ficha-lote__head">
+      <!-- Columna de texto -->
+      <div class="ficha-lote__texto">
+        <h2 class="ficha-lote__titulo">
+          <ion-icon name="business-outline" color="danger"></ion-icon>
+          {{ lote.nombre }}
+        </h2>
 
-      <p class="ficha-lote__campo">
-        <ion-icon name="call-outline"></ion-icon>
-        <span (click)="copiarTelefono()"> (+52){{ lote.telefonoContacto }}</span>
-      </p>
+        <p class="ficha-lote__campo">
+          <ion-icon name="call-outline"></ion-icon>
+          <span (click)="copiarTelefono()"> (+52){{ lote.telefonoContacto }}</span>
+        </p>
 
-      <p class="ficha-lote__campo">
-        <ion-icon name="location-outline"></ion-icon> {{ direccionCompleta }}
-      </p>
+        <p class="ficha-lote__campo">
+          <ion-icon name="location-outline"></ion-icon>
+          {{ direccionCompleta }}
+        </p>
 
-      <div class="ficha-lote__actions">
-        <ion-button color="primary" size="small" (click)="editarLote()">
-          <ion-icon name="create-outline" slot="start"></ion-icon>
-          Editar
-        </ion-button>
+        <div class="ficha-lote__actions" *ngIf="isOwner">
+          <ion-button color="primary" size="small" (click)="editarLote()">
+            <ion-icon name="create-outline" slot="start"></ion-icon>
+            Editar
+          </ion-button>
+        </div>
+      </div>
+
+      <!-- Columna de imagen -->
+      <div class="ficha-lote__img">
+        <img class="ficha-lote__imagen" [src]="previewImagenPrincipal || ''" alt="Imagen de {{ lote.nombre }}" />
       </div>
     </div>
-
-    <img class="ficha-lote__imagen" [src]="previewImagenPrincipal || ''" alt="Imagen de {{ lote.nombre }}" />
   </div>
 
-  <div class="catalogo-autos">
+  <ion-grid class="contenedor-catalogo">
+    <ion-row>
+      <!-- Columna lateral de filtros -->
+      <ion-col size="12" size-md="3">
+        <app-menu [filtros]="filtros" [filtrosAplicados]="filtrosAplicados"
+          (mostrarOpciones)="mostrarOpciones($event.event, $event.tipo)" (limpiarFiltros)="resetearFiltros()">
+        </app-menu>
+      </ion-col>
 
-    <div *ngIf="carrosDelLote?.length === 0" class="mensaje-vacio">
-      <ion-icon name="car-sport-outline" class="icono-mensaje"></ion-icon><br />
-      No se encontraron autos para esta sección.
-    </div>
+      <ion-col size="12" size-md="9">
+        <div class="catalogo-autos">
+          <div *ngIf="carrosDelLote?.length === 0" class="mensaje-vacio">
+            <ion-icon name="car-sport-outline" class="icono-mensaje"></ion-icon><br />
+            No se encontraron autos para esta sección.
+          </div>
 
-    <ng-container *ngFor="let auto of carrosDelLote">
-      <app-cartas [auto]="auto">
-      </app-cartas>
-    </ng-container>
+          <ng-container *ngFor="let auto of carrosDelLote">
+            <app-cartas [auto]="auto"></app-cartas>
+          </ng-container>
+        </div>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 
-  </div>
   <app-footer></app-footer>
+  <!-- ⬅️ faltaba este cierre -->
 </ion-content>

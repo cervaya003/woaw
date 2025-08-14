@@ -12,6 +12,7 @@ import { CartasComponent } from '../../components/cartas/cartas.component';
 import { NavbarComponent } from "src/app/components/navbar/navbar.component";
 import { AcomodoComponent } from "src/app/components/filtos/acomodo/acomodo.component";
 import { FooterComponent } from "src/app/components/footer/footer.component";
+import { MenuComponent } from "src/app/components/filtos/menu/menu.component";
 
 @NgModule({
   imports: [
@@ -22,7 +23,8 @@ import { FooterComponent } from "src/app/components/footer/footer.component";
     CartasComponent,
     NavbarComponent,
     AcomodoComponent,
-    FooterComponent
+    FooterComponent,
+    MenuComponent
 ],
   declarations: [LotePage],
 })
