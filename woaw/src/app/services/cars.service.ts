@@ -533,7 +533,7 @@ export class CarsService {
           tipoBusqueda === 'tipoVehiculo' ? 'tipoVehiculo' : 'keywords';
         const url = `${
           environment.api_key
-        }/vehiculos?${parametro}=${encodeURIComponent(palabra)}`;
+        }/cars/vehiculos?${parametro}=${encodeURIComponent(palabra)}`;
 
         return this.http.get(url, { headers });
       }),

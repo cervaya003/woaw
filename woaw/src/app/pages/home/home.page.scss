@@ -81,7 +81,7 @@ ion-content {
     overflow-x: clip;
 
     /* ⚠️ Proporción EXACTA de tu imagen */
-    aspect-ratio: 1536 / 1024;
+    aspect-ratio: 1536 / 606;
     height: auto;
 
     /* Fondo: imagen SIEMPRE completa (sin recortes) */
@@ -181,7 +181,7 @@ ion-content {
       content: "";
       display: block;
       /* alto = (ancho * h/w) → usa los mismos números de arriba */
-      padding-top: calc(100% * 1024 / 1536);
+      padding-top: calc(100% * 606 / 1536);
     }
   }
 }
