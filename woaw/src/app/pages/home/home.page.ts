@@ -37,7 +37,6 @@ export class HomePage implements OnInit {
   aplicandoTransicion = false;
   aplicandoTransicionCarrucelPrincipal = false;
 
-
   TiposVeiculo: string[] = [];
 
   // -----
@@ -47,6 +46,8 @@ export class HomePage implements OnInit {
   // -----
 
   overlayLoaded = false;
+
+  imgenPrincipal: string = '';
 
   constructor(
     private popoverCtrl: PopoverController,
@@ -58,11 +59,13 @@ export class HomePage implements OnInit {
 
   async ngOnInit() {
 
-    const img = new Image();
-    img.src = '/assets/autos/publicidad/recortada.png';
-    img.onload = () => {
-      this.overlayLoaded = true;
-    };
+    // const img = new Image();
+    // img.src = '/assets/autos/publicidad/principal4.webp';
+    // img.onload = () => {
+    //   this.overlayLoaded = true;
+    // };
+
+    this.cargaimagen();
 
     this.generalService.tokenExistente$.subscribe((estado) => {
       this.isLoggedIn = estado;
@@ -75,9 +78,6 @@ export class HomePage implements OnInit {
       this.textoIndex = (this.textoIndex + 1) % this.totalTextos;
     }, 10000);
     this.gatTiposVeiculos();
-    // this.carrucelPrincipal();
-
-
   }
 
   ngAfterViewInit(): void {
@@ -172,6 +172,16 @@ export class HomePage implements OnInit {
     historial.unshift(termino);
     historial = historial.slice(0, 10);
     localStorage.setItem('historialBusqueda', JSON.stringify(historial));
+  }
+
+  async cargaimagen() {
+    this.imgenPrincipal = '/assets/autos/publicidad/principal4.webp';
+    try {
+      await this.generalService.preloadHero(this.imgenPrincipal);
+      this.overlayLoaded = true;
+    } catch {
+      this.overlayLoaded = true;
+    }
   }
 }
 
