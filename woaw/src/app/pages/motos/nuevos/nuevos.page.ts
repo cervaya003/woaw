@@ -70,7 +70,6 @@ export class NuevosPage implements OnInit {
     this.motosService.getMotos().subscribe({
       next: (res: any) => {
          const moto = res?.motos || []
-         console.log(res)
         this.MisMotos = moto;
         this.motosFiltradas = [...moto];
         // console.log('FILTRADA:', this.motosFiltradas);

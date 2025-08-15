@@ -12,6 +12,7 @@ import { AlertController } from '@ionic/angular';
 import { ModalController } from '@ionic/angular';
 import { GeneralService } from '../../../services/general.service';
 import { CarsService } from '../../../services/cars.service';
+import { MotosService } from '../../../services/motos.service';
 
 @Component({
   selector: 'app-principal',
@@ -25,14 +26,17 @@ export class PrincipalComponent implements OnInit {
   autosNuevos: any[] = [];
   autosSeminuevos: any[] = [];
   autosUsados: any[] = [];
+  misMotos: any[] = [];
   Dispositivo: 'telefono' | 'tablet' | 'computadora' = 'computadora';
   public conUsados: number = 0;
   public conSeminuevos: number = 0;
   public conNuevos: number = 0;
+  public conMotos: number = 0;
 
   constructor(
     public carsService: CarsService,
     public generalService: GeneralService,
+    public motosService: MotosService,
     private router: Router
   ) { }
 
@@ -44,6 +48,7 @@ export class PrincipalComponent implements OnInit {
     this.getCarsNews();
     this.getCarsSeminuevos();
     this.getCarsUsados();
+    this.getMotos();
   }
 
   ngAfterViewInit(): void {
@@ -51,7 +56,7 @@ export class PrincipalComponent implements OnInit {
       '.carrusel-autos_minicartas'
     );
   }
-  
+
   getCarsNews() {
     this.carsService.getCarsNews().subscribe({
       next: (res: any) => {
@@ -99,6 +104,22 @@ export class PrincipalComponent implements OnInit {
     });
   }
 
+  getMotos() {
+    this.motosService.getMotos().subscribe({
+      next: (res: any) => {
+        console.log(res)
+        this.conMotos = res.contador;
+        const moto = res?.motos || []
+        this.misMotos = moto.slice(0, 4);
+      },
+      error: (err) => {
+        const mensaje = err?.error?.message || 'Ocurrió un error inesperado';
+        this.generalService.alert('Error de Conexión', mensaje);
+      },
+    });
+  }
+
+
   verMas(url: string) {
     this.router.navigate([url]);
   }
@@ -106,5 +127,8 @@ export class PrincipalComponent implements OnInit {
   onCardClick(auto: any, event: Event): void {
     this.router.navigate(['/ficha', 'autos', auto._id]);
   }
-  
+
+  onCardClickM(moto: any, event: Event): void {
+    this.router.navigate(['/ficha', 'motos', moto._id]);
+  }
 }
