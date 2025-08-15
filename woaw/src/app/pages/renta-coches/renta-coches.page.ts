@@ -34,7 +34,7 @@ export class RentaCochesPage implements OnInit {
     this.cargaimagen();
   }
   async cargaimagen() {
-    this.imgenPrincipal = '/assets/autos/publicidad/8.webp';
+    this.imgenPrincipal = '/assets/autos/publicidad/R.png';
     try {
       await this.generalService.preloadHero(this.imgenPrincipal);
       this.overlayLoaded = true;

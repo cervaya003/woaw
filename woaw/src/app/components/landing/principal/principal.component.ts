@@ -66,7 +66,8 @@ export class PrincipalComponent implements OnInit {
           precioMin: Math.min(...car.version.map((v: any) => v.Precio)),
         }))
           .sort((a: { precioMin: number }, b: { precioMin: number }) => a.precioMin - b.precioMin)
-          .slice(0, 4);
+          .slice(Math.floor((autos.length - 4) / 2), Math.floor((autos.length - 4) / 2) + 4);
+
       },
       error: (err) => {
         const mensaje = err?.error?.message || 'Ocurrió un error inesperado';

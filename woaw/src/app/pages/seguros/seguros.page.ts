@@ -28,13 +28,15 @@ export class SegurosPage implements OnInit {
     private alertCtrl: AlertController,
     private router: Router,
     private generalService: GeneralService,
-    public carsService: CarsService) { }
+    public carsService: CarsService) {
+
+    }
 
   ngOnInit() {
     this.cargaimagen();
   }
   async cargaimagen() {
-    this.imgenPrincipal = '/assets/autos/publicidad/9.webp';
+    this.imgenPrincipal = '/assets/autos/seguro1.png';
     try {
       await this.generalService.preloadHero(this.imgenPrincipal);
       this.overlayLoaded = true;
@@ -42,6 +44,4 @@ export class SegurosPage implements OnInit {
       this.overlayLoaded = true;
     }
   }
-
-
 }

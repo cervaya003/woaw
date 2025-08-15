@@ -435,16 +435,13 @@ export class CarComponent implements OnInit {
     this.generalService.loading('Guardando auto...');
     this.carsService.guardarAutos(appdata, this.estadoVehiculo).subscribe({
       next: (res: any) => {
-        // console.log(res);
         if (res.token && res.rol) {
-          // Obtener el usuario actual del localStorage
           const userActual = JSON.parse(localStorage.getItem('user') || '{}');
           userActual.rol = res.rol;
           localStorage.setItem('user', JSON.stringify(userActual));
           localStorage.setItem('token', res.token);
         }
         this.router.navigate(['/mis-autos']);
-        // ocultar spinner
         this.generalService.loadingDismiss();
         this.generalService.alert(
           '¡Auto agregado correctamente!',

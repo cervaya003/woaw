@@ -272,8 +272,6 @@ export class GeneralService {
 
     elementos.forEach((el) => observer.observe(el));
   }
-
-
   preloadHero(url: string, timeoutMs = 6000): Promise<void> {
     return new Promise((resolve, reject) => {
       const img = new Image();
