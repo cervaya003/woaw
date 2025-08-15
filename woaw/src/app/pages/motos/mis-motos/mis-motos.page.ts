@@ -76,9 +76,10 @@ export class MisMotosPage implements OnInit {
 
   async misMotos() {
     this.motosService.misMotosId().subscribe({
-      next: (res: any[]) => {
-        this.MisMotos = res;
-        this.motosFiltradas = [...res];
+      next: (res: any) => {
+        const moto = res?.motos || []
+        this.MisMotos = moto;
+        this.motosFiltradas = [...moto];
         this.totalMotos = this.MisMotos.length;
         this.calcularPaginacion();
         this.getCarsFavoritos();
