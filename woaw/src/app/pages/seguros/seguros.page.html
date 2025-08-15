@@ -1,11 +1,65 @@
 <app-navbar></app-navbar>
 
-<ion-content [fullscreen]="true" class="imagen-fullscreen">
+<ion-content [fullscreen]="true" class="coming-soon-page">
 
-  <img *ngIf="overlayLoaded" [src]="imgenPrincipal" alt="Seguro de Auto" class="img-responsiva" loading="eager"
-    fetchpriority="high" />
+  <section class="hero">
+
+    <div class="glow glow-a"></div>
+    <div class="glow glow-b"></div>
+    <div class="grain"></div>
+
+    <div class="container">
+
+      <ion-chip class="badge" color="primary">
+        <ion-icon name="flash-outline"></ion-icon>
+        <ion-label color="danger">Próximamente</ion-label>
+      </ion-chip>
+
+      <img src="/assets/autos/escudo.png" alt="Escudo" class="escudo-icon" loading="lazy" decoding="async"
+        fetchpriority="low" />
+
+      <h1 class="title">
+        Seguros de Auto <span class="brand">WOAW</span>
+      </h1>
+
+      <p class="subtitle">
+        Cotiza, compara y asegura en minutos.
+      </p>
+
+      <ul class="bullets">
+        <li>
+          <ion-icon name="shield-checkmark-outline"></ion-icon>
+          Coberturas: amplia, limitada y RC.
+        </li>
+        <li>
+          <ion-icon name="card-outline"></ion-icon>
+          Meses sin intereses
+        </li>
+        <li>
+          <ion-icon name="timer-outline"></ion-icon>
+          Activación inmediata digital
+        </li>
+      </ul>
+
+      <div class="cta">
+        <ion-button size="large" shape="round" color="danger" >
+          Muy pronto
+        </ion-button>
+        <!-- <ion-button size="large" shape="round" class="notify">
+          Quiero que me avisen
+        </ion-button> -->
+      </div>
+
+      <!-- <p class="footnote">Lanzamiento Q4 · Aliados certificados</p> -->
+    </div>
+
+    <img class="hero-bg" [src]="imgenPrincipal" alt="" loading="lazy" decoding="async" fetchpriority="low" />
+
+    <div class="road">
+      <div class="lane"></div>
+    </div>
+
+  </section>
 
   <app-footer></app-footer>
 </ion-content>
-
-
