@@ -120,3 +120,45 @@
   </div>
 </section>
 
+<!-- BLOQUE MOTOS -->
+<section class="bloque-carrusel-minicartas">
+  <div class="contenedor_texto_minicartas">
+    <h2 (click)="verMas('/m-nuevos')">Motos</h2>
+  </div>
+  <div class="carrusel-autos_minicartas">
+    <div class="card-auto" *ngFor="let moto of misMotos" (click)="onCardClickM(moto, $event)">
+      <img [src]="moto.imagenes[0]" alt="{{ moto.marca }} {{ moto.modelo }}" />
+      <div class="info">
+        <h3>{{ moto.marca }} {{ moto.modelo }} {{ moto.anio }}</h3>
+        <p>
+          <span>MX ${{ moto.precio | number:'1.0-0' }}</span>
+        </p>
+        <div class="detalles-auto_minicartas" *ngIf="moto.cilindrada">
+          <div class="item-detalle" *ngIf="moto.anio && Dispositivo !== 'computadora'">
+            <ion-icon name="calendar-outline"></ion-icon>
+            <span title="{{ moto.anio }}">{{ moto.anio }}</span>
+          </div>
+          <div class="item-detalle">
+            <ion-icon name="speedometer-outline"></ion-icon>
+            <span>{{ moto.cilindrada }}</span>
+          </div>
+          <div class="item-detalle" *ngIf="moto.transmision && Dispositivo == 'computadora'">
+            <ion-icon name="swap-horizontal-outline"></ion-icon>
+            <span title="{{ moto.transmision }}">{{ moto.transmision }}</span>
+          </div>
+        </div>
+      </div>
+      <div [ngClass]="generalService.getClaseTipoBarra(moto.tipoVenta)"></div>
+      <p [ngClass]="generalService.getClaseTipo(moto.tipoVenta)">
+        {{ moto.tipoVenta }}
+      </p>
+    </div>
+    <div class="card-auto card-vermas" (click)="verMas('/m-nuevos')">
+      <div class="info center">
+        <h3>Ver más</h3>
+        <ion-icon name="arrow-forward-circle" class="flecha-icon"></ion-icon>
+        <div class="contador">{{ conMotos }}</div>
+      </div>
+    </div>
+  </div>
+</section>

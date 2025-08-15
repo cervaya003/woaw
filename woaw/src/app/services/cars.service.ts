@@ -12,6 +12,9 @@ import { HeadersService } from './headers.service';
   providedIn: 'root',
 })
 export class CarsService {
+  getMotos() {
+    throw new Error('Method not implemented.');
+  }
   public isLoggedIn: boolean = false;
   public MyRole: string | null = null;
 
