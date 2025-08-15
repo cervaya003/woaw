@@ -68,9 +68,11 @@ export class NuevosPage implements OnInit {
   }
   async misMotos() {
     this.motosService.getMotos().subscribe({
-      next: (res: any[]) => {
-        this.MisMotos = res;
-        this.motosFiltradas = [...res];
+      next: (res: any) => {
+         const moto = res?.motos || []
+         console.log(res)
+        this.MisMotos = moto;
+        this.motosFiltradas = [...moto];
         // console.log('FILTRADA:', this.motosFiltradas);
         this.totalMotos = this.MisMotos.length;
         this.calcularPaginacion();

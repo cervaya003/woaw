@@ -6,13 +6,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { FormBuilder, Validators } from '@angular/forms';
 import { LoadingController } from '@ionic/angular';
 import { Router } from '@angular/router';
-import {
-  AbstractControl,
-  ValidatorFn,
-  ValidationErrors,
-  FormGroup,
-} from '@angular/forms';
-
+import { AbstractControl, ValidatorFn, ValidationErrors, FormGroup, } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { AlertController } from '@ionic/angular';
 import { ModalController } from '@ionic/angular';
@@ -51,11 +45,13 @@ export class PrincipalComponent implements OnInit {
     this.getCarsSeminuevos();
     this.getCarsUsados();
   }
+
   ngAfterViewInit(): void {
     this.generalService.aplicarAnimacionPorScroll(
       '.carrusel-autos_minicartas'
     );
   }
+  
   getCarsNews() {
     this.carsService.getCarsNews().subscribe({
       next: (res: any) => {
@@ -74,6 +70,7 @@ export class PrincipalComponent implements OnInit {
       },
     });
   }
+
   getCarsSeminuevos() {
     this.carsService.getCarsSeminuevos().subscribe({
       next: (res: any) => {
@@ -87,6 +84,7 @@ export class PrincipalComponent implements OnInit {
       },
     });
   }
+
   getCarsUsados() {
     this.carsService.getCarsUsados().subscribe({
       next: (res: any) => {
@@ -100,10 +98,13 @@ export class PrincipalComponent implements OnInit {
       },
     });
   }
+
   verMas(url: string) {
     this.router.navigate([url]);
   }
+
   onCardClick(auto: any, event: Event): void {
     this.router.navigate(['/ficha', 'autos', auto._id]);
   }
+  
 }
