@@ -11,19 +11,19 @@ const routes: Routes = [
     loadChildren: () =>
       import('./pages/inicio/inicio.module').then((m) => m.InicioPageModule),
     canActivate: [NotAuthGuard],
-    data: { title: 'Iniciar sesión | woaw.com' },
+    data: { title: 'Iniciar sesión | woaw' },
   },
   {
     path: 'home',
     loadChildren: () =>
       import('./pages/home/home.module').then((m) => m.HomePageModule),
-    data: { title: 'Compra y venta de autos | woaw.com' },
+    data: { title: 'Compra y venta de autos | woaw' },
   },
   {
     path: 'nuevos',
     loadChildren: () =>
       import('./pages/coches/nuevos/nuevos.module').then((m) => m.NuevosPageModule),
-    data: { title: 'Autos nuevos en Querétaro| woaw.com' },
+    data: { title: 'Autos nuevos en Querétaro| woaw' },
   },
   {
     path: 'seminuevos',
@@ -31,7 +31,7 @@ const routes: Routes = [
       import('./pages/coches/seminuevos/seminuevos.module').then(
         (m) => m.SeminuevosPageModule
       ),
-    data: { title: 'Autos seminuevos en Querétaro | woaw.com' },
+    data: { title: 'Autos seminuevos en Querétaro | woaw' },
   },
   {
     path: 'favoritos',
@@ -40,7 +40,7 @@ const routes: Routes = [
         (m) => m.FaviritosPageModule
       ),
     canActivate: [AuthGuard],
-    data: { title: 'Mis favoritos | woaw.com' },
+    data: { title: 'Mis favoritos | woaw' },
   },
   {
     path: 'mensajes',
@@ -49,19 +49,19 @@ const routes: Routes = [
         (m) => m.MensajesPageModule
       ),
     canActivate: [AuthGuard],
-    data: { title: 'Mensajes | woaw.com' },
+    data: { title: 'Mensajes | woaw' },
   },
   {
     path: 'ficha/:tipo/:id',
     loadChildren: () =>
       import('./pages/ficha/ficha.module').then((m) => m.FichaPageModule),
-    data: { title: 'Detalle del vehículo | woaw.com' },
+    data: { title: 'Detalle del vehículo | woaw' },
   },
   {
     path: 'usados',
     loadChildren: () =>
       import('./pages/coches/usados/usados.module').then((m) => m.UsadosPageModule),
-    data: { title: 'Autos usados en venta | woaw.com' },
+    data: { title: 'Autos usados en venta | woaw' },
   },
   {
     path: 'mis-autos',
@@ -70,7 +70,7 @@ const routes: Routes = [
         (m) => m.MisAutosPageModule
       ),
     canActivate: [AuthGuard],
-    data: { title: 'Mis autos publicados | woaw.com' },
+    data: { title: 'Mis autos publicados | woaw' },
   },
   {
     path: 'update-car/:tipo/:id',
@@ -79,24 +79,24 @@ const routes: Routes = [
         (m) => m.UpdateCarPageModule
       ),
     canActivate: [AuthGuard],
-    data: { title: 'Editar vehículo | woaw.com' },
+    data: { title: 'Editar vehículo | woaw' },
   },
   {
     path: 'new-car',
     loadChildren: () =>
       import('./pages/new-car/new-car.module').then((m) => m.NewCarPageModule),
     // canActivate: [AuthGuard],
-    data: { title: 'Publicar nuevo vehículo | woaw.com' },
+    data: { title: 'Publicar nuevo vehículo | woaw' },
   },
   {
     path: 'mis-motos',
     loadChildren: () => import('./pages/motos/mis-motos/mis-motos.module').then(m => m.MisMotosPageModule),
-    data: { title: 'Mis motos publicados | woaw.com' },
+    data: { title: 'Mis motos publicados | woaw' },
   },
   {
     path: 'm-nuevos',
     loadChildren: () => import('./pages/motos/nuevos/nuevos.module').then(m => m.NuevosPageModule),
-    data: { title: 'Motos en venta | woaw.com' },
+    data: { title: 'Motos en venta | woaw' },
   },
   {
     path: 'm-seminuevos',
@@ -109,7 +109,7 @@ const routes: Routes = [
   {
     path: 'arrendamiento',
     loadChildren: () => import('./pages/arrendamiento/arrendamiento.module').then(m => m.ArrendamientoPageModule),
-    data: { title: 'Arrendamiento | woaw.com' },
+    data: { title: 'Arrendamiento | woaw' },
   },
   {
     path: 'search/vehiculos/:termino',
@@ -122,25 +122,25 @@ const routes: Routes = [
   {
     path: 'renta-coches',
     loadChildren: () => import('./pages/renta-coches/renta-coches.module').then(m => m.RentaCochesPageModule),
-    data: { title: 'renta | woaw.com' }
+    data: { title: 'renta | woaw' }
   },
   {
     path: 'seguros',
     loadChildren: () => import('./pages/seguros/seguros.module').then(m => m.SegurosPageModule),
-    data: { title: 'seguros | woaw.com' }
+    data: { title: 'seguros | woaw' }
   },
   {
     path: 'lote-edit/:id',
     loadChildren: () => import('./pages/lote-edit/lote-edit.module').then(m => m.LoteEditPageModule),
     canActivate: [AuthGuard],
-    data: { title: 'lote | woaw.com' },
+    data: { title: 'lote | woaw' },
   },
   {
     path: 'lote/:nombre/:id',
     loadChildren: () => import('./pages/lote/lote.module').then( m => m.LotePageModule),
-    data: { title: 'lotes | woaw.com' },
+    data: { title: 'lotes | woaw' },
   },
-  
+
 ];
 
 @NgModule({

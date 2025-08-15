@@ -25,6 +25,12 @@
     object-fit: cover;
     z-index: 0;
     pointer-events: none;
+    filter: brightness(0.7);
+
+    @media (max-width: 768px) {
+      width: 100%;
+      height: 80%;
+    }
   }
 
 
@@ -75,6 +81,7 @@
     font-size: clamp(28px, 6vw, 56px);
     line-height: 1.04;
     letter-spacing: -0.02em;
+    color: rgb(255, 255, 255);
 
     .brand {
       background: linear-gradient(90deg, red, darkred);
@@ -91,7 +98,20 @@
     font-size: clamp(14px, 2.2vw, 18px);
     opacity: 0.88;
     background-color: transparent;
+    color: rgb(255, 255, 255);
+    font-weight: bold;
   }
+
+  .badge {
+    --background: rgba(255, 0, 0, 0.3);
+    --color: #fff;
+  }
+
+  .badge ion-icon,
+  .badge ion-label {
+    color: #fff !important;
+  }
+
 
   .bullets {
     display: grid;
@@ -111,10 +131,13 @@
       background: rgba(255, 0, 0, 0.189);
       border: 1px solid rgba(255, 0, 0, 0.503);
       backdrop-filter: blur(4px);
+      color: rgb(255, 255, 255);
+      font-weight: bold;
+      font-size: 13px;
 
       ion-icon {
         font-size: 20px;
-        color: red;
+        color: rgb(255, 255, 255);
       }
     }
   }
@@ -151,7 +174,7 @@
     height: 420px;
     top: -80px;
     right: -60px;
-    background: radial-gradient(closest-side, red 10%, transparent 70%);
+    background: radial-gradient(closest-side, rgb(255, 255, 255) 10%, transparent 70%);
   }
 
   .glow-b {
@@ -159,7 +182,7 @@
     height: 520px;
     bottom: -50px;
     left: -90px;
-    background: radial-gradient(closest-side, darkred 10%, transparent 70%);
+    background: radial-gradient(closest-side, rgb(255, 255, 255) 10%, transparent 70%);
 
     @media (max-width: 860px) {
       display: none;
