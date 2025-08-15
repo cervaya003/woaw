@@ -19,6 +19,7 @@ import { Share } from '@capacitor/share';
 import { PopUpComponent } from '../components/modal/pop-up/pop-up.component';
 import { HeadersService } from './headers.service';
 import { switchMap, catchError } from 'rxjs/operators';
+import { query } from '@angular/animations';
 
 @Injectable({
   providedIn: 'root',
@@ -110,7 +111,7 @@ export class ContactosService {
     nombreCompleto = `${usuario.nombre} ${usuario.apellidos}`.toUpperCase();
 
     const mensaje = encodeURIComponent(
-      `Hola, le escribe un asesor de GOAUTOS. Su vehículo ha generado interés:\n\n🚗 *${marca} ${modelo} ${anio}*\n\nConsulte su publicación:\n https://goautos.mx/ficha/${tipo}/${id}`
+      `Hola, le escribe un asesor de GOAUTOS. Su vehículo ha generado interés:\n\n🚗 *${marca} ${modelo} ${anio}*\n\nConsulte su publicación:\n https://wo-aw.com/ficha/${tipo}/${id}`
     );
 
     const url = `https://api.whatsapp.com/send?phone=${this.telefonoFijo}&text=${mensaje}`;
@@ -140,8 +141,11 @@ export class ContactosService {
     auto: any,
     tipo_veiculo: string
   ) {
-    console.log(auto, tipo_veiculo)
+    // console.log(auto, tipo_veiculo)
     let telefonoVariable: string = '';
+
+    var nombre: string | null = null
+    var id: string | null = null
 
     const storage = localStorage.getItem('user');
     let nombreCompleto = '';
@@ -158,7 +162,6 @@ export class ContactosService {
         nombreCompleto = '';
       }
     }
-
     // 📌 Validación de a qué número enviar
     if (
       tipo_veiculo == 'motos'
@@ -173,7 +176,7 @@ export class ContactosService {
       // se va al jefe / NUMERO DE ARRENDAR
       telefonoVariable = environment.telefonoArrendamiento;
     } else if (
-      tipo_veiculo == 'autos'  &&
+      tipo_veiculo == 'autos' &&
       auto.tipoVenta == 'nuevo'
     ) {
       // se va al jefe / NUMERO DE ARRENDAR
@@ -191,9 +194,14 @@ export class ContactosService {
     ) {
       // Dueño del auto
       telefonoVariable = `${auto.usuarioId?.lada}${auto.usuarioId?.telefono}`;
-    } else if (auto.lote != null) {
+    } else if (
+      auto.lote != null 
+    ) {
+      nombre = auto.lote.nombre
+      id = auto.lote._id
       // al lotero
-      telefonoVariable = `+52${auto.lote?.telefonoContacto}`;
+      telefonoVariable = `+52${auto.lote?.telefonoContacto}${auto.lote?._id}${auto.lote?.nombre}`;
+      // console.log('estoy aqui')
     }
 
     let mensaje = '';
@@ -202,7 +210,7 @@ export class ContactosService {
       mensaje = encodeURIComponent(
         `Su vehículo ha generado interés en GoAutos:\n\n` +
         `🚗 *${auto.marca} ${auto.modelo} ${auto.anio}*\n\n` +
-        `🔗 https://goautos.mx/ficha/${tipo_veiculo}/${auto._id}`
+        `🔗 https://wo-aw.com/ficha/${tipo_veiculo}/${auto._id}`
       );
     } else {
       mensaje = encodeURIComponent(
@@ -210,22 +218,33 @@ export class ContactosService {
         `Estoy interesad@ en el siguiente vehículo:\n\n` +
         `🚗 *${auto.marca} ${auto.modelo} ${auto.anio}*\n\n` +
         `Les agradecería si pudieran brindarme más información.\n\n` +
-        `🔗 https://goautos.mx/ficha/${tipo_veiculo}/${auto._id}`
+        `🔗 https://wo-aw.com/ficha/${tipo_veiculo}/${auto._id}`
       );
     }
 
-    this.envioContador();
-    this.carsService.envio_notificacion(auto._id);
+    this.envioContador(nombre, id);
+    //    this.carsService.envio_notificacion(auto._id);
 
     const url = `https://api.whatsapp.com/send?phone=${telefonoVariable}&text=${mensaje}`;
     window.open(url, '_blank');
   }
-  envioContador(): void {
-    const rol = this.MyRole || 'desconocido';
-    const url = `${environment.api_key}/contador?rol=${encodeURIComponent(
-      rol
-    )}`;
+  envioContador(nombre: string | null, id: string | null): void {
 
+    // console.log(nombre, id);
+
+    const rol = this.MyRole || 'desconocido';
+    const baseUrl = `${environment.api_key}/contador`;
+
+    const params = new URLSearchParams();
+    params.set('rol', rol);
+
+    if (nombre !== null && id !== null) {
+      params.set('nombreLote', nombre);
+      params.set('loteId', id);
+    }
+
+    const url = `${baseUrl}?${params.toString()}`;
+    console.log(url)
     this.http.get(url).subscribe({
       next: (res) => {
         // console.log('✅ Contador enviado con éxito:', res);
@@ -264,7 +283,7 @@ export class ContactosService {
       `🚗 *${auto.marca} ${auto.modelo} ${auto.anio}*\n` +
       (versionesTexto ? `🧩 Versiones:\n${versionesTexto}\n` : '') +
       `${precioTexto}\n` +
-      `🔗 Ver en GOAUTOS: https://goautos.mx/ficha/${tipo}/${auto._id}`;
+      `🔗 Ver en GOAUTOS: https://wo-aw.com/ficha/${tipo}/${auto._id}`;
 
     try {
       await Share.share({
@@ -361,7 +380,7 @@ export class ContactosService {
       }
     }
 
-    const linkAuto = `https://goautos.mx/ficha/autos/${auto._id}`;
+    const linkAuto = `https://wo-aw.com/ficha/autos/${auto._id}`;
 
     const mensaje = encodeURIComponent(
       nombreCompleto
@@ -433,7 +452,7 @@ export class ContactosService {
         break;
 
       case 'tiktok':
-        url = `https://www.tiktok.com/@goautos.mx`;
+        url = `https://www.tiktok.com/@wo-aw.com`;
         break;
 
       default:
