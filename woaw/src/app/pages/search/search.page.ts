@@ -70,7 +70,7 @@ export class SearchPage implements OnInit {
   buscarVehiculos(termino: string) {
   this.carsService.search(termino, this.tipoBusqueda).subscribe({
     next: (res: any) => {
-      const coches = res?.coches ?? [];
+      const coches = res?.vehiculos ?? [];
       const contador = res?.contador ?? coches.length;
 
       this.resultados = coches;

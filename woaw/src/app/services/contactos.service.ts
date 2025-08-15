@@ -116,7 +116,7 @@ export class ContactosService {
     const url = `https://api.whatsapp.com/send?phone=${this.telefonoFijo}&text=${mensaje}`;
     window.open(url, '_blank');
   }
-  async contactarGOAUTOS(
+  async contactarWOAW(
     auto: any,
     tipo_veiculo: string
   ): Promise<void> {

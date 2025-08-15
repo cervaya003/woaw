@@ -36,7 +36,7 @@ export class SegurosPage implements OnInit {
     this.cargaimagen();
   }
   async cargaimagen() {
-    this.imgenPrincipal = '/assets/autos/seguro1.png';
+    this.imgenPrincipal = '/assets/autos/seguro.webp';
     try {
       await this.generalService.preloadHero(this.imgenPrincipal);
       this.overlayLoaded = true;

@@ -430,12 +430,12 @@
 }
 
 .btn-personalizado {
-  flex: 1 1 auto; // ✅ Se expanden automáticamente
-  min-width: 120px; // ✅ Mínimo ancho para no encogerse mucho
-  max-width: 200px; // ✅ Límite superior para que no se vean exagerados
+  flex: 1 1 auto;
+  min-width: 120px;
+  max-width: 200px;
   display: flex;
   align-items: center;
-  justify-content: center; // ✅ Centrado del texto
+  justify-content: center;
   gap: 8px;
   border: none;
   border-radius: 20px;
@@ -453,7 +453,7 @@
   }
 
   &.success {
-    background-color: #28a745;
+    background-color: #0ccf39;
   }
 
   &.danger {
@@ -461,11 +461,11 @@
   }
 
   &.primary {
-    background-color: #007bff;
+    background-color: #1b89ff;
   }
 
   &.medium {
-    background-color: #6c757d;
+    background-color: #8f8f8f;
   }
 
   &:hover {
