@@ -231,7 +231,7 @@ export class CarComponent implements OnInit {
     } else if (this.anio === anioActual && this.MyRole != 'admin') {
       this.estadoVehiculo = 'Seminuevo';
       this.estadoVehiculo_logico = 'seminuevo';
-    }  else if (this.anio >= anioActual - 4) {
+    } else if (this.anio >= anioActual - 4) {
       this.estadoVehiculo = 'Seminuevo';
       this.estadoVehiculo_logico = 'seminuevo';
     } else if (this.anio < 2008 && this.anio >= 1800) {
@@ -464,6 +464,9 @@ export class CarComponent implements OnInit {
     });
   }
   async validacionesAntesdeEnviarForm_Nuevos(): Promise<boolean> {
+    if (!this.validarUbicacion()) {
+      return false;
+    }
     // 1. Validar que haya al menos una versión seleccionada
     const versionesSeleccionadas = this.versionSeleccionada
       .map((seleccionada, index) =>
@@ -506,38 +509,38 @@ export class CarComponent implements OnInit {
     }
 
     // 3. Validar descripción (obligatoria, máximo 100 caracteres)
-    if (!this.descripcion || this.descripcion.trim().length === 0) {
-      this.generalService.alert(
-        'Descripción requerida',
-        'Por favor escribe una breve descripción del vehículo.',
-        'warning'
-      );
-      return false;
-    }
+    // if (!this.descripcion || this.descripcion.trim().length === 0) {
+    //   this.generalService.alert(
+    //     'Descripción requerida',
+    //     'Por favor escribe una breve descripción del vehículo.',
+    //     'warning'
+    //   );
+    //   return false;
+    // }
 
-    if (this.descripcion.trim().length > 100) {
-      this.generalService.alert(
-        'Descripción demasiado larga',
-        'La descripción debe tener máximo 100 caracteres.',
-        'warning'
-      );
-      return false;
-    }
+    // if (this.descripcion.trim().length > 100) {
+    //   this.generalService.alert(
+    //     'Descripción demasiado larga',
+    //     'La descripción debe tener máximo 100 caracteres.',
+    //     'warning'
+    //   );
+    //   return false;
+    // }
     // Validación de ubicación
-    const ubicacionValida =
-      this.ubicacionSeleccionada &&
-      this.ubicacionSeleccionada.length === 4 &&
-      typeof this.ubicacionSeleccionada[2] === 'number' &&
-      typeof this.ubicacionSeleccionada[3] === 'number';
+    // const ubicacionValida =
+    //   this.ubicacionSeleccionada &&
+    //   this.ubicacionSeleccionada.length === 4 &&
+    //   typeof this.ubicacionSeleccionada[2] === 'number' &&
+    //   typeof this.ubicacionSeleccionada[3] === 'number';
 
-    if (!ubicacionValida) {
-      this.generalService.alert(
-        'Ubicación requerida',
-        'Selecciona la ubicación del vehículo en el mapa.',
-        'warning'
-      );
-      return false;
-    }
+    // if (!ubicacionValida) {
+    //   this.generalService.alert(
+    //     'Ubicación requerida',
+    //     'Selecciona la ubicación del vehículo en el mapa.',
+    //     'warning'
+    //   );
+    //   return false;
+    // }
     // Validación de imágenes
     if (!this.imagenPrincipal) {
       this.generalService.alert(
@@ -552,7 +555,7 @@ export class CarComponent implements OnInit {
   }
   async prepararFormularioParaEnvio_Nuevo(): Promise<FormData | false> {
     const formData = new FormData();
-    formData.append('descripcion', this.descripcion || '');
+    // formData.append('descripcion', this.descripcion || '');
     formData.append('anio', this.anio.toString());
     formData.append('marca', this.marca);
     formData.append('modelo', this.modelo);
