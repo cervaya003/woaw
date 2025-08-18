@@ -76,7 +76,7 @@ export class MotosService {
     return from(this.headersService.obtenerToken()).pipe(
       switchMap((token) => {
         const headers = this.headersService.getJsonHeaders(token);
-        return this.http.get(`${environment.api_key}/motos/motos`, {
+        return this.http.get(`${environment.api_key}/motos/random`, {
           headers,
         });
       }),

@@ -63,19 +63,23 @@
 
       <ion-col size="12" size-md="9">
         <div class="catalogo-autos">
-          <div *ngIf="carrosDelLote?.length === 0" class="mensaje-vacio">
+          <!-- ✅ Mensaje vacío: considera autos + motos -->
+          <div *ngIf="((carrosDelLote?.length || 0) + (motosDelLote?.length || 0)) === 0" class="mensaje-vacio">
             <ion-icon name="car-sport-outline" class="icono-mensaje"></ion-icon><br />
-            No se encontraron autos para esta sección.
+            No se encontraron vehículos para esta sección.
           </div>
 
-          <ng-container *ngFor="let auto of carrosDelLote">
+          <!-- ✅ Una sola “lista/columna”: autos y motos juntos -->
+          <ng-container *ngFor="let auto of (carrosDelLote || []).concat(motosDelLote || [])">
             <app-cartas [auto]="auto"></app-cartas>
           </ng-container>
         </div>
       </ion-col>
+
+
     </ion-row>
   </ion-grid>
 
   <app-footer></app-footer>
-  <!-- ⬅️ faltaba este cierre -->
+  <!-- faltaba este cierre -->
 </ion-content>

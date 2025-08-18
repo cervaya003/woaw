@@ -74,28 +74,37 @@ export class MisMotosPage implements OnInit {
     });
   }
 
-  async misMotos() {
-    this.motosService.misMotosId().subscribe({
-      next: (res: any) => {
-        const moto = res?.motos || []
-        this.MisMotos = moto;
-        this.motosFiltradas = [...moto];
-        this.totalMotos = this.MisMotos.length;
+async misMotos() {
+  this.motosService.misMotosId().subscribe({
+    next: (res: any) => {
+      // Soporta ambas formas: { motos: [...] } o directamente [...]
+      const motosArr: any[] =
+        Array.isArray(res?.motos) ? res.motos :
+        Array.isArray(res) ? res :
+        [];
+
+      this.MisMotos = motosArr;
+      this.motosFiltradas = [...motosArr];
+      this.totalMotos = this.MisMotos.length;
+
+      this.calcularPaginacion();
+      this.getCarsFavoritos();
+      this.misAutosid();
+    },
+    error: (err) => {
+      const mensaje = err?.error?.message || 'Error al obtener tus vehículos.';
+      if (mensaje === 'No se encontraron vehículos para este usuario') {
+        this.MisMotos = [];
+        this.motosFiltradas = [];
+        this.totalMotos = 0;
         this.calcularPaginacion();
-        this.getCarsFavoritos();
-        this.misAutosid();
-      },
-      error: (err) => {
-        const mensaje =
-          err?.error?.message || 'Error al obtener tus vehículos.';
-        if (mensaje === 'No se encontraron vehículos para este usuario') {
-          this.MisMotos = [];
-        } else {
-          console.warn(mensaje);
-        }
-      },
-    });
-  }
+      } else {
+        console.warn(mensaje);
+      }
+    },
+  });
+}
+
   getCarsFavoritos() {
     this.carsService.getCarsFavoritos().subscribe({
       next: (res: any) => {

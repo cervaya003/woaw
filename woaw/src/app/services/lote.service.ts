@@ -45,6 +45,19 @@ export class LoteService {
     );
   }
 
+  getmoto(loteId: string): Observable<any> {
+    return from(this.headersService.obtenerToken()).pipe(
+      switchMap(token => {
+        const headers = this.headersService.getFormDataHeaders(token);
+        return this.http.get(
+          `${environment.api_key}/motos/motos/lote/${loteId}`,
+          { headers }
+        );
+      }),
+      catchError(error => this.headersService.handleError(error))
+    );
+  }
+
   getLoteById(id: string): Observable<any> {
     // Si eres admin, usa 'all'; si solo quieres los tuyos, usa 'mios'
     // aquí asumimos 'all' para simplificar

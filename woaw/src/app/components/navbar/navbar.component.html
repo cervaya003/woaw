@@ -48,12 +48,18 @@
           Vehiculos <ion-icon name="chevron-down-outline" slot="end"></ion-icon>
         </ion-button>
 
+        <ion-button fill="clear" [ngClass]="{ 'activo': isActive('m-nuevos') }"
+          (click)="redirecion('m-nuevos')">
+          Motos
+        </ion-button>
+
         <ion-button fill="clear" [ngClass]="{ 'activo': isActive('arrendamiento') }"
           (click)="redirecion('arrendamiento')">
           Arrendamiento
         </ion-button>
 
-        <ion-button fill="clear" [ngClass]="{ 'activo': isActive('renta-coches') }" (click)="redirecion('renta-coches')">
+        <ion-button fill="clear" [ngClass]="{ 'activo': isActive('renta-coches') }"
+          (click)="redirecion('renta-coches')">
           Renta de coches
         </ion-button>
 
@@ -76,7 +82,7 @@
           Publicar
         </button>
 
-        <div class="usuario-info" *ngIf="isLoggedIn" (click)="abrirModalPerfil()" >
+        <div class="usuario-info" *ngIf="isLoggedIn" (click)="abrirModalPerfil()">
           <img *ngIf="!esDispositivoMovil" src="assets/icon/mexico.png" alt="MX" class="icono-bandera" />
           <div class="contenedor-nombre">
             <ion-icon name="person-outline" class="icono-user"></ion-icon>

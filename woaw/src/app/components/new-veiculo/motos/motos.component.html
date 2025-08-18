@@ -1,12 +1,11 @@
 <section>
-  <div class="resumen-estado">
-    <!-- Botón arriba -->
+  <!-- Resumen + botón Publicar (solo cuando estás en el form principal) -->
+  <div class="resumen-estado" *ngIf="seccionFormulario == 2 && Pregunta == 'no'">
     <button type="button" class="btn-guardar" (click)="EnviarVeiculo()">
       <ion-icon name="save-outline" class="icono-guardar"></ion-icon>
-      Guardar Auto
+      Publicar
     </button>
 
-    <!-- Fila de texto en horizontal -->
     <div class="fila-info">
       <p>Año: <strong>{{ anio }}</strong></p>
       <p>Marca: <strong>{{ marca }}</strong></p>
@@ -15,15 +14,182 @@
     </div>
   </div>
 
-  <div class="formulario">
-    <!-- Para Seminuevo o Usado: -->
-    <div class="grid-form">
+  <!-- # ------ PREGUNTA COMO SUBIR: LOTE O PARTICULAR -----  -->
+  <div class="tipo-vehiculo-container" *ngIf="Pregunta == 'si'">
+    <h2 class="titulo-tipo">¿Qué tipo de vehículo quieres subir?</h2>
 
-      <!-- <div class="campo">
+    <div class="opciones-vehiculo">
+      <!-- Particular -->
+      <div class="casilla" [class.activa]="tipoSeleccionado === 'particular'" (click)="seleccionarTipo('particular')">
+        <img src="assets/img/particular.png" alt="Particular" />
+        <p>Particular</p>
+        <ion-icon *ngIf="tipoSeleccionado === 'particular'" name="checkmark-circle-outline" class="icono-check"></ion-icon>
+      </div>
+
+      <!-- Lote -->
+      <div class="casilla" [class.activa]="tipoSeleccionado === 'lote'" (click)="seleccionarTipo('lote')">
+        <img src="assets/img/lote.png" alt="Lote" />
+        <p>Lote</p>
+        <ion-icon *ngIf="tipoSeleccionado === 'lote'" name="checkmark-circle-outline" class="icono-check"></ion-icon>
+      </div>
+    </div>
+
+    <div class="contenedor-boton">
+      <button class="btn-continuar" [disabled]="!tipoSeleccionado" (click)="continuar()">
+        Continuar
+        <ion-icon name="arrow-forward-outline"></ion-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- # ------ PREGUNTA SI QUIERE VENDERLA EL MISMO  -----  -->
+  <div *ngIf="tipoSeleccionado == 'particular' && MyRole !== 'admin' && seccionFormulario == 1" class="pregunta-vendedor">
+    <p class="texto-pregunta">¿Cómo quieres vender tu moto?</p>
+
+    <div class="botones-vendedor">
+      <button class="btn-vender-yo" (click)="quienLovende(0)">La vendo yo</button>
+      <button class="btn-vende-go" (click)="quienLovende(1)">
+        Que la venda
+        <img src="assets/icon/logo4.png" alt="Go Autos" class="logo-boton" />
+      </button>
+    </div>
+  </div>
+
+  <!-- Publicación asistida para particular -->
+  <div
+    *ngIf="tipoSeleccionado === 'particular' && seccionFormulario === 3 && (MyRole === 'cliente' || MyRole === 'vendedor')"
+    class="formulario-publicacion">
+    <p class="info-texto">
+      <strong>¡Nosotros nos encargamos!</strong> Publicamos tu moto y agendamos citas con interesados.
+      <br />
+      <strong>Contáctanos por WhatsApp y te ayudamos.</strong>
+    </p>
+
+    <ion-item>
+      <ion-label position="stacked">¿Qué moto es?</ion-label>
+      <ion-input placeholder="Ej. Kawasaki Ninja 2020" [(ngModel)]="nombreMoto"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Año</ion-label>
+      <ion-select [(ngModel)]="anioMoto" placeholder="Selecciona un año">
+        <ion-select-option *ngFor="let year of listaAnios" [value]="year">{{ year }}</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Precio estimado (opcional)</ion-label>
+      <ion-input type="number" placeholder="Solo números" [(ngModel)]="precioEstimado"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Tipo de factura (opcional)</ion-label>
+      <ion-select [(ngModel)]="tipoFactura" placeholder="Selecciona una opción">
+        <ion-select-option value="original">Original</ion-select-option>
+        <ion-select-option value="refacturada">Refacturada</ion-select-option>
+        <ion-select-option value="sin-factura">Sin factura</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <div class="btn-wsp-container">
+      <button class="btn-wsp" (click)="ContactosService.contactarPorPublicacionParticular(nombreMoto, anioMoto!, precioEstimado!, tipoFactura)">
+        <ion-icon name="logo-whatsapp" slot="start"></ion-icon>
+        Contáctanos por WhatsApp
+      </button>
+    </div>
+  </div>
+
+  <!-- # ------ FORMULARIO PRINCIPAL -----  -->
+  <div class="formulario" *ngIf="Pregunta == 'no' && seccionFormulario == 2">
+
+    <!-- Ubicación / Lote / Imágenes -->
+    <div class="contenedor-botones">
+
+      <!-- Particular: ubicación -->
+      <div class="bloque-imagenes" *ngIf="tipoSeleccionado == 'particular'">
+        <button type="button" (click)="seleccionarUbicacion()">
+          <ion-icon name="location-outline" class="icono"></ion-icon>
+          Seleccionar ubicación
+        </button>
+
+        <div *ngIf="ubicacionSeleccionada" class="ubicacion-mostrada">
+          <ion-icon name="location-outline"></ion-icon>
+          {{ direccionCompleta }}
+        </div>
+      </div>
+
+      <!-- Lote -->
+      <div class="bloque-imagenes" *ngIf="tipoSeleccionado === 'lote'">
+        <label for="loteSelect">Selecciona tu lote:</label>
+        <select id="loteSelect" [(ngModel)]="loteSeleccionado" class="select-lote" (change)="onLoteSeleccionado()">
+          <option [ngValue]="null" disabled selected>Selecciona un lote</option>
+          <option *ngFor="let lote of lotes" [ngValue]="lote._id">
+            {{ lote.nombre }}
+          </option>
+        </select>
+
+        <div *ngIf="ubicacionesLoteSeleccionado!.length > 1" class="bloque-direcciones">
+          <label for="direccionSelect">Selecciona una ubicación:</label>
+          <select id="direccionSelect" [(ngModel)]="direccionSeleccionada" class="select-lote">
+            <option style="font-size: 12px;" [ngValue]="null" disabled selected>Selecciona una ubicación</option>
+            <option style="font-size: 12px;" *ngFor="let dir of ubicacionesLoteSeleccionado; let i = index" [ngValue]="dir">
+              {{ ubicacionesLoteLegibles[i] || 'Obteniendo dirección...' }}
+            </option>
+          </select>
+        </div>
+
+        <div *ngIf="direccionSeleccionada && ubicacionesLoteSeleccionado.length === 1" class="ubicacion-mostrada">
+          <ion-icon name="location-outline"></ion-icon>
+          <span style="font-size: 12px;">
+            {{ direccionCompleta }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Imágenes -->
+      <div class="bloque-imagenes">
+        <button class="btn-imagenes" type="button" (click)="seleccionarImagenes()">
+          <ion-icon name="image-outline"></ion-icon>
+          Seleccionar Imágenes
+          <label class="radio-validacion" [class.activo]="imagenesValidas" [class.inactivo]="!imagenesValidas">
+            <span class="radio-custom"></span>
+            <ion-icon name="checkmark-outline"></ion-icon>
+          </label>
+        </button>
+
+        <button *ngIf="imagenesIntentadas" class="btn-limpiar" type="button" (click)="limpiarImagenes()">
+          <ion-icon name="trash-outline"></ion-icon>
+          Imagenes
+        </button>
+      </div>
+    </div>
+
+    <!-- (Opcional) Motos NUEVAS: versiones + precio -->
+    <div *ngIf="estadoVehiculo_logico === 'nuevo'">
+      <label>Selecciona las versiones disponibles y asigna un precio:</label>
+      <div *ngFor="let version of versiones; let i = index" class="version-item">
+        <ion-checkbox [checked]="versionSeleccionada[i]" (ionChange)="toggleVersion(i, version)"></ion-checkbox>
+        <span>{{ version }}</span>
+        <input *ngIf="versionSeleccionada[i]" type="number" min="0" placeholder="Precio" [(ngModel)]="preciosVersiones[version]" name="precio_{{ i }}" />
+      </div>
+    </div>
+
+    <!-- Seminueva / Usada -->
+    <div class="grid-form" *ngIf="estadoVehiculo_logico === 'seminuevo' || estadoVehiculo_logico === 'usado' || estadoVehiculo_logico === 'viejito'">
+
+      <!-- Versión
+      <div class="campo">
         <label>Versión: <span class="requerido">*</span></label>
-        <input type="text" [(ngModel)]="version" placeholder="Escribe la versión manualmente" />
+
+        <select *ngIf="!esUsadoAntiguo && versionesDisponibles" [(ngModel)]="versionSeleccionadaTexto" (ngModelChange)="onSeleccionVersion($event)">
+          <option disabled selected value="">Selecciona una versión</option>
+          <option *ngFor="let version of versiones" [value]="version">{{ version }}</option>
+        </select>
+
+        <input *ngIf="esUsadoAntiguo || !versionesDisponibles" type="text" [(ngModel)]="versionSeleccionadaTexto" placeholder="Escribe la versión manualmente" />
       </div> -->
 
+      <!-- Precio -->
       <div class="campo">
         <label>Precio: <span class="requerido">*</span></label>
         <input type="number" min="0" placeholder="Precio del vehículo" [(ngModel)]="precio" />
@@ -35,26 +201,25 @@
         <input type="text" placeholder="Ej. UVY-123-A" [(ngModel)]="placas" />
       </div>
 
-      <!-- Kilometraje (obligatorio) -->
+      <!-- Kilometraje -->
       <div class="campo">
         <label>Kilometraje: <span class="requerido">*</span></label>
         <input type="number" min="0" placeholder="Ej. 45000" required [(ngModel)]="kilometraje" />
       </div>
 
-      <!-- Color (obligatorio) -->
+      <!-- Color -->
       <div class="campo">
         <label>Color: <span class="requerido">*</span></label>
 
-        <!-- ✅ Si es Nuevo: checkboxes -->
+        <!-- Nueva: checkboxes -->
         <div *ngIf="estadoVehiculo === 'Nuevo'" class="checkbox-colores">
           <label *ngFor="let opcion of opciones" class="color-opcion">
-            <input type="checkbox" [value]="opcion.label" (change)="toggleColorSeleccionado(opcion.label)"
-              [checked]="colorSeleccionado.includes(opcion.label)" />
+            <input type="checkbox" [value]="opcion.label" (change)="toggleColorSeleccionado(opcion.label)" [checked]="colorSeleccionado.includes(opcion.label)" />
             {{ opcion.label }}
           </label>
         </div>
 
-        <!-- ✅ Si NO es Nuevo: select (pero sigue enviando array) -->
+        <!-- No nueva: select -->
         <select *ngIf="estadoVehiculo !== 'Nuevo'" [(ngModel)]="colorSeleccionadoUnico" name="color" required>
           <option value="" disabled selected>Selecciona un color</option>
           <option *ngFor="let opcion of opciones" [value]="opcion.label">
@@ -63,8 +228,7 @@
         </select>
       </div>
 
-
-      <!-- Moneda (obligatorio o informativo) -->
+      <!-- Moneda -->
       <div class="campo">
         <label>Moneda:</label>
         <select [(ngModel)]="moneda" name="moneda">
@@ -73,85 +237,46 @@
         </select>
       </div>
 
-      <!-- Descripción (obligatorio) -->
+      <!-- Descripción -->
       <div class="campo" style="grid-column: span 2;">
-        <label>Descripción del vehículo: <span class="requerido">*</span></label>
-        <textarea rows="4" placeholder="Ej. Auto en excelente estado, único dueño..." required
-          [(ngModel)]="descripcion"></textarea>
+        <label>Descripción de la motocicleta: <span class="requerido">*</span></label>
+        <textarea rows="4" placeholder="Ej. Moto en excelente estado, único dueño..." required [(ngModel)]="descripcion"></textarea>
       </div>
 
-      <div class="campo">
-        <div class="bloque-imagenes">
-          <button type="button" (click)="seleccionarUbicacion()">
-            <ion-icon name="location-outline" class="icono"></ion-icon>
-            Seleccionar ubicación
-          </button>
-
-          <div *ngIf="ubicacionSeleccionada" class="ubicacion-mostrada">
-            <ion-icon name="location-outline"></ion-icon>
-            <span>
-              {{ ubicacionSeleccionada[0] }}, {{ ubicacionSeleccionada[1] }}<br />
-              Lat: {{ ubicacionSeleccionada[2] }}, Lng: {{ ubicacionSeleccionada[3] }}
-            </span>
-          </div>
-        </div>
-
-        <div class="bloque-imagenes">
-          <button type="button" (click)="seleccionarImagenes()">
-            <ion-icon name="image-outline"></ion-icon>
-            Seleccionar Imágenes
-          </button>
-
-          <label class="radio-validacion" [class.activo]="imagenesValidas" [class.inactivo]="!imagenesValidas">
-            <span class="radio-custom"></span>
-            <ion-icon name="checkmark-outline"></ion-icon>
-          </label>
-          <button *ngIf="imagenesIntentadas" class="btn-limpiar" type="button" (click)="limpiarImagenes()">
-            <ion-icon name="trash-outline"></ion-icon>
-            Imagenes
-          </button>
-        </div>
-      </div>
-
-      <!-- Tipo de Motor (obligatorio) -->
+      <!-- Específicos de moto -->
       <div class="campo">
         <label>Tipo de Motor: <span class="opcional_css">(opcional)</span></label>
-        <input type="text" required [(ngModel)]="tipoMotor" name="tipoMotor"
-          placeholder="Ej. 4 tiempos, eléctrico..." />
+        <input type="text" [(ngModel)]="tipoMotor" name="tipoMotor" placeholder="Ej. 4 tiempos, eléctrico..." />
       </div>
 
-      <!-- Cilindrada (opcional) -->
       <div class="campo">
-        <label>Cilindrada: <span class="opcional_css">(opcional)</span></label>
-        <input type="text" placeholder="Ej. 1000cc" [(ngModel)]="cilindrada" />
+        <label>Cilindrada: <span class="requerido">*</span></label>
+        <input type="text" placeholder="Ej. 150cc" required [(ngModel)]="cilindrada" />
       </div>
 
-      <!-- Transmisión (obligatorio) -->
       <div class="campo">
-        <label>Transmisión: <span class="opcional_css">(opcional)</span></label>
+        <label>Transmisión: <span class="requerido">*</span></label>
         <input type="text" required [(ngModel)]="transmision" name="transmision" placeholder="Ej. manual, CVT, etc." />
       </div>
 
-      <!-- Combustible (obligatorio) -->
       <div class="campo">
         <label>Combustible: <span class="opcional_css">(opcional)</span></label>
-        <input type="text" required [(ngModel)]="combustible" name="combustible"
-          placeholder="Ej. gasolina, eléctrico..." />
+        <input type="text" [(ngModel)]="combustible" name="combustible" placeholder="Ej. gasolina, eléctrico..." />
       </div>
 
-      <!-- Frenos (obligatorio) -->
       <div class="campo">
         <label>Frenos: <span class="opcional_css">(opcional)</span></label>
-        <input type="text" required [(ngModel)]="frenos" name="frenos" placeholder="Ej. disco, tambor, ABS..." />
+        <input type="text" [(ngModel)]="frenos" name="frenos" placeholder="Ej. disco, tambor, ABS..." />
       </div>
 
-      <!-- Suspensión (opcional) -->
       <div class="campo">
         <label>Suspensión: <span class="opcional_css">(opcional)</span></label>
-        <input type="text" placeholder="Ej. Suspensión independiente" [(ngModel)]="suspension" />
+        <input type="text" [(ngModel)]="suspension" placeholder="Ej. telescópica, mono-shock" />
       </div>
-
-
     </div>
+
+    <!-- 🔻 FICHA TÉCNICA ELIMINADA: no catálogo ni editable -->
+    <!-- (Se quitaron los bloques: grid-info con card-especificaciones y el grid-form con camposEspecificaciones) -->
+
   </div>
 </section>

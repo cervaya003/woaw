@@ -11,6 +11,7 @@ import { MenuVehiculosComponent } from '../../components/menu-vehiculos/menu-veh
 import { HistorealSearchComponent } from '../../components/historeal-search/historeal-search.component';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { PerfilComponent } from '../modal/perfil/perfil.component';
+import { MotosService } from '../../services/motos.service';
 
 @Component({
   selector: 'app-navbar',
@@ -40,7 +41,8 @@ export class NavbarComponent implements OnInit {
     public generalService: GeneralService,
     private modalCtrl: ModalController,
     private popoverCtrl: PopoverController,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    public motoservice: MotosService
   ) { }
 
   ngOnInit() {
