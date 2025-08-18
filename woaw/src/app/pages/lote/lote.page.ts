@@ -32,6 +32,7 @@ export class LotePage implements OnInit, OnDestroy {
   private navSub?: Subscription;
   direccionCompleta = 'Obteniendo ubicación...';
   carrosDelLote: any[] = [];
+  motosDelLote: any[] = [];
   ordenActivo: string | null = null;
   previewImagenPrincipal: string | null = null;
 
@@ -70,6 +71,7 @@ export class LotePage implements OnInit, OnDestroy {
     this.loteId = this.route.snapshot.paramMap.get('id')!;
     this.cargarLote();
     this.cargarCarros();
+    this.cargarMotos();
     this.verificarPropiedadDelLote();
 
     this.navSub = this.router.events
@@ -115,6 +117,19 @@ export class LotePage implements OnInit, OnDestroy {
       next: (res) => {
         this.carrosDelLote = res || [];
         this.totalAutos = this.carrosDelLote.length;
+      },
+      error: async () => {
+        // silencioso
+      },
+    });
+  }
+
+    private cargarMotos(): void {
+    this.loteService.getmoto(this.loteId).subscribe({
+      next: (res) => {
+        this.motosDelLote = res || [];
+        this.totalAutos = this.motosDelLote.length;
+        console.log(this.motosDelLote);
       },
       error: async () => {
         // silencioso
