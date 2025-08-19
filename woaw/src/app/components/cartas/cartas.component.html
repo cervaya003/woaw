@@ -35,7 +35,7 @@
   <div class="contenido-auto">
     <div [ngClass]="generalService.getClaseTipoBarra(auto.tipoVenta)"></div>
 
-    <button *ngIf="ubicacion === 'mis_autos'" class="estado-btn"
+    <button *ngIf="ubicacion === 'mis_autos' || ubicacion === 'mis_motos' "  class="estado-btn"
       [ngClass]="{ 'disponible': auto.estadoVehiculo === 'disponible', 'vendido': auto.estadoVehiculo === 'vendido' }"
       (click)="toggleEstado(auto, $event)">
       <ion-icon [name]="auto.estadoVehiculo === 'disponible' ? 'toggle-outline' : 'toggle-sharp'"

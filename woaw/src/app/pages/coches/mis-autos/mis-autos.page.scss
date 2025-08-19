@@ -10,16 +10,24 @@
   }
 }
 
-
 .buscador-escritorio {
-  width: 280px;
-  max-width: 100%;
+  width: 100%;
+  max-width: 520px;       // ajusta a gusto (ej. 600px)
+  margin-left: auto;      // empuja a la derecha
+  --border-radius: 12px;
+  --background: #1e1e1e;
+  --color: #fff;
+  --placeholder-color: #a0a0a0;
+  --icon-color: #a0a0a0;
 }
 
 .buscador-movil {
-  --background: #1e1e1e;
-  --color: white;
-  --placeholder-color: #ccc;
-  padding: 0 12px;
-  width: 100%;
+  --border-radius: 12px;
+}
+
+/* Por si necesitas que el contenedor del start no “coma” demasiado espacio */
+.perfil-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }

@@ -36,8 +36,7 @@ export class UpdateCarPage implements OnInit {
   public isLoggedIn: boolean = false;
   public MyRole: string | null = null;
   tipo: string = '';
-  @ViewChild('mapAutoContainer', { static: false })
-  mapAutoContainer!: ElementRef;
+  @ViewChild('mapAutoContainer', { static: false }) mapAutoContainer!: ElementRef;
   mapAuto!: google.maps.Map;
   autoMarker!: google.maps.Marker;
   direccionCompleta: string = 'Obteniendo ubicación...';
@@ -48,14 +47,24 @@ export class UpdateCarPage implements OnInit {
   imagenPrincipal_sinFondo: File | string | null = null;
   imagenPrincipalMostrada: string = '';
 
+  // opciones de color para el ion-select
+  opciones = [
+    { label: 'Blanco' }, { label: 'Negro' }, { label: 'Gris' }, { label: 'Plateado' },
+    { label: 'Rojo' }, { label: 'Azul' }, { label: 'Azul marino' }, { label: 'Verde' },
+    { label: 'Verde oscuro' }, { label: 'Beige' }, { label: 'Café' }, { label: 'Amarillo' },
+    { label: 'Naranja' }, { label: 'Morado' }, { label: 'Vino' }, { label: 'Oro' },
+    { label: 'Bronce' }, { label: 'Turquesa' }, { label: 'Gris Oxford' }, { label: 'Arena' },
+    { label: 'Azul cielo' }, { label: 'Grafito' }, { label: 'Champagne' }, { label: 'Titanio' },
+    { label: 'Cobre' }, { label: 'Camaleón' }, { label: 'Otro' },
+  ];
+
   restablecer: boolean = false;
-  // precioAlterado: boolean = false;
   versionesOriginales: any[] = [];
   lotes: any[] = [];
   totalLotes: number = 0;
   loteSeleccionado: string | null = null;
   direccionSeleccionada: any = null;
-  direccionSeleccionadaActual: any = null
+  direccionSeleccionadaActual: any = null;
   ubicacionesLoteSeleccionado: any[] = [];
   tipoSeleccionado: 'particular' | 'lote' = 'particular';
   @ViewChild('inputArchivo', { static: false }) inputArchivo!: ElementRef;
@@ -80,18 +89,13 @@ export class UpdateCarPage implements OnInit {
         this.MyRole = rol;
       } else {
         this.generalService.eliminarToken();
-        this.generalService.alert(
-          '¡Saliste de tu sesión Error - 707!',
-          '¡Hasta pronto!',
-          'info'
-        );
+        this.generalService.alert('¡Saliste de tu sesión Error - 707!', '¡Hasta pronto!', 'info');
       }
     });
     // Detectar tipo de dispositivo
     this.generalService.dispositivo$.subscribe((tipo) => {
       this.esDispositivoMovil = tipo === 'telefono' || tipo === 'tablet';
     });
-    // console.log(this.esDispositivoMovil);
     await this.obtenerVeiculo();
     if (this.MyRole === 'admin') {
       this.getLotes('all');
@@ -99,6 +103,7 @@ export class UpdateCarPage implements OnInit {
       this.getLotes('mios');
     }
   }
+
   async obtenerVeiculo() {
     this.tipo_veiculo = this.route.snapshot.paramMap.get('tipo') ?? '';
     const id = this.route.snapshot.paramMap.get('id');
@@ -109,20 +114,17 @@ export class UpdateCarPage implements OnInit {
       this.motosURL(id);
     }
   }
+
   async autosURL(id: string) {
     this.carsService.getCar(id).subscribe({
       next: (res: any) => {
         this.auto = res;
-        console.log(this.auto)
         this.imagenPrincipalMostrada = this.auto.imagenPrincipal;
         this.urlsImagenes = [...this.auto.imagenes];
-        this.urlsImagenesExistentes = [...res.imagenes];
-        this.versionesOriginales = JSON.parse(
-          JSON.stringify(this.auto.version)
-        );
+      this.urlsImagenesExistentes = [...res.imagenes];
+        this.versionesOriginales = JSON.parse(JSON.stringify(this.auto.version));
 
         if (res.lote != null) {
-          console.log('heyyyy')
           this.tipoSeleccionado = 'lote';
           this.loteSeleccionado = res.lote._id;
           this.direccionSeleccionadaActual = res.ubicacion;
@@ -141,9 +143,7 @@ export class UpdateCarPage implements OnInit {
             ubic.lng || 0,
           ];
           this.generalService.obtenerDireccionDesdeCoordenadas(ubic.lat, ubic.lng)
-            .then((direccion) => {
-              this.direccionCompleta = direccion;
-            })
+            .then((direccion) => { this.direccionCompleta = direccion; })
             .catch((error) => {
               this.direccionCompleta = 'No se pudo obtener la dirección.';
               console.warn(error);
@@ -159,14 +159,61 @@ export class UpdateCarPage implements OnInit {
       },
     });
   }
+
   async motosURL(id: string) {
     this.motosService.getMoto(id).subscribe({
       next: (res: any) => {
-        this.auto = res;
-        this.precioMoto = res.precio ?? null;
-        this.imagenPrincipalMostrada = this.auto.imagenPrincipal;
-        this.urlsImagenes = [...this.auto.imagenes];
-        this.urlsImagenesExistentes = [...res.imagenes];
+        this.auto = res || {};
+        this.precioMoto = res?.precio ?? null;
+
+        // imágenes
+        this.imagenPrincipalMostrada = this.auto?.imagenPrincipal || null;
+        this.urlsImagenes = Array.isArray(this.auto?.imagenes) ? [...this.auto.imagenes] : [];
+        this.urlsImagenesExistentes = Array.isArray(res?.imagenes) ? [...res.imagenes] : [];
+
+        // ✅ Si viene de un LOTE
+        if (res?.lote) {
+          this.tipoSeleccionado = 'lote';
+          this.loteSeleccionado = res.lote._id;
+          this.ubicacionesLoteSeleccionado = Array.isArray(res.lote?.direccion) ? res.lote.direccion : [];
+
+          // 👉 Guarda la ubicación original como referencia (igual que en autos)
+          this.direccionSeleccionadaActual = res.ubicacion || null;
+
+          // si backend manda ubicacion, intenta preseleccionar esa dirección del lote
+          if (res.ubicacion && this.ubicacionesLoteSeleccionado.length > 0) {
+            const { lat, lng } = res.ubicacion;
+            const match = this.ubicacionesLoteSeleccionado.find((d: any) => d.lat === lat && d.lng === lng);
+            this.direccionSeleccionada = match || null;
+          } else {
+            this.direccionSeleccionada = null;
+          }
+
+          // esto setea direccionCompleta si hay 1 dirección o prepara el listado si hay varias
+          this.leerLatLng();
+        }
+
+        // ✅ Si es PARTICULAR (sin lote)
+        if (res?.ubicacion && !res?.lote) {
+          this.tipoSeleccionado = 'particular';
+          this.direccionSeleccionada = res.ubicacion;
+
+          const { ciudad, estado, lat, lng } = res.ubicacion;
+          this.ubicacionSeleccionada = [
+            ciudad || 'Sin ciudad',
+            estado || 'Sin estado',
+            typeof lat === 'number' ? lat : 0,
+            typeof lng === 'number' ? lng : 0,
+          ];
+
+          this.generalService
+            .obtenerDireccionDesdeCoordenadas(this.ubicacionSeleccionada[2], this.ubicacionSeleccionada[3])
+            .then((direccion) => (this.direccionCompleta = direccion))
+            .catch((error) => {
+              this.direccionCompleta = 'No se pudo obtener la dirección.';
+              console.warn(error);
+            });
+        }
       },
       error: (err) => {
         const mensaje = err?.error?.message || 'Ocurrió un error inesperado';
@@ -177,6 +224,7 @@ export class UpdateCarPage implements OnInit {
       },
     });
   }
+
   getEspecificacionesPorVersion(version: string) {
     const anio = this.auto.anio;
     const marca = this.auto.marca;
@@ -206,10 +254,12 @@ export class UpdateCarPage implements OnInit {
         },
       });
   }
+
   onSeleccionarVersion(version: { nombre: string; precio: number }) {
     this.versionSeleccionada = version;
     this.getEspecificacionesPorVersion(version.nombre);
   }
+
   mostrarmapa() {
     const { lat, lng, ciudad, estado } = this.auto.ubicacion;
 
@@ -235,21 +285,19 @@ export class UpdateCarPage implements OnInit {
     this.generalService.obtenerDireccionDesdeCoordenadas(lat, lng)
       .then((direccion) => {
         this.direccionCompleta = direccion;
-        // console.log('📍 Dirección obtenida:', direccion);
       })
       .catch((error) => {
         this.direccionCompleta = 'No se pudo obtener la dirección.';
         console.warn(error);
       });
   }
+
   // ##----- Imagenes -----
   actualizarImagenPrincipal(nuevaImagen: string) {
-    // console.log(nuevaImagen);
     this.generalService.confirmarAccion(
       '¿Deseas usar esta imagen como imagen principal del vehículo?',
       'Establecer como principal',
       () => {
-        // this.ActualizaImgen = true;
         this.selecionarUnaExistente(nuevaImagen);
       }
     );
@@ -314,6 +362,7 @@ export class UpdateCarPage implements OnInit {
       );
     }
   }
+
   async agregarImagen(event: Event) {
     const input = event.target as HTMLInputElement;
     const file: File | null = input.files?.[0] || null;
@@ -374,6 +423,7 @@ export class UpdateCarPage implements OnInit {
       );
     }
   }
+
   dividirImagenes(imagenes: string[], columnas: number): string[][] {
     if (!imagenes || imagenes.length === 0) return [];
 
@@ -398,6 +448,7 @@ export class UpdateCarPage implements OnInit {
       }
     );
   }
+
   eliminarCoches(id: string) {
     this.carsService.deleteCar(id).subscribe({
       next: (res: any) => {
@@ -417,6 +468,7 @@ export class UpdateCarPage implements OnInit {
       },
     });
   }
+
   eliminarMotos(id: string) {
     this.motosService.deleteMoto(id).subscribe({
       next: (res: any) => {
@@ -437,7 +489,6 @@ export class UpdateCarPage implements OnInit {
     });
   }
 
-  // ## ----- Actualizar auto
   // ## ----- Actualizar auto o moto
 
   verificarCambiosPrecio(): void {
@@ -456,10 +507,10 @@ export class UpdateCarPage implements OnInit {
     // 🏍 Si es moto con precio en raíz
     if (this.tipo_veiculo === 'motos') {
       if (this.precioMoto === null || this.auto?.precio === undefined) return;
-
       this.restablecer = this.precioMoto !== this.auto.precio;
     }
   }
+
   async alertPutCar(id: string) {
     this.generalService.confirmarAccion(
       '¿Estás seguro de actualizar este vehículo?',
@@ -469,6 +520,7 @@ export class UpdateCarPage implements OnInit {
       }
     );
   }
+
   async PutAuto(id: string) {
     await this.generalService.loading('Verificando...');
 
@@ -477,30 +529,33 @@ export class UpdateCarPage implements OnInit {
 
       if (this.tipo_veiculo === 'autos') {
         formData = await this.agregarVersionesAlFormData_autos(formData);
+        // ✅ agregar campos básicos (kilometraje, color, moneda, placas, descripción)
+        formData = await this.agregarCamposBasicosAlFormData_autos(formData);
         formData = await this.agregarUbicacionAlFormData_autos(formData);
         this.enviarDatos_autos(id, formData);
+
       } else if (this.tipo_veiculo === 'motos') {
         formData = await this.agregarPrecioAlFormData_Motos(formData);
+        // ✅ NUEVO: también enviamos los campos base y específicos de moto
+        formData = await this.agregarCamposBasicosAlFormData_motos(formData);
+        // ✅ también mandamos ubicación/lote para motos
+        formData = await this.agregarUbicacionAlFormData_autos(formData);
         this.enviarDatos_motos(id, formData);
       }
     } catch (error) {
       this.generalService.loadingDismiss();
 
       let mensaje = 'Error desconocido';
-
       if (typeof error === 'string') {
         mensaje = error;
       } else if (typeof error === 'object' && error !== null && 'error' in error) {
         mensaje = (error as any).error;
       }
-
-      // await this.generalService.alert(
-      //   'Error al procesar la información',
-      //   mensaje,
-      //   'warning'
-      // );
+      // feedback visible si algo revienta antes de suscribirse
+      this.generalService.alert('Error', String(mensaje), 'danger');
     }
   }
+
   private async generarFormDataImagenes(): Promise<FormData> {
     const formData = new FormData();
 
@@ -527,6 +582,7 @@ export class UpdateCarPage implements OnInit {
 
     return formData;
   }
+
   private async agregarVersionesAlFormData_autos(
     formData: FormData
   ): Promise<FormData> {
@@ -535,7 +591,7 @@ export class UpdateCarPage implements OnInit {
         return resolve(formData);
       }
 
-      const versionesValidas = [];
+      const versionesValidas: any[] = [];
 
       for (let i = 0; i < this.auto.version.length; i++) {
         const v = this.auto.version[i];
@@ -566,15 +622,75 @@ export class UpdateCarPage implements OnInit {
       resolve(formData);
     });
   }
+
+  // ✅ AUTOS: agrega kilometraje/color/moneda/placas/descripcion
+  private async agregarCamposBasicosAlFormData_autos(formData: FormData): Promise<FormData> {
+    const km = this.auto?.kilometraje ?? '';
+    // color puede ser string o array
+    const colorValue = this.auto?.color;
+    const color =
+      Array.isArray(colorValue) ? colorValue.join(', ') : (colorValue ?? '').toString();
+
+    const moneda = (this.auto?.moneda ?? 'MXN').toString();
+    const placas = (this.auto?.placas && this.auto.placas !== 'null') ? this.auto.placas : '';
+    const descripcion = (this.auto?.descripcion ?? '').toString();
+
+    formData.append('kilometraje', String(km));
+    formData.append('color', color);
+    formData.append('moneda', moneda);
+    if (placas !== '') formData.append('placas', placas);
+    formData.append('descripcion', descripcion);
+
+    return formData;
+  }
+
+  // ✅ MOTO: agrega campos base y específicos
+  private async agregarCamposBasicosAlFormData_motos(formData: FormData): Promise<FormData> {
+    // Kilometraje
+    const km = this.auto?.kilometraje;
+    if (km !== undefined && km !== null && !Number.isNaN(Number(km))) {
+      formData.append('kilometraje', String(km));
+    }
+
+    // Color: string o array (si fue nueva con múltiples)
+    const colorValue = this.auto?.color;
+    let color = '';
+    if (Array.isArray(colorValue)) color = colorValue.join(', ');
+    else if (typeof colorValue === 'string') color = colorValue;
+    if (color) formData.append('color', color);
+
+    // Moneda
+    const moneda = this.auto?.moneda ?? 'MXN';
+    if (moneda) formData.append('moneda', String(moneda));
+
+    // Placas
+    if (this.auto?.placas && this.auto.placas !== 'null') {
+      formData.append('placas', String(this.auto.placas));
+    }
+
+    // Descripción
+    if (this.auto?.descripcion !== undefined && this.auto?.descripcion !== null) {
+      formData.append('descripcion', String(this.auto.descripcion));
+    }
+
+    // Específicos de moto
+    if (this.auto?.tipoMotor)   formData.append('tipoMotor',   String(this.auto.tipoMotor));
+    if (this.auto?.cilindrada)  formData.append('cilindrada',  String(this.auto.cilindrada));
+    if (this.auto?.transmision) formData.append('transmision', String(this.auto.transmision));
+    if (this.auto?.combustible) formData.append('combustible', String(this.auto.combustible));
+    if (this.auto?.frenos)      formData.append('frenos',      String(this.auto.frenos));
+    if (this.auto?.suspension)  formData.append('suspension',  String(this.auto.suspension));
+
+    return formData;
+  }
+
   private async agregarUbicacionAlFormData_autos(
     formData: FormData
   ): Promise<FormData> {
     return new Promise(async (resolve, reject) => {
-
       let ubicacionObj: any = null;
 
       if (this.tipoSeleccionado === 'particular' && this.ubicacionSeleccionada) {
-
         const [ciudad, estado, lat, lng] = this.ubicacionSeleccionada;
 
         if (!ciudad || !estado || !lat || !lng) {
@@ -592,8 +708,6 @@ export class UpdateCarPage implements OnInit {
         return resolve(formData);
 
       } else if (this.tipoSeleccionado === 'lote') {
-
-
         const lote = this.lotes.find(l => l._id === this.loteSeleccionado);
 
         if (!lote) {
@@ -634,11 +748,11 @@ export class UpdateCarPage implements OnInit {
       return reject('Sin ubicación válida');
     });
   }
+
   private async agregarPrecioAlFormData_Motos(
     formData: FormData
   ): Promise<FormData> {
     return new Promise((resolve, reject) => {
-      // ⚠️ Validar que el precio exista y sea válido
       if (
         this.precioMoto === null ||
         this.precioMoto === undefined ||
@@ -654,11 +768,11 @@ export class UpdateCarPage implements OnInit {
         return reject(new Error('Precio inválido en moto'));
       }
 
-      // ✅ Agregar el precio al formData
       formData.append('precio', String(this.precioMoto));
       resolve(formData);
     });
   }
+
   enviarDatos_autos(id: string, formData: FormData) {
     this.carsService.putCar(id, formData).subscribe({
       next: async (res: any) => {
@@ -683,12 +797,13 @@ export class UpdateCarPage implements OnInit {
       },
     });
   }
+
   enviarDatos_motos(id: string, formData: FormData) {
     this.motosService.putMoto(id, formData).subscribe({
       next: async (res: any) => {
         this.generalService.alert(
           'Éxito',
-          'Moto actualizado correctamente.',
+          'Moto actualizada correctamente.',
           'success'
         );
         await this.restablecerDatos();
@@ -724,6 +839,7 @@ export class UpdateCarPage implements OnInit {
 
     this.restablecer = true;
   }
+
   regresar() {
     if (this.tipo_veiculo === 'autos') {
       this.router.navigate(['/mis-autos']);
@@ -731,6 +847,7 @@ export class UpdateCarPage implements OnInit {
       this.router.navigate(['/mis-motos']);
     }
   }
+
   eliminarVersion(index: number) {
     const versionEliminada = this.auto.version[index];
 
@@ -743,30 +860,31 @@ export class UpdateCarPage implements OnInit {
       }
     );
   }
+
   async restablecerDatos() {
     this.restablecer = false;
-    // this.precioAlterado = false;
     this.imagenPrincipalMostrada = this.auto.imagenPrincipal;
     this.imagenPrincipal_sinFondo = null;
     this.urlsImagenes = [...this.auto.imagenes];
     this.urlsImagenesExistentes = [...this.auto.imagenes];
     this.imagenes = [];
+
     // 🏎 Autos: restablece versiones
     if (this.tipo_veiculo === 'autos') {
       this.auto.version = JSON.parse(JSON.stringify(this.versionesOriginales));
     }
+
     // 🏍 Motos: restablece precio raíz
     if (this.tipo_veiculo === 'motos') {
       this.precioMoto = this.auto.precio ?? null;
     }
+
     // ----
     this.loteSeleccionado = null;
     this.ubicacionesLoteSeleccionado = [];
     this.direccionSeleccionada = null;
     this.ubicacionSeleccionada = null;
 
-    // Restaurar según los datos originales del auto
-    // Restaurar según los datos originales del auto
     if (this.auto.lote) {
       this.tipoSeleccionado = 'lote';
       this.loteSeleccionado = this.auto.lote._id;
@@ -775,7 +893,6 @@ export class UpdateCarPage implements OnInit {
       if (this.ubicacionesLoteSeleccionado.length === 1) {
         this.direccionSeleccionada = this.ubicacionesLoteSeleccionado[0];
       } else {
-        // ✅ Buscar y seleccionar la ubicación original
         if (this.direccionSeleccionadaActual) {
           const index = this.ubicacionesLoteSeleccionado.findIndex(
             (dir) =>
@@ -804,6 +921,7 @@ export class UpdateCarPage implements OnInit {
       ];
     }
   }
+
   getLotes(tipo: 'all' | 'mios') {
     this.registroService.allLotes(tipo).subscribe({
       next: async (res) => {
@@ -824,6 +942,7 @@ export class UpdateCarPage implements OnInit {
       },
     });
   }
+
   seleccionarLote(loteId: string) {
     this.loteSeleccionado = loteId;
     const lote = this.lotes.find(l => l._id === loteId);
@@ -831,6 +950,7 @@ export class UpdateCarPage implements OnInit {
     this.leerLatLng();
     this.restablecer = true;
   }
+
   async seleccionarUbicacion() {
     const modal = await this.modalController.create({
       component: MapaComponent,
@@ -855,9 +975,12 @@ export class UpdateCarPage implements OnInit {
       }
     }
   }
+
   seleccionarTipo(tipo: 'particular' | 'lote') {
     this.tipoSeleccionado = tipo;
+    this.restablecer = true; // marcar cambios
   }
+
   leerLatLng() {
     if (this.ubicacionesLoteSeleccionado.length === 1) {
       this.direccionSeleccionada = this.ubicacionesLoteSeleccionado[0];
@@ -905,8 +1028,31 @@ export class UpdateCarPage implements OnInit {
     }
 
   }
+
   onUbicacionChange(event: any) {
     this.restablecer = true;
   }
 
+  // ✅ para marcar el formulario como sucio desde inputs simples
+  markDirty() {
+    this.restablecer = true;
+  }
+
+  // ==== Handlers para footer SIEMPRE visible ====
+  onGuardarClick(): void {
+    if (!this.auto?._id) return;
+    if (!this.restablecer) {
+      this.generalService.alert('Sin cambios', 'No hay cambios por guardar.', 'warning');
+      return;
+    }
+    this.alertPutCar(this.auto._id);
+  }
+
+  onRestablecerClick(): void {
+    if (!this.restablecer) {
+      this.generalService.alert('Nada que restablecer', 'No has modificado nada.', 'info');
+      return;
+    }
+    this.restablecerDatos();
+  }
 }
