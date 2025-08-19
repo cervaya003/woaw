@@ -19,11 +19,20 @@ import { ActivatedRoute, Router } from '@angular/router';
 export class LotesPage implements OnInit {
   public isLoggedIn: boolean = false;
   public MyRole: 'admin' | 'lotero' | 'vendedor' | 'cliente' | null = null;
+
   addLote: boolean = false;
   terminoBusqueda: string = '';
+
+  // Datos visibles (según tab activo)
   lotes: any[] = [];
   lotesFiltrados: any[] = [];
   totalLotes: number = 0;
+
+  // Tabs: todos/mios
+  activeTab: 'todos' | 'mios' = 'todos';
+  lotesAll: any[] = [];
+  lotesMine: any[] = [];
+
   mostrarAuto: boolean = false;
   loteSelect: any[] = [];
 
@@ -41,32 +50,45 @@ export class LotesPage implements OnInit {
     this.generalService.tokenExistente$.subscribe((estado) => {
       this.isLoggedIn = estado;
     });
+
     this.generalService.tipoRol$.subscribe((rol) => {
       if (rol === 'admin' || rol === 'lotero' || rol === 'vendedor' || rol === 'cliente') {
         this.MyRole = rol;
       } else {
-        this.generalService.eliminarToken();
-        this.generalService.alert(
-          '¡Saliste de tu sesión Error - 707!',
-          '¡Hasta pronto!',
-          'info'
-        );
+        this.MyRole = null; // usuarios no logueados o rol desconocido
       }
+      // Trae lotes cuando ya conocemos (o no) el rol
+      this.getLotes();
     });
-    this.getLotes();
   }
+
   add_lote() {
     this.addLote = !this.addLote;
   }
 
   getLotes() {
-    const tipo = this.MyRole === 'admin' ? 'all' : 'mios';
-    this.loteservice.getlotes(tipo).subscribe({
+    // Siempre trae TODOS
+    this.loteservice.getlotes('all').subscribe({
       next: async (res) => {
-        // console.log(res);
-        this.lotes = res.lotes;
-        this.totalLotes = this.lotes.length;
-        this.filtrarLotes();
+        this.lotesAll = res?.lotes || [];
+
+        // Si es admin/lotero, también trae MIS lotes
+        if (this.MyRole === 'admin' || this.MyRole === 'lotero') {
+          this.loteservice.getlotes('mios').subscribe({
+            next: async (res2) => {
+              this.lotesMine = res2?.lotes || [];
+              this.applyTab(this.activeTab); // respeta el tab activo
+            },
+            error: async () => {
+              this.lotesMine = [];
+              this.applyTab('todos');
+            }
+          });
+        } else {
+          // Otros roles o visitantes: solo "todos"
+          this.lotesMine = [];
+          this.applyTab('todos');
+        }
       },
       error: async (error) => {
         await this.generalService.loadingDismiss();
@@ -78,6 +100,14 @@ export class LotesPage implements OnInit {
       },
     });
   }
+
+  applyTab(tab: 'todos' | 'mios') {
+    this.activeTab = tab;
+    const base = (tab === 'mios') ? this.lotesMine : this.lotesAll;
+    this.lotes = base;
+    this.filtrarLotes(); // usa el término actual y actualiza total
+  }
+
   getFechaBonita(fecha: string): string {
     const opciones: Intl.DateTimeFormatOptions = {
       day: '2-digit',
@@ -86,6 +116,7 @@ export class LotesPage implements OnInit {
     };
     return new Date(fecha).toLocaleDateString('es-MX', opciones);
   }
+
   doRefresh(event: any) {
     this.getLotes();
     this.addLote = false;
@@ -93,23 +124,38 @@ export class LotesPage implements OnInit {
       event.target.complete();
     }, 1500);
   }
+
   filtrarLotes() {
     const termino = this.terminoBusqueda.toLowerCase().trim();
+    const base = (this.activeTab === 'mios') ? this.lotesMine : this.lotesAll;
+
     if (!termino) {
-      this.lotesFiltrados = [...this.lotes];
+      this.lotesFiltrados = [...base];
+      this.totalLotes = this.lotesFiltrados.length;
       return;
     }
 
-    this.lotesFiltrados = this.lotes.filter((lote) =>
-      lote.nombre?.toLowerCase().includes(termino) ||
-      lote.direccion?.ciudad?.toLowerCase().includes(termino) ||
-      lote.direccion?.estado?.toLowerCase().includes(termino)
-    );
+    this.lotesFiltrados = base.filter((lote) => {
+      // direccion puede ser objeto o arreglo; tomamos el primero si es arreglo
+      const dir = Array.isArray(lote?.direccion) ? lote.direccion[0] : lote?.direccion;
+      const nombre = (lote?.nombre || '').toLowerCase();
+      const ciudad = (dir?.ciudad || '').toLowerCase();
+      const estado = (dir?.estado || '').toLowerCase();
+
+      return (
+        nombre.includes(termino) ||
+        ciudad.includes(termino) ||
+        estado.includes(termino)
+      );
+    });
+
+    this.totalLotes = this.lotesFiltrados.length;
   }
+
   mostrarAutos(lote: any) {
-    const nombreURL = encodeURIComponent(lote.nombre || '');
-    localStorage.setItem('origenLote', `/lote/${nombreURL}/${lote._id}`);
-    this.router.navigate(['/lote', nombreURL, lote._id]);
+    const nombreURL = encodeURIComponent(lote?.nombre || '');
+    localStorage.setItem('origenLote', `/lote/${nombreURL}/${lote?._id}`);
+    this.router.navigate(['/lote', nombreURL, lote?._id]);
   }
 
   BackLote() {

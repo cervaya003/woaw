@@ -17,6 +17,16 @@
           placeholder="Buscar lote..." debounce="300" class="buscador-lotes">
         </ion-searchbar>
 
+        <ion-segment *ngIf="MyRole === 'admin' || MyRole === 'lotero'" [value]="activeTab"
+          (ionChange)="applyTab($event.detail.value === 'mios' ? 'mios' : 'todos')">
+          <ion-segment-button value="todos">
+            Todos ({{ lotesAll.length }})
+          </ion-segment-button>
+          <ion-segment-button value="mios">
+            Mis lotes ({{ lotesMine.length }})
+          </ion-segment-button>
+        </ion-segment>
+
         <!-- Título -->
         <h2 class="titulo-lotes">{{ totalLotes }} Resultados</h2>
 
@@ -45,7 +55,7 @@
 
               <ion-card-subtitle class="lote-subtitle clamp-2">
                 <ion-icon name="car-sport-outline"></ion-icon>
-                Total: {{ lote.conteoCoches.total }}
+                Total: {{ lote.conteoCoches?.total }}
               </ion-card-subtitle>
             </ion-card-header>
           </ion-card>
@@ -53,19 +63,10 @@
       </ion-row>
     </ion-grid>
 
-
-
-
     <div class="no-lotes" *ngIf="!addLote && lotesFiltrados.length === 0">
       <ion-icon name="business-outline" class="no-icon"></ion-icon>
       <p>No hay lotes disponibles</p>
     </div>
-
-    <!--  <ion-button *ngIf="mostrarAuto" fill="clear" size="large" class="back-button" (click)="BackLote()">
-      <ion-icon slot="icon-only" name="arrow-back-outline"></ion-icon>
-    </ion-button> -->
-
-    <!-- <app-vehiculos [lote]="loteSelect" ></app-vehiculos> -->
 
   </div>
 

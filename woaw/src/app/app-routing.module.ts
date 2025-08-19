@@ -117,7 +117,8 @@ const routes: Routes = [
   },
   {
     path: 'lotes',
-    loadChildren: () => import('./pages/lotes/lotes.module').then(m => m.LotesPageModule)
+    loadChildren: () => import('./pages/lotes/lotes.module').then(m => m.LotesPageModule),
+    data: { title: 'lotes | woaw' }
   },
   {
     path: 'renta-coches',

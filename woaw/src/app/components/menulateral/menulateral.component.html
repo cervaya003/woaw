@@ -24,18 +24,17 @@
         <ion-icon name="add-outline" color="danger"></ion-icon>
         Publicar
       </ion-item>
-      <ion-item *ngIf="isLoggedIn && (MyRole == 'admin' || MyRole == 'vendedor')" button
+      <ion-item *ngIf="isLoggedIn && (MyRole == 'admin' || MyRole == 'vendedor' || MyRole == 'lotero')" button
         (click)="redirecion('mis-autos')">
         <ion-icon name="car-sport-outline" color="danger"></ion-icon>
         Mis autos
       </ion-item>
-      <ion-item *ngIf="isLoggedIn && (MyRole == 'admin' || MyRole == 'vendedor')" button
+      <ion-item *ngIf="isLoggedIn && (MyRole == 'admin' || MyRole == 'vendedor'|| MyRole == 'lotero')" button
         (click)="redirecion('mis-motos')">
         <ion-icon name="bicycle-outline" color="danger"></ion-icon>
         Mis motos
       </ion-item>
-      <ion-item *ngIf="isLoggedIn && (MyRole == 'admin' || MyRole == 'lotero')"
-       (click)="redirecion('lotes')" button>
+      <ion-item (click)="redirecion('lotes')" button>
         <ion-icon name="business-outline" color="danger"></ion-icon>
         Lotes
       </ion-item>
