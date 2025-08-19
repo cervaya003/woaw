@@ -11,11 +11,11 @@
       </div>
     </ion-buttons>
 
-    <ion-buttons slot="end" *ngIf="!esDispositivoMovil">
-      <ion-searchbar [(ngModel)]="terminoBusqueda" (ionInput)="filtrarPorBusqueda()"
-        placeholder="marca, modelo, año o versión" debounce="100" animated class="buscador-escritorio">
-      </ion-searchbar>
-    </ion-buttons>
+    <!-- 🔹 Buscador de escritorio fuera de ion-buttons -->
+    <ion-searchbar *ngIf="!esDispositivoMovil" slot="end" [(ngModel)]="terminoBusqueda"
+      (ionInput)="filtrarPorBusqueda()" placeholder="marca, modelo, año o versión" debounce="100" animated
+      class="buscador-escritorio">
+    </ion-searchbar>
   </ion-toolbar>
 
   <!-- SOLO EN MÓVIL: barra separada para buscador -->

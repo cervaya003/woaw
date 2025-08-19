@@ -111,7 +111,7 @@ export class ContactosService {
     nombreCompleto = `${usuario.nombre} ${usuario.apellidos}`.toUpperCase();
 
     const mensaje = encodeURIComponent(
-      `Hola, le escribe un asesor de GOAUTOS. Su vehículo ha generado interés:\n\n🚗 *${marca} ${modelo} ${anio}*\n\nConsulte su publicación:\n https://wo-aw.com/ficha/${tipo}/${id}`
+      `Hola, le escribe un asesor de WOAW. Su vehículo ha generado interés:\n\n🚗 *${marca} ${modelo} ${anio}*\n\nConsulte su publicación:\n https://wo-aw.com/ficha/${tipo}/${id}`
     );
 
     const url = `https://api.whatsapp.com/send?phone=${this.telefonoFijo}&text=${mensaje}`;
@@ -186,7 +186,7 @@ export class ContactosService {
       auto.usuarioId?.rol?.name === 'admin' &&
       auto.tipoVenta != 'nuevo'
     ) {
-      // a goAutos
+      // a WOAW
       telefonoVariable = environment.telefonoFijo;
     } else if (
       auto.lote === null &&
@@ -200,7 +200,7 @@ export class ContactosService {
       nombre = auto.lote.nombre
       id = auto.lote._id
       // al lotero
-      telefonoVariable = `+52${auto.lote?.telefonoContacto}${auto.lote?._id}${auto.lote?.nombre}`;
+      telefonoVariable = `+52${auto.lote?.telefonoContacto}`;
       // console.log('estoy aqui')
     }
 
@@ -208,7 +208,7 @@ export class ContactosService {
 
     if (this.MyRole === 'admin' && this.isLoggedIn) {
       mensaje = encodeURIComponent(
-        `Su vehículo ha generado interés en GoAutos:\n\n` +
+        `Su vehículo ha generado interés en Woaw:\n\n` +
         `🚗 *${auto.marca} ${auto.modelo} ${auto.anio}*\n\n` +
         `🔗 https://wo-aw.com/ficha/${tipo_veiculo}/${auto._id}`
       );
@@ -283,7 +283,7 @@ export class ContactosService {
       `🚗 *${auto.marca} ${auto.modelo} ${auto.anio}*\n` +
       (versionesTexto ? `🧩 Versiones:\n${versionesTexto}\n` : '') +
       `${precioTexto}\n` +
-      `🔗 Ver en GOAUTOS: https://wo-aw.com/ficha/${tipo}/${auto._id}`;
+      `🔗 Ver en WOAW: https://wo-aw.com/ficha/${tipo}/${auto._id}`;
 
     try {
       await Share.share({
@@ -444,15 +444,15 @@ export class ContactosService {
         break;
 
       case 'facebook':
-        url = `https://www.facebook.com/goautosqro`;
+        url = ``;
         break;
 
       case 'instagram':
-        url = `https://www.instagram.com/goautosmx/`;
+        url = ``;
         break;
 
       case 'tiktok':
-        url = `https://www.tiktok.com/@wo-aw.com`;
+        url = ``;
         break;
 
       default:

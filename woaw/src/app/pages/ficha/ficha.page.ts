@@ -116,7 +116,7 @@ export class FichaPage implements OnInit {
         nombre: v.Name,
         precio: v.Precio,
       }));
-
+      
       this.versiones.sort((a, b) => a.precio - b.precio);
       this.versionSeleccionada = this.versiones[0];
       this.auto.precioDesde = this.versiones[0]?.precio;
@@ -389,6 +389,7 @@ export class FichaPage implements OnInit {
   autosURL(id: any) {
     this.carsService.getCar(id).subscribe({
       next: async (res: any) => {
+        //console.log(res);
         this.auto = res;
         if (this.auto.lote == null) {
           this.tipoAlSubir = 'particular';
