@@ -67,7 +67,7 @@ export class InicioPage implements OnInit {
     private activatedRoute: ActivatedRoute,
     private registroService: RegistroService,
     private menuCtrl: MenuController,
-  ) {}
+  ) { }
 
   async ngOnInit() {
     // this.generalService.presentToast('hey')

@@ -533,10 +533,9 @@ export class CarsService {
         this.generalService.loadingDismiss();
 
         const parametro =
-          tipoBusqueda === 'tipoVehiculo' ? 'tipoVehiculo' : 'keywords';
-        const url = `${
-          environment.api_key
-        }/vehiculos?${parametro}=${encodeURIComponent(palabra)}`;
+          tipoBusqueda === 'tipoVehiculo' ? `/cars/vehiculos?tipoVehiculo=${palabra}` : `/vehiculos?keywords=${palabra}`;
+        const url = `${environment.api_key
+          }${parametro}`;
 
         return this.http.get(url, { headers });
       }),
@@ -547,7 +546,14 @@ export class CarsService {
 
 /**
 
+        return this.http.get(
+          `${environment.api_key}/cars/vehiculos?tipoVenta=seminuevo`,
+          {
+            headers,
+          }
+        );
 
+        /vehiculos?
 
 
 exports.removeBackgroundBuffer = async (req, res) => {

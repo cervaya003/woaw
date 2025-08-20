@@ -16,8 +16,7 @@
       <br>
       <img *ngIf="mostrarContenido.imagen != null" [src]="mostrarContenido.imagen" alt="Imagen ilustrativa"
         [ngClass]="{ 'animar-izquierda': animarImagen }" />
-      <div class="texto-izquierdo" [ngClass]="{ 'animar-arriba': animarTexto }">
-        <!-- <h2>{{ mostrarContenido.titulo }}</h2> -->
+      <div class="texto-izquierdo" [ngClass]="{ 'animar-arriba': animarTexto }"> 
         <p>{{ mostrarContenido.texto }}</p>
       </div>
     </div>

@@ -62,7 +62,9 @@ export class LoginComponent implements OnInit {
         this.generalService.loadingDismiss();
         if (res.token && res.user) {
           this.generalService.guardarCredenciales(res.token, res.user);
-          this.router.navigate(['/home']);
+          setTimeout(() => {
+            this.router.navigate(['/home']);
+          }, 1200);
           this.generalService.alert(
             'Bienvenido a Go Autos',
             'Inicio de sesión exitoso',
@@ -120,6 +122,7 @@ export class LoginComponent implements OnInit {
       next: (res: any) => {
         this.generalService.loadingDismiss();
         if (res.token && res.user) {
+          console.log('Login exitoso con Google:', res);
           this.generalService.guardarCredenciales(res.token, res.user);
           this.router.navigate(['/home']);
           this.generalService.alert(
@@ -129,7 +132,7 @@ export class LoginComponent implements OnInit {
           );
         } else {
           this.generalService.alert(
-            'Error de conexión',
+            ' Error en registro',
             'Ups, algo salió mal, vuelve a intentarlo',
             'danger'
           );

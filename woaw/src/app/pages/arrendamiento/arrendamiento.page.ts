@@ -141,7 +141,7 @@ export class ArrendamientoPage implements OnInit {
   GetMarcas_camiones() {
     this.carsService.GetMarcasCamiones().subscribe({
       next: (res: any[]) => {
-        console.log(res);
+        //console.log(res);
         this.opcionesCamiones = res.map((marca) => ({ ...marca, imagenValida: true, tipo: 'camion' }));
       },
       error: (err) => {
@@ -199,7 +199,7 @@ export class ArrendamientoPage implements OnInit {
 
     this.modelosConVersiones = [];
     const anio = new Date().getFullYear();
-    const marca = this.marcaSeleccionada?.key ?? this.marcaSeleccionada?._id;
+    const marca = this.marcaSeleccionada?.key ?? this.marcaSeleccionada?.nombre;
 
     if (!marca) {
       console.warn('No se ha seleccionado ninguna marca válida.');
@@ -233,7 +233,7 @@ export class ArrendamientoPage implements OnInit {
     });
   }
   enviarSolicitud(tipo: 'Wh' | 'Email') {
-    const marca = this.marcaSeleccionada?.key ?? this.marcaSeleccionada?._id;
+    const marca = this.marcaSeleccionada?.key ?? this.marcaSeleccionada?.nombre;
 
     if (!marca) {
       this.generalService.alert('Selecciona una Marca', 'Selecciona una marca.', 'warning');
@@ -290,7 +290,6 @@ export class ArrendamientoPage implements OnInit {
         await this.generalService.loading('Enviando Email...');
         this.contactosService.Enviar_Datos_email(body).subscribe({
           next: (ret) => {
-            console.log('✅ Email enviado con éxito', ret);
             this.generalService.loadingDismiss();
             this.generalService.alert(
               '¡Datos enviados!',
