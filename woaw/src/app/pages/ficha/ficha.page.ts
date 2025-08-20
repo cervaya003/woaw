@@ -1,9 +1,8 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { Router, NavigationStart } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { GeneralService } from '../../services/general.service';
 import { ModalController } from '@ionic/angular';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { CarsService } from './../../services/cars.service';
 import { MotosService } from './../../services/motos.service';
 import { ContactosService } from './../../services/contactos.service';
@@ -35,6 +34,7 @@ export class FichaPage implements OnInit {
   especificacionesAuto: any[] = [];
   tipo: string = '';
   public tipo_veiculo: string = '';
+
   @ViewChild('mapAutoContainer', { static: false })
   mapAutoContainer!: ElementRef;
   mapAuto!: google.maps.Map;
@@ -72,7 +72,7 @@ export class FichaPage implements OnInit {
     private seoService: SeoService,
     public motosService: MotosService,
     private location: Location
-  ) { }
+  ) {}
 
   async ngOnInit() {
     this.generalService.tokenExistente$.subscribe((estado) => {
@@ -88,6 +88,7 @@ export class FichaPage implements OnInit {
     });
     await this.obtenerAuto();
   }
+
   async obtenerAuto() {
     this.tipo_veiculo = this.route.snapshot.paramMap.get('tipo') ?? '';
     this.idvehiculo = this.route.snapshot.paramMap.get('id');
@@ -98,6 +99,7 @@ export class FichaPage implements OnInit {
       this.motosURL(this.idvehiculo);
     }
   }
+
   async seo() {
     if (this.auto?.marca && this.auto?.modelo && this.auto?.anio) {
       const titulo = `${this.auto.marca} ${this.auto.modelo} ${this.auto.anio} en venta | Go Autos`;
@@ -107,6 +109,7 @@ export class FichaPage implements OnInit {
       );
     }
   }
+
   async mostrarauto() {
     this.tipo = (this.auto.tipoVenta || '').toLowerCase();
     this.imagenSeleccionada = this.auto?.imagenes?.[0] || '';
@@ -116,7 +119,7 @@ export class FichaPage implements OnInit {
         nombre: v.Name,
         precio: v.Precio,
       }));
-      
+
       this.versiones.sort((a, b) => a.precio - b.precio);
       this.versionSeleccionada = this.versiones[0];
       this.auto.precioDesde = this.versiones[0]?.precio;
@@ -145,6 +148,7 @@ export class FichaPage implements OnInit {
     }
     this.mostrarmapa();
   }
+
   mostrarmapa() {
     const { lat, lng, ciudad, estado } = this.auto.ubicacion;
     const position = new google.maps.LatLng(lat, lng);
@@ -153,14 +157,13 @@ export class FichaPage implements OnInit {
       this.mapAuto = new google.maps.Map(this.mapAutoContainer.nativeElement, {
         center: position,
         zoom: this.tipoAlSubir === 'particular' ? 14 : 16,
-        styles:
-        [
+        styles: [
           {
-            featureType: "poi",
-            elementType: "all",
-            stylers: [{ visibility: "off" }]
-          }
-        ]
+            featureType: 'poi',
+            elementType: 'all',
+            stylers: [{ visibility: 'off' }],
+          },
+        ],
       });
 
       if (this.tipoAlSubir === 'lote') {
@@ -189,7 +192,8 @@ export class FichaPage implements OnInit {
     }, 300);
 
     // Obtener dirección aproximada
-    this.generalService.obtenerDireccionDesdeCoordenadas(lat, lng)
+    this.generalService
+      .obtenerDireccionDesdeCoordenadas(lat, lng)
       .then((direccion) => {
         this.direccionCompleta = direccion;
       })
@@ -198,6 +202,8 @@ export class FichaPage implements OnInit {
         console.warn(error);
       });
   }
+
+  // === Botones de “regresar” ===
   async regresar() {
     let origenLote = localStorage.getItem('origenLote');
     if (origenLote !== null) {
@@ -222,12 +228,10 @@ export class FichaPage implements OnInit {
         }
         break;
       }
-
       case 'motos': {
         await this.router.navigate(['/m-nuevos']);
         break;
       }
-
       default: {
         console.warn(
           'Tipo de vehículo o tipo de venta no reconocido:',
@@ -239,35 +243,56 @@ export class FichaPage implements OnInit {
       }
     }
   }
+
+  // Botón simple de la navbar: vuelve si hay historial; si no, ve a /home
+  volver() {
+    // 1) Si Angular tiene navigationId > 1, hubo navegación previa en esta sesión.
+    const navId = (history.state && (history.state as any).navigationId) || 0;
+    if (navId > 1) {
+      this.location.back();
+      return;
+    }
+
+    // 2) Si el referrer es del mismo origen, intenta back del browser.
+    if (document.referrer) {
+      try {
+        const ref = new URL(document.referrer);
+        if (ref.origin === location.origin) {
+          window.history.back();
+          return;
+        }
+      } catch {
+        /* ignore */
+      }
+    }
+
+    // 3) Como último recurso, vete al home.
+    this.router.navigate(['/home']); // ajusta si tu ruta de inicio es distinta
+  }
+
   getEspecificacionesPorVersion(version: string) {
     const anio = this.auto.anio;
     const marca = this.auto.marca;
     const modelo = this.auto.modelo;
     const vers = version;
 
-    this.carsService
-      .EspesificacionesVersionFicha(anio, marca, modelo, vers)
-      .subscribe({
-        next: (res: any[]) => {
-          this.generalService.loadingDismiss();
-          this.especificacionesAuto = res;
-        },
-        error: (err) => {
-          this.generalService.loadingDismiss();
-          const mensaje =
-            err?.error?.message ||
-            'Ocurrió un error al traer las especificaciones';
-          this.generalService.alert(
-            'Error al obtener especificaciones',
-            mensaje,
-            'danger'
-          );
-        },
-        complete: () => {
-          this.generalService.loadingDismiss();
-        },
-      });
+    this.carsService.EspesificacionesVersionFicha(anio, marca, modelo, vers).subscribe({
+      next: (res: any[]) => {
+        this.generalService.loadingDismiss();
+        this.especificacionesAuto = res;
+      },
+      error: (err) => {
+        this.generalService.loadingDismiss();
+        const mensaje =
+          err?.error?.message || 'Ocurrió un error al traer las especificaciones';
+        this.generalService.alert('Error al obtener especificaciones', mensaje, 'danger');
+      },
+      complete: () => {
+        this.generalService.loadingDismiss();
+      },
+    });
   }
+
   onSeleccionarVersion(version: { nombre: string; precio: number }) {
     this.versionSeleccionada = version;
     this.getEspecificacionesPorVersion(version.nombre);
@@ -276,6 +301,7 @@ export class FichaPage implements OnInit {
       this.mostrarCotizador = true;
     });
   }
+
   getEstiloColor(color: string): any {
     const mapaColores: { [key: string]: string } = {
       Blanco: '#FFFFFF',
@@ -318,46 +344,40 @@ export class FichaPage implements OnInit {
 
     return isImagen
       ? {
-        backgroundImage: mapaColores[color],
-        backgroundSize: 'cover',
-        color: '#fff',
-      }
+          backgroundImage: mapaColores[color],
+          backgroundSize: 'cover',
+          color: '#fff',
+        }
       : {
-        backgroundColor: mapaColores[color],
-        color: this.colorEsClaro(mapaColores[color]) ? '#000' : '#fff',
-      };
+          backgroundColor: mapaColores[color],
+          color: this.colorEsClaro(mapaColores[color]) ? '#000' : '#fff',
+        };
   }
-  colorEsClaro(hex: string): boolean {
-    // Elimina el '#' si existe
-    hex = hex.replace('#', '');
 
-    // Convierte a valores RGB
+  colorEsClaro(hex: string): boolean {
+    hex = hex.replace('#', '');
     const r = parseInt(hex.substring(0, 2), 16);
     const g = parseInt(hex.substring(2, 4), 16);
     const b = parseInt(hex.substring(4, 6), 16);
-
-    // Luminancia percibida
     const luminancia = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+    return luminancia > 0.7;
+  }
 
-    return luminancia > 0.7; // Si es muy claro, regresa true
-  }
   onImagenPrincipalCargada() {
-    // setTimeout(() => {
     this.imagenPrincipalCargada = true;
-    // }, 10000);
   }
+
   onMiniaturaCargada(url: string) {
     this.miniaturasCargadas[url] = true;
   }
-  // ##----- -----
+
   onTouchStart(event: TouchEvent) {
     this.touchStartX = event.touches[0].clientX;
   }
+
   onTouchEnd(event: TouchEvent) {
     const touchEndX = event.changedTouches[0].clientX;
     const diff = touchEndX - this.touchStartX;
-
-    // Umbral mínimo de deslizamiento
     if (Math.abs(diff) > 50) {
       if (diff < 0) {
         this.cambiarImagen('siguiente');
@@ -366,43 +386,37 @@ export class FichaPage implements OnInit {
       }
     }
   }
+
   cambiarImagen(direccion: 'siguiente' | 'anterior') {
     const index = this.auto.imagenes.indexOf(this.imagenSeleccionada);
     const total = this.auto.imagenes.length;
-
     if (direccion === 'siguiente' && index < total - 1) {
       this.imagenSeleccionada = this.auto.imagenes[index + 1];
     } else if (direccion === 'anterior' && index > 0) {
       this.imagenSeleccionada = this.auto.imagenes[index - 1];
     }
   }
+
   get descripcionCorta(): string {
     if (!this.auto?.descripcion) return '';
-
     const palabras = this.auto.descripcion.split(' ');
     if (palabras.length <= 20 || this.descripcionExpandida) {
       return this.auto.descripcion;
     }
     return palabras.slice(0, 20).join(' ') + '...';
   }
-  // ## -----
+
   autosURL(id: any) {
     this.carsService.getCar(id).subscribe({
       next: async (res: any) => {
-        //console.log(res);
         this.auto = res;
-        if (this.auto.lote == null) {
-          this.tipoAlSubir = 'particular';
-        } else {
-          this.tipoAlSubir = 'lote';
-        }
+        this.tipoAlSubir = this.auto.lote == null ? 'particular' : 'lote';
         const storage = localStorage.getItem('user');
         const usuario = storage ? JSON.parse(storage) : null;
         this.esMio = !!usuario && this.auto.usuarioId?.email === usuario.email;
         await this.mostrarauto();
         this.spinner = true;
         await this.seo();
-        // console.log('Vehículo cargado:', this.auto);
       },
       error: (err) => {
         const mensaje = err?.error?.message || 'Ocurrió un error inesperado';
@@ -413,15 +427,12 @@ export class FichaPage implements OnInit {
       },
     });
   }
+
   motosURL(id: any) {
     this.motosService.getMoto(id).subscribe({
       next: async (res: any) => {
         this.auto = res;
-        if (this.auto.lote == null) {
-          this.tipoAlSubir = 'particular';
-        } else {
-          this.tipoAlSubir = 'lote';
-        }
+        this.tipoAlSubir = this.auto.lote == null ? 'particular' : 'lote';
         const storage = localStorage.getItem('user');
         const usuario = storage ? JSON.parse(storage) : null;
         this.esMio = !!usuario && this.auto.usuarioId?.email === usuario.email;
@@ -439,6 +450,7 @@ export class FichaPage implements OnInit {
       },
     });
   }
+
   async aviso(num: number) {
     if (num === 0) {
       let modal;
@@ -449,7 +461,6 @@ export class FichaPage implements OnInit {
             onAceptar: () => this.setAceptado('aviso', true),
             onCancelar: () => this.setAceptado('aviso', false),
           },
-
           breakpoints: [0, 0.7, 1],
           cssClass: 'modal-perfil',
           initialBreakpoint: 0.7,
@@ -501,8 +512,8 @@ export class FichaPage implements OnInit {
       await modal.present();
     }
   }
+
   setAceptado(tipo: 'aviso' | 'terminos', valor: boolean) {
-    console.log(tipo, valor);
     if (valor === true) {
       localStorage.setItem(tipo, 'true');
     } else {
@@ -511,19 +522,17 @@ export class FichaPage implements OnInit {
         aviso: 'Aviso de Privacidad',
         terminos: 'Términos y Condiciones',
       };
-
       const mensajes: Record<typeof tipo, string> = {
         aviso:
           'Por tu seguridad y protección de datos, es necesario aceptar el Aviso de Privacidad.',
         terminos:
           'Debes aceptar los Términos y Condiciones para usar este servicio de forma segura y responsable.',
       };
-
       this.generalService.alert(titulos[tipo], mensajes[tipo], 'info');
-
       localStorage.removeItem(tipo);
     }
   }
+
   async abrirModalArrendamiento(aut: object) {
     let modal;
     if (this.dispositivo === 'telefono') {
@@ -544,28 +553,23 @@ export class FichaPage implements OnInit {
         cssClass: 'modal-consentimiento',
       });
     }
-
     await modal.present();
   }
+
   async abrirModalImagen(imagenes: string[], indice: number = 0) {
-    console.log(imagenes, indice);
     const modal = await this.modalCtrl.create({
       component: ImagenesVehiculoComponent,
-      componentProps: {
-        imagenes,
-        indice,
-      },
+      componentProps: { imagenes, indice },
       cssClass: 'modal-imagen-personalizado',
       backdropDismiss: true,
       showBackdrop: true,
     });
-
     await modal.present();
   }
-    mostrarAutos(lote: any) {
+
+  mostrarAutos(lote: any) {
     const nombreURL = encodeURIComponent(lote.nombre || '');
     localStorage.setItem('origenLote', `/lote/${nombreURL}/${lote._id}`);
     this.router.navigate(['/lote', nombreURL, lote._id]);
   }
-
 }

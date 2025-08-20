@@ -1,27 +1,55 @@
-<div class="contenedor-scroll-marcas">
-  <ion-list>
-    <ion-item *ngFor="let opcion of opciones" (click)="seleccionar(opcion)">
-      <ng-container *ngIf="!opcion.quitar; else quitar">
-        <div
-          *ngIf="tipo === 'color'"
-          class="color-dot"
-          [ngStyle]="{ 'background-color': obtenerColorHex(opcion.label) }"
-        ></div>
+<div class="popover-wrap">
+  <!-- fila superior: buscador + botón X -->
+  <div class="top-row">
+    <ion-searchbar
+      class="searchbar-soft"
+      placeholder="Buscar..."
+      [debounce]="150"
+      [value]="query"
+      (ionInput)="onSearchChange($event)"
+      (ionClear)="onClear()">
+    </ion-searchbar>
 
-        <img
-          *ngIf="tipo === 'marca' && opcion.imageUrl"
-          [src]="opcion.imageUrl"
-          alt="{{ opcion.label }}"
-          class="logo-marca"
-          (error)="ocultarImagen($event)"
-        />
+    <!-- botón X (quitar filtro) -->
+    <button
+      class="icon-clear"
+      (click)="seleccionar({ quitar: true, label: 'Quitar filtro X' })"
+      title="Quitar filtro"
+      aria-label="Quitar filtro">
+      <ion-icon name="close-outline"></ion-icon>
+    </button>
+  </div>
 
-        <ion-label>{{ opcion.label }}</ion-label>
-      </ng-container>
+  <div class="divider"></div>
 
-      <ng-template #quitar>
-        <ion-label color="danger"><strong>{{ opcion.label }}</strong></ion-label>
-      </ng-template>
-    </ion-item>
-  </ion-list>
+  <div class="contenedor-scroll-marcas">
+    <ion-list>
+      <ion-item *ngFor="let opcion of opcionesFiltradas; trackBy: trackByKey" (click)="seleccionar(opcion)">
+        <ng-container *ngIf="!opcion.quitar; else quitar">
+          <div
+            *ngIf="tipo === 'color'"
+            class="color-dot"
+            [ngStyle]="{ 'background-color': obtenerColorHex(opcion.label) }">
+          </div>
+
+          <img
+            *ngIf="tipo === 'marca' && opcion.imageUrl"
+            [src]="opcion.imageUrl"
+            alt="{{ opcion.label }}"
+            class="logo-marca"
+            (error)="ocultarImagen($event)" />
+
+          <ion-label>{{ opcion.label }}</ion-label>
+        </ng-container>
+
+        <ng-template #quitar>
+          <ion-label color="danger"><strong>{{ opcion.label }}</strong></ion-label>
+        </ng-template>
+      </ion-item>
+
+      <ion-item *ngIf="opcionesFiltradas.length === 0">
+        <ion-label>Sin resultados</ion-label>
+      </ion-item>
+    </ion-list>
+  </div>
 </div>

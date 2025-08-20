@@ -1,4 +1,3 @@
-<!-- src/app/pages/lote/lote.page.html -->
 <ion-header>
   <ion-toolbar color="dark">
     <div class="perfil-header">
@@ -13,7 +12,10 @@
   </ion-toolbar>
 </ion-header>
 
-<app-acomodo [totalAutos]="totalAutos" (ordenCambio)="ordenarAutos($event)" [titulo]="'Lote'">
+<app-acomodo
+  [totalAutos]="totalAutos"
+  (ordenCambio)="ordenarAutos($event)"
+  [titulo]="'Lote'">
 </app-acomodo>
 
 <ion-content [fullscreen]="true" class="ion-padding">
@@ -56,30 +58,57 @@
     <ion-row>
       <!-- Columna lateral de filtros -->
       <ion-col size="12" size-md="3">
-        <app-menu [filtros]="filtros" [filtrosAplicados]="filtrosAplicados"
-          (mostrarOpciones)="mostrarOpciones($event.event, $event.tipo)" (limpiarFiltros)="resetearFiltros()">
+        <app-menu
+          [filtros]="filtros"
+          [filtrosAplicados]="filtrosAplicados"
+          (mostrarOpciones)="mostrarOpciones($event.event, $event.tipo)"
+          (limpiarFiltros)="resetearFiltros()">
         </app-menu>
       </ion-col>
 
+      <!-- Catálogo -->
       <ion-col size="12" size-md="9">
         <div class="catalogo-autos">
-          <!-- ✅ Mensaje vacío: considera autos + motos -->
-          <div *ngIf="((carrosDelLote?.length || 0) + (motosDelLote?.length || 0)) === 0" class="mensaje-vacio">
+          <!-- Mensaje vacío basado en la lista paginada -->
+          <div *ngIf="autosPaginados?.length === 0" class="mensaje-vacio">
             <ion-icon name="car-sport-outline" class="icono-mensaje"></ion-icon><br />
             No se encontraron vehículos para esta sección.
           </div>
 
-          <!-- ✅ Una sola “lista/columna”: autos y motos juntos -->
-          <ng-container *ngFor="let auto of (carrosDelLote || []).concat(motosDelLote || [])">
+          <!-- Lista (autos + motos ya combinados/filtrados/paginados) -->
+          <ng-container *ngFor="let auto of autosPaginados">
             <app-cartas [auto]="auto"></app-cartas>
           </ng-container>
         </div>
+
+        <!-- Paginación reducida con “...” -->
+        <div class="contenedor-paginacion" *ngIf="totalPaginas > 1">
+          <p class="titulo-paginacion">más</p>
+          <div class="paginacion-scroll">
+            <div class="paginacion">
+              <!-- Flecha anterior -->
+              <button class="pagina" (click)="setPagina(paginaActual - 1)" [disabled]="paginaActual === 1">‹</button>
+
+              <!-- Botones dinámicos con ellipsis -->
+              <ng-container *ngFor="let i of paginasReducidas">
+                <button
+                  *ngIf="esNumero(i)"
+                  class="pagina"
+                  [class.activa]="paginaActual === i"
+                  (click)="setPagina(i)">
+                  {{ i }}
+                </button>
+                <span *ngIf="!esNumero(i)" class="ellipsis">...</span>
+              </ng-container>
+
+              <!-- Flecha siguiente -->
+              <button class="pagina" (click)="setPagina(paginaActual + 1)" [disabled]="paginaActual === totalPaginas">›</button>
+            </div>
+          </div>
+        </div>
       </ion-col>
-
-
     </ion-row>
   </ion-grid>
 
   <app-footer></app-footer>
-  <!-- faltaba este cierre -->
 </ion-content>
