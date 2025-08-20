@@ -140,7 +140,15 @@ const routes: Routes = [
     path: 'lote/:nombre/:id',
     loadChildren: () => import('./pages/lote/lote.module').then( m => m.LotePageModule),
     data: { title: 'lotes | woaw' },
+  },  {
+    path: 'politicas',
+    loadChildren: () => import('./pages/politicas/politicas.module').then( m => m.PoliticasPageModule)
   },
+  {
+    path: 'eliminacion-cuenta',
+    loadChildren: () => import('./pages/eliminacion-cuenta/eliminacion-cuenta.module').then( m => m.EliminacionCuentaPageModule)
+  },
+
 
 ];
 
