@@ -1,15 +1,16 @@
 <app-navbar></app-navbar>
 
-<ion-content [fullscreen]="true" class="coming-soon-page">
+<ion-content [fullscreen]="true">
 
   <section class="hero">
+
+    <img class="hero-bg" [src]="imgenPrincipal" alt="" loading="lazy" decoding="async" fetchpriority="low" />
 
     <div class="glow glow-a"></div>
     <div class="glow glow-b"></div>
     <div class="grain"></div>
 
     <div class="container">
-
       <ion-chip class="badge" color="primary">
         <ion-icon name="flash-outline"></ion-icon>
         <ion-label>Próximamente</ion-label>
@@ -41,23 +42,10 @@
         </li>
       </ul>
 
-      <div class="cta">
-        <ion-button size="large" shape="round" color="danger">
-          Muy pronto
-        </ion-button>
-        <!-- <ion-button size="large" shape="round" class="notify">
-          Quiero que me avisen
-        </ion-button> -->
-      </div>
-
-      <!-- <p class="footnote">Lanzamiento Q4 · Aliados certificados</p> -->
+      <!-- <div class="cta">
+        <button ion-button class="btn btn-primary">Muy pronto</button>
+      </div> -->
     </div>
-
-    <img class="hero-bg" [src]="imgenPrincipal" alt="" loading="lazy" decoding="async" fetchpriority="low" />
-
-    <!-- <div class="road">
-      <div class="lane"></div>
-    </div> -->
 
   </section>
 

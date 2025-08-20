@@ -201,7 +201,6 @@ export class ContactosService {
       id = auto.lote._id
       // al lotero
       telefonoVariable = `+52${auto.lote?.telefonoContacto}`;
-      // console.log('estoy aqui')
     }
 
     let mensaje = '';

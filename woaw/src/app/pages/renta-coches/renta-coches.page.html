@@ -1,8 +1,34 @@
 <app-navbar></app-navbar>
-<ion-content [fullscreen]="true" class="imagen-fullscreen">
 
-  <img *ngIf="overlayLoaded" [src]="imgenPrincipal" alt="Seguro de Auto" class="img-responsiva" loading="eager"
-    fetchpriority="high" />
+<ion-content [fullscreen]="true">
+
+  <section class="imagen-fullscreen">
+
+    <img *ngIf="overlayLoaded" [src]="imgenPrincipal" alt="Próximamente WOAW" class="img-responsiva" loading="eager"
+      fetchpriority="high" />
+
+    <div class="hero-overlay">
+      <span class="eyebrow">
+        <span class="dot"></span> Próximamente
+      </span>
+
+      <h1>Renta de autos <span class="brand">WOAW</span></h1>
+      <p class="lead">Muy pronto podrás disfrutar de nuestra nueva experiencia de renta de autos.</p>
+
+      <ul class="chips" role="list" aria-label="ventajas">
+        <li class="chip" role="listitem">Reserva inmediata</li>
+        <li class="chip" role="listitem">Sin depósito</li>
+        <li class="chip" role="listitem">Cobertura básica incluida</li>
+      </ul>
+
+      <div class="cta">
+        <button ion-button class="btn btn-primary">Próximamente</button>
+      </div>
+
+    </div>
+
+  </section>
+
 
   <app-footer></app-footer>
 </ion-content>
