@@ -1,3 +1,70 @@
+/* Contenedor general del popover */
+.popover-wrap {
+  padding: 8px 10px 6px;
+  min-width: 260px;
+}
+
+/* Fila superior: buscador + X */
+.top-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 4px; /* 🔹 espacio lateral para que no pegue a los bordes */
+}
+
+/* Searchbar compacto y suave */
+.searchbar-soft {
+  flex: 1 1 auto;
+  --background: #f6f7f8;
+  --color: #1f2937;
+  --placeholder-color: #9ca3af;
+  --icon-color: #9ca3af;
+  --clear-button-color: #9ca3af;
+  --border-radius: 10px;
+  --box-shadow: 0 1px 0 rgba(0,0,0,0.04), inset 0 0 0 1px #e5e7eb;
+  margin: 0;
+  /* opcional: altura más chica */
+  /* --height: 40px; */
+}
+
+/* Botón X (quitar filtro) al lado del buscador */
+.icon-clear {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  border: 1px solid #f1c3c3;
+  background: #fff5f5;
+  color: #b91c1c;
+  cursor: pointer;
+  transition: all .16s ease-in-out;
+  margin-right: 2px; /* 🔹 espacio extra respecto al borde */
+
+  ion-icon {
+    font-size: 18px;
+    pointer-events: none;
+  }
+
+  &:hover {
+    background: #fee2e2;
+    border-color: #fca5a5;
+    transform: translateY(-1px);
+  }
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+/* Línea divisora sutil */
+.divider {
+  height: 1px;
+  background: #ededed;
+  margin: 8px 0 6px;
+}
+
+/* Lista y items */
 ion-list {
   padding: 0;
 }
@@ -7,56 +74,47 @@ ion-item {
   --inner-border-width: 0px;
   --padding-start: 12px;
   --padding-end: 12px;
-  --min-height: 48px;
-  font-size: 16px;
+  --min-height: 46px;
+  font-size: 15.5px;
   display: flex;
   align-items: center;
   gap: 10px;
   cursor: pointer;
-  transition: background-color 0.2s ease-in-out;
-  border-radius: 6px;
+  transition: background-color 0.16s ease-in-out, transform 0.12s ease-in-out;
+  border-radius: 8px;
 }
 
 ion-item:hover {
-  --background-color: #db272723 !important;
-  transform: scale(1.01);
+  --background: #fdf2f2;
+  transform: translateY(-1px);
 }
 
 ion-item ion-label {
   margin: 0;
   font-weight: 500;
-  color: #333;
+  color: #374151;
 }
 
+/* Logo de marca */
 .logo-marca {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   object-fit: contain;
   background: white;
-  transition: transform 0.2s ease;
+  transition: transform 0.16s ease;
   margin-right: 2px;
 }
 
 ion-item:hover .logo-marca {
-  transform: scale(1.05);
+  transform: scale(1.06);
 }
 
-
+/* Scroll del listado */
 .contenedor-scroll-marcas {
   max-height: 50vh;
   overflow-y: auto;
-  padding: 8px 0;
+  padding: 4px 0 2px;
   scrollbar-width: thin;
-}
-
-
-.color-dot {
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  margin-right: 12px;
-  border: 1px solid #ccc;
-  display: inline-block;
 }
 
 .contenedor-scroll-marcas::-webkit-scrollbar {
@@ -64,6 +122,19 @@ ion-item:hover .logo-marca {
 }
 
 .contenedor-scroll-marcas::-webkit-scrollbar-thumb {
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: rgba(0, 0, 0, 0.18);
   border-radius: 4px;
 }
+
+/* Dot de color */
+.color-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  margin-right: 10px;
+  border: 1px solid #d1d5db;
+  display: inline-block;
+}
+
+/* (Opcional) – si tenías un .btn-clear anterior, ya no se usa.
+   Lo puedes borrar o dejar por si lo reutilizas en otro popover. */
