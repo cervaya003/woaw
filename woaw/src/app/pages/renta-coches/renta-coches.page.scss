@@ -1,10 +1,10 @@
 .imagen-fullscreen {
   position: relative;
-  min-height: clamp(820px, 80vh, 820px); 
-  overflow: hidden;   
-  
+  min-height: clamp(820px, 80vh, 820px);
+  overflow: hidden;
+
   @media(max-width: 960px) {
-    min-height: clamp(500px, 80vh, 500px);
+    min-height: clamp(520px, 80vh, 520px);
   }
 }
 
@@ -12,23 +12,32 @@
   position: absolute;
   inset: 0;
   width: 100%;
-  height: 100%;              
+  height: 100%;
   object-fit: cover;
   filter: saturate(1.05) contrast(1.04) brightness(.9);
   z-index: 0;
 }
+
+
+
+
+
+
 
 .hero-overlay {
   position: relative;
   z-index: 1;
   width: min(1100px, 92vw);
   margin: 0 auto;
-  padding: clamp(72px, 12vh, 140px) 0 80px;
+  padding: clamp(72px, 12vh, 15px) 0 80px;
   color: #f5f7fb;
   font-weight: bolder;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+
+  text-align: center;
+  align-items: center;
+  justify-content: center;
 
   &::before {
     content: "";
@@ -38,85 +47,129 @@
     z-index: -1;
     border-radius: 28px;
   }
-}
 
-.eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  background: rgba(255, 255, 255, .08);
-  border: 1px solid rgba(255, 255, 255, .12);
-  border-radius: 999px;
-  width: max-content;
-  color: #ffffff;
-  font-weight: bolder;
 
-  .dot {
-    width: 8px;
-    height: 8px;
+  .eyebrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, .08);
+    border: 1px solid rgba(255, 255, 255, .12);
     border-radius: 999px;
-    background: #f59e0b;
+    width: max-content;
+    color: #ffffff;
+    font-weight: bolder;
+    font-size: 15px;
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: #ff0000;
+    }
+
+    @media (max-width: 1025px) {
+      font-size: 12px;
+    }
+
+    @media (max-width: 768px) {
+      font-size: 10px;
+    }
+  }
+
+  h1 {
+    margin: 4px 0 0;
+    font-weight: 800;
+    font-size: 60px;
+    line-height: 1.05;
+
+    @media (max-width: 1025px) {
+      font-size: 45px;
+    }
+
+    @media (max-width: 768px) {
+      font-size: 30px;
+    }
+
+    .brand {
+      background: linear-gradient(90deg, red, rgb(135, 4, 4));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 0 0 transparent;
+    }
+  }
+
+  .lead {
+    color: #ffffff;
+    font-weight: bolder;
+    font-size: clamp(15px, 1.7vw, 18px);
+  }
+
+  .chips {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+    padding: 0;
+    list-style: none;
+    justify-content: center;
+    font-size: 15px;
+
+    @media (max-width: 1025px) {
+      font-size: 13px;
+    }
+
+    @media (max-width: 768px) {
+      font-size: 11px;
+    }
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .06);
+    border: 1px solid rgba(255, 255, 255, .12);
+  }
+
+  .cta {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+  }
+
+  .btn {
+    padding: 14px 18px;
+    border-radius: 14px;
+    border: 1px solid transparent;
+    font-weight: 600;
+    letter-spacing: .2px;
+    cursor: pointer;
+  }
+
+  .btn-primary {
+    background: #ff2d20;
+    color: #fff;
+    font-weight: bolder;
+    box-shadow: 0 12px 30px rgba(255, 45, 32, .35);
   }
 }
 
-h1 {
-  margin: 4px 0 0;
-  font-size: clamp(28px, 5vw, 52px);
-  line-height: 1.05;
 
-  .brand {
-    color: #ff2d20;
-  }
-}
 
-.lead {
-  color: #ffffff;
-  font-weight: bolder;
-  font-size: clamp(15px, 1.7vw, 18px);
-}
 
-.chips {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-top: 4px;
-  padding: 0;
-  list-style: none;
-}
 
-.chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 14px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, .06);
-  border: 1px solid rgba(255, 255, 255, .12);
-}
 
-.cta {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-top: 10px;
-}
 
-.btn {
-  padding: 14px 18px;
-  border-radius: 14px;
-  border: 1px solid transparent;
-  font-weight: 600;
-  letter-spacing: .2px;
-  cursor: pointer;
-}
 
-.btn-primary {
-  background: #ff2d20;
-  color: #fff;
-  font-weight: bolder;
-  box-shadow: 0 12px 30px rgba(255, 45, 32, .35);
-}
+
 
 .btn-ghost {
   background: rgba(255, 255, 255, .04);

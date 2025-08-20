@@ -15,7 +15,7 @@
   position: absolute;
   inset: 0;
   width: 100%;
-  height: 100%;              
+  height: 100%;
   object-fit: cover;
   filter: saturate(1.05) contrast(1.04) brightness(.9);
   z-index: 0;
@@ -54,6 +54,7 @@
   // box-shadow: 0 12px 30px rgba(255, 45, 32, .35);
 }
 
+
 .container {
   position: relative;
   z-index: 2;
@@ -61,6 +62,32 @@
   width: min(960px, 100%);
   text-align: center;
   background: transparent;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.eyebrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: rgba(216, 8, 8, 0.08);
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 999px;
+  width: max-content;
+  margin: 0 auto;
+  color: #000000;
+  font-weight: bolder;
+
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    background: #ff0000;
+  }
 }
 
 .badge {
