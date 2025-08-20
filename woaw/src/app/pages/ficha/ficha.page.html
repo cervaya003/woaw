@@ -2,7 +2,7 @@
   <ion-toolbar color="dark">
     <ion-buttons slot="start">
       <div class="perfil-header">
-        <button class="btn-regresar" (click)="regresar()">
+        <button class="btn-regresar" (click)="volver()">
           <ion-icon name="arrow-back-outline"></ion-icon>
         </button>
 
@@ -10,7 +10,7 @@
         <span *ngIf="auto" class="titulo-perfil">{{ auto.marca }} {{ auto.modelo }} {{ auto.anio }}</span>
       </div>
     </ion-buttons>
-
+    
     <ion-buttons slot="end">
       <ion-button (click)="regresar()">
         <ion-icon name="close-outline"></ion-icon>
