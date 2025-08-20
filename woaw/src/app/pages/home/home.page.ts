@@ -48,6 +48,7 @@ export class HomePage implements OnInit {
   overlayLoaded = false;
 
   imgenPrincipal: string = '';
+  imgenArrendamiento: string = '';
 
   constructor(
     private popoverCtrl: PopoverController,
@@ -176,13 +177,16 @@ export class HomePage implements OnInit {
 
   async cargaimagen() {
     this.imgenPrincipal = '/assets/autos/publicidad/principal4.webp';
+    this.imgenArrendamiento = '/assets/autos/publicidad/arrendamiento.png';
     try {
       await this.generalService.preloadHero(this.imgenPrincipal);
+      await this.generalService.preloadHero(this.imgenArrendamiento);
       this.overlayLoaded = true;
     } catch {
       this.overlayLoaded = true;
     }
   }
+
 }
 
 /**

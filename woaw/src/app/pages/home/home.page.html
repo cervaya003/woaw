@@ -59,24 +59,20 @@
     </div>
   </div>
 
-  <!-- <div class="cartas-sobre-imagen"> -->
   <app-principal></app-principal>
-  <!-- </div> -->
 
-  <!-- <a class="titulo-arrendamiento" href="/arrendamiento">
-    ARRENDAMIENTO PURO
-  </a> -->
 
-  <a href="/arrendamiento">
-    <div class="banner-img">
-      <img src='/assets/autos/publicidad/arrendamientop.png' alt="banner" loading="lazy" />
-      <!-- <link rel="preload" as="image" href="/assets/autos/publicidad/arrendamientop.avif" fetchpriority="high" /> -->
+  <div class="banner-img">
+    <img [src]="imgenArrendamiento" alt="Banner arrendamiento puro" loading="lazy" />
+    <div class="arr-overlay">
+      <h1>Arrendamiento puro</h1>
+      <p>Paga por usar, no por poseer. 100% deducible, cuotas fijas y renovación cada 12–48 meses.</p>
+      <a class="btn-cta" href="/arrendamiento">
+        Conocer más <ion-icon name="arrow-forward-outline"></ion-icon>
+      </a>
     </div>
-  </a>
+  </div>
 
-  <!-- <div class="banner-img" [class.fade-in]="aplicandoTransicion">
-    <img [src]="fondoActual" alt="banner" />
-  </div> -->
 
   <br><br>
 
