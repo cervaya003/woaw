@@ -20,7 +20,7 @@ import { CarsService } from '../../services/cars.service';
 import { ContactosService } from './../../services/contactos.service';
 import { ImagenesVehiculoComponent } from './../../components/modal/imagenes-vehiculo/imagenes-vehiculo.component';
 import { ModalController } from '@ionic/angular';
-
+import { MotosService } from '../../services/motos.service';
 @Component({
   selector: 'app-cartas',
   templateUrl: './cartas.component.html',
@@ -50,8 +50,9 @@ export class CartasComponent implements OnInit {
     public carsService: CarsService,
     public contactosService: ContactosService,
     private modalCtrl: ModalController,
-    private route: ActivatedRoute
-  ) {}
+    private route: ActivatedRoute,
+    public motosService: MotosService
+  ) { }
 
   ngOnInit() {
     this.generalService.tokenExistente$.subscribe((estado) => {
@@ -122,14 +123,16 @@ export class CartasComponent implements OnInit {
       },
     });
   }
-  toggleEstado(auto: any, event: Event) {
-    event.stopPropagation(); // Evita que se dispare el evento de clic en el auto
-    this.carsService.toggleEstadoVehiculo(auto._id).subscribe({
-      next: (res: any) => {
-        // Actualiza visualmente el estado del auto
-        auto.estadoVehiculo =
-          auto.estadoVehiculo === 'disponible' ? 'vendido' : 'disponible';
 
+  toggleEstado(auto: any, event: Event) {
+    event.stopPropagation();
+
+    const esMoto = this.ubicacion === 'mis_motos';
+    const svc = esMoto ? this.motosService : this.carsService;
+
+    svc.toggleEstadoVehiculo(auto._id).subscribe({
+      next: () => {
+        auto.estadoVehiculo = auto.estadoVehiculo === 'disponible' ? 'vendido' : 'disponible';
         this.generalService.alert(
           'Estado actualizado',
           `Estado cambiado a "${auto.estadoVehiculo.toUpperCase()}".`,
@@ -138,6 +141,7 @@ export class CartasComponent implements OnInit {
       },
       error: (err) => {
         const mensaje = err?.error?.message || 'Error al cambiar el estado.';
+        this.generalService.alert('Error', mensaje, 'danger');
       },
     });
   }

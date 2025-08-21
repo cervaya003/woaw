@@ -139,7 +139,7 @@ async misMotos() {
     });
   }
   regresar() {
-    this.router.navigate(['/nuevos']);
+    this.router.navigate(['/home']);
   }
   handleRefrescarAutos(ubicacion: string) {
     this.misMotos();

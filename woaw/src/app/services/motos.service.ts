@@ -17,7 +17,7 @@ export class MotosService {
     private generalService: GeneralService,
     private router: Router,
     private headersService: HeadersService
-  ) {}
+  ) { }
 
   //  ## ----- ----- -----
   //  ## ----- ----- -----
@@ -129,6 +129,21 @@ export class MotosService {
       catchError((error) => this.headersService.handleError(error))
     );
   }
+  
+  toggleEstadoVehiculo(carId: string): Observable<any> {
+    return from(this.headersService.obtenerToken()).pipe(
+      switchMap((token) => {
+        const headers = this.headersService.getJsonHeaders(token);
+        return this.http.patch(
+          `${environment.api_key}/motos/motos/${carId}/toggle-estado`,
+          {},
+          { headers }
+        );
+      }),
+      catchError((error) => this.headersService.handleError(error))
+    );
+  }
+
   getMarcas_all(): Observable<any> {
     // this.generalService.loading('Obteniendo marcas...');
     return from(this.headersService.obtenerToken()).pipe(
