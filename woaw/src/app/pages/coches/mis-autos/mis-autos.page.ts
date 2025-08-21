@@ -325,7 +325,7 @@ export class MisAutosPage implements OnInit {
     }, 100);
   }
   regresar() {
-    this.router.navigate(['/nuevos']);
+    this.router.navigate(['/home']);
   }
   esNumero(valor: any): valor is number {
     return typeof valor === 'number';
