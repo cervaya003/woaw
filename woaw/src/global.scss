@@ -36,6 +36,13 @@
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 // @import "@ionic/angular/css/palettes/dark.system.css";
 
+
+
+
+
+
+
+
 ion-refresher {
   --color: red !important;
 
@@ -73,44 +80,6 @@ ion-toolbar {
 //
 
 
-
-// .custom-alert .alert-head {
-//   display: flex;
-//   justify-content: justify;
-//   width: 100%;
-// }
-
-// .custom-alert .alert-title {
-//   font-size: 18px;
-//   font-weight: 600;
-//   margin-bottom: 8px;
-//   width: 100%;
-//   text-align: center;
-// }
-
-// .custom-alert .alert-message {
-//   font-size: 14px;
-//   color: #555;
-//   line-height: 1.4;
-//   margin-bottom: 10px;
-//   width: 100%;
-//   text-align: center;
-// }
-
-// .custom-alert .alert-button-group {
-//   display: flex;
-//   justify-content: center;
-//   width: 100%;
-// }
-
-// ## ----- ----
-//  .:::.   .:::.
-// :::::::.:::::::
-// :::::::::::::::
-//  '::::::::::::'
-//    '::::::::'
-//      '::::'
-//        ':'
 
 
 .custom-alert.danger .alert-wrapper {
@@ -328,5 +297,3 @@ app-tabs {
 //     background: #f1f1f1;
 //   }
 // }
-
-

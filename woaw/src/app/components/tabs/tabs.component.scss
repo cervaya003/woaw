@@ -35,3 +35,33 @@ ion-tab-button.activo {
 }
 
 
+
+ion-tab-bar {
+  overflow: visible;       
+  height: 64px;
+}
+
+.boton-plus {
+  position: relative;
+
+  width: 46px;
+  height: 46px;
+  aspect-ratio: 1 / 1;       
+  border-radius: 50%;
+
+  flex: 0 0 auto;
+  padding: 0;
+  --padding-start: 0;
+  --padding-end: 0;
+
+  background: #d62828;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+
+  ion-icon {
+    font-size: 28px;
+    color: #fff;
+  }
+}

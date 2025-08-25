@@ -30,12 +30,20 @@
       </ng-container>
     </ion-note>
 
-
     <button type="submit" class="btn-login">Iniciar sesión</button>
     <br>
-    <div id="google-button"></div>
+
+    <!-- botón web (GIS) -->
+    <div #googleBtn id="google-button" *ngIf="!isNative"></div>
+
+    <!-- botón nativo (Android) -->
+    <div class="google-btn" *ngIf="isNative" (click)="loginWithGoogleMobile()">
+      <img src="assets/icon/Google_logo.png" alt="Google" class="google-icon" />
+      <span>Continuar con Google</span>
+    </div>
 
   </form>
+
 </div>
 
 <!-- fill="outline" -->

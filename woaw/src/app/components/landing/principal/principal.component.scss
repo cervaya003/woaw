@@ -14,10 +14,24 @@
   h2 {
     font-family: 'Poppins', sans-serif;
     font-weight: 900;
-    color: red;
-    font-size: 18px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #d62828;
+    font-size: 22px;
     margin: 0;
+    line-height: 1.2;
+    text-shadow: 1px 2px 6px rgba(0, 0, 0, 0.25);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+
+    ion-icon {
+      font-size: 12px;
+      margin-top: 1px;
+    }
   }
+
 
   .subrayado-rojo {
     width: 100%;

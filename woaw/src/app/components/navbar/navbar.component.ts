@@ -110,20 +110,23 @@ export class NavbarComponent implements OnInit {
   redirecion_logo() {
     this.router.navigate(['/home']);
   }
-  async abrirPopover(event: any, tipo: 'Autos' | 'Motos' | 'Camiones') {
-    const popover = await this.popoverCtrl.create({
-      component: MenuVehiculosComponent,
-      event,
-      translucent: true,
-      showBackdrop: false,
-      cssClass: 'popover-coches',
-      componentProps: {
-        tipoVehiculo: tipo,
-      },
-    });
-
-    await popover.present();
+  async abrirPopover(tipo: 'Autos' | 'Motos' | 'Camiones') {
+    this.router.navigate(['/menu-vehiculos', tipo.toLowerCase()]);
   }
+  // async abrirPopover(event: any, tipo: 'Autos' | 'Motos' | 'Camiones') {
+  //   const popover = await this.popoverCtrl.create({
+  //     component: MenuVehiculosComponent,
+  //     event,
+  //     translucent: true,
+  //     showBackdrop: false,
+  //     cssClass: 'popover-coches',
+  //     componentProps: {
+  //       tipoVehiculo: tipo,
+  //     },
+  //   });
+
+  //   await popover.present();
+  // }
   // ----- -----
   async abrirHistorial(ev: Event) {
     if (this.popoverRef) return;

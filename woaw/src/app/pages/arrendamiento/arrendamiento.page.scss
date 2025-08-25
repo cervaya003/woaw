@@ -416,29 +416,31 @@ ion-select {
 }
 
 .banner-img {
-  width: 100%;
-  height: auto;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
+  position: fixed;
+  inset: 0;              
+  z-index: 0;           
+  pointer-events: none; 
+  display: block;
 
   img {
+    position: absolute;
+    inset: 0;
     width: 100%;
-    height: auto;
+    height: 100%;
     object-fit: cover;
-    max-width: 100%;
+    display: block;
+    max-width: none;
     max-height: none;
-    opacity: 0.9;
-    // transition: opacity 0.5s ease-in-out;
-  }
-
-  @media (max-width: 1024px) {
-    img {
-      object-fit: contain;
-    }
   }
 }
+
+
+.contenedor_arrendamiento{ 
+  position: relative;
+  z-index: 1;            
+  background: #ffffff7d;      
+}
+
 
 .seccion-pasos {
   max-width: 1400px;

@@ -10,8 +10,9 @@
 
   // Teléfonos (menos de 768px)
   @media (max-width: 767px) {
-    bottom: 65px !important;
+    bottom: 70px !important;
     right: 15px !important;
+    // display: none !important;
   }
 }
 

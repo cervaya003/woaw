@@ -303,8 +303,20 @@ export class GeneralService {
         done(false);
       };
     });
-  }
 
+  }
+  preloadVideo(src: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const video = document.createElement('video');
+      video.src = src;
+      video.preload = 'auto';
+      video.muted = true;   
+      video.playsInline = true;
+
+      video.oncanplaythrough = () => resolve();
+      video.onerror = () => reject();
+    });
+  }
 
   // ## ----- ----- -----
   // Esto nunca se hace ☢️☢️☢️

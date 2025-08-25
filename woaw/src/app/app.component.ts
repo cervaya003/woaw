@@ -12,6 +12,10 @@ import { filter, map, mergeMap } from 'rxjs/operators';
 import { PerfilComponent } from '../app/components/modal/perfil/perfil.component';
 import { ModalController } from '@ionic/angular';
 
+import { Capacitor } from '@capacitor/core';
+
+
+
 declare let gtag: Function;
 
 @Component({
@@ -61,6 +65,15 @@ export class AppComponent {
       this.MyRole = rol;
     });
   }
+  async initializeApp() {
+    await this.platform.ready();
+
+    if (this.platform.is('android')) {
+      await StatusBar.setOverlaysWebView({ overlay: false });
+      await StatusBar.setBackgroundColor({ color: '#D62828' }); // rojo
+      await StatusBar.setStyle({ style: Style.Dark });          // iconos clarosƒ
+    }
+  }
   get mostrarTabs(): boolean {
     const rutasSinTabs = ['/update-car/', '/new-car'];
     return (
@@ -69,14 +82,9 @@ export class AppComponent {
     );
   }
   get mostrarBtnAll(): boolean {
-    const rutasSinTabs = ['/update-car/', '/arrendamiento','/lote-edit/'];
+    const rutasSinTabs = ['/update-car/', '/arrendamiento', '/lote-edit/'];
     const rutaActual = this.router.url;
     return !rutasSinTabs.some(ruta => rutaActual.startsWith(ruta));
-  }
-  async initializeApp() {
-    await this.platform.ready();
-    await StatusBar.setOverlaysWebView({ overlay: false });
-    await StatusBar.setStyle({ style: Style.Light });
   }
   setDynamicTitle() {
     this.router.events
@@ -103,14 +111,13 @@ export class AppComponent {
       await new Promise((resolve) => setTimeout(resolve, 200));
       this.zone.run(() => this.router.navigateByUrl('/' + url));
     } catch (err) {
-      console.error('❌ Redirección fallida:', err);
+      console.error('Redirección fallida:', err);
     }
   }
   cerrarMenu() {
     this.menuCtrl.close('menuLateral');
   }
   async logout() {
-    // console.log(nuevaImagen);
     this.generalService.confirmarAccion(
       '¿Deseas salir?',
       '¿Estás seguro de que deseas salir de la aplicación?',
@@ -130,7 +137,6 @@ export class AppComponent {
     );
   }
   async abrirModalPerfil() {
-    // Mostrar spinner
     await this.generalService.loading('Cargando...');
     this.cerrarMenu();
     setTimeout(async () => {
@@ -147,61 +153,6 @@ export class AppComponent {
       await modal.present();
     }, 500);
   }
+
+
 }
-/**
- *
-import { Component } from '@angular/core';
-import { Platform } from '@ionic/angular';
-import { StatusBar, Style } from '@capacitor/status-bar';
-import { GeneralService } from './services/general.service';
-import { Router, NavigationEnd } from '@angular/router';
-import { Location } from '@angular/common';
-import { filter } from 'rxjs/operators';
-
-@Component({
-  selector: 'app-root',
-  templateUrl: 'app.component.html',
-  styleUrls: ['app.component.scss'],
-  standalone: false,
-})
-export class AppComponent {
-  esDispositivoMovil: boolean = false;
-
-  constructor(
-    private platform: Platform,
-    private generalService: GeneralService,
-    private router: Router,
-    private location: Location
-  ) {
-    this.generalService.dispositivo$.subscribe((tipo) => {
-      this.esDispositivoMovil = tipo === 'telefono' || tipo === 'tablet';
-    });
-
-    // Restaurar última ruta si recargó en "/"
-    this.platform.ready().then(() => {
-      const rutaGuardada = localStorage.getItem('ultimaRuta');
-      if (window.location.pathname === '/' && rutaGuardada && rutaGuardada !== '/') {
-        this.router.navigateByUrl(rutaGuardada);
-      }
-    });
-
-    // Cada vez que navega, guardar y ocultar la ruta
-    this.router.events
-      .pipe(filter((event) => event instanceof NavigationEnd))
-      .subscribe((event: NavigationEnd) => {
-        // Guardar la ruta real
-        localStorage.setItem('ultimaRuta', event.urlAfterRedirects);
-        // Limpiar la URL visual
-        this.location.replaceState('/');
-      });
-
-    this.initializeApp();
-  }
-
-  async initializeApp() {
-    await StatusBar.setOverlaysWebView({ overlay: false });
-    await StatusBar.setStyle({ style: Style.Light });
-  }
-}
-
- */

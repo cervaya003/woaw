@@ -1,7 +1,9 @@
 <!-- BLOQUE USADOS -->
 <section class="bloque-carrusel-minicartas">
   <div class="contenedor_texto_minicartas">
-    <h2 (click)="verMas('/usados')">Coches Usados</h2>
+    <h2 (click)="verMas('/usados')">Usados
+      <ion-icon name="arrow-forward-outline"></ion-icon>
+    </h2>
   </div>
   <div class="carrusel-autos_minicartas">
 
@@ -47,7 +49,9 @@
 <!-- BLOQUE SEMINUEVOS -->
 <section class="bloque-carrusel-minicartas">
   <div class="contenedor_texto_minicartas">
-    <h2 (click)="verMas('/seminuevos')">Coches Seminuevos</h2>
+    <h2 (click)="verMas('/seminuevos')">Seminuevos
+      <ion-icon name="arrow-forward-outline"></ion-icon>
+    </h2>
   </div>
 
   <div class="carrusel-autos_minicartas">
@@ -94,7 +98,9 @@
 <!-- BLOQUE NUEVOS -->
 <section class="bloque-carrusel-minicartas">
   <div class="contenedor_texto_minicartas">
-    <h2 (click)="verMas('/nuevos')">Coches Nuevos</h2>
+    <h2 (click)="verMas('/nuevos')">Nuevos
+      <ion-icon name="arrow-forward-outline"></ion-icon>
+    </h2>
   </div>
   <div class="carrusel-autos_minicartas">
     <div class="card-auto" *ngFor="let auto of autosNuevos" (click)="onCardClick(auto, $event)">
@@ -121,9 +127,11 @@
 </section>
 
 <!-- BLOQUE MOTOS -->
-<section class="bloque-carrusel-minicartas">
+<section *ngIf="tipo == 'all'" class="bloque-carrusel-minicartas">
   <div class="contenedor_texto_minicartas">
-    <h2 (click)="verMas('/m-nuevos')">Motos</h2>
+    <h2 (click)="verMas('/m-nuevos')">Motos
+      <ion-icon name="arrow-forward-outline"></ion-icon>
+    </h2>
   </div>
   <div class="carrusel-autos_minicartas">
     <div class="card-auto" *ngFor="let moto of misMotos" (click)="onCardClickM(moto, $event)">

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 import { Observable, from } from 'rxjs';
 import { switchMap, catchError } from 'rxjs/operators';
@@ -9,95 +9,113 @@ import { HeadersService } from './headers.service';
   providedIn: 'root',
 })
 export class RegistroService {
+  //  Base de la API disponible como propiedad pública para tu componente
+  private readonly _baseUrl = this.normalizeBaseUrl(environment.api_key);
+  public get baseUrl(): string {
+    return this._baseUrl;
+  }
+
   constructor(
     private http: HttpClient,
     private headersService: HeadersService
   ) { }
 
-  //  ## ----- ----- -----
-  //  ## ----- ----- -----
+  // ───────────────────────────────────────────────
+  // Helpers
+  // ───────────────────────────────────────────────
+  private normalizeBaseUrl(url: string): string {
+    return (url || '').replace(/\/+$/, '');
+  }
+
+  public getGoogleMobileRedirectUrl(platform: 'android' | 'ios' = 'android'): string {
+    return `${this.baseUrl}/auth/google/mobile/redirect?platform=${platform}`;
+  }
+
+  // ───────────────────────────────────────────────
+  // Endpoints
+  // ───────────────────────────────────────────────
 
   preregistro(datos: any): Observable<any> {
-    return this.http.post(`${environment.api_key}/users/pre-register`, datos);
+    return this.http.post(`${this.baseUrl}/users/pre-register`, datos);
   }
+
   renvioCodigo(datos: any): Observable<any> {
-    return this.http.post(`${environment.api_key}/users/resend-code`, datos);
+    return this.http.post(`${this.baseUrl}/users/resend-code`, datos);
   }
+
   validacioncodigo(datos: any): Observable<any> {
-    return this.http.post(`${environment.api_key}/users/verify-code`, datos);
+    return this.http.post(`${this.baseUrl}/users/verify-code`, datos);
   }
+
   registro(datos: any): Observable<any> {
-    return this.http.post(`${environment.api_key}/users/register`, datos);
+    return this.http.post(`${this.baseUrl}/users/register`, datos);
   }
+
   // # LOGIN
   login(datos: any): Observable<any> {
-    return this.http.post(`${environment.api_key}/users/login`, datos);
+    return this.http.post(`${this.baseUrl}/users/login`, datos);
   }
-  cambiarPassword(data: {
-    password: string;
-    newPassword: string;
-  }): Observable<any> {
+
+  cambiarPassword(data: { password: string; newPassword: string }): Observable<any> {
     return from(this.headersService.obtenerToken()).pipe(
       switchMap((token) => {
         const headers = this.headersService.getJsonHeaders(token);
-        return this.http.post(
-          `${environment.api_key}/users/change-password`,
-          data,
-          {
-            headers,
-          }
-        );
+        return this.http.post(`${this.baseUrl}/users/change-password`, data, { headers });
       }),
       catchError((error) => this.headersService.handleError(error))
     );
   }
+
   recuperacionEmail(datos: any): Observable<any> {
-    return this.http.post(
-      `${environment.api_key}/users/recover-password`,
-      datos
-    );
+    return this.http.post(`${this.baseUrl}/users/recover-password`, datos);
   }
+
   recuperacioCodigo(datos: any): Observable<any> {
-    return this.http.post(`${environment.api_key}/users/verify-code`, datos);
+    return this.http.post(`${this.baseUrl}/users/verify-code`, datos);
   }
+
   recuperacionFinal(datos: any): Observable<any> {
-    return this.http.post(`${environment.api_key}/users/reset-password`, datos);
+    return this.http.post(`${this.baseUrl}/users/reset-password`, datos);
   }
+
+  // Web: intercambias el idToken (GIS) por tu token propio
   loginConGoogle(idToken: string): Observable<any> {
-    return this.http.post(`${environment.api_key}/users/google-login`, {
-      idToken,
-    });
+    return this.http.post(`${this.baseUrl}/users/google-login`, { idToken });
   }
+
   registroLote(datos: FormData): Observable<any> {
     return from(this.headersService.obtenerToken()).pipe(
       switchMap((token) =>
-        this.http.post(`${environment.api_key}/lotes/add`, datos, {
+        this.http.post(`${this.baseUrl}/lotes/add`, datos, {
           headers: this.headersService.getFormDataHeaders(token),
         })
       ),
       catchError((error) => this.headersService.handleError(error))
     );
   }
+
+  // antes estabas enviando los headers como body
   misLotes(): Observable<any> {
     return from(this.headersService.obtenerToken()).pipe(
       switchMap((token) =>
-        this.http.post(`${environment.api_key}/lotes/mis-lotes`, {
-          headers: this.headersService.getFormDataHeaders(token),
-        })
+        this.http.post(
+          `${this.baseUrl}/lotes/mis-lotes`,
+          {},
+          { headers: this.headersService.getFormDataHeaders(token) }
+        )
       ),
       catchError((error) => this.headersService.handleError(error))
     );
   }
+
   allLotes(tipo: 'all' | 'mios'): Observable<any> {
     return from(this.headersService.obtenerToken()).pipe(
       switchMap((token) => {
         const endpoint = tipo === 'all' ? '/lotes/' : '/lotes/mis-lotes';
         const headers = this.headersService.getFormDataHeaders(token);
-        return this.http.get(`${environment.api_key}${endpoint}`, { headers });
+        return this.http.get(`${this.baseUrl}${endpoint}`, { headers });
       }),
       catchError((error) => this.headersService.handleError(error))
     );
   }
-
-
 }
