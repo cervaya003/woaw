@@ -1,11 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
-import {
-  FormsModule,
-  ReactiveFormsModule,
-  FormBuilder,
-} from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormBuilder } from '@angular/forms';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { MotosService } from '../../../services/motos.service';
@@ -25,7 +21,7 @@ import { ContactosService } from './../../../services/contactos.service';
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class MotosComponent implements OnInit {
-  // Estado visible y lógico (igual que en car.ts)
+  // Estado visible y lógico
   estadoVehiculo: 'Nuevo' | 'Usado' | 'Seminuevo' | '' = '';
   estadoVehiculo_logico: 'nuevo' | 'usado' | 'seminuevo' | 'viejito' | '' = '';
 
@@ -34,109 +30,34 @@ export class MotosComponent implements OnInit {
   @Input() modelo!: string;
   @Input() tipo!: string;
 
-  // Catálogo de versiones / ficha técnica (paridad con car.ts)
+  // (no usamos versiones en motos)
   versiones: any[] = [];
-  versionesDisponibles: boolean = false;
-  esUsadoAntiguo: boolean = false;
-  versionSeleccionada: boolean[] = [];
-  preciosVersiones: { [version: string]: number } = {};
-  versionSeleccionadaTexto: string = '';
-
-  especificacionesVersion: any = {
-    motor: '',
-    cilindrada: '',
-    potencia: '',
-    cilindros: '',
-    combustible: '',
-    transmision: '',
-    traccion: '',
-    pasajeros: '',
-    puertas: '',
-    rines: '',
-    tipoVehiculo: '',
-    extra: [] as string[],
-  };
-
-  camposViejito: Record<string, string> = {
-    motor: '',
-    cilindrada: '',
-    potencia: '',
-    cilindros: '',
-    combustible: '',
-    transmision: '',
-    traccion: '',
-    pasajeros: '',
-    puertas: '',
-    rines: '',
-    tipoVehiculo: '',
-  };
-
-  camposEspecificaciones: string[] = [
-    'motor',
-    'cilindrada',
-    'potencia',
-    'cilindros',
-    'combustible',
-    'transmision',
-    'traccion',
-    'pasajeros',
-    'puertas',
-    'rines',
-    'tipoVehiculo',
-    // 'extra' se maneja aparte si lo usas como array
-  ];
-
-  ejemplosCampos: Record<string, string> = {
-    motor: 'Monocilíndrico 4T',
-    cilindrada: '150cc',
-    potencia: '18 hp',
-    cilindros: '1',
-    combustible: 'Gasolina',
-    transmision: 'Manual 6 vel',
-    traccion: 'Cadena',
-    pasajeros: '2',
-    puertas: '—',
-    rines: '17 pulgadas',
-    tipoVehiculo: 'Deportiva',
-  };
-
-  etiquetasCampos: Record<string, string> = {
-    motor: 'Motor',
-    cilindrada: 'Cilindrada',
-    potencia: 'Potencia',
-    cilindros: 'Cilindros',
-    combustible: 'Combustible',
-    transmision: 'Transmisión',
-    traccion: 'Tracción',
-    pasajeros: 'Pasajeros',
-    puertas: 'Puertas',
-    rines: 'Rines',
-    tipoVehiculo: 'Tipo de vehículo',
-  };
+  versionesDisponibles = false;
+  esUsadoAntiguo = false;
 
   // Ubicación / lote / UI
   ubicacionSeleccionada: [string, string, number, number] | null = null;
   direccionCompleta: string = 'Obteniendo ubicación...';
-  imagenesIntentadas: boolean = false;
+  imagenesIntentadas = false;
 
-  colorSeleccionado: string[] = [];       // nuevo: múltiples
-  colorSeleccionadoUnico: string = '';    // usado: uno
+  // Color: siempre un único valor desde <select>
+  colorSeleccionadoUnico: string = '';
+
   lotes: any[] = [];
   listaAnios: number[] = [];
-  totalLotes: number = 0;
+  totalLotes = 0;
 
-  precio: number = 0;
+  precio = 0;
   placas: string = '';
   kilometraje: number | null = null;
-  descripcion: string = '';
+  descripcion = '';
   moneda: 'MXN' | 'USD' = 'MXN';
-  extrasTexto: string = '';
-  tipoMotor: string = '';
-  cilindrada: string = '';
-  transmision: string = '';
-  combustible: string = '';
-  frenos: string = '';
-  suspension: string = '';
+  tipoMotor = '';
+  cilindrada = '';
+  transmision = '';
+  combustible = '';
+  frenos = '';
+  suspension = '';
 
   public Pregunta: 'no' | 'si' | null = null;
   tipoSeleccionado: 'particular' | 'lote' = 'particular';
@@ -163,10 +84,10 @@ export class MotosComponent implements OnInit {
     { label: 'Turquesa' }, { label: 'Gris Oxford' }, { label: 'Arena' }, { label: 'Grafito' },
     { label: 'Champagne' }, { label: 'Titanio' }, { label: 'Cobre' }, { label: 'Camaleón' },
     { label: 'Perlado' }, { label: 'Mate' }, { label: 'Negro obsidiana' }, { label: 'Blanco perla' },
-    { label: 'Rojo cereza' }, { label: 'Azul eléctrico' }, { label: 'Gris plomo' },
+    { label: 'Rojo cereza' }, { label: 'Azul eléctrico' }, { label: 'Gris plomo' }
   ];
 
-  imagenesValidas: boolean = false;
+  imagenesValidas = false;
   imagenPrincipal: File | null = null;
   imagenesSecundarias: File[] = [];
 
@@ -178,7 +99,7 @@ export class MotosComponent implements OnInit {
     private registroService: RegistroService,
     private motosService: MotosService,
     public ContactosService: ContactosService,
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.generalService.tipoRol$.subscribe((rol) => {
@@ -204,10 +125,10 @@ export class MotosComponent implements OnInit {
       this.tipoSeleccionado = 'particular';
     }
 
-    this.obtenerVersiones(); // define estado lógico también
+    this.definirEstadoVehiculo();
   }
 
-  // ====== Paridad con car.ts ======
+  // ====== Estado por año/rol ======
   definirEstadoVehiculo() {
     const anioActual = new Date().getFullYear();
 
@@ -228,63 +149,15 @@ export class MotosComponent implements OnInit {
       this.estadoVehiculo_logico = 'usado';
     }
 
-    this.esUsadoAntiguo =
-      this.estadoVehiculo === 'Usado' && this.anio < 2008 && this.anio >= 1800;
-  }
-
-  obtenerVersiones() {
-    if (this.modelo && this.anio && this.marca) {
-      const anio = Number(this.anio);
-
-      // Intento de catálogo (si tu servicio lo tiene). El "as any" evita error si no existe el método.
-      const svc: any = this.motosService as any;
-
-      if (svc && typeof svc.GetVersiones === 'function') {
-        svc.GetVersiones(anio, this.marca, this.modelo).subscribe({
-          next: (data: any[]) => {
-            this.versiones = data || [];
-            this.versionesDisponibles = Array.isArray(this.versiones) && this.versiones.length > 0;
-            this.generalService.loadingDismiss();
-            this.definirEstadoVehiculo();
-          },
-          error: (_e: any) => {
-            this.generalService.loadingDismiss();
-            this.versiones = [];
-            this.versionesDisponibles = false;
-            this.definirEstadoVehiculo();
-          },
-        });
-      } else {
-        // Sin endpoint: continua normal con viejito/manual
-        this.versiones = [];
-        this.versionesDisponibles = false;
-        this.definirEstadoVehiculo();
-      }
-    } else {
-      this.definirEstadoVehiculo();
+    // NUEVO: km=0 y no pedir placas
+    if (this.estadoVehiculo_logico === 'nuevo') {
+      this.kilometraje = 0;
+      this.placas = '';
     }
   }
 
-  onSeleccionVersion(version: string) {
-    const svc: any = this.motosService as any;
-    if (this.modelo && this.anio && this.marca && svc && typeof svc.EspesificacionesVersion === 'function') {
-      svc.EspesificacionesVersion(this.anio, this.marca, this.modelo, version).subscribe({
-        next: (data: any) => {
-          this.especificacionesVersion = data?.[0] || null;
-        },
-        error: (_err: any) => {
-          this.generalService.alert('Error', 'No se pudieron obtener las especificaciones. Intenta nuevamente.', 'danger');
-        },
-        complete: () => this.generalService.loadingDismiss(),
-      });
-    } else {
-      this.especificacionesVersion = null;
-    }
-  }
-
-  seleccionarTipo(tipo: 'particular' | 'lote') {
-    this.tipoSeleccionado = tipo;
-  }
+  // ==== Selección de tipo, lotes, ubicación ====
+  seleccionarTipo(tipo: 'particular' | 'lote') { this.tipoSeleccionado = tipo; }
 
   continuar() {
     if (!this.tipoSeleccionado) return;
@@ -412,11 +285,6 @@ export class MotosComponent implements OnInit {
     );
   }
 
-  toggleVersion(index: number, version: string): void {
-    this.versionSeleccionada[index] = !this.versionSeleccionada[index];
-    if (!this.versionSeleccionada[index]) delete this.preciosVersiones[version];
-  }
-
   // ====== Envío ======
   async EnviarVeiculo() {
     let validado = false;
@@ -431,7 +299,7 @@ export class MotosComponent implements OnInit {
       '¿Estás seguro de que deseas enviar esta información?',
       'Confirmar envío',
       async () => { await this.enviarDatos(appdata as FormData); },
-      'Al continuar, confirmas que los datos proporcionados sobre tu vehículo son correctos y estás consciente de que serán publicados.'
+      'Al continuar, confirmas que los datos proporcionados sobre tu vehículo son correctos y serán publicados.'
     );
   }
 
@@ -493,7 +361,7 @@ export class MotosComponent implements OnInit {
   }
 
   async validacionesAntesdeEnviarMoto(): Promise<boolean> {
-    // Ubicación según tipo (igual que car.ts)
+    // Ubicación según tipo
     if (!this.validarUbicacion()) return false;
 
     // Precio
@@ -502,8 +370,8 @@ export class MotosComponent implements OnInit {
       return false;
     }
 
-    // Placas (opcional)
-    if (this.placas && this.placas.trim() !== '') {
+    // Placas (opcional) – NO validar ni requerir en "nuevo"
+    if (this.estadoVehiculo_logico !== 'nuevo' && this.placas && this.placas.trim() !== '') {
       const longitud = this.placas.trim().length;
       const formatoValido = /^[A-Za-z0-9-]+$/.test(this.placas);
       if (longitud < 6 || longitud > 12 || !formatoValido) {
@@ -512,46 +380,43 @@ export class MotosComponent implements OnInit {
       }
     }
 
-    // Kilometraje
-    const kilometrajeValido =
-      this.kilometraje !== null &&
-      Number.isInteger(this.kilometraje) &&
-      this.kilometraje >= 0;
-    if (!kilometrajeValido) {
-      this.generalService.alert('Kilometraje inválido', 'El kilometraje debe ser un número valido entero positivo.', 'warning');
-      return false;
-    }
-    if (this.kilometraje !== null && this.kilometraje > 180000) {
-      this.generalService.alert('Kilometraje elevado', 'Este vehículo tiene más de 180,000 km. Puede ser difícil de vender o requerir mantenimiento importante.', 'info');
-      return false;
-    }
-
-    // Color
-    if (this.estadoVehiculo === 'Nuevo') {
-      if (!this.colorSeleccionado || this.colorSeleccionado.length === 0) {
-        this.generalService.alert('Color requerido', 'Por favor, selecciona al menos un color para el vehículo nuevo.', 'warning');
+    // Kilometraje – solo aplica cuando NO es nuevo
+    if (this.estadoVehiculo_logico !== 'nuevo') {
+      const kilometrajeValido =
+        this.kilometraje !== null &&
+        Number.isInteger(this.kilometraje) &&
+        this.kilometraje >= 0;
+      if (!kilometrajeValido) {
+        this.generalService.alert('Kilometraje inválido', 'El kilometraje debe ser un número entero positivo.', 'warning');
+        return false;
+      }
+      if (this.kilometraje !== null && this.kilometraje > 180000) {
+        this.generalService.alert('Kilometraje elevado', 'Este vehículo tiene más de 180,000 km.', 'info');
         return false;
       }
     } else {
-      if (!this.colorSeleccionadoUnico || this.colorSeleccionadoUnico.trim() === '') {
-        this.generalService.alert('Color requerido', 'Por favor, selecciona un color para el vehículo.', 'warning');
-        return false;
-      }
+      this.kilometraje = 0; // seguridad
+    }
+
+    // Color: SIEMPRE desde el select
+    if (!this.colorSeleccionadoUnico || this.colorSeleccionadoUnico.trim() === '') {
+      this.generalService.alert('Color requerido', 'Selecciona un color.', 'warning');
+      return false;
     }
 
     // Descripción
     if (!this.descripcion || this.descripcion.trim().length === 0) {
-      this.generalService.alert('Descripción requerida', 'Por favor escribe una breve descripción del vehículo.', 'warning');
+      this.generalService.alert('Descripción requerida', 'Escribe una breve descripción.', 'warning');
       return false;
     }
-    if (this.descripcion.trim().length > 100) { // ← coherente con el mensaje
-      this.generalService.alert('Descripción demasiado larga', 'La descripción debe tener máximo 100 caracteres.', 'warning');
+    if (this.descripcion.trim().length > 100) {
+      this.generalService.alert('Descripción demasiado larga', 'Máximo 100 caracteres.', 'warning');
       return false;
     }
 
     // Imágenes
     if (!this.imagenPrincipal) {
-      this.generalService.alert('Falta imagen principal', 'Selecciona una imagen principal para continuar.', 'warning');
+      this.generalService.alert('Falta imagen principal', 'Selecciona una imagen principal.', 'warning');
       return false;
     }
     if (this.estadoVehiculo !== 'Nuevo') {
@@ -560,55 +425,46 @@ export class MotosComponent implements OnInit {
         return false;
       }
       if (this.imagenesSecundarias.length > 10) {
-        this.generalService.alert('Demasiadas imágenes', 'Puedes subir un máximo de 10 imágenes secundarias.', 'warning');
+        this.generalService.alert('Demasiadas imágenes', 'Máximo 10 imágenes secundarias.', 'warning');
         return false;
       }
     }
 
-    // Cilindrada (obligatoria)
+    // Cilindrada
     if (!this.cilindrada || this.cilindrada.trim().length === 0) {
-      this.generalService.alert('Cilindrada requerida', 'Por favor ingresa la cilindrada (ej. 150cc).', 'warning');
+      this.generalService.alert('Cilindrada requerida', 'Ingresa la cilindrada (ej. 150cc).', 'warning');
       return false;
     }
     const valor = this.cilindrada.trim();
     if (valor.length > 25) {
-      this.generalService.alert('Cilindrada demasiado larga', 'La cilindrada no puede tener más de 25 caracteres.', 'warning');
+      this.generalService.alert('Cilindrada demasiado larga', 'Máximo 25 caracteres.', 'warning');
       return false;
     }
     const cilindradaValida = /^\d{1,4}\s?cc$/i.test(valor);
     if (!cilindradaValida) {
-      this.generalService.alert('Cilindrada inválida', 'La cilindrada debe tener el formato correcto (Ej. 1000cc).', 'warning');
+      this.generalService.alert('Cilindrada inválida', 'Formato correcto: 1000cc.', 'warning');
       return false;
     }
     this.cilindrada = valor.replace(/\s+/g, '').toLowerCase();
 
-    // Transmisión (obligatoria)
+    // Transmisión
     if (!this.transmision || this.transmision.trim().length === 0) {
-      this.generalService.alert('Transmisión requerida', 'Por favor indica la transmisión (ej. Manual, Automática, CVT).', 'warning');
+      this.generalService.alert('Transmisión requerida', 'Indica la transmisión (Manual, Automática, CVT).', 'warning');
       return false;
     }
     const transmisionValor = this.transmision.trim();
     if (transmisionValor.length > 25) {
-      this.generalService.alert('Transmisión demasiado larga', 'La transmisión no puede tener más de 25 caracteres.', 'warning');
+      this.generalService.alert('Transmisión demasiado larga', 'Máximo 25 caracteres.', 'warning');
       return false;
     }
     this.transmision = transmisionValor.replace(/\s+/g, ' ');
 
-    // Campos opcionales con límite
-    if (this.tipoMotor?.trim().length > 25) {
-      this.generalService.alert('Tipo de Motor demasiado largo', 'El tipo de motor no puede tener más de 25 caracteres.', 'warning');
-      return false;
-    }
-    if (this.combustible?.trim().length > 25) {
-      this.generalService.alert('Combustible demasiado largo', 'El tipo de combustible no puede tener más de 25 caracteres.', 'warning');
-      return false;
-    }
-    if (this.frenos?.trim().length > 25) {
-      this.generalService.alert('Frenos demasiado largos', 'El tipo de frenos no puede tener más de 25 caracteres.', 'warning');
-      return false;
-    }
-    if (this.suspension?.trim().length > 25) {
-      this.generalService.alert('Suspensión demasiado larga', 'El tipo de suspensión no puede tener más de 25 caracteres.', 'warning');
+    // Opcionales con límite
+    if (this.tipoMotor?.trim().length > 25
+      || this.combustible?.trim().length > 25
+      || this.frenos?.trim().length > 25
+      || this.suspension?.trim().length > 25) {
+      this.generalService.alert('Campo demasiado largo', 'Máximo 25 caracteres en los opcionales.', 'warning');
       return false;
     }
 
@@ -622,18 +478,23 @@ export class MotosComponent implements OnInit {
     formData.append('marca', this.marca);
     formData.append('modelo', this.modelo);
     formData.append('moneda', this.moneda);
-    formData.append('placas', this.placas?.trim() ? this.placas.toUpperCase() : 'null');
     formData.append('descripcion', this.descripcion || '');
-    formData.append('kilometraje', this.kilometraje?.toString() || '0');
 
-    // Colores (si NO es nuevo, mover único al array)
-    if (this.estadoVehiculo !== 'Nuevo') {
-      this.colorSeleccionado = this.colorSeleccionadoUnico ? [this.colorSeleccionadoUnico] : [];
+    // Placas: NO enviar en nuevo. En seminuevo/usado sólo si viene.
+    if (this.estadoVehiculo_logico !== 'nuevo' && this.placas?.trim()) {
+      formData.append('placas', this.placas.toUpperCase());
     }
-    this.colorSeleccionado.forEach((color) => formData.append('color[]', color));
+
+    // Kilometraje: 0 en nuevo, valor real en otros
+    const kmEnviar = this.estadoVehiculo_logico === 'nuevo' ? 0 : (this.kilometraje ?? 0);
+    formData.append('kilometraje', kmEnviar.toString());
+
+    // Color (un único valor desde select)
+    if (this.colorSeleccionadoUnico) {
+      formData.append('color[]', this.colorSeleccionadoUnico);
+    }
 
     formData.append('tipoVenta', this.estadoVehiculo);
-
     formData.append('tipoMotor', this.tipoMotor);
     formData.append('cilindrada', this.cilindrada);
     formData.append('transmision', this.transmision);
@@ -642,30 +503,7 @@ export class MotosComponent implements OnInit {
     formData.append('suspension', this.suspension);
     formData.append('precio', this.precio.toString());
 
-    // Versión / precios (si usas catálogo para "Nuevo")
-    if (this.estadoVehiculo_logico === 'nuevo') {
-      const versionesSeleccionadas = this.versionSeleccionada
-        .map((sel, i) => (sel ? this.versiones[i] : null))
-        .filter(Boolean) as string[];
-
-      if (versionesSeleccionadas.length > 0) {
-        const versionesConPrecio = versionesSeleccionadas.map((v) => ({
-          Name: v,
-          Precio: this.preciosVersiones[v] || 0,
-        }));
-        formData.append('version', JSON.stringify(versionesConPrecio));
-      }
-    } else {
-      // Usados/seminuevos: nombre de versión escrito + precio general
-      if (this.versionSeleccionadaTexto?.trim()) {
-        formData.append('version', JSON.stringify({
-          Name: this.versionSeleccionadaTexto,
-          Precio: this.precio,
-        }));
-      }
-    }
-
-    // Ubicación: particular o lote (igual que car.ts)
+    // Ubicación: particular o lote
     let ubicacionObj: any = null;
 
     if (this.tipoSeleccionado === 'particular' && this.ubicacionSeleccionada) {
@@ -696,6 +534,7 @@ export class MotosComponent implements OnInit {
 
     if (ubicacionObj) formData.append('ubicacion', JSON.stringify(ubicacionObj));
 
+    // Imágenes
     if (this.imagenPrincipal) {
       formData.append('imagenPrincipal', this.imagenPrincipal);
       formData.append('imagenes', this.imagenPrincipal);
@@ -708,12 +547,6 @@ export class MotosComponent implements OnInit {
   }
 
   // ====== Utilidades ======
-  toggleColorSeleccionado(color: string): void {
-    const index = this.colorSeleccionado.indexOf(color);
-    if (index >= 0) this.colorSeleccionado.splice(index, 1);
-    else this.colorSeleccionado.push(color);
-  }
-
   quienLovende(num: number) {
     if (num == 0) {
       this.seccionFormulario = 2;

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { GeneralService } from '../../services/general.service';
 import { CarsService } from '../../services/cars.service';
 import { MotosService } from '../../services/motos.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { MenuController } from '@ionic/angular';
 
 interface Marca {
@@ -23,31 +23,12 @@ export class NewCarPage implements OnInit {
   mostrarSelecion: string = '';
   mostrarIcono: string = '';
   mostrarCarComponent: boolean = false;
+
   opcionesBase = [
-    {
-      tipo: 'auto',
-      label: 'Coches',
-      icono: 'assets/img/icon-coche.png',
-      proximamente: false,
-    },
-    {
-      tipo: 'moto',
-      label: 'Motos',
-      icono: 'assets/img/icon-moto.png',
-      proximamente: false,
-    },
-    {
-      tipo: 'renta',
-      label: 'Renta',
-      icono: 'assets/img/icon-renta.png',
-      proximamente: true,
-    },
-    {
-      tipo: 'lote',
-      label: 'Lote',
-      icono: 'assets/img/icon-lote.png',
-      proximamente: false,
-    },
+    { tipo: 'auto', label: 'Coches', icono: 'assets/img/icon-coche.png', proximamente: false },
+    { tipo: 'moto', label: 'Motos', icono: 'assets/img/icon-moto.png', proximamente: false },
+    { tipo: 'renta', label: 'Renta', icono: 'assets/img/icon-renta.png', proximamente: true },
+    { tipo: 'lote', label: 'Lote', icono: 'assets/img/icon-lote.png', proximamente: false },
   ];
 
   opciones: any[] = [];
@@ -64,7 +45,7 @@ export class NewCarPage implements OnInit {
 
   public isLoggedIn: boolean = false;
 
-  // -----
+  // ----- data de selects
   marcas: any[] = [];
   modelos: any[] = [];
 
@@ -72,7 +53,7 @@ export class NewCarPage implements OnInit {
   public esDispositivoMovil: boolean = false;
   public dispositivo: string = '';
   mansaje_error: string = '';
-  // -----
+
   constructor(
     private generalService: GeneralService,
     private carsService: CarsService,
@@ -99,6 +80,7 @@ export class NewCarPage implements OnInit {
     this.generarListaAnios();
     this.cargarOpcionesPorRol();
   }
+
   seleccionar(tipo: 'auto' | 'moto' | 'renta' | 'lote' | null, label: string, icono: string) {
     if (label === 'Lote') {
       this.mostrarCarComponent = true;
@@ -112,15 +94,16 @@ export class NewCarPage implements OnInit {
     this.anioSeleccionado = '';
     this.anioManual = '';
   }
+
   cargarOpcionesPorRol() {
     if (this.MyRole === 'admin') {
       this.opciones = [...this.opcionesBase]; // todas las opciones
     } else {
-      this.opciones = this.opcionesBase.filter(
-        (op) => op.tipo !== 'arrendamiento'
-      );
+      // Nota: en tus opciones el tipo es 'renta' (no 'arrendamiento')
+      this.opciones = this.opcionesBase.filter((op) => op.tipo !== 'renta');
     }
   }
+
   generarListaAnios() {
     const anioActual = new Date().getFullYear();
     const anioLimite = 2008;
@@ -133,13 +116,14 @@ export class NewCarPage implements OnInit {
       this.listaAnios.push(i);
     }
   }
+
   // verifica el año al escribir o selecionar
   verificarAnio(tipo: 'select' | 'escrito') {
     this.limpiarDependencias('all');
     this.mostrarInputOtroAnio = this.anioSeleccionado === 'otro';
 
     const anio = this.obtenerAnioActual();
-    // console.log(anio)
+
     this.anioValido =
       tipo === 'select' ? this.validarAnio(anio) : this.validarAniOtro(anio);
 
@@ -148,30 +132,33 @@ export class NewCarPage implements OnInit {
       this.obtenerMarcasSiCorresponde(anio);
     } else {
       this.mansaje_error = 'Seleciona un año entre 2007 y 1900';
-      // console.log(this.mansaje_error);
-      // this.limpiarDependencias('all');
       return;
     }
   }
+
   validarAniOtro(anio: number): boolean {
     return anio >= 1801 && anio < 2008;
   }
+
   // Valida que el año esté en el rango permitido
   validarAnio(anio: number): boolean {
     const anioActual = new Date().getFullYear();
     return !isNaN(anio) && anio >= 1800 && anio <= anioActual;
   }
+
   esAnioAnteriorA2008(): boolean {
     const anio = this.obtenerAnioActual();
     return this.anioValido && anio < 2008;
   }
+
   // Extrae el año seleccionado o manual
   obtenerAnioActual(): number {
     return this.mostrarInputOtroAnio
       ? Number(this.anioManual)
       : Number(this.anioSeleccionado);
   }
-  // Limpia los campos relacionados si el año no es válido 🚮
+
+  // Limpia los campos relacionados
   limpiarDependencias(tipo: string): void {
     if (tipo === 'marca') {
       this.modeloSeleccionado = '';
@@ -184,18 +171,15 @@ export class NewCarPage implements OnInit {
     } else if (tipo === 'all') {
       this.marcaSeleccionada = '';
       this.modeloSeleccionado = '';
-
-      // this.anioSeleccionado = '';
-      // this.anioManual = '';
       this.modeloEsPersonalizado = false;
       this.marcaEsPersonalizada = false;
-
       this.marcas = [];
       this.modelos = [];
       this.mostrarCarComponent = false;
       this.mansaje_error = '';
     }
   }
+
   selecionarModelo() {
     this.limpiarDependencias('modelo');
     if (this.modeloSeleccionado === 'otro') {
@@ -205,20 +189,20 @@ export class NewCarPage implements OnInit {
       this.modeloEsPersonalizado = false;
     }
   }
+
   formularioValido(): boolean {
     const anio = this.obtenerAnioActual();
     const anioActual = new Date().getFullYear();
     const anioEsValido = this.anioValido && anio >= 1800 && anio <= anioActual;
 
-    const marcaValida =
-      !!this.marcaSeleccionada && this.marcaSeleccionada !== '';
-    const modeloValido =
-      !!this.modeloSeleccionado &&
+    const marcaValida = !!this.marcaSeleccionada && this.marcaSeleccionada !== '';
+    const modeloValido = !!this.modeloSeleccionado &&
       this.modeloSeleccionado.trim().length > 0 &&
       this.modeloSeleccionado.length <= 25;
 
     return !!anioEsValido && marcaValida && modeloValido;
   }
+
   mostrarComponente() {
     const anio = this.obtenerAnioActual();
     const marca = this.marcaSeleccionada;
@@ -251,36 +235,36 @@ export class NewCarPage implements OnInit {
       this.mostrarCarComponent = false;
     }
   }
+
   volverAtras() {
     this.mostrarCarComponent = false;
     if (this.seleccion === 'lote') {
       this.seleccion = null;
     }
   }
+
   regresar() {
-    // this.router.navigate(['/nuevos']);
     window.history.back();
   }
+
   getMarcaNombreSeleccionada(): string {
     if (!this.marcaEsPersonalizada) {
-      const marcaObj = this.marcas.find(
-        (m) => m._id === this.marcaSeleccionada
-      );
+      const marcaObj = this.marcas.find((m) => m._id === this.marcaSeleccionada);
       return marcaObj?.nombre || '';
     } else if (this.marcaEsPersonalizada) {
       return this.marcaSeleccionada;
     }
     return this.marcaSeleccionada;
   }
+
   validarInputModelo(): void {
-    // Aquí podrías validar que lo escrito tenga sentido
     if (!this.modeloSeleccionado || this.modeloSeleccionado.trim().length < 2) {
       this.modeloSeleccionado = '';
       this.modeloEsPersonalizado = false;
     }
   }
 
-  // ## ----- ----- PETICIONES DE CACHES, MOTOS, CAMIONES 🛻 ----- -----
+  // ## ----- ----- PETICIONES ----- ----- ##
   obtenerMarcasSiCorresponde(anio: number): void {
     switch (this.seleccion) {
       case 'auto':
@@ -300,8 +284,8 @@ export class NewCarPage implements OnInit {
         break;
     }
   }
-  obtenerModelosSiCorresponde(): void {
 
+  obtenerModelosSiCorresponde(): void {
     this.limpiarDependencias('marca');
 
     if (this.marcaSeleccionada === 'otro') {
@@ -330,20 +314,13 @@ export class NewCarPage implements OnInit {
     }
   }
 
-  //
   PeticionesMarcasDeAutos(anio: number) {
     const anioActual = new Date().getFullYear();
     if (anio >= 2008 && anio <= anioActual) {
       this.carsService.GetMarcas(anio).subscribe({
-        next: (data) => {
-          this.marcas = data;
-        },
-        error: (error) => {
-          console.error('Error al obtener marcas:', error);
-        },
-        complete: () => {
-          this.generalService.loadingDismiss();
-        },
+        next: (data) => { this.marcas = data; },
+        error: (error) => { console.error('Error al obtener marcas:', error); },
+        complete: () => { this.generalService.loadingDismiss(); },
       });
     } else if (anio < 2008 && anio >= 1800) {
       this.carsService.getMarcas_all().subscribe({
@@ -353,22 +330,19 @@ export class NewCarPage implements OnInit {
           );
         },
         error: (err) => {
-          const mensaje =
-            err?.error?.message || 'Error al cargar marcas - Carros';
+          const mensaje = err?.error?.message || 'Error al cargar marcas - Carros';
           console.warn(mensaje);
         },
-        complete: () => {
-          this.generalService.loadingDismiss();
-        },
+        complete: () => { this.generalService.loadingDismiss(); },
       });
     } else {
       console.log('no se ejcuta nada');
     }
   }
+
   PeticionesMarcasDeMotos() {
     this.motosService.getMarcas().subscribe({
       next: (data: Marca[]) => {
-        // console.log('Motos = ',data)
         this.marcas = data.sort((a: Marca, b: Marca) =>
           a.nombre.toLowerCase().localeCompare(b.nombre.toLowerCase())
         );
@@ -377,11 +351,10 @@ export class NewCarPage implements OnInit {
         const mensaje = err?.error?.message || 'Error al cargar marcas - Motos';
         console.warn(mensaje);
       },
-      complete: () => {
-        this.generalService.loadingDismiss();
-      },
+      complete: () => { this.generalService.loadingDismiss(); },
     });
   }
+
   PeticionesModelosDeAutos() {
     const anio = this.obtenerAnioActual();
     const marca = this.marcaSeleccionada;
@@ -392,17 +365,12 @@ export class NewCarPage implements OnInit {
     }
 
     this.carsService.GetModelos(marca, anio).subscribe({
-      next: (data) => {
-        this.modelos = data;
-      },
-      error: (error) => {
-        console.error('Error al obtener modelos:', error);
-      },
-      complete: () => {
-        this.generalService.loadingDismiss();
-      },
+      next: (data) => { this.modelos = data; },
+      error: (error) => { console.error('Error al obtener modelos:', error); },
+      complete: () => { this.generalService.loadingDismiss(); },
     });
   }
+
   PeticionesModelosDeMotos() {
     const anio = this.obtenerAnioActual();
     const marca = this.marcaSeleccionada;
@@ -419,17 +387,12 @@ export class NewCarPage implements OnInit {
     }
 
     this.motosService.GetModelos(marca).subscribe({
-      next: (data) => {
-        this.modelos = data;
-      },
-      error: (error) => {
-        console.error('Error al obtener modelos:', error);
-      },
-      complete: () => {
-        this.generalService.loadingDismiss();
-      },
+      next: (data) => { this.modelos = data; },
+      error: (error) => { console.error('Error al obtener modelos:', error); },
+      complete: () => { this.generalService.loadingDismiss(); },
     });
   }
+
   irAInicio(): void {
     this.router.navigateByUrl('/inicio');
   }

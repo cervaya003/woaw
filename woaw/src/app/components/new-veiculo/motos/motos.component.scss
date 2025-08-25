@@ -656,34 +656,105 @@ section {
 }
 
 /* ====== Extras de motos ====== */
+/* ====== Colores (chips) ====== */
 .checkbox-colores {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
   margin-top: 6px;
-  padding: 4px 0;
 
-  .color-opcion {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
-    border: 1px solid #ddd;
-    border-radius: 20px;
-    background: #f9f9f9;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.2s ease-in-out;
-    color: #333;
-
-    input[type='checkbox'] {
-      accent-color: #ff3d00;
-      transform: scale(1.1);
-    }
-
-    &:hover {
-      background-color: #ffece6;
-      border-color: #ff3d00;
-    }
+  @media (max-width: 992px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  @media (max-width: 520px) {
+    grid-template-columns: 1fr;
   }
 }
+
+.color-opcion {
+  /* layout */
+  display: grid;
+  grid-template-columns: 18px 1fr 18px;
+  align-items: center;
+  gap: 10px;
+
+  /* chip look */
+  padding: 10px 12px;
+  border: 1.5px solid #e5e5e5;
+  border-radius: 14px;
+  background: #fff;
+  color: #222;
+  font-size: 14px;
+  cursor: pointer;
+  transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
+
+  /* quitar input nativo */
+  input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* circulito de color */
+  .swatch {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1px solid #cfcfcf;
+    background: #f2f2f2; /* fallback */
+  }
+
+  /* si pasas opcionalmente el HEX en data-color lo aplicamos */
+  &[data-color] .swatch {
+    background: attr(data-color color, #f2f2f2);
+    border-color: rgba(0,0,0,.12);
+  }
+
+  .nombre {
+    font-weight: 600;
+    letter-spacing: .2px;
+  }
+
+  .tick {
+    display: grid;
+    place-items: center;
+    opacity: 0;
+    transform: scale(.8);
+    transition: opacity .18s ease, transform .18s ease;
+    color: #ff3d00;
+    font-size: 16px;
+
+    ion-icon {
+      font-size: 16px;
+    }
+  }
+
+  /* hover/focus */
+  &:hover { border-color: #ffdccf; background: #fff8f5; }
+  &:focus-within {
+    outline: 2px solid transparent;
+    box-shadow: 0 0 0 3px rgba(255, 61, 0, .18);
+    border-color: #ff7a4d;
+  }
+
+  /* estado seleccionado (usamos :has para simplificar) */
+  &:has(input:checked) {
+    border-color: #ff7a4d;
+    background: #fff3ed;
+    box-shadow: 0 2px 6px rgba(255, 61, 0, .12);
+  }
+  &:has(input:checked) .tick {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* dropdown (cuando no es nuevo) puede quedar como estaba, pero si quieres chip-look: */
+.formulario select[name="color"] {
+  border: 1.5px solid #e5e5e5;
+  border-radius: 10px;
+  background: #fff;
+  padding: 10px 12px;
+  font-weight: 600;
+}
+
