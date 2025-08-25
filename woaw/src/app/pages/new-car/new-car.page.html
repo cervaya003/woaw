@@ -42,7 +42,7 @@
     </div>
   </div>
 
-  <!-- # ------  -->
+  <!-- # -------->
 
   <div class="contenedor_form" *ngIf="seleccion === 'lote' || seleccion === 'auto' || seleccion === 'moto' ">
     <div *ngIf="!isLoggedIn && seleccion != 'lote'" class="mensaje-autenticacion">
@@ -134,6 +134,7 @@
       [marca]="marcaSeleccionada" [modelo]="modeloSeleccionado" [tipo]="seleccion">
     </app-car>
 
+    <!-- Motos: SIN esNuevo; el componente lo deduce por año -->
     <app-motos *ngIf="mostrarCarComponent && seleccion === 'moto'" [anio]="obtenerAnioActual()"
       [marca]="getMarcaNombreSeleccionada()" [modelo]="modeloSeleccionado" [tipo]="seleccion">
     </app-motos>

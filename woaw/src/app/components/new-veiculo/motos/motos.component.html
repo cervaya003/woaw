@@ -92,7 +92,8 @@
     </ion-item>
 
     <div class="btn-wsp-container">
-      <button class="btn-wsp" (click)="ContactosService.contactarPorPublicacionParticular(nombreMoto, anioMoto!, precioEstimado!, tipoFactura)">
+      <button class="btn-wsp"
+        (click)="ContactosService.contactarPorPublicacionParticular(nombreMoto, anioMoto!, precioEstimado!, tipoFactura)">
         <ion-icon name="logo-whatsapp" slot="start"></ion-icon>
         Contáctanos por WhatsApp
       </button>
@@ -104,8 +105,7 @@
 
     <!-- Ubicación / Lote / Imágenes -->
     <div class="contenedor-botones">
-
-      <!-- Particular: ubicación -->
+      <!-- Particular -->
       <div class="bloque-imagenes" *ngIf="tipoSeleccionado == 'particular'">
         <button type="button" (click)="seleccionarUbicacion()">
           <ion-icon name="location-outline" class="icono"></ion-icon>
@@ -164,63 +164,30 @@
       </div>
     </div>
 
-    <!-- (Opcional) Motos NUEVAS: versiones + precio -->
-    <div *ngIf="estadoVehiculo_logico === 'nuevo'">
-      <label>Selecciona las versiones disponibles y asigna un precio:</label>
-      <div *ngFor="let version of versiones; let i = index" class="version-item">
-        <ion-checkbox [checked]="versionSeleccionada[i]" (ionChange)="toggleVersion(i, version)"></ion-checkbox>
-        <span>{{ version }}</span>
-        <input *ngIf="versionSeleccionada[i]" type="number" min="0" placeholder="Precio" [(ngModel)]="preciosVersiones[version]" name="precio_{{ i }}" />
-      </div>
-    </div>
-
-    <!-- Seminueva / Usada -->
-    <div class="grid-form" *ngIf="estadoVehiculo_logico === 'seminuevo' || estadoVehiculo_logico === 'usado' || estadoVehiculo_logico === 'viejito'">
-
-      <!-- Versión
-      <div class="campo">
-        <label>Versión: <span class="requerido">*</span></label>
-
-        <select *ngIf="!esUsadoAntiguo && versionesDisponibles" [(ngModel)]="versionSeleccionadaTexto" (ngModelChange)="onSeleccionVersion($event)">
-          <option disabled selected value="">Selecciona una versión</option>
-          <option *ngFor="let version of versiones" [value]="version">{{ version }}</option>
-        </select>
-
-        <input *ngIf="esUsadoAntiguo || !versionesDisponibles" type="text" [(ngModel)]="versionSeleccionadaTexto" placeholder="Escribe la versión manualmente" />
-      </div> -->
-
+    <!-- Formulario de datos -->
+    <div class="grid-form">
       <!-- Precio -->
       <div class="campo">
         <label>Precio: <span class="requerido">*</span></label>
         <input type="number" min="0" placeholder="Precio del vehículo" [(ngModel)]="precio" />
       </div>
 
-      <!-- Placas (opcional) -->
-      <div class="campo">
+      <!-- Placas (opcional) — oculto si es NUEVO -->
+      <div class="campo" *ngIf="estadoVehiculo_logico !== 'nuevo'">
         <label>Placas: <span class="opcional_css">(opcional)</span></label>
         <input type="text" placeholder="Ej. UVY-123-A" [(ngModel)]="placas" />
       </div>
 
-      <!-- Kilometraje -->
-      <div class="campo">
+      <!-- Kilometraje — oculto si es NUEVO -->
+      <div class="campo" *ngIf="estadoVehiculo_logico !== 'nuevo'">
         <label>Kilometraje: <span class="requerido">*</span></label>
         <input type="number" min="0" placeholder="Ej. 45000" required [(ngModel)]="kilometraje" />
       </div>
 
-      <!-- Color -->
+      <!-- Color (MISMO MENÚ PARA TODOS) -->
       <div class="campo">
         <label>Color: <span class="requerido">*</span></label>
-
-        <!-- Nueva: checkboxes -->
-        <div *ngIf="estadoVehiculo === 'Nuevo'" class="checkbox-colores">
-          <label *ngFor="let opcion of opciones" class="color-opcion">
-            <input type="checkbox" [value]="opcion.label" (change)="toggleColorSeleccionado(opcion.label)" [checked]="colorSeleccionado.includes(opcion.label)" />
-            {{ opcion.label }}
-          </label>
-        </div>
-
-        <!-- No nueva: select -->
-        <select *ngIf="estadoVehiculo !== 'Nuevo'" [(ngModel)]="colorSeleccionadoUnico" name="color" required>
+        <select [(ngModel)]="colorSeleccionadoUnico" name="color" required>
           <option value="" disabled selected>Selecciona un color</option>
           <option *ngFor="let opcion of opciones" [value]="opcion.label">
             {{ opcion.label }}
@@ -276,7 +243,5 @@
     </div>
 
     <!-- 🔻 FICHA TÉCNICA ELIMINADA: no catálogo ni editable -->
-    <!-- (Se quitaron los bloques: grid-info con card-especificaciones y el grid-form con camposEspecificaciones) -->
-
   </div>
 </section>
