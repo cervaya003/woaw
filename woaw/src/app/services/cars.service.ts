@@ -343,6 +343,22 @@ export class CarsService {
       catchError((error) => this.headersService.handleError(error))
     );
   }
+  GetModelosCamiones(marca: string): Observable<any> {
+    // this.generalService.loading('Obteniendo modelos...');
+    return from(this.headersService.obtenerToken()).pipe(
+      switchMap((token) => {
+        const headers = this.headersService.getJsonHeaders(token);
+        this.generalService.loadingDismiss();
+        return this.http.get(
+          `${environment.api_key}/camioninfo/modelos-camion/${marca}`,
+          {
+            headers,
+          }
+        );
+      }),
+      catchError((error) => this.headersService.handleError(error))
+    );
+  }
   getMarcas_all(): Observable<any> {
     // this.generalService.loading('Obteniendo marcas...');
     return from(this.headersService.obtenerToken()).pipe(

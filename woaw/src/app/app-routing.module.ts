@@ -153,6 +153,8 @@ const routes: Routes = [
     path: 'menu-vehiculos/:tipo',
     loadChildren: () => import('./pages/menu-vehiculos/menu-vehiculos.module').then( m => m.MenuVehiculosPageModule)
   },
+  
+
 
 
 ];
