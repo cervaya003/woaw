@@ -170,6 +170,10 @@ const routes: Routes = [
         path: 'eliminacion-cuenta',
         loadChildren: () => import('./pages/eliminacion-cuenta/eliminacion-cuenta.module').then( m => m.EliminacionCuentaPageModule)
       },
+      {
+        path: 'menu-vehiculos/:tipo',
+        loadChildren: () => import('./pages/menu-vehiculos/menu-vehiculos.module').then( m => m.MenuVehiculosPageModule)
+      },
     ],
   },
 ];
