@@ -1,0 +1,71 @@
+<ion-header>
+  <ion-toolbar color="dark">
+    <ion-title>Verificación de teléfono</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="page-telefono">
+    <div class="form-wrapper">
+      <h2>Verifica tu número</h2>
+      <p>Necesitamos tu número para proteger tu cuenta y completar tu perfil.</p>
+
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <!-- Input combinado de lada (abre modal) + número -->
+        <div class="telefono-input-wrapper">
+          <ion-item lines="none" class="lada-box" (click)="abrirModalLadas()">
+            <img [src]="ladaSeleccionada.banderaUrl" class="flag-img" alt="flag" />
+            <p class="lada-text">{{ ladaSeleccionada.codigo }}</p>
+          </ion-item>
+
+          <ion-item lines="none" class="telefono-input">
+            <ion-input formControlName="numero" type="tel" inputmode="numeric" maxlength="15" placeholder="Teléfono">
+            </ion-input>
+          </ion-item>
+        </div>
+
+        <!-- Mensajes de validación -->
+        <ion-note *ngIf="form.get('numero')?.touched && form.get('numero')?.invalid">
+          Ingresa un número válido (7 a 15 dígitos).
+        </ion-note>
+
+        <!-- Botón -->
+        <button class="btn-guardar" type="submit" [disabled]="form.invalid || loading">
+          Guardar teléfono
+        </button>
+      </form>
+    </div>
+  </div>
+  <app-footer></app-footer>
+</ion-content>
+
+<!-- Modal de Ladas (controlado con mostrarModal) -->
+<ion-modal [isOpen]="mostrarModal" cssClass="modal-ladas" (didDismiss)="cerrarModal()">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>Selecciona tu país</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="cerrarModal()">Cerrar</ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content>
+      <div class="buscador-ladas">
+        <ion-input placeholder="Buscar país o código..." [(ngModel)]="filtroPais">
+        </ion-input>
+      </div>
+
+      <ion-list>
+        <ion-item button *ngFor="let p of paisesFiltrados()" (click)="seleccionarLada(p)">
+          <img [src]="p.banderaUrl" class="flag-img" alt="flag" />
+          <ion-label>
+            <h3>{{ p.nombre }}</h3>
+            <p>{{ p.codigo }}</p>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-content>
+  </ng-template>
+</ion-modal>
