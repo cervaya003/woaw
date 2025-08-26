@@ -239,6 +239,9 @@ export class NewCarPage implements OnInit {
         case 'moto':
           this.mostrarCarComponent = true;
           break;
+        case 'camion':
+          this.mostrarCarComponent = true;
+          break;
         default:
           this.generalService.alert(
             'Tipo no soportado',

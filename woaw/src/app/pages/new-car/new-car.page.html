@@ -68,7 +68,6 @@
         </p>
       </div>
       <div class="campo">
- 
         <label for="marca">Marca <span class="requerido">*</span></label>
         <select id="marca" *ngIf="!marcaEsPersonalizada" [(ngModel)]="marcaSeleccionada"
           (change)="obtenerModelosSiCorresponde()" [disabled]="!anioValido">
@@ -106,7 +105,7 @@
     </div>
 
     <button [disabled]="!formularioValido()"
-      *ngIf="!mostrarCarComponent && isLoggedIn  && (seleccion === 'auto' || seleccion === 'moto')" class="btn-guardar"
+      *ngIf="!mostrarCarComponent && isLoggedIn  && (seleccion === 'auto' || seleccion === 'moto' || seleccion === 'camion')" class="btn-guardar"
       (click)="mostrarComponente()">
       Continuar
       <ion-icon name="arrow-forward-outline"></ion-icon>
@@ -132,6 +131,11 @@
     <app-motos *ngIf="mostrarCarComponent && seleccion === 'moto'" [anio]="obtenerAnioActual()"
       [marca]="getMarcaNombreSeleccionada()" [modelo]="modeloSeleccionado" [tipo]="seleccion">
     </app-motos>
+
+
+     <app-car *ngIf="mostrarCarComponent && seleccion === 'camion'" [anio]="obtenerAnioActual()"
+      [marca]="marcaSeleccionada" [modelo]="modeloSeleccionado" [tipo]="seleccion">
+    </app-car>
 
     <!-- add loter  -->
     <app-add *ngIf="mostrarCarComponent && seleccion === 'lote'"></app-add>
