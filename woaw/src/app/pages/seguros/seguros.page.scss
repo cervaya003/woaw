@@ -15,6 +15,7 @@ ion-content {
 
   @media (max-width: 820px) {
     min-height: 70vh;
+    height: 100%;
   }
 }
 
@@ -29,7 +30,7 @@ ion-content {
   text-align: center;
   width: min(1100px, 92vw);
   margin: 0 auto;
-  padding: clamp(72px, 12vh, 100px) 0 80px;
+  padding: clamp(72px, 12vh, 70px) 0 80px;
 
 }
 
@@ -73,6 +74,11 @@ ion-content {
   margin: 0 auto;
   color: #000000;
   font-weight: bolder;
+  font-size: 14px;
+
+  @media (max-width: 820px) {
+    font-size: 11px;
+  }
 
   .dot {
     width: 10px;

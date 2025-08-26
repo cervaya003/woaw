@@ -21,7 +21,7 @@ ion-content {
 .hero-overlay {
   position: relative;
   z-index: 1;
-  min-height: 80vh;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: baseline;
@@ -30,6 +30,10 @@ ion-content {
   width: min(1100px, 92vw);
   margin: 0 auto;
   padding: clamp(72px, 12vh, 100px) 0 80px;
+
+  @media (max-width: 820px) {
+    min-height: 85vh;
+  }
 
   &::before {
     content: "";

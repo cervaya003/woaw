@@ -31,7 +31,7 @@
 
 /* ====== Hero Cards ====== */
 .hero-cards {
-    position: relative;
+    position: sticky;
     z-index: 1;
     display: flex;
     gap: clamp(10px, 2vw, 20px);
