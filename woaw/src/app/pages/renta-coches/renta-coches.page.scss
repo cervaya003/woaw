@@ -1,11 +1,5 @@
-.imagen-fullscreen {
+ion-content {
   position: relative;
-  min-height: clamp(860px, 80vh, 860px);
-  overflow: hidden;
-
-  @media(max-width: 960px) {
-    min-height: clamp(520px, 80vh, 520px);
-  }
 }
 
 .img-responsiva {
@@ -13,35 +7,29 @@
   top: 0;
   left: 0;
   width: 100%;
-  height: 100vh;
+  height: 100%;
+  min-height: 110vh;
   object-fit: cover;
-  z-index: -1;
+  z-index: 0;
+  pointer-events: none;
 
-  @media (min-width: 820px) {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100hv;
-    object-fit: cover;
-    filter: saturate(1.05) contrast(1.04) brightness(.9);
-    z-index: 0;
+  @media (max-width: 820px) {
+    min-height: 90vh;
   }
 }
 
 .hero-overlay {
   position: relative;
   z-index: 1;
-  width: min(1100px, 92vw);
-  margin: 0 auto;
-  padding: clamp(72px, 12vh, 15px) 0 80px;
-  color: #f5f7fb;
-  font-weight: bolder;
+  min-height: 80vh;
   display: flex;
   flex-direction: column;
-
-  text-align: center;
+  justify-content: baseline;
   align-items: center;
-  justify-content: center;
+  text-align: center;
+  width: min(1100px, 92vw);
+  margin: 0 auto;
+  padding: clamp(72px, 12vh, 100px) 0 80px;
 
   &::before {
     content: "";
@@ -136,9 +124,10 @@
     align-items: center;
     gap: 8px;
     padding: 10px 14px;
+    color: #ffffff;
     border-radius: 999px;
     background: rgba(255, 255, 255, .06);
-    border: 1px solid rgba(255, 255, 255, .12);
+    border: 1px solid rgba(255, 0, 0, 0.844);
   }
 
   .cta {
@@ -193,4 +182,10 @@
   .hero-overlay {
     padding: clamp(56px, 12vh, 100px) 0 60px;
   }
+}
+
+/* Asegura que el footer quede por encima del fondo */
+app-footer {
+  position: relative;
+  z-index: 1;
 }

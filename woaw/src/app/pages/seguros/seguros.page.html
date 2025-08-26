@@ -2,31 +2,24 @@
 
 <ion-content [fullscreen]="true">
 
+  <img class="hero-bg" [src]="imgenPrincipal" alt="" loading="lazy" decoding="async" fetchpriority="low" />
+
   <section class="hero">
-
-    <img class="hero-bg" [src]="imgenPrincipal" alt="" loading="lazy" decoding="async" fetchpriority="low" />
-
     <div class="glow glow-a"></div>
     <div class="glow glow-b"></div>
     <div class="grain"></div>
-
     <div class="container">
-
       <span class="eyebrow">
         <span class="dot"></span> Próximamente
       </span>
-
       <img src="/assets/autos/escudo.png" alt="Escudo" class="escudo-icon" loading="lazy" decoding="async"
         fetchpriority="low" />
-
       <h1 class="title">
         Seguros de Auto <span class="brand">WOAW</span>
       </h1>
-
       <p class="subtitle">
         Cotiza, compara y asegura en minutos.
       </p>
-
       <ul class="bullets">
         <li>
           <ion-icon name="shield-checkmark-outline"></ion-icon>
@@ -41,12 +34,7 @@
           Activación digital inmediata
         </li>
       </ul>
-
-      <!-- <div class="cta">
-        <button ion-button class="btn btn-primary">Muy pronto</button>
-      </div> -->
     </div>
-
   </section>
 
   <app-footer></app-footer>
