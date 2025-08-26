@@ -59,18 +59,17 @@ export class HomePage implements OnInit {
   ) { }
 
   async ngOnInit() {
-
-    // const img = new Image();
-    // img.src = '/assets/autos/publicidad/principal4.webp';
-    // img.onload = () => {
-    //   this.overlayLoaded = true;
-    // };
-
     this.cargaimagen();
 
+    // Refleja estado de login y verifica teléfono cuando haya sesión
     this.generalService.tokenExistente$.subscribe((estado) => {
       this.isLoggedIn = estado;
+      if (estado) this.generalService.verificarTelefono();
     });
+
+    // Verificación inmediata al entrar a Home (si ya hay sesión guardada)
+    this.generalService.verificarTelefono();
+
     this.escribirTexto();
     this.generalService.dispositivo$.subscribe((tipo) => {
       this.esDispositivoMovil = tipo === 'telefono' || tipo === 'tablet';
@@ -79,6 +78,11 @@ export class HomePage implements OnInit {
       this.textoIndex = (this.textoIndex + 1) % this.totalTextos;
     }, 10000);
     this.gatTiposVeiculos();
+  }
+
+  // Cada vez que Home vuelve a ser la vista activa
+  ionViewWillEnter() {
+    this.generalService.verificarTelefono();
   }
 
   ngAfterViewInit(): void {
@@ -99,11 +103,12 @@ export class HomePage implements OnInit {
       }
     }, 150);
   }
+
   // # ----- ------
   gatTiposVeiculos() {
     this.carsService.gatTiposVeiculos().subscribe({
       next: (res: any) => {
-        this.TiposVeiculo = res.slice(0, 9);;
+        this.TiposVeiculo = res.slice(0, 9);
       },
       error: (err) => {
         const mensaje = err?.error?.message || 'Ocurrió un error inesperado';
@@ -111,6 +116,7 @@ export class HomePage implements OnInit {
       },
     });
   }
+
   // ----- -----
   async abrirHistorial(ev: Event) {
     if (this.popoverRef) return;
@@ -135,6 +141,7 @@ export class HomePage implements OnInit {
       this.popoverRef = null;
     });
   }
+
   onInputChange(ev: any) {
     const value = ev.detail.value;
     this.terminoBusqueda = value;
@@ -146,6 +153,7 @@ export class HomePage implements OnInit {
       this.abrirHistorial(ev);
     }
   }
+
   irABusqueda(sugerencia: string) {
     const termino = sugerencia.trim();
     if (!termino) return;
@@ -158,12 +166,14 @@ export class HomePage implements OnInit {
     }
     this.router.navigate(['/search/vehiculos', termino]);
   }
+
   buscarPorTipo(tipo: string) {
     const termino = tipo.trim();
     if (!termino) return;
     this.generalService.setTerminoBusqueda('tipoVehiculo');
     this.router.navigate(['/search/vehiculos', termino]);
   }
+
   guardarStorage(termino: string) {
     const guardado = localStorage.getItem('historialBusqueda');
     let historial: string[] = guardado ? JSON.parse(guardado) : [];
@@ -186,7 +196,6 @@ export class HomePage implements OnInit {
       this.overlayLoaded = true;
     }
   }
-
 }
 
 /**
@@ -194,5 +203,4 @@ export class HomePage implements OnInit {
     this.router.navigate(['/search/vehiculos', termino], {
       queryParams: { origen: 'search' },
     });
-
  */
