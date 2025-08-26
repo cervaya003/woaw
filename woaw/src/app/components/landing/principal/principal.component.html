@@ -1,6 +1,6 @@
 <!-- BLOQUE USADOS -->
 <section class="bloque-carrusel-minicartas">
-  <div class="contenedor_texto_minicartas">
+  <div class="contenedor_texto_minicartas" *ngIf="!status">
     <h2 (click)="verMas('/usados')">Usados
       <ion-icon name="arrow-forward-outline"></ion-icon>
     </h2>
@@ -38,7 +38,7 @@
     </div>
     <div class="card-auto card-vermas" (click)="verMas('/usados')">
       <div class="info center">
-        <h3>Ver más</h3>
+        <h3>Ver más Usados</h3>
         <ion-icon name="arrow-forward-circle" class="flecha-icon"></ion-icon>
         <div class="contador">{{ conUsados }}</div>
       </div>
@@ -48,7 +48,7 @@
 
 <!-- BLOQUE SEMINUEVOS -->
 <section class="bloque-carrusel-minicartas">
-  <div class="contenedor_texto_minicartas">
+  <div class="contenedor_texto_minicartas" *ngIf="!status">
     <h2 (click)="verMas('/seminuevos')">Seminuevos
       <ion-icon name="arrow-forward-outline"></ion-icon>
     </h2>
@@ -85,7 +85,7 @@
 
     <div class="card-auto card-vermas" (click)="verMas('/seminuevos')">
       <div class="info center">
-        <h3>Ver más</h3>
+        <h3>Ver más Seminuevos</h3>
         <ion-icon name="arrow-forward-circle" class="flecha-icon"></ion-icon>
         <div class="contador">{{ conSeminuevos }}</div>
       </div>
@@ -97,7 +97,7 @@
 
 <!-- BLOQUE NUEVOS -->
 <section class="bloque-carrusel-minicartas">
-  <div class="contenedor_texto_minicartas">
+  <div class="contenedor_texto_minicartas" *ngIf="!status">
     <h2 (click)="verMas('/nuevos')">Nuevos
       <ion-icon name="arrow-forward-outline"></ion-icon>
     </h2>
@@ -118,7 +118,7 @@
     </div>
     <div class="card-auto card-vermas" (click)="verMas('/nuevos')">
       <div class="info center">
-        <h3>Ver más</h3>
+        <h3>Ver más Nuevos</h3>
         <ion-icon name="arrow-forward-circle" class="flecha-icon"></ion-icon>
         <div class="contador">{{ conNuevos }}</div>
       </div>
@@ -128,7 +128,7 @@
 
 <!-- BLOQUE MOTOS -->
 <section *ngIf="tipo == 'all'" class="bloque-carrusel-minicartas">
-  <div class="contenedor_texto_minicartas">
+  <div class="contenedor_texto_minicartas" *ngIf="!status">
     <h2 (click)="verMas('/m-nuevos')">Motos
       <ion-icon name="arrow-forward-outline"></ion-icon>
     </h2>
@@ -163,7 +163,7 @@
     </div>
     <div class="card-auto card-vermas" (click)="verMas('/m-nuevos')">
       <div class="info center">
-        <h3>Ver más</h3>
+        <h3>Ver más Motos</h3>
         <ion-icon name="arrow-forward-circle" class="flecha-icon"></ion-icon>
         <div class="contador">{{ conMotos }}</div>
       </div>

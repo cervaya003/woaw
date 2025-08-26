@@ -41,6 +41,7 @@ export class ArrendamientoPage implements OnInit {
   modeloSeleccionado: any = null;
   expandedCard: number | null = null;
   tipoSeleccionado: 'coches' | 'camiones' = 'coches';
+  terminoBusqueda: string = '';
   public dispositivo: string = '';
   public esDispositivoMovil: boolean = false;
   formArrendamiento!: FormGroup;
@@ -51,7 +52,14 @@ export class ArrendamientoPage implements OnInit {
     versionSeleccionada: any[];
   }[] = [];
   pasoActual: number = 1;
+  imgenPrincipal: string = '';
+  selecionaVehiculo: boolean = false;
 
+  filteredOpciones: any[] = [];
+  filteredOpcionesCamiones: any[] = [];
+
+  imgenArre1: string = '';
+  imgenArre2: string = '';
 
   constructor(
     private generalService: GeneralService,
@@ -62,6 +70,8 @@ export class ArrendamientoPage implements OnInit {
     private fb: FormBuilder
   ) { }
   ngOnInit() {
+    this.cargaimagen();
+    this.getMarcas_cohes();
     this.menuCtrl.close('menuLateral');
     this.generalService.dispositivo$.subscribe((tipo) => {
       this.esDispositivoMovil = tipo === 'telefono' || tipo === 'tablet';
@@ -81,10 +91,7 @@ export class ArrendamientoPage implements OnInit {
     this.marcaSeleccionada = marca;
     this.expandedCard = null;
     // Scroll suave hacia el ancla
-    const anchor = document.getElementById('top-seccion-arrendamiento-marcas');
-    if (anchor) {
-      anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
+    // c 
   }
   confirmarArrendamiento(): void {
     if (!this.marcaSeleccionada) return;
@@ -109,17 +116,15 @@ export class ArrendamientoPage implements OnInit {
         } else {
           modelosFormateados = data;
         }
-
-        // console.log(modelosFormateados);
         this.modelos = modelosFormateados;
         this.mostrarModelos = true;
         // scrooooll
-        setTimeout(() => {
-          const anchor = document.getElementById('anchor-modelos');
-          if (anchor) {
-            anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
-        }, 100);
+        // setTimeout(() => {
+        //   const anchor = document.getElementById('anchor-modelos');
+        //   if (anchor) {
+        //     anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        //   }
+        // }, 100);
       },
       error: (error) => {
         console.error('Error al obtener modelos:', error);
@@ -129,24 +134,20 @@ export class ArrendamientoPage implements OnInit {
   getMarcas_cohes() {
     this.carsService.GetMarcas(2025).subscribe({
       next: (res: any[]) => {
-        // console.log(res);
-        this.opciones = res.map((marca) => ({ ...marca, imagenValida: true, tipo: 'coche' }));
+        this.opciones = res.map(m => ({ ...m, imagenValida: true, tipo: 'coche' }));
+        this.filteredOpciones = [...this.opciones];
         this.GetMarcas_camiones();
       },
-      error: (err) => {
-        const mensaje = err?.error?.message || 'Error al cargar marcas';
-      },
+      error: () => { },
     });
   }
   GetMarcas_camiones() {
     this.carsService.GetMarcasCamiones().subscribe({
       next: (res: any[]) => {
-        //console.log(res);
-        this.opcionesCamiones = res.map((marca) => ({ ...marca, imagenValida: true, tipo: 'camion' }));
+        this.opcionesCamiones = res.map(m => ({ ...m, imagenValida: true, tipo: 'camion' }));
+        this.filteredOpcionesCamiones = [...this.opcionesCamiones];
       },
-      error: (err) => {
-        const mensaje = err?.error?.message || 'Error al cargar marcas';
-      },
+      error: () => { },
     });
   }
   regresar() {
@@ -193,6 +194,7 @@ export class ArrendamientoPage implements OnInit {
   cambiarTipo(tipo: 'coches' | 'camiones') {
     this.tipoSeleccionado = tipo;
     this.marcaSeleccionada = null;
+    this.selecionaVehiculo = true;
   }
   onModelosChange(event: any): void {
     this.modelosSeleccionados = event.detail.value || [];
@@ -240,7 +242,7 @@ export class ArrendamientoPage implements OnInit {
       return;
     }
     if (this.formArrendamiento.invalid) {
-      this.generalService.alert('Error al guardar los datos', 'Completa todos los campos obligatorios.', 'warning');
+      this.generalService.alert('Ingresa tus datos', 'Completa todos los campos obligatorios.', 'warning');
       return;
     }
     if (this.modelosConVersiones.length === 0) {
@@ -256,8 +258,15 @@ export class ArrendamientoPage implements OnInit {
       );
 
       if (modelosInvalidos.length > 0) {
-        const modelosFaltantes = modelosInvalidos.map(item => item.modelo).join(', ');
-        this.generalService.alert('Faltan versiones', `Selecciona al menos una versión para los modelos: ${modelosFaltantes}`, 'warning');
+        const modelosFaltantes = modelosInvalidos
+          .map(item => this.getModeloNombre(item.modelo))
+          .join(', ');
+
+        this.generalService.alert(
+          'Faltan versiones',
+          `Selecciona al menos una versión para los modelos: ${modelosFaltantes}`,
+          'warning'
+        );
         return;
       }
     }
@@ -337,5 +346,45 @@ export class ArrendamientoPage implements OnInit {
   }
   selecionaMarca() {
     this.generalService.alert('Selecciona una marca', 'Para continuar selecciona una marca.', 'info');
+  }
+  regresarAntes() {
+    this.selecionaVehiculo = false;
+  }
+  onBuscar(valor: string) {
+    const q = this.normalize(valor);
+    this.filteredOpciones = this.opciones.filter(m => this.coincideMarca(m, q));
+    this.filteredOpcionesCamiones = this.opcionesCamiones.filter(m => this.coincideMarca(m, q));
+  }
+  private coincideMarca(marca: any, q: string): boolean {
+    if (!q) return true;
+    const nombre = this.normalize(marca?.nombre);
+    const key = this.normalize(marca?.key);
+    const idExt = this.normalize(marca?.idExterno);
+    return (nombre?.includes(q) || key?.includes(q) || idExt?.includes(q));
+  }
+  private getModeloNombre(m: any): string {
+    if (!m) return '';
+    if (typeof m === 'string') return m;
+    if (typeof m.modelo === 'string') return m.modelo;   // coches: { modelo: 'Kicks', ... }
+    if (typeof m.nombre === 'string') return m.nombre;   // fallback (algunos venían con 'nombre')
+    if (typeof m.key === 'string') return m.key;         // otro fallback
+    return String(m);
+  }
+  private normalize(v: any): string {
+    return (v ?? '')
+      .toString()
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .trim();
+  }
+  async cargaimagen() {
+    this.imgenArre1 = 'assets/autos/arre1.png';
+    this.imgenArre2 = 'assets/autos/arre2.png';
+    this.imgenPrincipal = 'assets/autos/publicidad/arrendamiento.png';
+    try {
+      await this.generalService.preloadHero(this.imgenPrincipal);
+    } catch {
+    }
   }
 }

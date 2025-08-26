@@ -24,6 +24,7 @@ import { MotosService } from '../../../services/motos.service';
 })
 export class PrincipalComponent implements OnInit {
   @Input() tipo: string = 'all';
+  @Input() status: boolean = true;
   autosNuevos: any[] = [];
   autosSeminuevos: any[] = [];
   autosUsados: any[] = [];

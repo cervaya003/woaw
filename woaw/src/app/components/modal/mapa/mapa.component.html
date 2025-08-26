@@ -1,62 +1,66 @@
 <ion-header translucent>
+  <!-- Toolbar principal -->
   <ion-toolbar color="light" class="header-completo">
     <ion-title>Ubicación</ion-title>
-
-    <!-- <ion-text color="danger" *ngIf="!ubicacionLugarInvalida" slot="start" class="ubicacion-alerta">
-      ⚠️ Selecciona ubicación del auto
-    </ion-text>
-
-    <ion-text color="success" *ngIf="ubicacionLugarInvalida" slot="start" class="ubicacion-alerta">
-      ✅ Ubicación seleccionada
-    </ion-text> -->
-
     <ion-buttons slot="end">
       <ion-button (click)="cancelar()">
         <ion-icon name="close-outline" slot="icon-only"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
+
+  <!-- Barra de búsqueda debajo -->
+  <ion-toolbar color="light">
+    <ion-searchbar placeholder="Buscar dirección, colonia o lugar..." [debounce]="250"
+      (ionInput)="onInputChange($event)" showCancelButton="never" animated #inputDireccion>
+    </ion-searchbar>
+  </ion-toolbar>
 </ion-header>
 
-
-<ion-content fullscreen class="ion-padding">
-  <ion-item lines="none">
-    <!-- Input con autocompletado -->
-    <ion-input fill="outline" placeholder="Buscar dirección, colonia o lugar..." #inputDireccion
-      (ionInput)="onInputChange($event)">
-    </ion-input>
-
-    <!-- Botón de limpiar -->
-    <ion-button fill="clear" size="small" slot="end" *ngIf="mostrarBotonLimpiar" (click)="limpiarInputDireccion()">
-      <ion-icon name="close-circle-outline"></ion-icon>
-    </ion-button>
-
-    <!-- Botón de confirmar -->
-    <ion-button class="btn-confirmar-ubicacion" slot="end" (click)="confirmarUbicacion()">
-      <ion-icon name="checkmark-circle-outline" slot="icon-only"></ion-icon>
-    </ion-button>
-
-  </ion-item>
-
-
+<ion-content fullscreen>
   <ion-text color="medium" style="font-size: 12px; margin-left: 10px;">
     Escribe el lugar, calle, colonia o ciudad para buscar.
   </ion-text>
+  <!-- Leyenda / semáforo -->
+  <div class="legend-ubicacion">
+    <div class="legend-item">
+      <span class="dot dot-green"></span>
+      <span>Mi ubicación</span>
+    </div>
 
-  <!-- Contenedor del mapa o spinner -->
-  <div style="margin-top: 1rem; width: 100%; height: 500px; border-radius: 2px; position: relative; overflow: hidden;">
+    <div class="legend-item">
+      <ion-icon name="location-sharp" class="pin"></ion-icon>
+      <span>Ubicación a seleccionar (toca el mapa)</span>
+    </div>
+  </div>
+
+  <!-- Contenedor del mapa -->
+  <div style="margin-top: 1rem; width: 100%; height: 350px; position: relative; overflow: hidden;">
 
     <!-- Spinner -->
-    <div *ngIf="cargandoMapa" class="spinner-cargando">
+    <div *ngIf="cargandoMapa" class="spinner-cargando"
+      style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;">
       <ion-spinner name="crescent" color="primary"></ion-spinner>
       <p style="font-size: 13px; margin-top: 8px;">Cargando mapa...</p>
     </div>
 
     <!-- Mapa real -->
-    <div #mapContainer [hidden]="cargandoMapa" style="width: 100%; height: 100%; border-radius: 12px;">
+    <div #mapContainer [hidden]="cargandoMapa" style="width: 100%; height: 100%; ">
     </div>
   </div>
-
-
-
 </ion-content>
+
+<!-- Footer con botones -->
+<ion-footer>
+  <ion-toolbar>
+    <ion-buttons slot="start" style="font-size: 12px; color: rgb(119, 119, 119);">
+      {{ direccionCompleta }}
+    </ion-buttons>
+
+    <ion-buttons slot="end">
+      <ion-button color="danger" fill="solid" [disabled]="!ubicacionLugarInvalida" (click)="confirmarUbicacion()">
+        {{ textoBoton }}
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>

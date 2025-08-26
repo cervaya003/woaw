@@ -2,10 +2,9 @@
 
 <ion-content [fullscreen]="true">
 
-  <section class="imagen-fullscreen">
+  <img *ngIf="overlayLoaded" [src]="imgenPrincipal" alt="Próximamente WOAW" class="img-responsiva"  />
 
-    <img *ngIf="overlayLoaded" [src]="imgenPrincipal" alt="Próximamente WOAW" class="img-responsiva" loading="eager"
-      fetchpriority="high" />
+  <section class="imagen-fullscreen">
 
     <div class="hero-overlay">
       <span class="eyebrow">

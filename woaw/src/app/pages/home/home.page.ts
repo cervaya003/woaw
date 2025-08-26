@@ -196,7 +196,6 @@ export class HomePage implements OnInit {
       this.forzarMuteAutoplay();
     }
   }
-
   private forzarMuteAutoplay(): void {
     const video = this.videoRef?.nativeElement;
     if (!video) return;
@@ -206,12 +205,9 @@ export class HomePage implements OnInit {
       console.warn('Autoplay bloqueado por el navegador');
     });
   }
-
   toggleMute(video: HTMLVideoElement) {
     video.muted = !video.muted;
   }
-
-
 }
 
 /**

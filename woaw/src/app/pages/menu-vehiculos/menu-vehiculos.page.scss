@@ -1,0 +1,181 @@
+.bg-img {
+    position: absolute;
+    top: 32rem;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1;
+    opacity: 0.9;
+}
+
+.bg-img2 {
+    position: absolute;
+    top: 0rem;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1;
+    transform: rotate(180deg);
+    opacity: 0.6;
+}
+
+.contenido {
+    position: relative;
+    z-index: 1;
+}
+
+
+
+
+/* ====== Hero Cards ====== */
+.hero-cards {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    gap: clamp(10px, 2vw, 20px);
+    padding: clamp(12px, 3vw, 24px);
+    justify-content: center;
+    align-items: stretch;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.hero-card {
+    flex: 0 0 clamp(110px, 16vw, 160px);
+    height: clamp(55px, 8vw, 80px);
+    border-radius: 10px;
+    padding: clamp(6px, 1vw, 10px);
+    display: grid;
+    grid-template-rows: 1fr auto;
+    align-items: end;
+    color: #000;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    background: linear-gradient(140deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.08));
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    cursor: pointer;
+    user-select: none;
+    transform-origin: center;
+    transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+    opacity: 0;
+}
+
+.hero-card:hover {
+    transform: translateY(-4px) scale(1.03);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, .25);
+    border-color: rgb(255, 0, 0);
+}
+
+
+.hero-card__title {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: clamp(10px, 2vw, 12px);
+    letter-spacing: 0.5px;
+}
+
+.hero-card__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: 600;
+    font-size: clamp(9px, 1.5vw, 11px);
+    padding: 3px 6px;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, .18);
+    border: 1px solid rgba(255, 255, 255, .25);
+}
+
+.hero-card__cta ion-icon {
+    font-size: 12px;
+    transform: translateX(0);
+    transition: transform .25s ease;
+}
+
+.hero-card:hover .hero-card__cta ion-icon {
+    transform: translateX(3px);
+}
+
+.card-nuevos {
+    background-image: linear-gradient(145deg, rgba(17, 255, 0, 0.75), rgba(0, 0, 0, 0.12));
+}
+
+.card-seminuevos {
+    background-image: linear-gradient(145deg, rgba(255, 165, 0, .75), rgba(0, 0, 0, 0.12));
+}
+
+.card-usados {
+    background-image: linear-gradient(145deg, rgba(40, 144, 214, 0.75), rgba(0, 0, 0, 0.12));
+}
+
+/* Animaciones distintas para cada carta */
+@keyframes slideLeftIn {
+    from {
+        opacity: 0;
+        transform: translateX(40px) scale(.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+}
+
+@keyframes popIn {
+    0% {
+        opacity: 0;
+        transform: scale(.9);
+    }
+
+    60% {
+        opacity: 1;
+        transform: scale(1.03);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes slideRightIn {
+    from {
+        opacity: 0;
+        transform: translateX(-40px) scale(.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+}
+
+.card-nuevos {
+    animation: slideRightIn .7s cubic-bezier(.2, .65, .2, 1) .05s forwards;
+}
+
+.card-seminuevos {
+    animation: popIn .7s cubic-bezier(.2, .65, .2, 1) .2s forwards;
+}
+
+.card-usados {
+    animation: slideLeftIn .7s cubic-bezier(.2, .65, .2, 1) .35s forwards;
+}
+
+.hero-cards::-webkit-scrollbar {
+    height: 8px;
+}
+
+.hero-cards::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, .35);
+    border-radius: 999px;
+}
+
+.hero-cards::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, .12);
+    border-radius: 999px;
+}
