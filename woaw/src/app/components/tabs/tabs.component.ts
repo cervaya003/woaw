@@ -28,7 +28,7 @@ export class TabsComponent implements OnInit {
     private popoverCtrl: PopoverController,
     private modalCtrl: ModalController,
     private zone: NgZone
-  ) {}
+  ) { }
 
   notificacionesFavoritos: number = 9;
 
@@ -59,21 +59,8 @@ export class TabsComponent implements OnInit {
     return url === `/${ruta}` || url.startsWith(`/${ruta}/`);
   }
 
-  async abrirPopover(event: any, tipo: 'Autos' | 'Motos' | 'Camiones') {
-    const popover = await this.modalCtrl.create({
-      component: MenuVehiculosComponent,
-      componentProps: {
-        tipoVehiculo: tipo,
-      },
-      breakpoints: [0, 0.3, 0.5, 0.7],
-      initialBreakpoint: 0.5,
-      cssClass: 'modal-perfil',
-      handle: true,
-      backdropDismiss: true,
-      showBackdrop: true,
-    });
-
-    await popover.present();
+  async abrirPopover(tipo: 'Autos' | 'Motos' | 'Camiones') {
+    this.router.navigate(['/menu-vehiculos', tipo.toLowerCase()]);
   }
 }
 

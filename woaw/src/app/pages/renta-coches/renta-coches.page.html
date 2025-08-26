@@ -2,10 +2,9 @@
 
 <ion-content [fullscreen]="true">
 
-  <section class="imagen-fullscreen">
+  <img *ngIf="overlayLoaded" [src]="imgenPrincipal" alt="Próximamente WOAW" class="img-responsiva"  />
 
-    <img *ngIf="overlayLoaded" [src]="imgenPrincipal" alt="Próximamente WOAW" class="img-responsiva" loading="eager"
-      fetchpriority="high" />
+  <section class="imagen-fullscreen">
 
     <div class="hero-overlay">
       <span class="eyebrow">
@@ -13,8 +12,7 @@
       </span>
 
       <h1>Renta de autos <span class="brand">WOAW</span></h1>
-      <p class="lead">Muy pronto podrás disfrutar de nuestra nueva experiencia de renta de autos.</p>
-
+      <p class="lead">Muy pronto una nueva forma de llegar a tu destino. Muévete facil, seguro y cómodo.</p>
       <ul class="chips" role="list" aria-label="ventajas">
         <li class="chip" role="listitem">Reserva inmediata</li>
         <li class="chip" role="listitem">Sin depósito</li>

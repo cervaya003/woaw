@@ -29,7 +29,6 @@
             No se encontraron autos para esta sección.
           </div>
 
-
           <ng-container *ngFor="let auto of autosPaginados">
             <app-cartas [auto]="auto" [autosFavoritosIds]="autosFavoritosIds" [ubicacion]="'seminuevos'"
               (refrescarAutos)="handleRefrescarAutos($event)" [esMio]="idsMisAutos.includes(auto._id)">
@@ -38,7 +37,7 @@
 
         </div>
 
-        <!-- Paginación -->
+        <!-- Paginación  -->
         <div class="contenedor-paginacion" *ngIf="totalPaginas > 1">
           <p class="titulo-paginacion">más</p>
           <div class="paginacion-scroll">

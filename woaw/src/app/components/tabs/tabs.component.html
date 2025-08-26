@@ -5,9 +5,13 @@
     <ion-label>Home</ion-label>
   </ion-tab-button>
 
-  <ion-tab-button (click)="abrirPopover($event, 'Autos')">
+  <ion-tab-button (click)="abrirPopover('Autos')" [ngClass]="{ 'activo': isActive('menu-vehiculos/autos') }">
     <ion-icon name="car-outline"></ion-icon>
     <ion-label>Autos</ion-label>
+  </ion-tab-button>
+
+  <ion-tab-button class="boton-plus" (click)="redirecion('new-car')">
+    <ion-icon name="add"></ion-icon>
   </ion-tab-button>
 
   <ion-tab-button (click)="redirecion('m-nuevos')" [ngClass]="{ 'activo': isActive('m-nuevos') }">
@@ -25,7 +29,7 @@
     <ion-label>Arrendar</ion-label>
   </ion-tab-button>
 
-  <ion-tab-button (click)="redirecion('seguros')" [ngClass]="{ 'activo': isActive('seguros') }">
+  <!-- <ion-tab-button (click)="redirecion('seguros')" [ngClass]="{ 'activo': isActive('seguros') }">
     <ion-icon name="shield-checkmark-outline"></ion-icon>
     <ion-label>Seguros</ion-label>
   </ion-tab-button>
@@ -33,6 +37,6 @@
   <ion-tab-button (click)="redirecion('renta-coches')" [ngClass]="{ 'activo': isActive('renta-coches') }">
     <ion-icon name="document-lock-outline"></ion-icon>
     <ion-label>Renta</ion-label>
-  </ion-tab-button>
+  </ion-tab-button> -->
 
 </ion-tab-bar>

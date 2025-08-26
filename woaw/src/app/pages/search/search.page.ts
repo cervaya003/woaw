@@ -45,7 +45,7 @@ export class SearchPage implements OnInit {
     private generalService: GeneralService,
     public carsService: CarsService,
     private popoverCtrl: PopoverController
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.generalService.valorGlobal$.subscribe((valor) => {
@@ -56,9 +56,6 @@ export class SearchPage implements OnInit {
         this.tipoBusqueda = termino;
       }
     });
-    // this.route.queryParams.subscribe((params) => {
-    //   const origen = params['origen'];
-    // });
     this.route.paramMap.subscribe((params) => {
       const termino = params.get('termino');
       if (termino) {
@@ -68,28 +65,28 @@ export class SearchPage implements OnInit {
     });
   }
   buscarVehiculos(termino: string) {
-  this.carsService.search(termino, this.tipoBusqueda).subscribe({
-    next: (res: any) => {
-      const coches = res?.vehiculos ?? [];
-      const contador = res?.contador ?? coches.length;
+    this.carsService.search(termino, this.tipoBusqueda).subscribe({
+      next: (res: any) => {
+        const autos = res.coches || []
+        const contador = res.contador;
 
-      this.resultados = coches;
-      this.resultadosFiltrados = [...coches];
-      this.totalVehiculos = contador;
+        this.resultados = autos;
+        this.resultadosFiltrados = [...autos];
+        this.totalVehiculos = contador;
 
-      // útil mientras pruebas parser/filtros del back:
-      if (res?.debug) console.log('DEBUG filtro back:', res.debug);
+        // útil mientras pruebas parser/filtros del back:
+        if (res?.debug) console.log('DEBUG filtro back:', res.debug);
 
-      this.calcularPaginacion();
-      this.getCarsFavoritos();
-      this.misAutosid();
-    },
-    error: (err) => {
-      console.warn('Error en búsqueda:', err);
-      this.generalService.alert('Error', 'No se pudo realizar la búsqueda');
-    },
-  });
-}
+        this.calcularPaginacion();
+        this.getCarsFavoritos();
+        this.misAutosid();
+      },
+      error: (err) => {
+        console.warn('Error en búsqueda:', err);
+        this.generalService.alert('Error', 'No se pudo realizar la búsqueda');
+      },
+    });
+  }
 
   getCarsFavoritos() {
     this.carsService.getCarsFavoritos().subscribe({
@@ -261,12 +258,12 @@ export class SearchPage implements OnInit {
           )) ||
         (typeof vehiculo.color === 'string' &&
           vehiculo.color.toLowerCase().trim() ===
-            filtroColor.label.toLowerCase().trim());
+          filtroColor.label.toLowerCase().trim());
 
       const coincideMarca =
         !filtroMarca ||
         vehiculo.marca.toLowerCase().trim() ===
-          filtroMarca.label.toLowerCase().trim();
+        filtroMarca.label.toLowerCase().trim();
 
       return coincidePrecio && coincideAnio && coincideColor && coincideMarca;
     });

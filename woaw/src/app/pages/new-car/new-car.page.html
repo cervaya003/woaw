@@ -42,15 +42,15 @@
     </div>
   </div>
 
-  <!-- # -------->
+  <!------- # -------->
 
-  <div class="contenedor_form" *ngIf="seleccion === 'lote' || seleccion === 'auto' || seleccion === 'moto' ">
+  <div class="contenedor_form" *ngIf="seleccion === 'lote' || seleccion === 'auto' || seleccion === 'moto' || seleccion === 'camion' ">
     <div *ngIf="!isLoggedIn && seleccion != 'lote'" class="mensaje-autenticacion">
       Para publicar y vender un vehículo, primero debes iniciar sesión o crear una cuenta.
       <button class="btn-acceso" (click)="irAInicio()">Acceder</button>
     </div>
 
-    <div *ngIf="!mostrarCarComponent && isLoggedIn && (seleccion === 'auto' || seleccion === 'moto')"
+    <div *ngIf="!mostrarCarComponent && isLoggedIn && (seleccion === 'auto' || seleccion === 'moto' || seleccion ==='camion')"
       class="fila-inputs">
       <div class="campo">
         <label for="anio">Año <span class="requerido">*</span></label>
@@ -66,11 +66,9 @@
         <p *ngIf="mostrarInputOtroAnio && mansaje_error !== ''" class="error_msj">
           {{ mansaje_error }}
         </p>
-
       </div>
-
       <div class="campo">
-
+ 
         <label for="marca">Marca <span class="requerido">*</span></label>
         <select id="marca" *ngIf="!marcaEsPersonalizada" [(ngModel)]="marcaSeleccionada"
           (change)="obtenerModelosSiCorresponde()" [disabled]="!anioValido">
@@ -89,10 +87,8 @@
 
       <div class="campo">
         <label for="modelo">Modelo <span class="requerido">*</span></label>
-
         <input *ngIf="esAnioAnteriorA2008()" type="text" id="modelo" [(ngModel)]="modeloSeleccionado"
           (change)="selecionarModelo()" placeholder="Escribe el modelo" maxlength="25" />
-
         <select *ngIf="!esAnioAnteriorA2008() && !modeloEsPersonalizado" id="modelo" [(ngModel)]="modeloSeleccionado"
           (change)="selecionarModelo()" [disabled]="!marcaSeleccionada">
           <option disabled selected value="">Selecciona un modelo</option>
@@ -115,7 +111,6 @@
       Continuar
       <ion-icon name="arrow-forward-outline"></ion-icon>
     </button>
-
     <div *ngIf="mostrarCarComponent" class="fila_select">
       <!-- Botón de regresar -->
       <button type="button" class="btn-regresar" (click)="volverAtras()">
@@ -134,7 +129,6 @@
       [marca]="marcaSeleccionada" [modelo]="modeloSeleccionado" [tipo]="seleccion">
     </app-car>
 
-    <!-- Motos: SIN esNuevo; el componente lo deduce por año -->
     <app-motos *ngIf="mostrarCarComponent && seleccion === 'moto'" [anio]="obtenerAnioActual()"
       [marca]="getMarcaNombreSeleccionada()" [modelo]="modeloSeleccionado" [tipo]="seleccion">
     </app-motos>

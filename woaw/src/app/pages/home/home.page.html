@@ -58,11 +58,23 @@
       </div>
     </div>
   </div>
-
+  <br>
   <app-principal></app-principal>
 
+  <section class="video-wrap">
+    <video #videoEl class="video" [src]="videoSrc" autoplay muted loop playsinline preload="auto"
+      poster="assets/img/poster.jpg">
+    </video>
 
-  <div class="banner-img">
+    <!-- Botón overlay -->
+    <!-- <button class="mute-btn" (click)="toggleMute(videoEl)">
+      {{ videoEl?.muted ? '🔇' : '🔊' }}
+    </button> -->
+  </section>
+
+
+
+  <!-- <div class="banner-img">
     <img [src]="imgenArrendamiento" alt="Banner arrendamiento puro" loading="lazy" />
     <div class="arr-overlay">
       <h1>Arrendamiento puro <span class="brand">WOAW</span></h1>
@@ -71,10 +83,9 @@
       <ul class="bullets">
         <li>
           <ion-icon name="shield-checkmark-outline"></ion-icon>
-          Reduce caraga fiscal
+          Reduce carga fiscal
         </li>
         <li>
-          <!-- <ion-icon name="card-outline"></ion-icon> -->
           Empresas, negocios, personas fisicas con actividad empresarial y/o personas morales
         </li>
         <li>
@@ -87,7 +98,7 @@
         Conocer más
       </a>
     </div>
-  </div>
+  </div> -->
 
   <br><br>
 

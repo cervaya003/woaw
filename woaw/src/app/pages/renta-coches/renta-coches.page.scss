@@ -1,6 +1,6 @@
 .imagen-fullscreen {
   position: relative;
-  min-height: clamp(820px, 80vh, 820px);
+  min-height: clamp(860px, 80vh, 860px);
   overflow: hidden;
 
   @media(max-width: 960px) {
@@ -10,19 +10,23 @@
 
 .img-responsiva {
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 0;
   width: 100%;
-  height: 100%;
+  height: 100vh;
   object-fit: cover;
-  filter: saturate(1.05) contrast(1.04) brightness(.9);
-  z-index: 0;
+  z-index: -1;
+
+  @media (min-width: 820px) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100hv;
+    object-fit: cover;
+    filter: saturate(1.05) contrast(1.04) brightness(.9);
+    z-index: 0;
+  }
 }
-
-
-
-
-
-
 
 .hero-overlay {
   position: relative;
@@ -161,15 +165,6 @@
     box-shadow: 0 12px 30px rgba(255, 45, 32, .35);
   }
 }
-
-
-
-
-
-
-
-
-
 
 .btn-ghost {
   background: rgba(255, 255, 255, .04);

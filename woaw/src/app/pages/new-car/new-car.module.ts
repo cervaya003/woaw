@@ -16,6 +16,7 @@ import { FooterComponent } from '../../components/footer/footer.component';
 import { AddComponent } from '../../components/lote/add/add.component';
 import { CarComponent } from '../../components/new-veiculo/car/car.component';
 import { MotosComponent } from '../../components/new-veiculo/motos/motos.component';
+/* import {} */
 
 @NgModule({
   imports: [

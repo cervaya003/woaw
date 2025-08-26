@@ -49,6 +49,10 @@ export class HomePage implements OnInit {
 
   imgenPrincipal: string = '';
   imgenArrendamiento: string = '';
+  videoSrc: string = '';
+
+  @ViewChild('videoEl', { static: false })
+  private videoRef!: ElementRef<HTMLVideoElement>;
 
   constructor(
     private popoverCtrl: PopoverController,
@@ -60,6 +64,7 @@ export class HomePage implements OnInit {
 
   async ngOnInit() {
     this.cargaimagen();
+    this.cargavideo();
 
     // Refleja estado de login y verifica teléfono cuando haya sesión
     this.generalService.tokenExistente$.subscribe((estado) => {
@@ -79,7 +84,6 @@ export class HomePage implements OnInit {
     }, 10000);
     this.gatTiposVeiculos();
   }
-
   // Cada vez que Home vuelve a ser la vista activa
   ionViewWillEnter() {
     this.generalService.verificarTelefono();
@@ -91,7 +95,6 @@ export class HomePage implements OnInit {
       '.banner-img img'
     );
   }
-
   // ----- -----
   escribirTexto() {
     let index = 0;
@@ -184,7 +187,6 @@ export class HomePage implements OnInit {
     historial = historial.slice(0, 10);
     localStorage.setItem('historialBusqueda', JSON.stringify(historial));
   }
-
   async cargaimagen() {
     this.imgenPrincipal = '/assets/autos/publicidad/principal4.webp';
     this.imgenArrendamiento = '/assets/autos/publicidad/arrendamiento.png';
@@ -195,6 +197,27 @@ export class HomePage implements OnInit {
     } catch {
       this.overlayLoaded = true;
     }
+  }
+
+  async cargavideo() {
+    this.videoSrc = 'assets/autos/publicidad/vp.mp4';
+    try {
+      await this.generalService.preloadVideo(this.videoSrc);
+    } finally {
+      this.forzarMuteAutoplay();
+    }
+  }
+  private forzarMuteAutoplay(): void {
+    const video = this.videoRef?.nativeElement;
+    if (!video) return;
+    video.muted = true;
+    video.autoplay = true;
+    video.play().catch(() => {
+      console.warn('Autoplay bloqueado por el navegador');
+    });
+  }
+  toggleMute(video: HTMLVideoElement) {
+    video.muted = !video.muted;
   }
 }
 

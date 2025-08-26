@@ -13,6 +13,8 @@ import { Geolocation } from '@capacitor/geolocation';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { GeneralService } from '../../../services/general.service';
+import { NgZone } from '@angular/core';
+import { IonSearchbar } from '@ionic/angular';
 
 @Component({
   selector: 'app-mapa',
@@ -24,6 +26,9 @@ import { GeneralService } from '../../../services/general.service';
 })
 export class MapaComponent implements OnInit {
   @ViewChild('mapContainer', { static: false }) mapContainer!: ElementRef;
+
+  direccionCompleta: string = 'Selecciona la ubicación';
+  textoBoton: string = '...';
 
   lat: number = 0;
   lng: number = 0;
@@ -37,7 +42,7 @@ export class MapaComponent implements OnInit {
   ubicacionLugar: [string, string, number, number] = ['', '', 0, 0];
 
   map!: google.maps.Map;
-  markerActual!: google.maps.Marker;
+  markerActual: google.maps.Marker | google.maps.Circle | null = null;
   markerLugar!: google.maps.Marker;
 
   @ViewChild('inputDireccion', { static: false }) inputDireccion: any;
@@ -47,7 +52,8 @@ export class MapaComponent implements OnInit {
   constructor(
     private modalController: ModalController,
     private http: HttpClient,
-    private generalService: GeneralService
+    private generalService: GeneralService,
+    private zone: NgZone,
   ) { }
 
   ngOnInit() { }
@@ -82,98 +88,133 @@ export class MapaComponent implements OnInit {
       if (res.status === 'OK' && res.results.length > 0) {
         this.direccion = res.results[0].formatted_address;
 
-        const center = new google.maps.LatLng(this.lat, this.lng);
+        const center: google.maps.LatLngLiteral = { lat: this.lat, lng: this.lng };
+
+        // Inicializa el mapa
         this.map = new google.maps.Map(this.mapContainer.nativeElement, {
           center,
           zoom: 15,
-          styles:
-            [
-              {
-                featureType: "poi",
-                elementType: "all",
-                stylers: [{ visibility: "off" }]
-              }
-            ]
-
+          // streetViewControl: false, 
+          // mapTypeControl: true,
+          draggableCursor: 'pointer',
+          draggingCursor: 'grabbing',
+          styles: [
+            {
+              featureType: 'poi',
+              elementType: 'all',
+              stylers: [{ visibility: 'off' }],
+            },
+          ],
         });
 
-        this.markerActual = new google.maps.Marker({
+        if (this.markerActual) {
+          this.markerActual.setMap(null);
+          this.markerActual = null;
+        }
+
+        // Dibuja CÍRCULO VERDE para la ubicación actual
+        this.markerActual = new google.maps.Circle({
           map: this.map,
-          position: center,
-          icon: {
-            url: 'https://maps.gstatic.com/mapfiles/ms2/micons/man.png',
-            scaledSize: new google.maps.Size(40, 40),
-            anchor: new google.maps.Point(20, 40),
-          },
+          center: center,
+          radius: 50,
+          fillColor: '#15ff00ff',
+          fillOpacity: 0.45,
+          strokeColor: '#086304ff',
+          strokeOpacity: 0.9,
+          strokeWeight: 2,
+          clickable: false,
         });
+
         setTimeout(() => {
           this.cargandoMapa = false;
-        }, 1000);
+        }, 500);
+
         this.configurarClickEnMapa();
       }
     });
   }
 
-  searchMap() {
-    const input = document.querySelector(
-      'ion-input[placeholder="Buscar dirección, colonia o lugar..."] input'
-    ) as HTMLInputElement;
+  async searchMap() {
+    // Obtén el <input> real dentro del ion-searchbar
+    const inputEl = await this.inputDireccion.getInputElement();
 
-    if (!input) return;
-
-    const autocomplete = new google.maps.places.Autocomplete(input, {
+    const autocomplete = new google.maps.places.Autocomplete(inputEl, {
       types: ['geocode'],
       componentRestrictions: { country: 'mx' },
     });
 
     autocomplete.addListener('place_changed', () => {
       const place = autocomplete.getPlace();
-
       if (!place.geometry || !place.geometry.location) return;
 
-      const location = place.geometry.location;
-      this.latLugar = location.lat();
-      this.lngLugar = location.lng();
-      this.obtenerDireccionDelLugar(this.latLugar, this.lngLugar, location);
+      const loc = place.geometry.location;
+      const lat = loc.lat();
+      const lng = loc.lng();
+
+      // Actualiza UI en zona Angular
+      this.zone.run(() => {
+        this.textoBoton = '...';
+        this.direccionCompleta = 'cargando...';
+        this.ubicacionLugarInvalida = false;
+      });
+
+      this.obtenerDireccionDelLugar(lat, lng, loc);
     });
   }
 
   obtenerDireccionDelLugar(lat: number, lng: number, location: any) {
+    // ✅ Estos cambios deben disparar UI aunque vengas de un click de Google Maps
+    this.zone.run(() => {
+      this.textoBoton = '...';
+      this.direccionCompleta = 'cargando...';
+      this.ubicacionLugarInvalida = false;
+    });
+
     const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${environment.maps_key}`;
 
     this.http.get(url).subscribe((res: any) => {
       if (res.status === 'OK' && res.results.length > 0) {
         const components = res.results[0].address_components;
-        let ciudad = '',
-          estado = '';
-
-        for (let comp of components) {
+        let ciudad = '', estado = '';
+        for (const comp of components) {
           if (comp.types.includes('locality')) ciudad = comp.long_name;
-          else if (!ciudad && comp.types.includes('sublocality'))
-            ciudad = comp.long_name;
-          else if (
-            !ciudad &&
-            comp.types.includes('administrative_area_level_2')
-          )
-            ciudad = comp.long_name;
-
-          if (comp.types.includes('administrative_area_level_1'))
-            estado = comp.long_name;
+          else if (!ciudad && comp.types.includes('sublocality')) ciudad = comp.long_name;
+          else if (!ciudad && comp.types.includes('administrative_area_level_2')) ciudad = comp.long_name;
+          if (comp.types.includes('administrative_area_level_1')) estado = comp.long_name;
         }
 
-        this.ubicacionLugar = [ciudad, estado, lat, lng];
-        this.ubicacionLugarInvalida = true;
+        // Puedes seguir usando tu util; también corre en zona:
+        this.generalService.obtenerDireccionDesdeCoordenadas(lat, lng)
+          .then((direccion) => {
+            this.zone.run(() => {
+              this.direccionCompleta = direccion || res.results[0].formatted_address || `${ciudad}, ${estado}`;
+              this.ubicacionLugar = [ciudad, estado, lat, lng];
+              this.ubicacionLugarInvalida = true;
+              this.textoBoton = 'Guardar';
+            });
+          })
+          .catch((error) => {
+            console.warn(error);
+            this.zone.run(() => {
+              this.ubicacionLugarInvalida = false;
+              this.direccionCompleta = 'No se pudo obtener la dirección.';
+              this.textoBoton = 'Error';
+            });
+          });
+
       } else {
-        this.direccionLugar = 'No se pudo obtener la dirección del lugar.';
+        this.zone.run(() => {
+          this.direccionLugar = 'No se pudo obtener la dirección del lugar.';
+          this.direccionCompleta = 'No se pudo obtener la dirección. ¡';
+          this.textoBoton = 'Error !';
+          this.ubicacionLugarInvalida = false;
+        });
       }
     });
 
+    // Mapa/marker (esto no necesita zone; no afecta bindings directamente)
     this.map.setCenter(location);
-
-    if (this.markerLugar) {
-      this.markerLugar.setMap(null);
-    }
-
+    if (this.markerLugar) this.markerLugar.setMap(null);
     this.markerLugar = new google.maps.Marker({
       map: this.map,
       position: location,
@@ -203,12 +244,13 @@ export class MapaComponent implements OnInit {
   }
 
   limpiarInputDireccion(): void {
-    if (this.markerLugar) {
-      this.markerLugar.setMap(null);
-    }
+    if (this.markerLugar) this.markerLugar.setMap(null);
 
     this.ubicacionLugar = ['', '', 0, 0];
-    this.inputDireccion.value = '';
+    this.ubicacionLugarInvalida = false;
+    this.direccionCompleta = 'Selecciona la ubicación';
+
+    if (this.inputDireccion) this.inputDireccion.value = ''; // IonSearchbar
     this.mostrarBotonLimpiar = false;
   }
 

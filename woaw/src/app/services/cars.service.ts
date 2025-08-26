@@ -343,6 +343,22 @@ export class CarsService {
       catchError((error) => this.headersService.handleError(error))
     );
   }
+  GetModelosCamiones(marca: string): Observable<any> {
+    // this.generalService.loading('Obteniendo modelos...');
+    return from(this.headersService.obtenerToken()).pipe(
+      switchMap((token) => {
+        const headers = this.headersService.getJsonHeaders(token);
+        this.generalService.loadingDismiss();
+        return this.http.get(
+          `${environment.api_key}/camioninfo/modelos-camion/${marca}`,
+          {
+            headers,
+          }
+        );
+      }),
+      catchError((error) => this.headersService.handleError(error))
+    );
+  }
   getMarcas_all(): Observable<any> {
     // this.generalService.loading('Obteniendo marcas...');
     return from(this.headersService.obtenerToken()).pipe(
@@ -533,10 +549,9 @@ export class CarsService {
         this.generalService.loadingDismiss();
 
         const parametro =
-          tipoBusqueda === 'tipoVehiculo' ? 'tipoVehiculo' : 'keywords';
-        const url = `${
-          environment.api_key
-        }/vehiculos?${parametro}=${encodeURIComponent(palabra)}`;
+          tipoBusqueda === 'tipoVehiculo' ? `/cars/vehiculos?tipoVehiculo=${palabra}` : `/vehiculos?keywords=${palabra}`;
+        const url = `${environment.api_key
+          }${parametro}`;
 
         return this.http.get(url, { headers });
       }),
@@ -547,7 +562,14 @@ export class CarsService {
 
 /**
 
+        return this.http.get(
+          `${environment.api_key}/cars/vehiculos?tipoVenta=seminuevo`,
+          {
+            headers,
+          }
+        );
 
+        /vehiculos?
 
 
 exports.removeBackgroundBuffer = async (req, res) => {
