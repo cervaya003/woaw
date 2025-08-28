@@ -1,12 +1,10 @@
 <section>
   <!-- ===== Resumen arriba (botón publicar + preview estado) ===== -->
   <div class="resumen-estado" *ngIf="seccionFormulario == 2 && Pregunta == 'no'">
-
     <button type="button" class="btn-guardar" (click)="EnviarCamion()">
       <ion-icon name="save-outline" class="icono-guardar"></ion-icon>
       Publicar
     </button>
-
 
     <div class="fila-info">
       <p>Año: <strong>{{ anio }}</strong></p>
@@ -17,7 +15,6 @@
   </div>
 
   <!-- ===== PREGUNTA tipo de camión (particular/lote/empresa) ===== -->
-
   <div class="tipo-vehiculo-container" *ngIf="Pregunta == 'si'">
     <h2 class="titulo-tipo">¿Qué tipo de camión quieres subir?</h2>
 
@@ -38,26 +35,23 @@
     <div class="contenedor-boton">
       <button class="btn-continuar" [disabled]="!tipoSeleccionado" (click)="continuar()">
         Continuar <ion-icon name="arrow-forward-outline"></ion-icon>
-
       </button>
     </div>
   </div>
 
-  <!-- ===== PREGUNTA “Quién lo vende” (solo particular no-admin) ===== -->
+  <!-- ===== PREGUNTA "Quién lo vende" (solo particular no-admin) ===== -->
   <div *ngIf="tipoSeleccionado == 'particular' && MyRole !== 'admin' && seccionFormulario == 1" class="pregunta-vendedor">
     <p class="texto-pregunta">¿Cómo quieres vender tu camión?</p>
     <div class="botones-vendedor">
       <button class="btn-vender-yo" (click)="quienLovende(0)">Lo vendo yo</button>
       <button class="btn-vende-go" (click)="quienLovende(1)">
         Que lo venda <img src="assets/icon/logo4.png" alt="Go Transportes" class="logo-boton" />
-
       </button>
     </div>
   </div>
 
   <!-- ===== Opción de que Go lo publique ===== -->
   <div *ngIf="tipoSeleccionado === 'particular' && seccionFormulario === 3 && (MyRole === 'cliente' || MyRole === 'transportista')" class="formulario-publicacion">
-
     <p class="info-texto">
       <strong>¡Nosotros nos encargamos!</strong> Publicamos tu camión y agendamos citas con interesados.
       <br />
@@ -91,9 +85,7 @@
     </ion-item>
 
     <div class="btn-wsp-container">
-
       <button class="btn-wsp" (click)="contactosService.contactarPorPublicacionParticular(nombreCamion, anioCamion!, precioEstimado!, tipoFactura)">
-
         <ion-icon name="logo-whatsapp" slot="start"></ion-icon>
         Contáctanos por WhatsApp
       </button>
@@ -104,7 +96,6 @@
   <div class="formulario" *ngIf="Pregunta == 'no' && seccionFormulario == 2">
     <div class="contenedor-botones">
       <!-- Ubicación (particular) -->
-
       <div class="bloque-imagenes" *ngIf="tipoSeleccionado == 'particular'">
         <button type="button" (click)="seleccionarUbicacion()">
           <ion-icon name="location-outline" class="icono"></ion-icon>
@@ -130,12 +121,10 @@
           <select id="direccionSelect" [(ngModel)]="direccionSeleccionada" class="select-lote">
             <option [ngValue]="null" disabled selected>Selecciona una ubicación</option>
             <option *ngFor="let dir of ubicacionesLoteSeleccionado; let i = index" [ngValue]="dir">
-
               {{ ubicacionesLoteLegibles[i] || 'Obteniendo dirección...' }}
             </option>
           </select>
         </div>
-
 
         <div *ngIf="direccionSeleccionada && ubicacionesLoteSeleccionado.length === 1" class="ubicacion-mostrada">
           <ion-icon name="location-outline"></ion-icon>
@@ -144,7 +133,6 @@
       </div>
 
       <!-- Imágenes -->
-
       <div class="bloque-imagenes">
         <button class="btn-imagenes" type="button" (click)="seleccionarImagenes()">
           <ion-icon name="image-outline"></ion-icon>
@@ -158,7 +146,6 @@
         <button *ngIf="imagenesIntentadas" class="btn-limpiar" type="button" (click)="limpiarImagenes()">
           <ion-icon name="trash-outline"></ion-icon>
           Imágenes
-
         </button>
       </div>
     </div>
@@ -171,7 +158,6 @@
         <select [(ngModel)]="tipoCamion" required>
           <option [ngValue]="null" disabled selected>Selecciona un tipo</option>
           <option *ngFor="let tipo of tiposCamion" [value]="tipo.value">{{ tipo.label }}</option>
-
         </select>
       </div>
 
@@ -193,31 +179,61 @@
       <!-- Color -->
       <div class="campo">
         <label>Color: <span class="requerido">*</span></label>
-
         <select [(ngModel)]="color" required>
           <option [ngValue]="null" disabled selected>Selecciona un color</option>
           <option *ngFor="let opcion of colores" [value]="opcion.label">{{ opcion.label }}</option>
-
         </select>
       </div>
 
-      <!-- Kilometraje -->
-      <div class="campo">
+      <!-- Kilometraje - Solo visible para usados/seminuevos -->
+      <div class="campo" *ngIf="estadoCamion !== 'Nuevo'">
         <label>Kilometraje: <span class="requerido">*</span></label>
+        <input type="number" min="0" placeholder="Ej. 45000" [(ngModel)]="kilometraje" required />
+      </div>
 
-        <input type="number" min="0" placeholder="Ej. 100000" [(ngModel)]="kilometraje" required />
+      <!-- Tipo de venta -->
+      <div class="campo">
+        <label>Tipo de oferta: <span class="requerido">*</span></label>
+        <select [(ngModel)]="tipoVenta" required>
+          <option value="" disabled selected>Selecciona una opción</option>
+          <option *ngFor="let tipo of tiposVenta" [value]="tipo.value">{{ tipo.label }}</option>
+        </select>
       </div>
 
       <!-- === CAMPOS OPCIONALES === -->
-
+      <!-- Número de ejes con validación -->
       <div class="campo">
         <label>Número de ejes: <span class="opcional_css">(opcional)</span></label>
-        <input type="number" min="2" max="10" placeholder="Ej. 3" [(ngModel)]="ejes" />
+        <!-- Reemplazado el input simple con uno con validaciones -->
+        <select [(ngModel)]="ejes">
+          <option [ngValue]="null" selected>Selecciona una opción</option>
+          <option [ngValue]="2">2 ejes</option>
+          <option [ngValue]="3">3 ejes</option>
+          <option [ngValue]="4">4 ejes</option>
+          <option [ngValue]="5">5 ejes</option>
+          <option [ngValue]="6">6 ejes</option>
+          <option [ngValue]="7">7 ejes</option>
+          <option [ngValue]="8">8 ejes</option>
+          <option [ngValue]="9">9 ejes</option>
+          <option [ngValue]="10">10 ejes</option>
+        </select>
       </div>
 
       <div class="campo">
         <label>Capacidad de carga (toneladas): <span class="opcional_css">(opcional)</span></label>
-        <input type="number" min="0" placeholder="Ej. 20" [(ngModel)]="capacidadCargaToneladas" />
+        <select [(ngModel)]="capacidadCargaToneladas">
+          <option [ngValue]="null" selected>Selecciona una opción</option>
+          <option [ngValue]="1.5">1.5 toneladas</option>
+          <option [ngValue]="3.5">3.5 toneladas</option>
+          <option [ngValue]="5">5 toneladas</option>
+          <option [ngValue]="7.5">7.5 toneladas</option>
+          <option [ngValue]="10">10 toneladas</option>
+          <option [ngValue]="14">14 toneladas</option>
+          <option [ngValue]="20">20 toneladas</option>
+          <option [ngValue]="30">30 toneladas</option>
+          <option [ngValue]="50">50 toneladas</option>
+          <option [ngValue]="100">100 toneladas</option>
+        </select>
       </div>
 
       <div class="campo">
@@ -235,7 +251,6 @@
           <option *ngFor="let tipo of tiposCombustible" [value]="tipo.value">{{ tipo.label }}</option>
         </select>
       </div>
-
 
       <div class="campo">
         <label>Potencia (HP): <span class="opcional_css">(opcional)</span></label>
@@ -257,4 +272,3 @@
     </div>
   </div>
 </section>
-
