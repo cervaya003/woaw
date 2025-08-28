@@ -59,7 +59,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
               const user = userRaw ? JSON.parse(decodeURIComponent(userRaw)) : null;
               this.generalService.guardarCredenciales(token, user);
               this.router.navigate(['/home']);
-              this.generalService.alert('Bienvenido a Go Autos', 'Inicio de sesión exitoso', 'success');
+              this.generalService.alert('Bienvenido a WOAW', 'Inicio de sesión exitoso', 'success');
             } else {
               this.generalService.alert('Error', 'No se recibió token de Google', 'danger');
             }
@@ -129,7 +129,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
         if (res.token && res.user) {
           this.generalService.guardarCredenciales(res.token, res.user);
           setTimeout(() => this.router.navigate(['/home']), 1200);
-          this.generalService.alert('Bienvenido a Go Autos', 'Inicio de sesión exitoso', 'success');
+          this.generalService.alert('Bienvenido a WOAW', 'Inicio de sesión exitoso', 'success');
         } else {
           this.generalService.alert('Error de conexión', 'Ups, algo salió mal, vuelve a intentarlo', 'danger');
         }
@@ -149,7 +149,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
         if (res.token && res.user) {
           this.generalService.guardarCredenciales(res.token, res.user);
           this.router.navigate(['/home']);
-          this.generalService.alert('Bienvenido a Go Autos', 'Inicio de sesión exitoso', 'success');
+          this.generalService.alert('Bienvenido a WOAW', 'Inicio de sesión exitoso', 'success');
         } else {
           this.generalService.alert(' Error en registro', 'Ups, algo salió mal, vuelve a intentarlo', 'danger');
         }

@@ -7,6 +7,7 @@
       'background-image':
       'linear-gradient(to bottom, rgba(255, 255, 255, 0) 75%, #ffffff00 100%), url(' + imgenPrincipal + ')',
       'background-size': 'cover',
+      'opacity': '1',
       'background-position': 'center center',
       'background-repeat': 'no-repeat'
     } : {}">
@@ -66,39 +67,16 @@
       poster="assets/img/poster.jpg">
     </video>
 
-    <!-- Botón overlay -->
+    <div class="overlay">
+      <img src="assets/icon/logo4.png" alt="Logo woaw" class="logo-goautos2" loading="lazy" />
+      <h1 class="headline ">Encuentra tu siguiente vehículo</h1>
+      <p class="subheadline">Coches, seminuevos y camiones.</p>
+    </div>
+
     <!-- <button class="mute-btn" (click)="toggleMute(videoEl)">
-      {{ videoEl?.muted ? '🔇' : '🔊' }}
+      <ion-icon [name]="videoEl?.muted ? 'volume-mute' : 'volume-high'"></ion-icon>
     </button> -->
   </section>
-
-
-
-  <!-- <div class="banner-img">
-    <img [src]="imgenArrendamiento" alt="Banner arrendamiento puro" loading="lazy" />
-    <div class="arr-overlay">
-      <h1>Arrendamiento puro <span class="brand">WOAW</span></h1>
-      <p>Que mover tu negocio no sea un límite</p>
-
-      <ul class="bullets">
-        <li>
-          <ion-icon name="shield-checkmark-outline"></ion-icon>
-          Reduce carga fiscal
-        </li>
-        <li>
-          Empresas, negocios, personas fisicas con actividad empresarial y/o personas morales
-        </li>
-        <li>
-          <ion-icon name="timer-outline"></ion-icon>
-          Plazos desde 12 hasta 48 meses
-        </li>
-      </ul>
-
-      <a class="btn-cta" href="/arrendamiento">
-        Conocer más
-      </a>
-    </div>
-  </div> -->
 
   <br><br>
 
@@ -124,3 +102,13 @@
 
   <app-footer></app-footer>
 </ion-content>
+
+
+
+<!-- 
+
+     <button class="mute-btn" (click)="toggleMute(videoEl)">
+      {{ videoEl?.muted ? '🔇' : '🔊' }}
+    </button> 
+
+  -->

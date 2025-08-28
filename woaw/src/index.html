@@ -4,39 +4,65 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+  <!-- SEO base -->
+  <title>Woaw | Compra y venta de autos nuevos y seminuevos | Arrendamiento</title>
   <meta name="description"
-    content="Compra y vende autos nuevos, seminuevos y usados en México con woaw. Encuentra el vehículo ideal o publica el tuyo con facilidad.">
+    content="Compra y vende autos nuevos, seminuevos y usados con Woaw. Encuentra el vehículo ideal o publica el tuyo con facilidad.">
   <meta name="keywords" content="autos, seminuevos, usados, nuevos, venta de autos, woaw, compra autos, coches México">
-  <meta name="author" content="woaw">
-  <meta name="robots" content="index, follow">
-  <link rel="canonical" href="https://wo-aw.com/" />
-  <title>Woaw | Compra y venta de autos nuevos y seminuevos</title>
-  <base href="/" />
-  <meta name="robots">
+  <link rel="canonical" href="https://wo-aw.com/">
+
+  <!-- Robots: asegura indexación -->
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+
+  <!-- PWA/branding -->
   <link rel="icon" type="image/png" href="assets/icon/logo0.png" />
+  <meta name="theme-color" content="#000000">
+
+  <!-- Tipografías -->
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Exo:wght@900&display=swap" rel="stylesheet">
 
-  <!-- Google Maps -->
+  <!-- Open Graph / Twitter (para que Google/SM entiendan tu marca) -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://wo-aw.com/">
+  <meta property="og:title" content="Woaw | Compra y venta de autos y camiones">
+  <meta property="og:description"
+    content="Marketplace para comprar y vender autos nuevos, seminuevos y usados. Arrendamiento sin complicaciones.">
+  <meta property="og:image" content="https://wo-aw.com/assets/icon/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Woaw | Compra y venta de autos y camiones">
+  <meta name="twitter:description" content="Marketplace para comprar y vender autos nuevos, seminuevos y usados.">
+  <meta name="twitter:image" content="https://wo-aw.com/assets/icon/og-image.png">
+
+  <!-- JSON-LD: marca el sitio para Google -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Woaw",
+    "url": "https://wo-aw.com/",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://wo-aw.com/search/vehiculos/{search_term}",
+      "query-input": "required name=search_term"
+    }
+  }
+  </script>
+
+  <base href="/">
   <script
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCaWXO_-CDUazvJxGKAg01BA73XULiqalE&libraries=places"></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
 
-  <!-- Google Analytics (GA4) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-9FQLZKFT9Q"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag() { dataLayer.push(arguments); }
     gtag('js', new Date());
-
-    /* GA4 */
     gtag('config', 'G-9FQLZKFT9Q');
-
-    /* Google Ads (config) */
     gtag('config', 'AW-17497947494');
-
-    /* Evento de conversión: Vista de página */
     gtag('event', 'conversion', {
       'send_to': 'AW-17497947494/Im_wCK_omosbEOb61ZdB'
     });

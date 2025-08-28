@@ -2,28 +2,28 @@
 
 <ion-content [fullscreen]="true">
   <img [src]="imgenPrincipal" alt="Fondo" class="bg-img" />
-  <img [src]="imgenPrincipal" alt="Fondo" class="bg-img2" />
+  <!-- <img [src]="imgenPrincipal" alt="Fondo" class="bg-img2" /> -->
 
   <div class="hero-cards">
-    <div class="hero-card card-usados" (click)="verMas('/usados')">
+    <div class="hero-card" (click)="verMas('/usados')">
       <div class="hero-card__title">Usados</div>
-      <div class="hero-card__cta">
+      <div class="hero-card__cta card-usados">
         Ver más
         <ion-icon name="arrow-forward-outline"></ion-icon>
       </div>
     </div>
 
-    <div class="hero-card card-seminuevos" (click)="verMas('/seminuevos')">
+    <div class="hero-card" (click)="verMas('/seminuevos')">
       <div class="hero-card__title">Seminuevos</div>
-      <div class="hero-card__cta">
+      <div class="hero-card__cta card-seminuevos">
         Ver más
         <ion-icon name="arrow-forward-outline"></ion-icon>
       </div>
     </div>
 
-    <div class="hero-card card-nuevos" (click)="verMas('/nuevos')">
+    <div class="hero-card" (click)="verMas('/nuevos')">
       <div class="hero-card__title">Nuevos</div>
-      <div class="hero-card__cta">
+      <div class="hero-card__cta card-nuevos">
         Ver más
         <ion-icon name="arrow-forward-outline"></ion-icon>
       </div>

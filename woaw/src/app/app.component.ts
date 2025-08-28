@@ -1,19 +1,24 @@
-import { Component } from '@angular/core';
-import { Platform } from '@ionic/angular';
+import { Component, ViewChildren, QueryList } from '@angular/core';
 import { StatusBar, Style } from '@capacitor/status-bar';
 import { GeneralService } from './services/general.service';
 import { ContactosService } from './services/contactos.service';
 import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { NgZone } from '@angular/core';
-import { MenuController } from '@ionic/angular';
 import { SeoService } from './services/seo.service';
 import { filter, map, mergeMap } from 'rxjs/operators';
 // Importamos la modal de perfil
 import { PerfilComponent } from '../app/components/modal/perfil/perfil.component';
-import { ModalController } from '@ionic/angular';
-
+import {
+  IonRouterOutlet,
+  Platform,
+  ToastController,
+  ModalController,
+  ActionSheetController,
+  AlertController,
+  MenuController,
+} from '@ionic/angular';
 import { Capacitor } from '@capacitor/core';
-
+import { App } from '@capacitor/app';
 
 
 declare let gtag: Function;
@@ -30,16 +35,24 @@ export class AppComponent {
   public isLoggedIn: boolean = false;
   public MyRole: string | null = null;
 
+  @ViewChildren(IonRouterOutlet) routerOutlets!: QueryList<IonRouterOutlet>;
+  private lastBackTime = 0;
+  private readonly ROOT_PATHS = ['/', '/home', '/inicio', '/autenticacion-user'];
+
   constructor(
     private platform: Platform,
     private generalService: GeneralService,
     private contactosService: ContactosService,
     private router: Router,
+    private toastCtrl: ToastController,
     private seoService: SeoService,
     private activatedRoute: ActivatedRoute,
     private zone: NgZone,
     private modalCtrl: ModalController,
     private menuCtrl: MenuController,
+
+    private actionSheetCtrl: ActionSheetController,
+    private alertCtrl: AlertController,
   ) {
     this.initializeApp();
     this.generalService.dispositivo$.subscribe((tipo) => {
@@ -60,10 +73,14 @@ export class AppComponent {
     this.generalService.tokenExistente$.subscribe((estado) => {
       this.isLoggedIn = estado;
     });
-
     this.generalService.tipoRol$.subscribe((rol) => {
       this.MyRole = rol;
     });
+
+    // ----- ------ 
+
+    this.platform.ready().then(() => this.registerHardwareBack());
+
   }
   async initializeApp() {
     await this.platform.ready();
@@ -154,5 +171,56 @@ export class AppComponent {
     }, 500);
   }
 
+
+  private registerHardwareBack() {
+    App.addListener('backButton', async () => {
+      const topModal = await this.modalCtrl.getTop();
+      if (topModal) { await topModal.dismiss(); return; }
+
+      const topAction = await this.actionSheetCtrl.getTop();
+      if (topAction) { await topAction.dismiss(); return; }
+
+      const topAlert = await this.alertCtrl.getTop();
+      if (topAlert) { await topAlert.dismiss(); return; }
+
+      const menuOpen = await this.menuCtrl.isOpen();
+      if (menuOpen) { await this.menuCtrl.close(); return; }
+
+      for (const outlet of this.routerOutlets.toArray()) {
+        if (outlet && outlet.canGoBack()) {
+          outlet.pop();
+          return;
+        }
+      }
+
+      const current = this.router.url.split('?')[0];
+      if (this.ROOT_PATHS.includes(current)) {
+        await this.handleExitGesture();
+        return;
+      }
+
+      this.router.navigateByUrl('/home', { replaceUrl: true });
+    });
+  }
+
+  private async handleExitGesture() {
+    if (!this.platform.is('android')) {
+      return;
+    }
+
+    const now = Date.now();
+    if (now - this.lastBackTime < 1500) {
+      App.exitApp();
+      return;
+    }
+
+    this.lastBackTime = now;
+    const toast = await this.toastCtrl.create({
+      message: 'Presiona atrás de nuevo para salir',
+      duration: 1200,
+      position: 'bottom',
+    });
+    await toast.present();
+  }
 
 }

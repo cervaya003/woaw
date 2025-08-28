@@ -7,11 +7,26 @@
 <ion-content>
   <div class="page-telefono">
     <div class="form-wrapper">
-      <h2>Verifica tu número</h2>
+
+      <img src="assets/icon/logo2.png" loading="lazy" alt="Go Autos" class="logo" />
+
+      <div class="bienvenida" *ngIf="user as u">
+        <div class="avatar">
+          <img *ngIf="fotoPerfil; else inicialesTpl" [src]="fotoPerfil" alt="Foto de perfil" />
+          <ng-template #inicialesTpl>
+            <span>{{ iniciales }}</span>
+          </ng-template>
+        </div>
+        <div class="texto">
+          <p class="saludo">Bienvenido</p>
+          <h3 class="nombre">{{ displayName }}</h3>
+        </div>
+      </div>
+
+      <h2>Ingresa tu número</h2>
       <p>Necesitamos tu número para proteger tu cuenta y completar tu perfil.</p>
 
       <form [formGroup]="form" (ngSubmit)="submit()">
-        <!-- Input combinado de lada (abre modal) + número -->
         <div class="telefono-input-wrapper">
           <ion-item lines="none" class="lada-box" (click)="abrirModalLadas()">
             <img [src]="ladaSeleccionada.banderaUrl" class="flag-img" alt="flag" />
@@ -24,22 +39,26 @@
           </ion-item>
         </div>
 
-        <!-- Mensajes de validación -->
         <ion-note *ngIf="form.get('numero')?.touched && form.get('numero')?.invalid">
-          Ingresa un número válido (7 a 15 dígitos).
+          Ingresa un número válido 10 dígitos.
         </ion-note>
 
-        <!-- Botón -->
-        <button class="btn-guardar" type="submit" [disabled]="form.invalid || loading">
+        <button class="btn-guardar" type="submit" [disabled]="form.invalid">
           Guardar teléfono
         </button>
       </form>
     </div>
   </div>
+
+  <img [src]="imgenPrincipal" alt="Fondo" class="bg-img2" />
+
   <app-footer></app-footer>
 </ion-content>
 
-<!-- Modal de Ladas (controlado con mostrarModal) -->
+
+
+
+
 <ion-modal [isOpen]="mostrarModal" cssClass="modal-ladas" (didDismiss)="cerrarModal()">
   <ng-template>
     <ion-header>

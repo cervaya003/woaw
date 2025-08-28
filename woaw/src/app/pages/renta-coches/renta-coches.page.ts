@@ -35,11 +35,12 @@ export class RentaCochesPage implements OnInit {
   }
   async cargaimagen() {
     this.imgenPrincipal = '/assets/autos/publicidad/renta.png';
+    this.generalService.addPreload(this.imgenPrincipal, 'image');
     try {
-      await this.generalService.preloadHero(this.imgenPrincipal);
-      this.overlayLoaded = true;
-    } catch {
-      this.overlayLoaded = true;
+      await Promise.all([
+        this.generalService.preloadHero(this.imgenPrincipal, 4500),
+      ]);
+    } finally {
     }
   }
 
