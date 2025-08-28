@@ -32,6 +32,9 @@ export class RentaCochesPage implements OnInit {
 
   ngOnInit() {
     this.cargaimagen();
+    // this.generalService.aplicarAnimacionPorScroll(
+    //   '.eyebrow'
+    // );
   }
   async cargaimagen() {
     this.imgenPrincipal = '/assets/autos/publicidad/renta.png';

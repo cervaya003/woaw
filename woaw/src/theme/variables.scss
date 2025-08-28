@@ -431,6 +431,8 @@ $color in $tipos-venta {
     width: 70px;
     border-radius: 0px 0px 0px 8px;
 
+    z-index: 1;
+    
     position: absolute;
     right: 0px;
     bottom: 3px;
@@ -458,6 +460,7 @@ $color in $tipos-venta {
   .tipo-barra-#{$tipo} {
     background-color: $color;
     height: .2px;
+    z-index: 1;
     width: 65%;
     position: absolute;
     left: 0px;

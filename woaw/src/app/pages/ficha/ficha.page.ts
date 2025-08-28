@@ -72,19 +72,18 @@ export class FichaPage implements OnInit {
     private seoService: SeoService,
     public motosService: MotosService,
     private location: Location
-  ) {}
+  ) { }
 
   async ngOnInit() {
+    this.generalService.dispositivo$.subscribe((tipo) => {
+      this.esDispositivoMovil = tipo === 'telefono' || tipo === 'tablet';
+      this.dispositivo = tipo;
+    });
     this.generalService.tokenExistente$.subscribe((estado) => {
       this.isLoggedIn = estado;
     });
     this.generalService.tipoRol$.subscribe((rol) => {
       this.MyRole = rol;
-    });
-    // Detectar tipo de dispositivo
-    this.generalService.dispositivo$.subscribe((tipo) => {
-      this.esDispositivoMovil = tipo === 'telefono' || tipo === 'tablet';
-      this.dispositivo = tipo;
     });
     await this.obtenerAuto();
   }
@@ -344,14 +343,14 @@ export class FichaPage implements OnInit {
 
     return isImagen
       ? {
-          backgroundImage: mapaColores[color],
-          backgroundSize: 'cover',
-          color: '#fff',
-        }
+        backgroundImage: mapaColores[color],
+        backgroundSize: 'cover',
+        color: '#fff',
+      }
       : {
-          backgroundColor: mapaColores[color],
-          color: this.colorEsClaro(mapaColores[color]) ? '#000' : '#fff',
-        };
+        backgroundColor: mapaColores[color],
+        color: this.colorEsClaro(mapaColores[color]) ? '#000' : '#fff',
+      };
   }
 
   colorEsClaro(hex: string): boolean {

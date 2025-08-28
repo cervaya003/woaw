@@ -592,19 +592,26 @@
   }
 }
 
-/* ✅ Responsive SOLO para móviles */
 @media (max-width: 480px) {
   .btn-personalizado {
     padding: 10px 6px;
     font-size: 12px;
     flex: 1 1 70px;
-    min-width: unset; // elimina mínimo de escritorio
-    max-width: unset; // elimina máximo de escritorio
+    min-width: unset; 
+    max-width: unset; 
   }
 
   .botones-contacto-responsive {
     gap: 6px;
     overflow-x: auto;
     flex-wrap: nowrap;
+  }
+}
+
+
+@media (max-width: 1124px) {
+  .responsive-col {
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
   }
 }

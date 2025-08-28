@@ -443,11 +443,11 @@ export class ContactosService {
         break;
 
       case 'facebook':
-        url = ``;
+        url = `https://www.facebook.com/profile.php?id=61579193880952`;
         break;
 
       case 'instagram':
-        url = ``;
+        url = `https://www.instagram.com/woaw.mx/`;
         break;
 
       case 'tiktok':
@@ -455,7 +455,6 @@ export class ContactosService {
         break;
 
       default:
-        console.warn('Red social no reconocida:', tipo);
         return;
     }
 

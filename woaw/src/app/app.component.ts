@@ -1,4 +1,4 @@
-import { Component, ViewChildren, QueryList } from '@angular/core';
+import { Component, ViewChildren, QueryList, ViewChild } from '@angular/core';
 import { StatusBar, Style } from '@capacitor/status-bar';
 import { GeneralService } from './services/general.service';
 import { ContactosService } from './services/contactos.service';
@@ -6,8 +6,6 @@ import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { NgZone } from '@angular/core';
 import { SeoService } from './services/seo.service';
 import { filter, map, mergeMap } from 'rxjs/operators';
-// Importamos la modal de perfil
-import { PerfilComponent } from '../app/components/modal/perfil/perfil.component';
 import {
   IonRouterOutlet,
   Platform,
@@ -17,7 +15,6 @@ import {
   AlertController,
   MenuController,
 } from '@ionic/angular';
-import { Capacitor } from '@capacitor/core';
 import { App } from '@capacitor/app';
 
 
@@ -35,9 +32,11 @@ export class AppComponent {
   public isLoggedIn: boolean = false;
   public MyRole: string | null = null;
 
-  @ViewChildren(IonRouterOutlet) routerOutlets!: QueryList<IonRouterOutlet>;
+  @ViewChild(IonRouterOutlet, { static: true }) routerOutlet!: IonRouterOutlet; // <— un solo outlet
+
   private lastBackTime = 0;
   private readonly ROOT_PATHS = ['/', '/home', '/inicio', '/autenticacion-user'];
+
 
   constructor(
     private platform: Platform,
@@ -82,15 +81,6 @@ export class AppComponent {
     this.platform.ready().then(() => this.registerHardwareBack());
 
   }
-  async initializeApp() {
-    await this.platform.ready();
-
-    if (this.platform.is('android')) {
-      await StatusBar.setOverlaysWebView({ overlay: false });
-      await StatusBar.setBackgroundColor({ color: '#D62828' }); // rojo
-      await StatusBar.setStyle({ style: Style.Dark });          // iconos clarosƒ
-    }
-  }
   get mostrarTabs(): boolean {
     const rutasSinTabs = ['/update-car/', '/new-car'];
     return (
@@ -122,58 +112,20 @@ export class AppComponent {
   RedesSociales(tipo: string) {
     this.contactosService.RedesSociales(tipo);
   }
-  async redirecion(url: string) {
-    try {
-      await this.menuCtrl.close('menuLateral');
-      await new Promise((resolve) => setTimeout(resolve, 200));
-      this.zone.run(() => this.router.navigateByUrl('/' + url));
-    } catch (err) {
-      console.error('Redirección fallida:', err);
+
+
+
+
+  async initializeApp() {
+    await this.platform.ready();
+    if (this.platform.is('android')) {
+      await StatusBar.setOverlaysWebView({ overlay: false });
+      await StatusBar.setBackgroundColor({ color: '#D62828' });
+      await StatusBar.setStyle({ style: Style.Dark });
     }
   }
-  cerrarMenu() {
-    this.menuCtrl.close('menuLateral');
-  }
-  async logout() {
-    this.generalService.confirmarAccion(
-      '¿Deseas salir?',
-      '¿Estás seguro de que deseas salir de la aplicación?',
-      async () => {
-        await this.generalService.loading('Saliendo...');
-        this.generalService.eliminarToken();
-        this.cerrarMenu();
-        setTimeout(() => {
-          this.router.navigate(['/home']);
-          this.generalService.alert(
-            '¡Saliste de tu sesión!',
-            '¡Hasta pronto!',
-            'info'
-          );
-        }, 1500);
-      }
-    );
-  }
-  async abrirModalPerfil() {
-    await this.generalService.loading('Cargando...');
-    this.cerrarMenu();
-    setTimeout(async () => {
-      // Ocultar spinner
-      await this.generalService.loadingDismiss();
-      const modal = await this.modalCtrl.create({
-        component: PerfilComponent,
-        breakpoints: [0, 0.5, 1],
-        cssClass: 'modal-perfil',
-        initialBreakpoint: 1,
-        handle: true,
-        showBackdrop: true,
-      });
-      await modal.present();
-    }, 500);
-  }
-
-
   private registerHardwareBack() {
-    App.addListener('backButton', async () => {
+    this.platform.backButton.subscribeWithPriority(9999, async () => {
       const topModal = await this.modalCtrl.getTop();
       if (topModal) { await topModal.dismiss(); return; }
 
@@ -186,34 +138,27 @@ export class AppComponent {
       const menuOpen = await this.menuCtrl.isOpen();
       if (menuOpen) { await this.menuCtrl.close(); return; }
 
-      for (const outlet of this.routerOutlets.toArray()) {
-        if (outlet && outlet.canGoBack()) {
-          outlet.pop();
-          return;
-        }
+      if (this.routerOutlet && this.routerOutlet.canGoBack()) {
+        await this.routerOutlet.pop();
+        return;
       }
-
       const current = this.router.url.split('?')[0];
       if (this.ROOT_PATHS.includes(current)) {
         await this.handleExitGesture();
         return;
       }
-
-      this.router.navigateByUrl('/home', { replaceUrl: true });
+      window.history.length > 1 ? history.back() : this.router.navigateByUrl('/home', { replaceUrl: true });
     });
   }
 
   private async handleExitGesture() {
-    if (!this.platform.is('android')) {
-      return;
-    }
+    if (!this.platform.is('android')) return;
 
     const now = Date.now();
     if (now - this.lastBackTime < 1500) {
       App.exitApp();
       return;
     }
-
     this.lastBackTime = now;
     const toast = await this.toastCtrl.create({
       message: 'Presiona atrás de nuevo para salir',

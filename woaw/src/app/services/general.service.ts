@@ -11,6 +11,10 @@ import { PopoverController } from '@ionic/angular';
 import { AlertComponent } from '../components/alert/alert.component';
 import { Router } from '@angular/router';
 
+import { fromEvent, merge, Subscription } from 'rxjs';
+import { map, startWith, debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { NgZone } from '@angular/core';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -20,6 +24,9 @@ export class GeneralService {
   public esMovil = new BehaviorSubject<boolean>(false);
 
   // Comportamiento reactivo del tipo de dispositivo
+  private readonly BP_PHONE = 768;
+  private readonly BP_TABLET = 1024;
+  private resizeSub?: Subscription;
   private dispositivoSubject = new BehaviorSubject<
     'telefono' | 'tablet' | 'computadora'
   >('computadora');
@@ -52,12 +59,19 @@ export class GeneralService {
     private toastController: ToastController,
     private modalController: ModalController,
     private popoverCtrl: PopoverController,
-    private router: Router
+    private router: Router,
+    private ngZone: NgZone,
   ) {
     this.detectarDispositivo();
     this.detectarDispositivoSinze();
-  }
 
+    this.resizeSub = fromEvent(window, 'resize')
+      .pipe(debounceTime(150))
+      .subscribe(() => this.detectarDispositivoSinze());
+  }
+  ngOnDestroy(): void {
+    this.resizeSub?.unsubscribe();
+  }
   // ==== Auth / User helpers ====
 
   // Obtiene el rol desde localStorage
@@ -204,10 +218,9 @@ export class GeneralService {
   // ----------------- DISPOSITIVO -----------------
   private detectarDispositivoSinze() {
     const width = window.innerWidth;
-
     if (width <= 768) {
       this.dispositivoSubject.next('telefono');
-    } else if (width > 768 && width <= 1024) {
+    } else if (width > 768 && width <= 1124) {
       this.dispositivoSubject.next('tablet');
     } else {
       this.dispositivoSubject.next('computadora');
