@@ -73,7 +73,7 @@ export class CamionComponent implements OnInit {
   tipoFactura: string = '';
 
   // Rol
-  public MyRole: 'admin' | 'lotero' | 'transportista' | 'empresa' | 'cliente' | null = null;
+  public MyRole: 'admin' | 'lotero' | 'transportista' | 'cliente' | null = null;
 
   // Catálogos estáticos
   colores = [
@@ -169,6 +169,9 @@ export class CamionComponent implements OnInit {
       }
     });
 
+
+    
+
     // Log inicial
     console.log('CamionComponent iniciado con:', {
       anio: this.anio, marca: this.marca, modelo: this.modelo
@@ -197,6 +200,8 @@ export class CamionComponent implements OnInit {
     }
   }
 
+  
+
   obtenerVersiones() {
     if (this.modelo && this.anio && this.marca) {
       const anio = Number(this.anio);
@@ -216,6 +221,9 @@ export class CamionComponent implements OnInit {
       });
     }
   }
+
+
+  
 
   // ===== Flujo Pantallas =====
   seleccionarTipo(tipo: 'particular' | 'lote' | 'empresa') {
@@ -348,6 +356,8 @@ export class CamionComponent implements OnInit {
       },
     });
   }
+
+  
 
   onLoteSeleccionado() {
     const lote = this.lotes.find(l => l._id === this.loteSeleccionado);
@@ -569,6 +579,7 @@ if (!this.tipoCamion) {
     // Imágenes (nombres EXACTOS que espera el back)
     if (this.imagenPrincipal) formData.append('imagenPrincipal', this.imagenPrincipal);
     for (const file of this.imagenesSecundarias) formData.append('imagenes', file);
+    
 
     return formData;
   }
