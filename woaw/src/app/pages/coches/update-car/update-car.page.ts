@@ -85,6 +85,11 @@ export class UpdateCarPage implements OnInit {
     private registroService: RegistroService,
   ) { }
 
+  // === Nuevo: helper para saber si el vehículo es "nuevo"
+  get isNuevo(): boolean {
+    return (this.auto?.tipoVenta || '').toLowerCase() === 'nuevo';
+  }
+
   async ngOnInit() {
     this.generalService.tokenExistente$.subscribe((estado) => {
       this.isLoggedIn = estado;
@@ -125,30 +130,30 @@ export class UpdateCarPage implements OnInit {
 
     const dirSel = this.direccionSeleccionada
       ? {
-          lat: Number(this.direccionSeleccionada.lat ?? 0),
-          lng: Number(this.direccionSeleccionada.lng ?? 0),
-        }
+        lat: Number(this.direccionSeleccionada.lat ?? 0),
+        lng: Number(this.direccionSeleccionada.lng ?? 0),
+      }
       : null;
 
     const motoExtras = this.tipo_veiculo === 'motos'
       ? {
-          tipoMotor: String(this.auto?.tipoMotor ?? ''),
-          cilindrada: String(this.auto?.cilindrada ?? ''),
-          transmision: String(this.auto?.transmision ?? ''),
-          combustible: String(this.auto?.combustible ?? ''),
-          frenos: String(this.auto?.frenos ?? ''),
-          suspension: String(this.auto?.suspension ?? ''),
-          precioMoto: Number(this.precioMoto ?? 0),
-        }
+        tipoMotor: String(this.auto?.tipoMotor ?? ''),
+        cilindrada: String(this.auto?.cilindrada ?? ''),
+        transmision: String(this.auto?.transmision ?? ''),
+        combustible: String(this.auto?.combustible ?? ''),
+        frenos: String(this.auto?.frenos ?? ''),
+        suspension: String(this.auto?.suspension ?? ''),
+        precioMoto: Number(this.precioMoto ?? 0),
+      }
       : {
-          tipoMotor: '',
-          cilindrada: '',
-          transmision: '',
-          combustible: '',
-          frenos: '',
-          suspension: '',
-          precioMoto: null,
-        };
+        tipoMotor: '',
+        cilindrada: '',
+        transmision: '',
+        combustible: '',
+        frenos: '',
+        suspension: '',
+        precioMoto: null,
+      };
 
     return {
       tipo: this.tipo_veiculo,
@@ -212,6 +217,13 @@ export class UpdateCarPage implements OnInit {
     this.carsService.getCar(id).subscribe({
       next: (res: any) => {
         this.auto = res;
+
+        // 🔒 Reglas de "nuevo"
+        if (this.isNuevo) {
+          this.auto.kilometraje = 0;
+          this.auto.placas = '';
+        }
+
         this.imagenPrincipalMostrada = this.auto.imagenPrincipal;
         this.urlsImagenes = [...this.auto.imagenes];
         this.urlsImagenesExistentes = [...res.imagenes];
@@ -260,6 +272,12 @@ export class UpdateCarPage implements OnInit {
       next: (res: any) => {
         this.auto = res || {};
         this.precioMoto = res?.precio ?? null;
+
+        // 🔒 Reglas de "nuevo" también para motos
+        if (this.isNuevo) {
+          this.auto.kilometraje = 0;
+          this.auto.placas = '';
+        }
 
         this.imagenPrincipalMostrada = this.auto?.imagenPrincipal || null;
         this.urlsImagenes = Array.isArray(this.auto?.imagenes) ? [...this.auto.imagenes] : [];
@@ -394,7 +412,7 @@ export class UpdateCarPage implements OnInit {
   }
   selecionarUnaExistente(nuevaImagen: string) {
     this.imagenPrincipalMostrada = nuevaImagen;
-    this.imagenPrincipal_sinFondo = nuevaImagen;
+    this.imagenPrincipal_sinFondo = nuevaImagen; // string (URL)
     this.markDirtyFromUI();
   }
   seleccionarImagen() {
@@ -436,7 +454,7 @@ export class UpdateCarPage implements OnInit {
 
       const previewUrl = URL.createObjectURL(comprimido);
       this.imagenPrincipalMostrada = previewUrl;
-      this.imagenPrincipal_sinFondo = comprimido;
+      this.imagenPrincipal_sinFondo = comprimido; // File comprimido
       this.markDirtyFromUI();
       this.generalService.alert(
         '¡Listo!',
@@ -497,7 +515,7 @@ export class UpdateCarPage implements OnInit {
 
       const previewUrl = URL.createObjectURL(comprimido);
       this.urlsImagenes.push(previewUrl);
-      this.imagenes.push(comprimido);
+      this.imagenes.push(comprimido); // guardamos el File comprimido
       this.markDirtyFromUI();
       this.generalService.alert(
         '¡Listo!',
@@ -602,9 +620,9 @@ export class UpdateCarPage implements OnInit {
       let formData = await this.generarFormDataImagenes();
 
       if (this.tipo_veiculo === 'autos') {
-        formData = await this.agregarVersionesAlFormData_autos(formData);
         formData = await this.agregarCamposBasicosAlFormData_autos(formData);
         formData = await this.agregarUbicacionAlFormData_autos(formData);
+        formData = await this.agregarVersionesAlFormData_autos(formData);
         // 👉 marca qué campos van vacíos para que el backend los limpie si hace falta
         this.appendClearFields(formData, this.getCamposVaciosAutos());
         this.enviarDatos_autos(id, formData);
@@ -629,21 +647,23 @@ export class UpdateCarPage implements OnInit {
     }
   }
 
+  // 🔧 Actualizado: no enviar strings como archivos y no recomprimir de nuevo
   private async generarFormDataImagenes(): Promise<FormData> {
     const formData = new FormData();
 
-    if (this.imagenPrincipal_sinFondo) {
-      formData.append('imagenPrincipal', this.imagenPrincipal_sinFondo as any);
-      formData.append('imagenes', this.imagenPrincipal_sinFondo as any);
+    // Imagen principal puede ser File (nueva) o string (URL existente)
+    if (this.imagenPrincipal_sinFondo instanceof File) {
+      formData.append('imagenPrincipal', this.imagenPrincipal_sinFondo);
+      // También súbela como parte de la galería
+      formData.append('imagenes', this.imagenPrincipal_sinFondo);
+    } else if (typeof this.imagenPrincipal_sinFondo === 'string' && this.imagenPrincipal_sinFondo.trim()) {
+      formData.append('imagenPrincipal', this.imagenPrincipal_sinFondo);
+      // NO la metas a 'imagenes' si es string
     }
 
-    for (const img of this.imagenes) {
-      const comprimido = await imageCompression(img, {
-        maxSizeMB: 2,
-        maxWidthOrHeight: 1600,
-        useWebWorker: true,
-      });
-      formData.append('imagenes', comprimido);
+    // Imágenes nuevas: ya están comprimidas en agregarImagen(); no las vuelvas a comprimir
+    for (const file of this.imagenes) {
+      formData.append('imagenes', file);
     }
 
     if (this.urlsImagenesExistentes.length > 0) {
@@ -696,15 +716,17 @@ export class UpdateCarPage implements OnInit {
     });
   }
 
-  // ✅ AUTOS: siempre enviar campos, aunque estén vacíos
+  // ✅ AUTOS: siempre enviar campos, con reglas para "nuevo"
   private async agregarCamposBasicosAlFormData_autos(formData: FormData): Promise<FormData> {
-    const km = this.auto?.kilometraje ?? '';
+    const km = this.isNuevo ? 0 : (this.auto?.kilometraje ?? '');
     const colorValue = this.auto?.color;
     const color =
       Array.isArray(colorValue) ? colorValue.join(', ') : (colorValue ?? '').toString();
 
     const moneda = (this.auto?.moneda ?? 'MXN').toString();
-    const placas = (this.auto?.placas && this.auto.placas !== 'null') ? this.auto.placas : '';
+    const placas = this.isNuevo
+      ? ''
+      : ((this.auto?.placas && this.auto.placas !== 'null') ? this.auto.placas : '');
     const descripcion = (this.auto?.descripcion ?? '').toString();
 
     formData.append('kilometraje', String(km));
@@ -716,10 +738,10 @@ export class UpdateCarPage implements OnInit {
     return formData;
   }
 
-  // ✅ MOTO: siempre enviar campos, aunque estén vacíos
+  // ✅ MOTO: siempre enviar campos; si es nueva, km=0 y placas=''
   private async agregarCamposBasicosAlFormData_motos(formData: FormData): Promise<FormData> {
-    const km = this.auto?.kilometraje;
-    formData.append('kilometraje', km === undefined || km === null ? '' : String(km));
+    const kmVal = this.isNuevo ? 0 : this.auto?.kilometraje;
+    formData.append('kilometraje', kmVal === undefined || kmVal === null ? '' : String(kmVal));
 
     const colorValue = this.auto?.color;
     const color = Array.isArray(colorValue)
@@ -730,15 +752,16 @@ export class UpdateCarPage implements OnInit {
     const moneda = (this.auto?.moneda ?? 'MXN').toString();
     formData.append('moneda', moneda);
 
-    formData.append('placas', String(this.auto?.placas ?? ''));
+    const placasVal = this.isNuevo ? '' : String(this.auto?.placas ?? '');
+    formData.append('placas', placasVal);
     formData.append('descripcion', String(this.auto?.descripcion ?? ''));
 
-    formData.append('tipoMotor',   String(this.auto?.tipoMotor   ?? ''));
-    formData.append('cilindrada',  String(this.auto?.cilindrada  ?? ''));
+    formData.append('tipoMotor', String(this.auto?.tipoMotor ?? ''));
+    formData.append('cilindrada', String(this.auto?.cilindrada ?? ''));
     formData.append('transmision', String(this.auto?.transmision ?? ''));
     formData.append('combustible', String(this.auto?.combustible ?? ''));
-    formData.append('frenos',      String(this.auto?.frenos      ?? ''));
-    formData.append('suspension',  String(this.auto?.suspension  ?? ''));
+    formData.append('frenos', String(this.auto?.frenos ?? ''));
+    formData.append('suspension', String(this.auto?.suspension ?? ''));
 
     return formData;
   }
@@ -748,11 +771,12 @@ export class UpdateCarPage implements OnInit {
   ): Promise<FormData> {
     return new Promise(async (resolve, reject) => {
       let ubicacionObj: any = null;
+      const isFiniteNum = (n: any) => typeof n === 'number' && Number.isFinite(n);
 
       if (this.tipoSeleccionado === 'particular' && this.ubicacionSeleccionada) {
         const [ciudad, estado, lat, lng] = this.ubicacionSeleccionada;
 
-        if (!ciudad || !estado || !lat || !lng) {
+        if (!ciudad || !estado || !isFiniteNum(lat) || !isFiniteNum(lng)) {
           await this.generalService.alert(
             'Ubicación incompleta',
             'Debes seleccionar una ciudad, estado y coordenadas válidas.',
@@ -783,7 +807,7 @@ export class UpdateCarPage implements OnInit {
             ? this.direccionSeleccionada
             : lote.direccion[0];
 
-        if (!direccion || !direccion.ciudad || !direccion.estado || !direccion.lat || !direccion.lng) {
+        if (!direccion || !direccion.ciudad || !direccion.estado || !isFiniteNum(direccion.lat) || !isFiniteNum(direccion.lng)) {
           await this.generalService.alert(
             'Dirección inválida',
             'Debes seleccionar una ubicación válida del lote.',
@@ -843,7 +867,13 @@ export class UpdateCarPage implements OnInit {
     const clears: string[] = [];
     const isEmpty = (v: any) => v === undefined || v === null || String(v).trim() === '';
 
-    if (isEmpty(this.auto?.placas)) clears.push('placas');
+    // En nuevo no deben existir placas
+    if (this.isNuevo) {
+      clears.push('placas');
+    } else {
+      if (isEmpty(this.auto?.placas)) clears.push('placas');
+    }
+
     if (isEmpty(this.auto?.descripcion)) clears.push('descripcion');
     // Si también quieres permitir borrar color en autos, descomenta:
     // if (isEmpty(this.auto?.color)) clears.push('color');
@@ -854,7 +884,13 @@ export class UpdateCarPage implements OnInit {
     const clears: string[] = [];
     const isEmpty = (v: any) => v === undefined || v === null || String(v).trim() === '';
 
-    if (isEmpty(this.auto?.placas)) clears.push('placas');
+    // En moto nueva no debe haber placas
+    if (this.isNuevo) {
+      clears.push('placas');
+    } else {
+      if (isEmpty(this.auto?.placas)) clears.push('placas');
+    }
+
     if (isEmpty(this.auto?.descripcion)) clears.push('descripcion');
     if (isEmpty(this.auto?.tipoMotor)) clears.push('tipoMotor');
     if (isEmpty(this.auto?.cilindrada)) clears.push('cilindrada');
@@ -871,10 +907,7 @@ export class UpdateCarPage implements OnInit {
       next: async (res: any) => {
         await this.restablecerDatos();
         this.router.navigate(['/mis-autos']);
-        setTimeout(() => {
-          location.reload();
-        }, 1000);
-
+        // ❌ quitamos reload para no perder estado
         this.generalService.alert(
           'Éxito',
           'Vehículo actualizado correctamente.',
@@ -897,9 +930,7 @@ export class UpdateCarPage implements OnInit {
       next: async (res: any) => {
         await this.restablecerDatos();
         this.router.navigate(['/mis-motos']);
-        setTimeout(() => {
-          location.reload();
-        }, 1000);
+        // ❌ quitamos reload para no perder estado
         this.generalService.alert(
           'Éxito',
           'Moto actualizada correctamente.',

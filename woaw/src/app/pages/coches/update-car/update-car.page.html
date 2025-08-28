@@ -72,11 +72,13 @@
           </ion-item>
         </ion-col>
 
-        <ion-col size="12" size-md="6">
+        <!-- Kilometraje (oculto si es nuevo) -->
+        <ion-col size="12" size-md="6" *ngIf="!isNuevo">
           <ion-item>
             <ion-label position="stacked">Kilometraje</ion-label>
-            <ion-input type="number" placeholder="Ej. 45000" [(ngModel)]="auto.kilometraje"
-              (ionInput)="markDirty()"></ion-input>
+            <ion-input type="number" inputmode="numeric" pattern="\\d*" placeholder="Ej. 45000"
+              [(ngModel)]="auto.kilometraje" (ionInput)="markDirty()">
+            </ion-input>
           </ion-item>
         </ion-col>
 
@@ -101,10 +103,12 @@
           </ion-item>
         </ion-col>
 
-        <ion-col size="12" size-md="6">
+        <!-- Placas (oculto si es nuevo) -->
+        <ion-col size="12" size-md="6" *ngIf="!isNuevo">
           <ion-item>
             <ion-label position="stacked">Placas (opcional)</ion-label>
-            <ion-input placeholder="Ej. UVY-123-A" [(ngModel)]="auto.placas" (ionInput)="markDirty()"></ion-input>
+            <ion-input placeholder="Ej. UVY-123-A" [(ngModel)]="auto.placas" (ionInput)="markDirty()">
+            </ion-input>
           </ion-item>
         </ion-col>
 
@@ -133,14 +137,16 @@
       </ion-row>
 
       <ion-row>
-        <ion-col size="12" size-md="6">
+        <!-- Placas (oculto si es nuevo) -->
+        <ion-col size="12" size-md="6" *ngIf="!isNuevo">
           <ion-item>
             <ion-label position="stacked">Placas (opcional)</ion-label>
             <ion-input placeholder="Ej. UVY-123-A" [(ngModel)]="auto.placas" (ionInput)="markDirty()"></ion-input>
           </ion-item>
         </ion-col>
 
-        <ion-col size="12" size-md="6">
+        <!-- Kilometraje (oculto si es nuevo) -->
+        <ion-col size="12" size-md="6" *ngIf="!isNuevo">
           <ion-item>
             <ion-label position="stacked">Kilometraje</ion-label>
             <ion-input type="number" placeholder="Ej. 45000" [(ngModel)]="auto.kilometraje"
@@ -270,8 +276,7 @@
 
         <!-- Única ubicación -->
         <ion-item *ngIf="ubicacionesLoteSeleccionado.length === 1">
-          <ion-input style="font-size: 10px;" readonly
-            [value]="direccionSeleccionada?.calle || direccionSeleccionada?.ciudad">{{direccionCompleta}}</ion-input>
+          <ion-input style="font-size: 10px;" readonly [value]="direccionCompleta"></ion-input>
         </ion-item>
       </div>
 

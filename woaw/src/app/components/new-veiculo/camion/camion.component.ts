@@ -1,3 +1,4 @@
+
  import { Component, OnInit, Input, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, ModalController } from '@ionic/angular';
@@ -10,6 +11,7 @@ import { Router } from '@angular/router';
 import { RegistroService } from '../../../services/registro.service';
 import { ContactosService } from './../../../services/contactos.service';
  
+
 @Component({
   selector: 'app-camion',
  templateUrl: './camion.component.html',
@@ -19,6 +21,7 @@ import { ContactosService } from './../../../services/contactos.service';
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class CamionComponent implements OnInit {
+
   estadoVehiculo: 'Nuevo' | 'Usado' | 'Seminuevo' | '' = '';
   @Input() anio!: number;
   @Input() marca!: string;
@@ -34,6 +37,7 @@ export class CamionComponent implements OnInit {
   tipoCamion: string = '';
 
   // === Campos opcionales ===
+
   moneda: 'MXN' | 'USD' = 'MXN';
   ejes: number | null = null;
   capacidadCargaToneladas: number | null = null;
