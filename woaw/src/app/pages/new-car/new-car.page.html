@@ -132,10 +132,14 @@
       [marca]="getMarcaNombreSeleccionada()" [modelo]="modeloSeleccionado" [tipo]="seleccion">
     </app-motos>
 
+     <!--  <app-motos *ngIf="mostrarCarComponent && seleccion === 'camion'" [anio]="obtenerAnioActual()"
+      [marca]="getMarcaNombreSeleccionada()" [modelo]="modeloSeleccionado" [tipo]="seleccion">
+    </app-motos> -->
 
-     <app-car *ngIf="mostrarCarComponent && seleccion === 'camion'" [anio]="obtenerAnioActual()"
-      [marca]="marcaSeleccionada" [modelo]="modeloSeleccionado" [tipo]="seleccion">
-    </app-car>
+     <app-camion *ngIf="mostrarCarComponent && seleccion === 'camion'" [anio]="obtenerAnioActual()"
+      [marca]="getMarcaNombreSeleccionada()" [modelo]="modeloSeleccionado" [tipo]="seleccion">
+    </app-camion>
+
 
     <!-- add loter  -->
     <app-add *ngIf="mostrarCarComponent && seleccion === 'lote'"></app-add>
