@@ -18,9 +18,9 @@ import { MotosService } from '../../../services/motos.service';
   selector: 'app-principal',
   templateUrl: './principal.component.html',
   styleUrls: ['./principal.component.scss'],
-  standalone: true, // Si usando componentes independientes (standalone)
+  standalone: true,
   imports: [IonicModule, CommonModule, ReactiveFormsModule],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA], //esquema personalizado
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class PrincipalComponent implements OnInit {
   @Input() tipo: string = 'all';
@@ -58,18 +58,22 @@ export class PrincipalComponent implements OnInit {
       '.carrusel-autos_minicartas'
     );
   }
-
   getCarsNews() {
     this.carsService.getCarsNews().subscribe({
       next: (res: any) => {
         this.conNuevos = res.contador;
-        const autos = res?.coches || []
-        this.autosNuevos = autos.map((car: any) => ({
-          ...car,
-          precioMin: Math.min(...car.version.map((v: any) => v.Precio)),
-        }))
-          .sort((a: { precioMin: number }, b: { precioMin: number }) => a.precioMin - b.precioMin)
-          .slice(Math.floor((autos.length - 4) / 2), Math.floor((autos.length - 4) / 2) + 4);
+        const autos = res?.coches || [];
+
+
+        const autosAleatorios = [...autos].sort(() => Math.random() - 0.5);
+        this.autosNuevos = autosAleatorios.slice(0, 4);
+
+        // this.autosNuevos = autos.map((car: any) => ({
+        //   ...car,
+        //   precioMin: Math.min(...car.version.map((v: any) => v.Precio)),
+        // }))
+        //   .sort((a: { precioMin: number }, b: { precioMin: number }) => a.precioMin - b.precioMin)
+        //   .slice(Math.floor((autos.length - 4) / 2), Math.floor((autos.length - 4) / 2) + 4);
 
       },
       error: (err) => {
@@ -78,13 +82,13 @@ export class PrincipalComponent implements OnInit {
       },
     });
   }
-
   getCarsSeminuevos() {
     this.carsService.getCarsSeminuevos().subscribe({
       next: (res: any) => {
         this.conSeminuevos = res.contador;
-        const autos = res?.coches || []
-        this.autosSeminuevos = autos.slice(0, 4);
+        const autos = res?.coches || [];
+        const autosAleatorios = [...autos].sort(() => Math.random() - 0.5);
+        this.autosSeminuevos = autosAleatorios.slice(0, 4);
       },
       error: (err) => {
         const mensaje = err?.error?.message || 'Ocurrió un error inesperado';
@@ -92,13 +96,13 @@ export class PrincipalComponent implements OnInit {
       },
     });
   }
-
   getCarsUsados() {
     this.carsService.getCarsUsados().subscribe({
       next: (res: any) => {
         this.conUsados = res.contador;
-        const autos = res?.coches || []
-        this.autosUsados = autos.slice(0, 4);
+        const autos = res?.coches || [];
+        const autosAleatorios = [...autos].sort(() => Math.random() - 0.5);
+        this.autosUsados = autosAleatorios.slice(0, 4);
       },
       error: (err) => {
         const mensaje = err?.error?.message || 'Ocurrió un error inesperado';
@@ -106,10 +110,9 @@ export class PrincipalComponent implements OnInit {
       },
     });
   }
-
   getMotos() {
     if (this.tipo !== 'all') {
-      return; 
+      return;
     }
     this.motosService.getMotos().subscribe({
       next: (res: any) => {
@@ -124,16 +127,12 @@ export class PrincipalComponent implements OnInit {
       },
     });
   }
-
-
   verMas(url: string) {
     this.router.navigate([url]);
   }
-
   onCardClick(auto: any, event: Event): void {
     this.router.navigate(['/ficha', 'autos', auto._id]);
   }
-
   onCardClickM(moto: any, event: Event): void {
     this.router.navigate(['/ficha', 'motos', moto._id]);
   }

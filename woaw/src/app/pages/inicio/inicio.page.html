@@ -1,11 +1,35 @@
 <app-navbar></app-navbar>
 <ion-content [fullscreen]="false" class="home-bg">
 
-  <div class="pantalla-dividida">
+  <ng-container *ngIf="splash">
+
+    <video autoplay muted loop playsinline class="video-fondo2">
+      <source [src]="videoSrc2" type="video/mp4" />
+      Tu navegador no soporta el video HTML5.
+    </video>
+
+    <div class="texto-titulo" [ngClass]="{ 'animar-arriba': animarTexto }">
+      <h1 [ngStyle]="{ color: mostrarContenido.color === 'rojo' ? '#ff0000' : '#ffffff' }">
+        {{ mostrarContenido.titulo }}
+      </h1>
+    </div>
+
+    <img *ngIf="mostrarContenido.imagen != null" [src]="mostrarContenido.imagen" alt="Imagen ilustrativa"
+      [ngClass]="{ 'animar-info': animarImagen }" />
+
+    <div class="texto-contenido" [ngClass]="{ 'animar-arriba': animarTexto }">
+      <p>{{ mostrarContenido.texto }}</p>
+    </div>
+
+  </ng-container>
+
+
+  <div class="pantalla-dividida" *ngIf="!splash">
+
     <!-- LADO IZQUIERDO -->
-    <div class="lado-izquierdo">
+    <div class="lado-izquierdo" *ngIf="!esDispositivoMovil">
       <video autoplay muted loop playsinline class="video-fondo">
-        <source src="assets/img/vc4.mp4" type="video/mp4" />
+        <source [src]="videoSrc" type="video/mp4" />
         Tu navegador no soporta el video HTML5.
       </video>
       <div class="texto-izquierdo" [ngClass]="{ 'animar-arriba': animarTexto }">
@@ -16,7 +40,7 @@
       <br>
       <img *ngIf="mostrarContenido.imagen != null" [src]="mostrarContenido.imagen" alt="Imagen ilustrativa"
         [ngClass]="{ 'animar-izquierda': animarImagen }" />
-      <div class="texto-izquierdo" [ngClass]="{ 'animar-arriba': animarTexto }"> 
+      <div class="texto-izquierdo" [ngClass]="{ 'animar-arriba': animarTexto }">
         <p>{{ mostrarContenido.texto }}</p>
       </div>
     </div>
@@ -33,7 +57,8 @@
           <span *ngIf="MostrarLogin && !MostrarRecuperacion && !MostrarRegistro">¿No tienes una cuenta? </span>
           <span *ngIf="!MostrarLogin">¿Ya tienes cuenta? </span>
           <strong>
-            <span (click)="cambioEstatus('registro')" *ngIf="MostrarLogin && !MostrarRecuperacion && !MostrarRegistro">Registrarme</span>
+            <span (click)="cambioEstatus('registro')"
+              *ngIf="MostrarLogin && !MostrarRecuperacion && !MostrarRegistro">Registrarme</span>
             <span (click)="cambioEstatus('login')" *ngIf="!MostrarLogin">Iniciar Sesión</span>
           </strong>
         </p>
@@ -50,7 +75,11 @@
           <a class="enlace-politica" (click)="mostrarTerminos()">Términos y condiciones</a> y el
           <a class="enlace-politica" (click)="mostrarAviso()">Aviso de Privacidad</a>.
         </p>
+
+        <img *ngIf="esDispositivoMovil" [src]="imgenPrincipal" alt="Fondo" class="bg-img2" />
+
       </div>
+
     </div>
   </div>
 

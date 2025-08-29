@@ -513,13 +513,68 @@ ion-content {
 .video-wrap {
   position: relative;
   width: 100%;
-  aspect-ratio: 16/9; 
+  aspect-ratio: 16/9;
 
   .video {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
+  }
+
+  /* Suaviza lectura con un degradado superior */
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, .55) 0%, rgba(0, 0, 0, .15) 40%, rgba(0, 0, 0, 0) 70%);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(8px, 2vw, 16px);
+    text-align: center;
+    padding: clamp(12px, 4vw, 32px);
+    pointer-events: none;
+  }
+
+  .logo-goautos2 {
+    width: clamp(50px, 18vw, 240px);
+    height: auto;
+    filter: drop-shadow(0 6px 16px rgba(0, 0, 0, .35));
+    user-select: none;
+    pointer-events: none;
+    animation: fadeUp .6s ease both;
+  }
+
+  .headline {
+    color: #fff;
+    font-weight: 800;
+    letter-spacing: .3px;
+    line-height: 1.1;
+    font-size: clamp(22px, 4.2vw, 48px);
+    text-shadow: 0 3px 12px rgba(0, 0, 0, .35);
+    margin: 0;
+    animation: fadeUp .75s .05s ease both;
+  }
+
+  .subheadline {
+    color: #f3f3f3;
+    font-weight: 400;
+    font-size: clamp(14px, 2vw, 18px);
+    max-width: min(90%, 760px);
+    margin: 0;
+    opacity: .95;
+    text-wrap: balance;
+    animation: fadeUp .85s .1s ease both;
   }
 
   .mute-btn {
@@ -538,15 +593,18 @@ ion-content {
     justify-content: center;
     font-size: 20px;
     cursor: pointer;
-    transition: background 0.3s ease;
+    transition: background .3s ease;
+    z-index: 3;
 
     &:hover {
-      background: rgba(0, 0, 0, 0.8);
+      background: rgba(0, 0, 0, .8);
     }
+
     @media (max-width: 768px) {
-      width: 20px;
-      height: 20px;
-      font-size: 10px;
+      width: 36px;
+      height: 36px;
+      font-size: 16px;
+      bottom: 10px;
     }
   }
 }

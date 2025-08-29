@@ -1,9 +1,20 @@
-<app-navbar></app-navbar>
+<app-navbar *ngIf="!esDispositivoMovil"></app-navbar>
+
+<ion-header *ngIf="esDispositivoMovil">
+  <ion-toolbar color="dark">
+    <ion-buttons slot="start">
+      <ion-back-button text="" routerDirection="back" defaultHref="/"></ion-back-button>
+      <div class="perfil-header">
+        <img src="/assets/icon/logo4.png" alt="Go Autos" class="logo" />
+      </div>
+      <ion-title>Motos</ion-title>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
 
 <ion-content #pageContent [fullscreen]="true">
   <app-acomodo [totalAutos]="totalMotos" [titulo]="'Motos'" (ordenCambio)="ordenarAutos($event)">
   </app-acomodo>
-
 
   <ion-grid class="contenedor-catalogo">
     <ion-row>
@@ -19,7 +30,6 @@
       <!-- Columna de catálogo -->
       <ion-col size="12" size-md="9">
 
-
         <div class="catalogo-autos">
           <ng-container *ngFor="let auto of motosPaginadas">
             <app-cartas [auto]="auto" [autosFavoritosIds]="autosFavoritosIds" [ubicacion]="'m-nuevos'"
@@ -30,7 +40,6 @@
 
         <!-- Paginación -->
         <div class="contenedor-paginacion" *ngIf="totalPaginas > 1">
-          <p class="titulo-paginacion">más</p>
           <div class="paginacion-scroll">
             <div class="paginacion">
               <!-- Flecha anterior -->
@@ -45,7 +54,6 @@
                 </button>
                 <span *ngIf="!esNumero(i)" class="ellipsis">...</span>
               </ng-container>
-
 
               <!-- Flecha siguiente -->
               <button class="pagina" (click)="cambiarPagina(paginaActual + 1)"

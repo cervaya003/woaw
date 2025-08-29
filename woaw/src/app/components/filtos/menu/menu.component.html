@@ -10,7 +10,12 @@
     </div>
   </div>
 
-  <div class="grupo-filtros-nuevo">
+  <!-- Flecha izquierda -->
+  <button *ngIf="flechaIzq" class="flecha-scroll izq" (click)="scrollGrupo(-160)">
+    <ion-icon name="chevron-back-outline"></ion-icon>
+  </button>
+
+  <div #grupoFiltros class="grupo-filtros-nuevo" (scroll)="actualizarFlechas()">
     <div *ngFor="let filtro of filtros" class="bloque-filtro">
 
       <button class="encabezado-filtro" (click)="onFiltroClick($event, filtro.tipo)">
@@ -22,8 +27,8 @@
         <!-- Imagen y texto si es marca -->
         <ng-container *ngIf="filtro.tipo === 'marca' && filtrosAplicados[filtro.tipo]?.imageUrl; else textoOColor">
           <div class="filtro-activo marca">
-            <img [src]="filtrosAplicados[filtro.tipo].imageUrl"
-              [alt]="filtrosAplicados[filtro.tipo].label" class="logo-filtro" />
+            <img [src]="filtrosAplicados[filtro.tipo].imageUrl" [alt]="filtrosAplicados[filtro.tipo].label"
+              class="logo-filtro" />
             <span>{{ filtrosAplicados[filtro.tipo]?.label }}</span>
           </div>
         </ng-container>
@@ -49,4 +54,8 @@
     </div>
   </div>
 
+  <!-- Flecha derecha -->
+  <button *ngIf="flechaDer" class="flecha-scroll der" (click)="scrollGrupo(160)">
+    <ion-icon name="chevron-forward-outline"></ion-icon>
+  </button>
 </div>

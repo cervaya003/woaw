@@ -394,7 +394,7 @@ export class RegistroComponent implements OnInit {
           }
           await this.generalService.loadingDismiss();
           await this.generalService.alert(
-            '¡Bienvenido a Go Autos!',
+            '¡Bienvenido a WOAW!',
             'Tu registro ha sido exitoso.',
             'success'
           );

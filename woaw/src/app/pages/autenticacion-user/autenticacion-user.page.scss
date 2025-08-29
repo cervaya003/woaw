@@ -1,181 +1,235 @@
-/* Quita paddings por defecto del ion-content si los tuvieras */
+.telefono-page,
 ion-content {
-    --padding-top: 0;
-    --padding-bottom: 0;
     --padding-start: 0;
     --padding-end: 0;
-}
+    --padding-top: 0;
+    --padding-bottom: 0;
+    position: relative;
 
-/* Wrapper que controla el centrado con flex */
-.page-telefono {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    /* ocupa el alto visible */
-    background: #f8f9fa;
-    padding: 16px;
-    /* respiración en móviles */
-}
-
-/* Card */
-.form-wrapper {
-    background: #fff;
-    padding: 2rem;
-    border-radius: 16px;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    width: 100%;
-    max-width: 420px;
-    animation: fadeOverlay 0.3s ease-out forwards;
-
-    h2 {
-        font-size: 24px;
-        font-weight: bold;
-        color: #e00000;
-        margin-bottom: 10px;
+    .page-telefono {
+        min-height: calc(100dvh - 56px);
+        display: grid;
+        place-items: start center;
+        padding: clamp(16px, 4vw, 8px);
+        background: transparent;
+        padding-top: clamp(2vh, 2vh, 8vh);
     }
 
-    p {
-        font-size: 14px;
-        color: #555;
-        margin-bottom: 20px;
-    }
+    .form-wrapper {
+        width: min(100%, 520px);
+        -webkit-backdrop-filter: blur(10px);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: clamp(16px, 4vw, 28px);
+        background: rgb(255, 255, 255);
+        opacity: 0;
+        transform: translateY(12px);
+        animation: fadeUp 400ms ease forwards;
 
-    /* ---- Input combinado lada + número ---- */
-    .telefono-input-wrapper {
-        display: flex;
-        width: 100%;
-        border-radius: 12px;
-        overflow: hidden;
-        border: 1px solid rgba(90, 90, 90, 0.2);
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
-        margin: 0 auto 10px auto;
-
-        ion-item.lada-box {
-            --background: transparent;
-            background-color: rgba(255, 255, 255, 0.9);
-            padding: 0 8px;
-            border-right: 1px solid rgba(67, 67, 67, 0.15);
-            min-width: 120px;
-            max-width: 150px;
+        .bienvenida {
             display: flex;
             align-items: center;
-            gap: 8px;
-            cursor: pointer;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 14px;
 
-            .flag-img {
-                width: 24px;
-                height: 18px;
-                object-fit: cover;
-                border-radius: 2px;
+            .avatar {
+                width: 44px;
+                height: 44px;
+                border-radius: 50%;
+                overflow: hidden;
+                flex-shrink: 0;
+                display: grid;
+                place-items: center;
+                background: #ececec;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, .12);
+
+                img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                }
+
+                span {
+                    font-weight: 800;
+                    color: #555;
+                    letter-spacing: .5px;
+                }
             }
 
-            .lada-text {
-                margin: 0;
-                font-weight: 600;
-                color: #4a4a4a;
+            .texto {
+                .saludo {
+                    margin: 0;
+                    font-size: 12px;
+                    color: #666;
+                    text-align: left;
+                }
+
+                .nombre {
+                    margin: 0;
+                    font-size: clamp(16px, 3.5vw, 18px);
+                    font-weight: 800;
+                    color: #111;
+                    line-height: 1.1;
+                }
             }
         }
 
-        .telefono-input {
-            flex: 1;
-            --background: transparent;
-
-            ion-input {
-                --padding-start: 14px;
-                --padding-end: 12px;
-                color: #4a4a4a;
-            }
+        .logo {
+            display: block;
+            width: 80px;
+            margin: 0 auto 18px;
         }
-    }
-
-    /* Notas de validación */
-    ion-note {
-        display: block;
-        text-align: left;
-        margin-top: 4px;
-        margin-bottom: 12px;
-        font-size: 12px;
-        color: #e00000;
-    }
-
-    /* Botón guardar */
-    .btn-guardar {
-        width: 100%;
-        background: #e00000;
-        color: white;
-        font-weight: bold;
-        cursor: pointer;
-        border: none;
-        padding: 16px;
-        border-radius: 30px;
-        margin-top: 6px;
-        font-size: 16px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-
-        &:disabled {
-            background: rgba(255, 0, 0, 0.3);
-            cursor: not-allowed;
-        }
-    }
-}
-
-/* Modal de ladas */
-.modal-ladas {
-    --height: 85%;
-    --border-radius: 16px;
-}
-
-.buscador-ladas {
-    padding: 12px 16px;
-
-    ion-input {
-        border: 1px solid rgba(0, 0, 0, 0.15);
-        border-radius: 10px;
-        --padding-start: 12px;
-        --padding-end: 12px;
-        background: #fff;
-    }
-}
-
-.flag-img {
-    width: 24px;
-    height: 18px;
-    object-fit: cover;
-    border-radius: 2px;
-}
-
-/* En pantallas medianas/grandes hacemos la card más amplia */
-@media (min-width: 768px) {
-    .form-wrapper {
-        max-width: 640px;
-        padding: 3rem 4rem;
 
         h2 {
-            font-size: 28px;
+            margin: 0 0 6px 0;
+            font-size: clamp(20px, 3.8vw, 26px);
+            font-weight: 800;
+            letter-spacing: 0.2px;
+            color: #000000;
+            text-align: center;
         }
 
         p {
-            font-size: 16px;
+            margin: 0 0 18px 0;
+            color: #2c2c2c;
+            text-align: center;
+            font-size: clamp(14px, 2.8vw, 15px);
+            line-height: 1.35;
+        }
+    }
+
+    @keyframes fadeUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .telefono-input-wrapper {
+        display: grid;
+        grid-template-columns: 128px 1fr;
+        gap: 10px;
+        align-items: stretch;
+        margin-bottom: 6px;
+
+        @media (max-width: 420px) {
+            grid-template-columns: 1fr 2fr;
+        }
+    }
+
+    .lada-box {
+        --background: rgba(0, 0, 0, 0.07);
+        --border-color: rgba(0, 0, 0, 0.16);
+        --inner-padding-start: 14px;
+        --inner-padding-end: 10px;
+        border: 1px solid var(--border-color);
+
+        width: 100%;
+        border-radius: 14px;
+        transition: transform .15s ease, box-shadow .15s ease, border-color .2s ease;
+        cursor: pointer;
+
+        display: flex;
+        align-items: center;
+        gap: 10px;
+
+
+        .flag-img {
+            width: 26px;
+            height: 18px;
+            object-fit: cover;
+            border-radius: 3px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, .25);
         }
 
-        .btn-guardar {
-            font-size: 18px;
-            padding: 18px;
+        .lada-text {
+            margin: 0;
+            color: #000000;
+            font-weight: 700;
+            letter-spacing: .2px;
+        }
+
+        &:active {
+            transform: translateY(1px);
+        }
+
+        &:hover {
+            box-shadow: 0 8px 20px rgba(0, 0, 0, .18);
         }
     }
-}
 
-/* Suave entrada */
-@keyframes fadeOverlay {
-    from {
-        opacity: 0;
-        transform: translateY(12px);
+    .telefono-input {
+        --background: rgba(0, 0, 0, 0.07);
+        --border-color: rgba(0, 0, 0, 0.16);
+        --padding-start: 14px;
+        --padding-end: 10px;
+        border-radius: 14px;
+        border: 1px solid var(--border-color);
+        background: var(--background);
+        transition: box-shadow .2s ease, border-color .2s ease;
+
+        ion-input {
+            --color: #000000;
+            --placeholder-color: rgba(0, 0, 0, 0.55);
+            --placeholder-opacity: 1;
+            font-weight: 600;
+            letter-spacing: .2px;
+        }
+
+        &:focus-within {
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.08);
+        }
     }
 
-    to {
-        opacity: 1;
-        transform: translateY(0);
+    ion-note {
+        display: block;
+        margin: 6px 2px 14px;
+        color: #ffb3b3;
+        font-weight: 600;
     }
+
+    .btn-guardar {
+        width: 100%;
+        height: 48px;
+        border-radius: 12px;
+        border: none;
+        font-weight: 800;
+        letter-spacing: .4px;
+        color: #ffffff;
+        background: linear-gradient(180deg, #f91818, #dc3005);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+        transition: transform .06s ease, filter .2s ease, box-shadow .2s ease;
+        cursor: pointer;
+
+        &:hover {
+            filter: brightness(1.04);
+            box-shadow: 0 12px 24px rgba(255, 53, 3, 0.28);
+        }
+
+        &:active {
+            transform: translateY(1px);
+        }
+
+        &:disabled {
+            opacity: .6;
+            filter: saturate(.6);
+            cursor: not-allowed;
+        }
+    }
+
+
+    .bg-img2 {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0.1;
+        z-index: 0;
+        pointer-events: none;
+    }
+
 }

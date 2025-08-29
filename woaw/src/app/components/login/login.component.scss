@@ -46,6 +46,10 @@
     animation: scaleLogo 0.2s ease-out 0.5s forwards;
     transform: scale(0.8);
     opacity: 0;
+
+    @media (max-width: 828px) {
+      width: 90px;
+    }
   }
 
   .titulo {
