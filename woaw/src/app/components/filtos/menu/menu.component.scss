@@ -100,60 +100,177 @@
 
 
 
+
 @media (max-width: 768px) {
+  .texto-filtro {
+    font-size: 13px !important;
+  }
+
   .filtros-lateral-estilo-nuevo {
+    position: relative;
+    padding: 5px !important;
+
+    .flecha-scroll {
+      position: absolute;
+      top: 65%;
+      transform: translateY(-50%);
+      width: 28px;
+      height: 28px;
+      border: 0;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.225);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 10;
+      padding: 0 !important;
+
+      ion-icon {
+        font-size: 15px !important;
+      }
+    }
+
+    .flecha-scroll.izq {
+      left: 2px;
+    }
+
+    .flecha-scroll.der {
+      right: 2px;
+    }
+
+    /* opcional: se desvanecen al pasar por encima del borde */
+    .flecha-scroll:hover {
+      background: rgba(0, 0, 0, 0.5);
+    }
+
     .grupo-filtros-nuevo {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      overflow-y: hidden;
+      -webkit-overflow-scrolling: touch;
+      gap: 13px;
+      padding: 6px 2px 10px;
+      scrollbar-width: none;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
 
       .bloque-filtro {
+        flex: 0 0 auto;
         border: none;
         background: #f8f8f8;
-        border-radius: 8px;
-        padding: 10px;
+        border-radius: 2px;
+        padding: 0px 13px;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
+      }
 
-        .encabezado-filtro {
-          width: 100%;
-          text-align: center;
-          font-size: 14px;
-          padding: 6px 0;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          gap: 6px;
+      .encabezado-filtro {
+        width: auto;
+        text-align: center;
+        font-size: 10px !important;
+        padding: 4px 0;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        gap: 6px;
 
-          ion-icon {
-            font-size: 14px;
-          }
+        ion-icon {
+          font-size: 10px !important;
         }
+      }
 
-        .contenido-filtro {
-          margin-top: 6px;
-          font-size: 12px;
-          text-align: center;
+      .contenido-filtro {
+        margin-top: -5px !important;
+        text-align: center;
+        align-items: center;
 
-          .filtro-activo {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
+        .filtro-activo {
+          display: flex;
+          align-items: center;
+          gap: 1px;
+          font-size: 8px !important;
+          padding: 1px 0;
 
-            &.marca img {
-              width: 24px;
-            }
+          &.marca img {
+            width: 10px !important;
+          }
 
-            &.color .color-dot {
-              width: 12px;
-              height: 12px;
-            }
+          &.color .color-dot {
+            width: 10px !important;
+            height: 10px !important;
+            border-radius: 50% !important;
+            border: 1px solid #ccc;
           }
         }
       }
     }
   }
 }
+
+
+
+// @media (max-width: 768px) {
+//   .filtros-lateral-estilo-nuevo {
+//     .grupo-filtros-nuevo {
+//       display: grid;
+//       grid-template-columns: repeat(2, 1fr);
+//       gap: 10px;
+
+//       .bloque-filtro {
+//         border: none;
+//         background: #f8f8f8;
+//         border-radius: 8px;
+//         padding: 10px;
+//         display: flex;
+//         flex-direction: column;
+//         align-items: center;
+//         justify-content: center;
+
+//         .encabezado-filtro {
+//           width: 100%;
+//           text-align: center;
+//           font-size: 14px;
+//           padding: 6px 0;
+//           display: flex;
+//           justify-content: center;
+//           align-items: center;
+//           gap: 6px;
+
+//           ion-icon {
+//             font-size: 14px;
+//           }
+//         }
+
+//         .contenido-filtro {
+//           margin-top: 6px;
+//           font-size: 12px;
+//           text-align: center;
+
+//           .filtro-activo {
+//             display: flex;
+//             flex-direction: column;
+//             align-items: center;
+//             gap: 4px;
+
+//             &.marca img {
+//               width: 24px;
+//             }
+
+//             &.color .color-dot {
+//               width: 12px;
+//               height: 12px;
+//             }
+//           }
+//         }
+//       }
+//     }
+//   }
+// }

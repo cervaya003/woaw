@@ -10,7 +10,7 @@
         <span *ngIf="auto" class="titulo-perfil">{{ auto.marca }} {{ auto.modelo }} {{ auto.anio }}</span>
       </div>
     </ion-buttons>
-    
+
     <ion-buttons slot="end">
       <ion-button (click)="regresar()">
         <ion-icon name="close-outline"></ion-icon>
@@ -33,7 +33,7 @@
     <ion-grid *ngIf="tipo === 'nuevo' ">
       <ion-row class="fila-ficha">
         <!-- Columna izquierda: Imagen grande, miniaturas y especificaciones -->
-        <ion-col size="12" size-md="8" class="columna-izquierda">
+        <ion-col size="12" size-md="8" class="columna-izquierda responsive-col">
 
           <div class="contenedor-imagenes">
 
@@ -282,15 +282,15 @@
               </span>
             </p>
 
-            <ion-card class="mapa_admin">
+            <div class="mapa_admin">
               <h1 class="text_ubicacion">Ubicación</h1>
-              <div #mapAutoContainer style="width: 100%; height: 300px; border-radius: px;"></div>
+              <div #mapAutoContainer style="width: 100%; height: 200px; border-radius: px;" (click)="openDirection()" ></div>
               <!-- Dirección debajo del mapa -->
               <ion-card-content style="margin-top: 0.2rem; font-size: 14px; color: #4b5563;">
                 <ion-icon name="location-outline" style="margin-right: 6px;"></ion-icon>
                 {{ direccionCompleta }}
               </ion-card-content>
-            </ion-card>
+            </div>
 
             <!-- Componente de cotizador Nuevos ☢️ -->
             <app-cotizador *ngIf="mostrarCotizador  && !esMio" [coche]="auto"
@@ -316,7 +316,8 @@
                 </p>
               </ion-card-content>
 
-              <ion-card-content style="margin-top: 0.8rem; font-size: 14px; color: #4b5563;" *ngIf="auto.lote != null" (click)="mostrarAutos(auto.lote)" button>
+              <ion-card-content style="margin-top: 0.8rem; font-size: 14px; color: #4b5563;" *ngIf="auto.lote != null"
+                (click)="mostrarAutos(auto.lote)" button>
                 <ion-label style="font-weight: bold; font-size: 15px;">Lote</ion-label>
 
                 <!-- Imagen del lote como avatar -->
@@ -342,13 +343,13 @@
 
           </div>
           <div class="overlay" *ngIf="esDispositivoMovil && auto.estadoVehiculo === 'vendido'">
-            <img src="/assets/icon/vendido.png" alt="Vendido"/>
+            <img src="/assets/icon/vendido.png" alt="Vendido" />
           </div>
 
         </ion-col>
 
         <!-- Columna derecha: Detalles comerciales -->
-        <ion-col size="12" size-md="4" class="columna-derecha">
+        <ion-col size="12" size-md="4" class="columna-derecha responsive-col">
 
           <div *ngIf="!esDispositivoMovil && auto.estadoVehiculo === 'disponible'" class="card-detalle">
 
@@ -439,7 +440,8 @@
                 </p>
               </ion-card-content>
 
-              <ion-card-content style="margin-top: 0.8rem; font-size: 14px; color: #4b5563;" *ngIf="auto.lote != null" (click)="mostrarAutos(auto.lote)" button>
+              <ion-card-content style="margin-top: 0.8rem; font-size: 14px; color: #4b5563;" *ngIf="auto.lote != null"
+                (click)="mostrarAutos(auto.lote)" button>
                 <ion-label style="font-weight: bold; font-size: 15px;">Lote</ion-label>
 
                 <!-- Imagen del lote como avatar -->
@@ -464,7 +466,7 @@
             </ion-card>
           </div>
           <div class="overlay" *ngIf="!esDispositivoMovil && auto.estadoVehiculo === 'vendido'">
-            <img src="/assets/icon/vendido.png" alt="Vendido"/>
+            <img src="/assets/icon/vendido.png" alt="Vendido" />
           </div>
 
           <!-- Especificaciones -->
@@ -599,7 +601,7 @@
     <ion-grid *ngIf="tipo === 'seminuevo' ||  tipo === 'usado'">
       <ion-row class="fila-ficha">
         <!-- Columna izquierda: Imagen grande, miniaturas y especificaciones -->
-        <ion-col size="12" size-md="8" class="columna-izquierda">
+        <ion-col size="12" size-md="8" class="columna-izquierda responsive-col">
 
           <div class="contenedor-imagenes">
             <div class="contenedor_imagen_principal" (touchstart)="esDispositivoMovil && onTouchStart($event)"
@@ -636,7 +638,7 @@
             </div>
           </div>
 
-          <ion-card *ngIf="!esDispositivoMovil" class="mapa_admin">
+          <div *ngIf="!esDispositivoMovil" class="mapa_admin">
             <h1 class="text_ubicacion">Ubicación</h1>
             <div #mapAutoContainer style="width: 100%; height: 300px; border-radius: px;"></div>
             <!-- Dirección debajo del mapa -->
@@ -644,7 +646,7 @@
               <ion-icon name="location-outline" style="margin-right: 6px;"></ion-icon>
               {{ direccionCompleta }}
             </ion-card-content>
-          </ion-card>
+          </div>
 
           <!-- Especificaciones -->
           <div *ngIf="!esDispositivoMovil" class="especificaciones">
@@ -792,70 +794,80 @@
               </span>
             </p>
 
-            <ion-card class="mapa_admin">
+            <div  class="mapa_admin">
               <h1 class="text_ubicacion">Ubicación</h1>
-              <div #mapAutoContainer style="width: 100%; height: 300px; border-radius: px;"></div>
+              <div #mapAutoContainer style="width: 100%; height: 200px; border-radius: px;" (click)="openDirection()"></div>
               <!-- Dirección debajo del mapa -->
               <ion-card-content style="margin-top: 0.2rem; font-size: 14px; color: #4b5563;">
                 <ion-icon name="location-outline" style="margin-right: 6px;"></ion-icon>
                 {{ direccionCompleta }}
               </ion-card-content>
-            </ion-card>
+            </div>
 
-            <!-- Componente de cotizador ☢️ -->
-            <app-cotizador *ngIf="!esMio" [coche]="auto"></app-cotizador>
+            <ion-row>
+              <ion-col size="12" size-md="7">
+                <!-- Componente de cotizador ☢️ -->
+                <app-cotizador *ngIf="!esMio" [coche]="auto"></app-cotizador>
+              </ion-col>
 
-            <ion-card>
-              <!-- Datos del vendedor -->
-              <ion-card-content style="margin-top: 0.8rem; font-size: 14px; color: #4b5563;"
-                *ngIf="auto.lote == null && (MyRole == 'admin' || esMio)">
-                <ion-label style="font-weight: bold; font-size: 15px;">Vendedor</ion-label>
-                <p style="margin: 4px 0 0 0;">
-                  <ion-icon name="person-circle-outline" style="margin-right: 6px;"></ion-icon>
-                  {{ auto.usuarioId.nombre }} {{ auto.usuarioId.apellidos }}
-                </p>
-                <p style="margin: 4px 0 0 0;">
-                  <ion-icon name="mail-outline" style="margin-right: 6px;"></ion-icon>
-                  {{ auto.usuarioId.email }}
-                </p>
-                <p style="margin: 4px 0 0 0;">
-                  <ion-icon name="call-outline" style="margin-right: 6px;"></ion-icon>
-                  {{ auto.usuarioId.lada }} {{ auto.usuarioId.telefono }}
-                </p>
-              </ion-card-content>
-
-              <ion-card-content style="margin-top: 0.8rem; font-size: 14px; color: #4b5563;" *ngIf="auto.lote != null" (click)="mostrarAutos(auto.lote)" button>
-                <ion-label style="font-weight: bold; font-size: 15px;">Lote</ion-label>
-
-                <!-- Imagen del lote como avatar -->
-                <div style="display: flex; align-items: center; gap: 12px; margin: 8px 0;">
-                  <ion-avatar style="width: 70px; height: 70px;">
-                    <img [src]="auto.lote.imagenPrincipal" alt="Logo del lote" />
-                  </ion-avatar>
-
-                  <div>
-                    <p style="margin: 4px 0 0 0; font-weight: 600;">
-                      <ion-icon name="business-outline" style="margin-right: 6px;"></ion-icon>
-                      {{ auto.lote.nombre }}
+              <ion-col size="12" size-md="5" *ngIf="(auto.lote == null ||auto.lote != null) ">
+                <ion-card>
+                  <!-- Datos del vendedor -->
+                  <ion-card-content style="margin-top: 0.8rem; font-size: 14px; color: #4b5563;"
+                    *ngIf="auto.lote == null && (MyRole == 'admin' || esMio)">
+                    <ion-label style="font-weight: bold; font-size: 15px;">Vendedor</ion-label>
+                    <p style="margin: 4px 0 0 0;">
+                      <ion-icon name="person-circle-outline" style="margin-right: 6px;"></ion-icon>
+                      {{ auto.usuarioId.nombre }} {{ auto.usuarioId.apellidos }}
+                    </p>
+                    <p style="margin: 4px 0 0 0;">
+                      <ion-icon name="mail-outline" style="margin-right: 6px;"></ion-icon>
+                      {{ auto.usuarioId.email }}
                     </p>
                     <p style="margin: 4px 0 0 0;">
                       <ion-icon name="call-outline" style="margin-right: 6px;"></ion-icon>
-                      +52 {{ auto.lote.telefonoContacto }}
+                      {{ auto.usuarioId.lada }} {{ auto.usuarioId.telefono }}
                     </p>
-                  </div>
-                </div>
-              </ion-card-content>
+                  </ion-card-content>
 
-            </ion-card>
+                  <ion-card-content style="margin-top: 0.8rem; font-size: 14px; color: #4b5563;"
+                    *ngIf="auto.lote != null" (click)="mostrarAutos(auto.lote)" button>
+                    <ion-label style="font-weight: bold; font-size: 15px;">Lote</ion-label>
+
+                    <!-- Imagen del lote como avatar -->
+                    <div style="display: flex; align-items: center; gap: 12px; margin: 8px 0;">
+                      <ion-avatar style="width: 70px; height: 70px;">
+                        <img [src]="auto.lote.imagenPrincipal" alt="Logo del lote" />
+                      </ion-avatar>
+
+                      <div>
+                        <p style="margin: 4px 0 0 0; font-weight: 600;">
+                          <ion-icon name="business-outline" style="margin-right: 6px;"></ion-icon>
+                          {{ auto.lote.nombre }}
+                        </p>
+                        <p style="margin: 4px 0 0 0;">
+                          <ion-icon name="call-outline" style="margin-right: 6px;"></ion-icon>
+                          +52 {{ auto.lote.telefonoContacto }}
+                        </p>
+                      </div>
+                    </div>
+                  </ion-card-content>
+
+                </ion-card>
+              </ion-col>
+
+            </ion-row>
+
           </div>
+
           <div class="overlay" *ngIf="esDispositivoMovil && auto.estadoVehiculo === 'vendido'">
-            <img src="/assets/icon/vendido.png" alt="Vendido"/>
+            <img src="/assets/icon/vendido.png" alt="Vendido" />
           </div>
 
         </ion-col>
 
         <!-- Columna derecha: Detalles comerciales -->
-        <ion-col size="12" size-md="4" class="columna-derecha">
+        <ion-col size="12" size-md="4" class="columna-derecha responsive-col">
 
           <div *ngIf="!esDispositivoMovil && auto.estadoVehiculo === 'disponible'" class="card-detalle">
 
@@ -917,7 +929,8 @@
                 </p>
               </ion-card-content>
 
-              <ion-card-content style="margin-top: 0.8rem; font-size: 14px; color: #4b5563;" *ngIf="auto.lote != null" (click)="mostrarAutos(auto.lote)" button>
+              <ion-card-content style="margin-top: 0.8rem; font-size: 14px; color: #4b5563;" *ngIf="auto.lote != null"
+                (click)="mostrarAutos(auto.lote)" button>
                 <ion-label style="font-weight: bold; font-size: 15px;">Lote</ion-label>
 
                 <!-- Imagen del lote como avatar -->
@@ -943,7 +956,7 @@
 
           </div>
           <div class="overlay" *ngIf="!esDispositivoMovil && auto.estadoVehiculo === 'vendido'">
-            <img src="/assets/icon/vendido.png" alt="Vendido"/>
+            <img src="/assets/icon/vendido.png" alt="Vendido" />
           </div>
 
           <!-- Especificaciones -->

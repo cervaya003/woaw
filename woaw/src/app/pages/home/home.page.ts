@@ -186,23 +186,27 @@ export class HomePage implements OnInit {
     historial.unshift(termino);
     historial = historial.slice(0, 10);
     localStorage.setItem('historialBusqueda', JSON.stringify(historial));
-  }
+  } 
   async cargaimagen() {
     this.imgenPrincipal = '/assets/autos/publicidad/principal4.webp';
     this.imgenArrendamiento = '/assets/autos/publicidad/arrendamiento.png';
+    this.generalService.addPreload(this.imgenPrincipal, 'image');
+    this.generalService.addPreload(this.imgenArrendamiento, 'image');
+    this.overlayLoaded = false;
     try {
-      await this.generalService.preloadHero(this.imgenPrincipal);
-      await this.generalService.preloadHero(this.imgenArrendamiento);
-      this.overlayLoaded = true;
-    } catch {
+      await Promise.all([
+        this.generalService.preloadHero(this.imgenPrincipal, 4500),
+        this.generalService.preloadHero(this.imgenArrendamiento, 4500),
+      ]);
+    } finally {
       this.overlayLoaded = true;
     }
   }
-
   async cargavideo() {
-    this.videoSrc = 'assets/autos/publicidad/vp.mp4';
+    this.videoSrc = 'assets/autos/publicidad/vp1.mp4';
+    this.generalService.addPreload(this.videoSrc, 'video');
     try {
-      await this.generalService.preloadVideo(this.videoSrc);
+      await this.generalService.preloadVideo(this.videoSrc, 7000);
     } finally {
       this.forzarMuteAutoplay();
     }

@@ -37,15 +37,16 @@ export class MenuVehiculosPage implements OnInit {
     this.cargaimagen();
     this.tipoVehiculo = this.route.snapshot.paramMap.get('tipo') || '';
   }
-
   async cargaimagen() {
-    this.imgenPrincipal = 'assets/autos/arre4.png';
+    this.imgenPrincipal = 'assets/autos/arre5.png';
+    this.generalService.addPreload(this.imgenPrincipal, 'image');
     try {
-      await this.generalService.preloadHero(this.imgenPrincipal);
-    } catch {
+      await Promise.all([
+        this.generalService.preloadHero(this.imgenPrincipal, 4500),
+      ]);
+    } finally {
     }
   }
-
   verMas(url: string) {
     this.router.navigate([url]);
   }
