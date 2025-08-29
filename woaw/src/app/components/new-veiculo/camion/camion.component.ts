@@ -1,6 +1,4 @@
-
 import { Component, OnInit, Input, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-
 import { CommonModule } from '@angular/common';
 import { IonicModule, ModalController } from '@ionic/angular';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -12,10 +10,9 @@ import { Router } from '@angular/router';
 import { RegistroService } from '../../../services/registro.service';
 import { ContactosService } from './../../../services/contactos.service';
  
-
 @Component({
   selector: 'app-camion',
- templateUrl: './camion.component.html',
+  templateUrl: './camion.component.html',
   styleUrls: ['./camion.component.scss'],
   standalone: true,
   imports: [IonicModule, CommonModule, FormsModule, ReactiveFormsModule],
@@ -28,17 +25,14 @@ export class CamionComponent implements OnInit {
   @Input() modelo!: string;
   @Input() tipo!: string; 
 
-
   // === Campos requeridos por el backend ===
   precio: number | null = null;
   color: string = '';
   kilometraje: number | null = null;
-
-  tipoVenta: 'venta' | 'renta' | 'venta_renta' | '' = '';
+ tipoVenta: 'venta' | 'renta' | 'venta_renta' | '' = '';
   tipoCamion: string = '';
 
   // === Campos opcionales ===
-
   moneda: 'MXN' | 'USD' = 'MXN';
   ejes: number | null = null;
   capacidadCargaToneladas: number | null = null;
@@ -60,9 +54,6 @@ export class CamionComponent implements OnInit {
   ubicacionSeleccionada: [string, string, number, number] | null = null; // [ciudad, estado, lat, lng]
   direccionCompleta: string = 'Obteniendo ubicación...';
 
-  ubicacionSeleccionada: [string, string, number, number] | null = null; // [ciudad, estado, lat, lng]
-  direccionCompleta: string = 'Obteniendo ubicación...';
-
   public Pregunta: 'no' | 'si' | null = null;
   tipoSeleccionado: 'particular' | 'lote' | 'empresa' = 'particular';
 
@@ -77,7 +68,6 @@ export class CamionComponent implements OnInit {
   seccionFormulario: 1 | 2 | 3 = 1;
 
   // "Véndelo por nosotros"
-
   nombreCamion: string = '';
   anioCamion: number | null = null;
   precioEstimado: number | null = null;
@@ -155,9 +145,7 @@ export class CamionComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
-
     console.log('Modelo inicial:', this.modelo);
-
     // Determina rol y configura vista SIN parpadeos
     this.generalService.tipoRol$.subscribe((rol) => {
       if (rol === 'admin' || rol === 'lotero' || rol === 'transportista' || rol === 'cliente') {
@@ -171,9 +159,7 @@ export class CamionComponent implements OnInit {
           this.seccionFormulario = 2;
           this.tipoSeleccionado = 'lote';
           this.getLotes('mios');
-
         } else {
-
           this.Pregunta = 'no';
           this.seccionFormulario = 1;
           this.tipoSeleccionado = 'particular';
@@ -203,7 +189,6 @@ export class CamionComponent implements OnInit {
     const anioActual = new Date().getFullYear();
 
     if (this.anio === anioActual && this.MyRole === 'admin') {
-
       this.estadoCamion = 'Nuevo'; 
       this.estadoCamion_logico = 'nuevo';
       // Para camiones nuevos, SIEMPRE 0
@@ -263,7 +248,6 @@ export class CamionComponent implements OnInit {
     }
   }
 
-
   // ===== Flujo Pantallas =====
   seleccionarTipo(tipo: 'particular' | 'lote' | 'empresa') {
     this.tipoSeleccionado = tipo;
@@ -286,7 +270,6 @@ export class CamionComponent implements OnInit {
 
   cambiarEstado(nuevoEstado: 'Nuevo' | 'Seminuevo') {
     this.estadoCamion = nuevoEstado;
-
     this.estadoVehiculo = nuevoEstado;
     
     if (nuevoEstado === 'Nuevo') {
@@ -296,12 +279,10 @@ export class CamionComponent implements OnInit {
     } else {
       this.estadoCamion_logico = 'seminuevo';
     }
-
   }
 
   // ===== Ubicación =====
   async seleccionarUbicacion() {
-
     const modal = await this.modalController.create({
       component: MapaComponent,
       backdropDismiss: false, // ⛔️ no se puede cerrar tocando fuera
@@ -352,7 +333,6 @@ export class CamionComponent implements OnInit {
   }
 
   // ===== Validación de ubicación (igual que en el original) =====
-
   private validarUbicacion(): boolean {
     const esParticular = this.tipoSeleccionado === 'particular';
     const esLoteEmpresa = this.tipoSeleccionado === 'lote' || this.tipoSeleccionado === 'empresa';
@@ -367,7 +347,6 @@ export class CamionComponent implements OnInit {
       if (!valida) {
         this.generalService.alert('Ubicación requerida', 'Selecciona la ubicación del camión en el mapa.', 'warning');
         return false;
-
       }
       return true;
     }
@@ -378,7 +357,6 @@ export class CamionComponent implements OnInit {
         this.generalService.alert('Lote requerido', 'Selecciona un lote o empresa válido.', 'warning');
         return false;
       }
-
       if (lote.direccion.length > 1 && !this.direccionSeleccionada) {
         this.generalService.alert('Ubicación del lote requerida', 'Selecciona una ubicación específica del lote.', 'warning');
         return false;
@@ -436,15 +414,12 @@ export class CamionComponent implements OnInit {
     }
   }
 
-
   // ===== Imágenes =====
   async seleccionarImagenes() {
     const modal = await this.modalController.create({
       component: FotosVeiculoComponent,
       backdropDismiss: false,
-
       componentProps: { estadoVehiculo: this.estadoCamion },
-
     });
     await modal.present();
     const { data } = await modal.onDidDismiss();
@@ -453,7 +428,6 @@ export class CamionComponent implements OnInit {
       this.imagenesIntentadas = true;
       this.imagenPrincipal = data.imagenPrincipal;
       this.imagenesSecundarias = data.imagenesSecundarias || [];
-
 
       // Validar según el estado del camión
       if (this.estadoCamion === 'Nuevo') {
@@ -478,23 +452,22 @@ export class CamionComponent implements OnInit {
           return false;
         }
 
-
-      if (this.estadoCamion === 'Seminuevo' || this.estadoCamion === 'Usado') {
         if (this.imagenesSecundarias.length < 2) {
           this.generalService.alert(
             'Imágenes insuficientes',
             'Debes seleccionar al menos 2 imágenes secundarias para camiones usados o seminuevos.',
             'warning'
           );
-
           this.imagenesValidas = false;
           return false;
         }
+
+        this.imagenesValidas = true;
       }
       
       return this.imagenesValidas;
-
     } else {
+      console.log('⛔ Modal cancelado o sin imágenes.');
       this.imagenesValidas = false;
       return false;
     }
@@ -513,85 +486,25 @@ export class CamionComponent implements OnInit {
     );
   }
 
-  // Validaciones de campos específicos
-  validarEjes(): boolean {
-    // Si no se ingresó ningún valor (es null), se considera válido porque es opcional
-    if (this.ejes === null) {
-      return true;
-    }
 
-    // Verificar que sea un número y esté dentro del rango permitido (2-10)
-    if (!Number.isInteger(this.ejes) || this.ejes < 2 || this.ejes > 10) {
-      this.generalService.alert(
-        'Número de ejes inválido',
-        'El número de ejes debe ser un número entero entre 2 y 10.',
-        'warning'
-      );
-      return false;
-    }
-
+validarEjes(): boolean {
+  // Si no se ingresó ningún valor (es null), se considera válido porque es opcional
+  if (this.ejes === null) {
     return true;
   }
 
-  validarCapacidadCarga(): boolean {
-    // Si no se ingresó ningún valor (es null), se considera válido porque es opcional
-    if (this.capacidadCargaToneladas === null) {
-      return true;
-
-    }
-
-    // Los valores del select son los permitidos, pero si se manipula el valor manualmente,
-    // verificamos que esté dentro de un rango aceptable
-    if (isNaN(Number(this.capacidadCargaToneladas)) || 
-        this.capacidadCargaToneladas < 0.5 || 
-        this.capacidadCargaToneladas > 150) {
-      this.generalService.alert(
-        'Capacidad de carga inválida',
-        'Por favor, selecciona una capacidad de carga válida.',
-        'warning'
-      );
-      return false;
-    }
-
-    return true;
-  }
-
- validarDescripcion(): boolean {
-  // La descripción siempre es obligatoria, sin importar el tipo de camión
-  if (!this.descripcion || this.descripcion.trim() === '') {
+  // Verificar que sea un número y esté dentro del rango permitido (2-10)
+  if (!Number.isInteger(this.ejes) || this.ejes < 2 || this.ejes > 10) {
     this.generalService.alert(
-      'Descripción requerida',
-      'Por favor escribe una descripción del camión.',
+      'Número de ejes inválido',
+      'El número de ejes debe ser un número entero entre 2 y 10.',
       'warning'
     );
     return false;
   }
-   
-  
-  // Para usados/seminuevos es obligatoria, pero no hay restricciones de longitud
-  if (!this.descripcion || this.descripcion.trim() === '') {
-    this.generalService.alert(
-      'Descripción requerida',
-      'Por favor escribe una descripción del camión.',
-      'warning'
-    );
-    return false;
-  }
-  
-  
-  // Para usados/seminuevos es obligatoria, pero no hay restricciones de longitud
-  if (!this.descripcion || this.descripcion.trim() === '') {
-    this.generalService.alert(
-      'Descripción requerida',
-      'Por favor escribe una descripción del camión.',
-      'warning'
-    );
-    return false;
-  }
-    
-    return true;
-  }
 
+  return true;
+}
   // ===== ENVÍO DEL FORMULARIO =====
   async EnviarCamion() {
     let validado: boolean = false;
@@ -625,11 +538,9 @@ export class CamionComponent implements OnInit {
       async () => {
         await this.enviarDatos(appdata);
       },
-
       'Al continuar, confirmas que los datos proporcionados sobre tu camión son correctos y serán publicados.'
     );
   }
-
 
   // ===== VALIDACIONES PARA CAMIONES NUEVOS =====
   async validacionesAntesdeEnviarForm_Nuevos(): Promise<boolean> {
@@ -669,32 +580,12 @@ export class CamionComponent implements OnInit {
     }
 
     // Rango de precios para camiones nuevos (mayor que autos)
-    if (this.precio < 50000 || this.precio > 10000000) {
+    if (this.precio < 450000 || this.precio > 10000000) {
       this.generalService.alert(
         'Precio inválido',
         'El precio debe estar entre $50,000 y $10,000,000.',
         'warning'
       );
-      return false;
-    }
-    
-    // Validar tipo de venta
-    if (!this.tipoVenta) {
-      this.generalService.alert(
-        'Tipo de oferta requerido',
-        'Debes seleccionar si el camión es para venta, renta o ambos.',
-        'warning'
-      );
-      return false;
-    }
-
-    // Validar ejes si se proporcionó un valor
-    if (!this.validarEjes()) {
-      return false;
-    }
-    
-    // Validar capacidad de carga si se proporcionó un valor
-    if (!this.validarCapacidadCarga()) {
       return false;
     }
 
@@ -707,10 +598,6 @@ export class CamionComponent implements OnInit {
       );
       return false;
     }
-
-    if (!this.validarDescripcion()) {
-  return false;
-}
 
     // Para camiones nuevos, el kilometraje siempre es 0
     this.kilometraje = 0;
@@ -796,32 +683,19 @@ export class CamionComponent implements OnInit {
     }
 
     // Validar tipo de venta
-    if (!this.tipoVenta) {
-      this.generalService.alert(
-        'Tipo de oferta requerido',
-        'Debes seleccionar si el camión es para venta, renta o ambos.',
-        'warning'
-      );
-      return false;
-    }
+   if (!this.tipoVenta) {
+    this.generalService.alert(
+      'Tipo de venta requerido',
+      'Debes seleccionar si el camión es para venta, renta o ambos.',
+      'warning'
+    );
+    return false;
+  }
 
-    // Validar ejes
-    if (!this.validarEjes()) {
-      return false;
-    }
-    
-    // Validar capacidad de carga
-    if (!this.validarCapacidadCarga()) {
-      return false;
-    }
-
-    // Validar descripción para usados/seminuevos (obligatorio)
-  if (!this.validarDescripcion()) {
-  return false;
-}
-
+   if (!this.validarEjes()) {
+    return false;
+  }
     // Validar imágenes
-
     if (!this.imagenPrincipal) {
       this.generalService.alert(
         'Falta imagen principal',
@@ -876,11 +750,9 @@ export class CamionComponent implements OnInit {
     if (this.combustible) formData.append('combustible', this.combustible);
     if (this.potenciaHP != null) formData.append('potenciaHP', String(this.potenciaHP));
     if (this.tipoCabina) formData.append('tipoCabina', this.tipoCabina);
-
-    if (this.descripcion && this.descripcion.trim()) formData.append('descripcion', this.descripcion.trim());
+    if (this.descripcion) formData.append('descripcion', this.descripcion);
 
     // Ubicación
-
     if (this.ubicacionSeleccionada) {
       const ubicacionObj = {
         ciudad: this.ubicacionSeleccionada[0],
@@ -890,10 +762,8 @@ export class CamionComponent implements OnInit {
       };
       formData.append('ubicacion', JSON.stringify(ubicacionObj));
     } else if (this.tipoSeleccionado === 'lote' || this.tipoSeleccionado === 'empresa') {
-      // Toma dirección del lote
       const lote = this.lotes.find(l => l._id === this.loteSeleccionado);
       const direccion = lote?.direccion.length > 1 ? this.direccionSeleccionada : lote?.direccion[0];
-
       if (direccion) {
         const ubicacionObj = {
           ciudad: direccion.ciudad,
@@ -944,9 +814,7 @@ export class CamionComponent implements OnInit {
     if (this.combustible) formData.append('combustible', this.combustible);
     if (this.potenciaHP != null) formData.append('potenciaHP', String(this.potenciaHP));
     if (this.tipoCabina) formData.append('tipoCabina', this.tipoCabina);
-    
-    // Para camiones usados, la descripción es obligatoria
-    if (this.descripcion) formData.append('descripcion', this.descripcion.trim());
+    if (this.descripcion) formData.append('descripcion', this.descripcion);
 
     // Ubicación
     if (this.ubicacionSeleccionada) {
@@ -989,6 +857,7 @@ export class CamionComponent implements OnInit {
 
   async enviarDatos(appdata: FormData) {
     this.generalService.loading('Guardando camión...');
+    console.log('Enviando datos del camión...');
     
     this.camionesService.guardarCamion(appdata).subscribe({
       next: (res: any) => {
@@ -1013,4 +882,3 @@ export class CamionComponent implements OnInit {
     });
   }
 }
-
