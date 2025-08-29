@@ -20,6 +20,8 @@ import { AvisoPrivasidadComponent } from '../../components/modal/aviso-privasida
 import { PopUpComponent } from '../../components/modal/pop-up/pop-up.component';
 import { ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { Browser } from '@capacitor/browser';
+import { Capacitor } from '@capacitor/core';
 
 @Component({
   selector: 'app-footer',
@@ -29,7 +31,7 @@ import { ActivatedRoute } from '@angular/router';
   imports: [IonicModule, CommonModule],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class FooterComponent implements OnInit {
+export class FooterComponent implements OnInit {  
   blog: any[] = [];
   mostrarMapa: boolean = false;
   mostrarVerMas: boolean = false;
@@ -37,6 +39,15 @@ export class FooterComponent implements OnInit {
   public YaseptePopup: boolean = false;
   public esDispositivoMovil: boolean = false;
   public dispositivo: string = '';
+
+  currentYear: number = new Date().getFullYear();
+
+  private readonly destinoLat = 20.6079;
+  private readonly destinoLng = -100.3793;
+  private readonly destinoLabel = 'WOAW Automotive - Oficinas Operativas';
+  private readonly destinoDir = 'Blvd. Bernardo Quintana Arrioja 14, Alamos 2da Secc, 76160 Santiago de Querétaro, Qro.';
+
+  @ViewChild('footerRoot', { static: true }) footerRoot!: ElementRef<HTMLElement>;
 
   constructor(
     private menu: MenuController,
@@ -48,7 +59,7 @@ export class FooterComponent implements OnInit {
     private modalCtrl: ModalController,
     private activatedRoute: ActivatedRoute,
     private carsService: CarsService
-  ) {}
+  ) { }
 
   async ngOnInit() {
     // localStorage.removeItem('popUp');
@@ -67,6 +78,49 @@ export class FooterComponent implements OnInit {
 
     const url = window.location.pathname;
     this.mostrarMapa = url.includes('/home');
+  }
+  ngAfterViewInit() {
+    const nodes = this.footerRoot.nativeElement.querySelectorAll('.is-reveal');
+
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.15 });
+
+    nodes.forEach(n => io.observe(n));
+  }
+  async abrirUbicacion() {
+    const label = encodeURIComponent(this.destinoLabel);
+    const webUrl = `https://www.google.com/maps/search/?api=1&query=${this.destinoLat},${this.destinoLng}`;
+
+    const platform = Capacitor.getPlatform();
+
+    if (platform === 'android') {
+      const url = `geo:${this.destinoLat},${this.destinoLng}?q=${this.destinoLat},${this.destinoLng}(${label})`;
+      try {
+        await Browser.open({ url });
+      } catch {
+        window.open(webUrl, '_blank');
+      }
+      return;
+    }
+
+    if (platform === 'ios') {
+      const url = `http://maps.apple.com/?ll=${this.destinoLat},${this.destinoLng}&q=${label}`;
+      try {
+        await Browser.open({ url });
+      } catch {
+        window.open(webUrl, '_blank');
+      }
+      return;
+    }
+
+    // Web/desktop
+    window.open(webUrl, '_blank');
   }
 
   async getBlog() {

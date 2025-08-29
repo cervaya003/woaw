@@ -597,8 +597,8 @@
     padding: 10px 6px;
     font-size: 12px;
     flex: 1 1 70px;
-    min-width: unset; 
-    max-width: unset; 
+    min-width: unset;
+    max-width: unset;
   }
 
   .botones-contacto-responsive {
@@ -613,5 +613,32 @@
   .responsive-col {
     flex: 0 0 100% !important;
     max-width: 100% !important;
+  }
+}
+
+
+.mapa_admin {
+  .text_ubicacion {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    color: #1f2937; // gris oscuro
+  }
+
+  .direccion_box {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    color: #4b5563;
+    background: #f9fafb;
+    border-radius: 12px;
+    padding: 8px 12px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+
+    ion-icon {
+      color: #ef4444; // rojo tipo google maps
+      font-size: 18px;
+      margin-right: 6px;
+    }
   }
 }

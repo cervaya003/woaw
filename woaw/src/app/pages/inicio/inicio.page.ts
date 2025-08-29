@@ -79,7 +79,6 @@ export class InicioPage implements OnInit {
       this.esDispositivoMovil = tipo === 'telefono' || tipo === 'tablet';
     });
     this.mostrarAnimaciones();
-    this.mostrarSplash();
   }
   ionViewWillEnter() {
     this.cargaimagen();
@@ -217,7 +216,7 @@ export class InicioPage implements OnInit {
       this.splash = true;
       setInterval(() => {
         this.splash = false;
-      }, 3000);
+      }, 5000);
     } else {
       setInterval(() => {
         this.indexContenido = (this.indexContenido + 1) % this.contenidos.length;
@@ -237,13 +236,14 @@ export class InicioPage implements OnInit {
     } finally {
     }
   }
-  
+
   async cargavideo() {
     this.videoSrc = 'assets/img/vc1.mp4';
     this.videoSrc2 = 'assets/img/vc3.mp4';
     this.generalService.addPreload(this.videoSrc, 'video');
     this.generalService.addPreload(this.videoSrc2, 'video');
     try {
+      this.mostrarSplash();
       await this.generalService.preloadVideo(this.videoSrc, 7000);
       await this.generalService.preloadVideo(this.videoSrc2, 7000);
     } finally {

@@ -451,7 +451,7 @@ export class ContactosService {
         break;
 
       case 'tiktok':
-        url = ``;
+        url = `https://www.tiktok.com/@woaw.mx`;
         break;
 
       default:
