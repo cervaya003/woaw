@@ -1,19 +1,14 @@
 <section>
   <!-- ===== Resumen arriba (botón publicar + preview estado) ===== -->
   <div class="resumen-estado" *ngIf="seccionFormulario == 2 && Pregunta == 'no'">
-<<<<<<< HEAD
-=======
 
->>>>>>> f55eaf8b172c03979d838b2492dedb05f229f66b
+
     <button type="button" class="btn-guardar" (click)="EnviarCamion()">
       <ion-icon name="save-outline" class="icono-guardar"></ion-icon>
       Publicar
     </button>
 
-<<<<<<< HEAD
-=======
 
->>>>>>> f55eaf8b172c03979d838b2492dedb05f229f66b
     <div class="fila-info">
       <p>Año: <strong>{{ anio }}</strong></p>
       <p>Marca: <strong>{{ marca }}</strong></p>
@@ -23,10 +18,7 @@
   </div>
 
   <!-- ===== PREGUNTA tipo de camión (particular/lote/empresa) ===== -->
-<<<<<<< HEAD
-=======
 
->>>>>>> f55eaf8b172c03979d838b2492dedb05f229f66b
   <div class="tipo-vehiculo-container" *ngIf="Pregunta == 'si'">
     <h2 class="titulo-tipo">¿Qué tipo de camión quieres subir?</h2>
 
@@ -47,39 +39,29 @@
     <div class="contenedor-boton">
       <button class="btn-continuar" [disabled]="!tipoSeleccionado" (click)="continuar()">
         Continuar <ion-icon name="arrow-forward-outline"></ion-icon>
-<<<<<<< HEAD
-=======
 
->>>>>>> f55eaf8b172c03979d838b2492dedb05f229f66b
       </button>
     </div>
   </div>
 
-<<<<<<< HEAD
+
   <!-- ===== PREGUNTA "Quién lo vende" (solo particular no-admin) ===== -->
-=======
-  <!-- ===== PREGUNTA “Quién lo vende” (solo particular no-admin) ===== -->
->>>>>>> f55eaf8b172c03979d838b2492dedb05f229f66b
+
   <div *ngIf="tipoSeleccionado == 'particular' && MyRole !== 'admin' && seccionFormulario == 1" class="pregunta-vendedor">
     <p class="texto-pregunta">¿Cómo quieres vender tu camión?</p>
     <div class="botones-vendedor">
       <button class="btn-vender-yo" (click)="quienLovende(0)">Lo vendo yo</button>
       <button class="btn-vende-go" (click)="quienLovende(1)">
         Que lo venda <img src="assets/icon/logo4.png" alt="Go Transportes" class="logo-boton" />
-<<<<<<< HEAD
-=======
 
->>>>>>> f55eaf8b172c03979d838b2492dedb05f229f66b
+
       </button>
     </div>
   </div>
 
   <!-- ===== Opción de que Go lo publique ===== -->
   <div *ngIf="tipoSeleccionado === 'particular' && seccionFormulario === 3 && (MyRole === 'cliente' || MyRole === 'transportista')" class="formulario-publicacion">
-<<<<<<< HEAD
-=======
 
->>>>>>> f55eaf8b172c03979d838b2492dedb05f229f66b
     <p class="info-texto">
       <strong>¡Nosotros nos encargamos!</strong> Publicamos tu camión y agendamos citas con interesados.
       <br />
@@ -113,7 +95,9 @@
     </ion-item>
 
     <div class="btn-wsp-container">
+
       <button class="btn-wsp" (click)="contactosService.contactarPorPublicacionParticular(nombreCamion, anioCamion!, precioEstimado!, tipoFactura)">
+
         <ion-icon name="logo-whatsapp" slot="start"></ion-icon>
         Contáctanos por WhatsApp
       </button>
@@ -124,6 +108,7 @@
   <div class="formulario" *ngIf="Pregunta == 'no' && seccionFormulario == 2">
     <div class="contenedor-botones">
       <!-- Ubicación (particular) -->
+
       <div class="bloque-imagenes" *ngIf="tipoSeleccionado == 'particular'">
         <button type="button" (click)="seleccionarUbicacion()">
           <ion-icon name="location-outline" class="icono"></ion-icon>
@@ -149,19 +134,13 @@
           <select id="direccionSelect" [(ngModel)]="direccionSeleccionada" class="select-lote">
             <option [ngValue]="null" disabled selected>Selecciona una ubicación</option>
             <option *ngFor="let dir of ubicacionesLoteSeleccionado; let i = index" [ngValue]="dir">
-<<<<<<< HEAD
-=======
 
->>>>>>> f55eaf8b172c03979d838b2492dedb05f229f66b
               {{ ubicacionesLoteLegibles[i] || 'Obteniendo dirección...' }}
             </option>
           </select>
         </div>
 
-<<<<<<< HEAD
-=======
 
->>>>>>> f55eaf8b172c03979d838b2492dedb05f229f66b
         <div *ngIf="direccionSeleccionada && ubicacionesLoteSeleccionado.length === 1" class="ubicacion-mostrada">
           <ion-icon name="location-outline"></ion-icon>
           <span>{{ direccionCompleta }}</span>
@@ -169,10 +148,7 @@
       </div>
 
       <!-- Imágenes -->
-<<<<<<< HEAD
-=======
 
->>>>>>> f55eaf8b172c03979d838b2492dedb05f229f66b
       <div class="bloque-imagenes">
         <button class="btn-imagenes" type="button" (click)="seleccionarImagenes()">
           <ion-icon name="image-outline"></ion-icon>
@@ -186,10 +162,7 @@
         <button *ngIf="imagenesIntentadas" class="btn-limpiar" type="button" (click)="limpiarImagenes()">
           <ion-icon name="trash-outline"></ion-icon>
           Imágenes
-<<<<<<< HEAD
-=======
 
->>>>>>> f55eaf8b172c03979d838b2492dedb05f229f66b
         </button>
       </div>
     </div>
@@ -202,10 +175,7 @@
         <select [(ngModel)]="tipoCamion" required>
           <option [ngValue]="null" disabled selected>Selecciona un tipo</option>
           <option *ngFor="let tipo of tiposCamion" [value]="tipo.value">{{ tipo.label }}</option>
-<<<<<<< HEAD
-=======
 
->>>>>>> f55eaf8b172c03979d838b2492dedb05f229f66b
         </select>
       </div>
 
@@ -227,9 +197,11 @@
       <!-- Color -->
       <div class="campo">
         <label>Color: <span class="requerido">*</span></label>
+
         <select [(ngModel)]="color" required>
           <option [ngValue]="null" disabled selected>Selecciona un color</option>
           <option *ngFor="let opcion of colores" [value]="opcion.label">{{ opcion.label }}</option>
+
         </select>
       </div>
 
@@ -240,6 +212,7 @@
       </div>
 
       <!-- Tipo de venta -->
+
       <div class="campo">
         <label>Tipo de oferta: <span class="requerido">*</span></label>
         <select [(ngModel)]="tipoVenta" required>
@@ -250,6 +223,7 @@
 
       <!-- === CAMPOS OPCIONALES === -->
       <!-- Número de ejes con validación -->
+
       <div class="campo">
         <label>Número de ejes: <span class="opcional_css">(opcional)</span></label>
         <!-- Reemplazado el input simple con uno con validaciones -->
@@ -292,6 +266,7 @@
   </select>
 </div>
 
+
       <div class="campo">
         <label>Transmisión: <span class="opcional_css">(opcional)</span></label>
         <select [(ngModel)]="transmision">
@@ -328,4 +303,3 @@
     </div>
   </div>
 </section>
-
