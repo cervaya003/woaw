@@ -77,7 +77,7 @@ export class CamionesService {
     return from(this.headersService.obtenerToken()).pipe(
       switchMap((token) => {
         const headers = this.headersService.getFormDataHeaders(token);
-        return this.http.post(`${environment.api_key}/camiones`, body, { headers });
+        return this.http.post(`${environment.api_key}/camiones/registrar`, body, { headers });
       }),
       catchError((error) => this.headersService.handleError(error))
     );
@@ -95,7 +95,6 @@ export class CamionesService {
     );
   }
 }
-
 
 
 

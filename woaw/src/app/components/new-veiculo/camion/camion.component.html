@@ -219,22 +219,30 @@
         </select>
       </div>
 
-      <div class="campo">
-        <label>Capacidad de carga (toneladas): <span class="opcional_css">(opcional)</span></label>
-        <select [(ngModel)]="capacidadCargaToneladas">
-          <option [ngValue]="null" selected>Selecciona una opción</option>
-          <option [ngValue]="1.5">1.5 toneladas</option>
-          <option [ngValue]="3.5">3.5 toneladas</option>
-          <option [ngValue]="5">5 toneladas</option>
-          <option [ngValue]="7.5">7.5 toneladas</option>
-          <option [ngValue]="10">10 toneladas</option>
-          <option [ngValue]="14">14 toneladas</option>
-          <option [ngValue]="20">20 toneladas</option>
-          <option [ngValue]="30">30 toneladas</option>
-          <option [ngValue]="50">50 toneladas</option>
-          <option [ngValue]="100">100 toneladas</option>
-        </select>
-      </div>
+     <div class="campo">
+  <label>Capacidad de carga (toneladas): <span class="opcional_css">(opcional)</span></label>
+  <select [(ngModel)]="capacidadCargaToneladas">
+    <option [ngValue]="null" selected>Selecciona una opción</option>
+    <optgroup label="Camiones ligeros (0.5 - 5 ton)">
+      <option [ngValue]="1.5">1.5 toneladas</option>
+      <option [ngValue]="3.5">3.5 toneladas</option>
+      <option [ngValue]="5">5 toneladas</option>
+    </optgroup>
+    <optgroup label="Camiones medianos (5.1 - 15 ton)">
+      <option [ngValue]="7.5">7.5 toneladas</option>
+      <option [ngValue]="10">10 toneladas</option>
+      <option [ngValue]="14">14 toneladas</option>
+    </optgroup>
+    <optgroup label="Camiones pesados (15.1 - 50 ton)">
+      <option [ngValue]="20">20 toneladas</option>
+      <option [ngValue]="30">30 toneladas</option>
+      <option [ngValue]="50">50 toneladas</option>
+    </optgroup>
+    <optgroup label="Camiones extrapesados (50.1+ ton)">
+      <option [ngValue]="100">100 toneladas</option>
+    </optgroup>
+  </select>
+</div>
 
       <div class="campo">
         <label>Transmisión: <span class="opcional_css">(opcional)</span></label>

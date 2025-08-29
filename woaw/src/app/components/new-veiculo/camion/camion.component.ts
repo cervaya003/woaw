@@ -1,4 +1,4 @@
- import { Component, OnInit, Input, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Component, OnInit, Input, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, ModalController } from '@ionic/angular';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -29,7 +29,7 @@ export class CamionComponent implements OnInit {
   precio: number | null = null;
   color: string = '';
   kilometraje: number | null = null;
- tipoVenta: 'venta' | 'renta' | 'venta_renta' | '' = '';
+  tipoVenta: 'venta' | 'renta' | 'venta_renta' | '' = '';
   tipoCamion: string = '';
 
   // === Campos opcionales ===
@@ -486,25 +486,84 @@ export class CamionComponent implements OnInit {
     );
   }
 
+  // Validaciones de campos específicos
+  validarEjes(): boolean {
+    // Si no se ingresó ningún valor (es null), se considera válido porque es opcional
+    if (this.ejes === null) {
+      return true;
+    }
 
-validarEjes(): boolean {
-  // Si no se ingresó ningún valor (es null), se considera válido porque es opcional
-  if (this.ejes === null) {
+    // Verificar que sea un número y esté dentro del rango permitido (2-10)
+    if (!Number.isInteger(this.ejes) || this.ejes < 2 || this.ejes > 10) {
+      this.generalService.alert(
+        'Número de ejes inválido',
+        'El número de ejes debe ser un número entero entre 2 y 10.',
+        'warning'
+      );
+      return false;
+    }
+
     return true;
   }
 
-  // Verificar que sea un número y esté dentro del rango permitido (2-10)
-  if (!Number.isInteger(this.ejes) || this.ejes < 2 || this.ejes > 10) {
+  validarCapacidadCarga(): boolean {
+    // Si no se ingresó ningún valor (es null), se considera válido porque es opcional
+    if (this.capacidadCargaToneladas === null) {
+      return true;
+    }
+
+    // Los valores del select son los permitidos, pero si se manipula el valor manualmente,
+    // verificamos que esté dentro de un rango aceptable
+    if (isNaN(Number(this.capacidadCargaToneladas)) || 
+        this.capacidadCargaToneladas < 0.5 || 
+        this.capacidadCargaToneladas > 150) {
+      this.generalService.alert(
+        'Capacidad de carga inválida',
+        'Por favor, selecciona una capacidad de carga válida.',
+        'warning'
+      );
+      return false;
+    }
+
+    return true;
+  }
+
+ validarDescripcion(): boolean {
+  // La descripción siempre es obligatoria, sin importar el tipo de camión
+  if (!this.descripcion || this.descripcion.trim() === '') {
     this.generalService.alert(
-      'Número de ejes inválido',
-      'El número de ejes debe ser un número entero entre 2 y 10.',
+      'Descripción requerida',
+      'Por favor escribe una descripción del camión.',
       'warning'
     );
     return false;
   }
+   
+  
+  // Para usados/seminuevos es obligatoria, pero no hay restricciones de longitud
+  if (!this.descripcion || this.descripcion.trim() === '') {
+    this.generalService.alert(
+      'Descripción requerida',
+      'Por favor escribe una descripción del camión.',
+      'warning'
+    );
+    return false;
+  }
+  
+  
+  // Para usados/seminuevos es obligatoria, pero no hay restricciones de longitud
+  if (!this.descripcion || this.descripcion.trim() === '') {
+    this.generalService.alert(
+      'Descripción requerida',
+      'Por favor escribe una descripción del camión.',
+      'warning'
+    );
+    return false;
+  }
+    
+    return true;
+  }
 
-  return true;
-}
   // ===== ENVÍO DEL FORMULARIO =====
   async EnviarCamion() {
     let validado: boolean = false;
@@ -580,12 +639,32 @@ validarEjes(): boolean {
     }
 
     // Rango de precios para camiones nuevos (mayor que autos)
-    if (this.precio < 450000 || this.precio > 10000000) {
+    if (this.precio < 50000 || this.precio > 10000000) {
       this.generalService.alert(
         'Precio inválido',
         'El precio debe estar entre $50,000 y $10,000,000.',
         'warning'
       );
+      return false;
+    }
+    
+    // Validar tipo de venta
+    if (!this.tipoVenta) {
+      this.generalService.alert(
+        'Tipo de oferta requerido',
+        'Debes seleccionar si el camión es para venta, renta o ambos.',
+        'warning'
+      );
+      return false;
+    }
+
+    // Validar ejes si se proporcionó un valor
+    if (!this.validarEjes()) {
+      return false;
+    }
+    
+    // Validar capacidad de carga si se proporcionó un valor
+    if (!this.validarCapacidadCarga()) {
       return false;
     }
 
@@ -598,6 +677,10 @@ validarEjes(): boolean {
       );
       return false;
     }
+
+    if (!this.validarDescripcion()) {
+  return false;
+}
 
     // Para camiones nuevos, el kilometraje siempre es 0
     this.kilometraje = 0;
@@ -683,18 +766,30 @@ validarEjes(): boolean {
     }
 
     // Validar tipo de venta
-   if (!this.tipoVenta) {
-    this.generalService.alert(
-      'Tipo de venta requerido',
-      'Debes seleccionar si el camión es para venta, renta o ambos.',
-      'warning'
-    );
-    return false;
-  }
+    if (!this.tipoVenta) {
+      this.generalService.alert(
+        'Tipo de oferta requerido',
+        'Debes seleccionar si el camión es para venta, renta o ambos.',
+        'warning'
+      );
+      return false;
+    }
 
-   if (!this.validarEjes()) {
-    return false;
-  }
+    // Validar ejes
+    if (!this.validarEjes()) {
+      return false;
+    }
+    
+    // Validar capacidad de carga
+    if (!this.validarCapacidadCarga()) {
+      return false;
+    }
+
+    // Validar descripción para usados/seminuevos (obligatorio)
+  if (!this.validarDescripcion()) {
+  return false;
+}
+
     // Validar imágenes
     if (!this.imagenPrincipal) {
       this.generalService.alert(
@@ -750,7 +845,7 @@ validarEjes(): boolean {
     if (this.combustible) formData.append('combustible', this.combustible);
     if (this.potenciaHP != null) formData.append('potenciaHP', String(this.potenciaHP));
     if (this.tipoCabina) formData.append('tipoCabina', this.tipoCabina);
-    if (this.descripcion) formData.append('descripcion', this.descripcion);
+    if (this.descripcion && this.descripcion.trim()) formData.append('descripcion', this.descripcion.trim());
 
     // Ubicación
     if (this.ubicacionSeleccionada) {
@@ -814,7 +909,9 @@ validarEjes(): boolean {
     if (this.combustible) formData.append('combustible', this.combustible);
     if (this.potenciaHP != null) formData.append('potenciaHP', String(this.potenciaHP));
     if (this.tipoCabina) formData.append('tipoCabina', this.tipoCabina);
-    if (this.descripcion) formData.append('descripcion', this.descripcion);
+    
+    // Para camiones usados, la descripción es obligatoria
+    if (this.descripcion) formData.append('descripcion', this.descripcion.trim());
 
     // Ubicación
     if (this.ubicacionSeleccionada) {
@@ -857,7 +954,6 @@ validarEjes(): boolean {
 
   async enviarDatos(appdata: FormData) {
     this.generalService.loading('Guardando camión...');
-    console.log('Enviando datos del camión...');
     
     this.camionesService.guardarCamion(appdata).subscribe({
       next: (res: any) => {

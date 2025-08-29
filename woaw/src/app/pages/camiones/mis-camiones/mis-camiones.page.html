@@ -1,0 +1,99 @@
+<ion-header>
+  <ion-toolbar color="dark">
+    <ion-buttons slot="start">
+      <div class="perfil-header">
+        <button class="btn-regresar" (click)="regresar()">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+        </button>
+
+        <img src="/assets/icon/logo4.png" alt="Go Autos" class="logo" />
+        <!-- <span class="titulo-perfil">Mis Camiones</span> -->
+      </div>
+    </ion-buttons>
+
+    <!-- 🔹 Buscador de escritorio fuera de ion-buttons -->
+    <ion-searchbar *ngIf="!esDispositivoMovil" slot="end" [(ngModel)]="terminoBusqueda"
+      (ionInput)="filtrarPorBusqueda()" placeholder="marca, modelo, año o versión" debounce="100" animated
+      class="buscador-escritorio">
+    </ion-searchbar>
+  </ion-toolbar>
+
+  <!-- SOLO EN MÓVIL: barra separada para buscador -->
+  <ion-toolbar color="dark" *ngIf="esDispositivoMovil">
+    <ion-searchbar [(ngModel)]="terminoBusqueda" (ionInput)="filtrarPorBusqueda()"
+      placeholder="marca, modelo, año o versión" debounce="100" animated class="buscador-movil">
+    </ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content #pageContent [fullscreen]="true">
+
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content pullingIcon="arrow-down-outline" refreshingSpinner="crescent"
+      pullingText="Desliza para actualizar" refreshingText="Actualizando...">
+    </ion-refresher-content>
+  </ion-refresher>
+
+  <app-acomodo [totalAutos]="totalCamiones" (ordenCambio)="ordenarCamiones($event)" [titulo]="'Mis Camiones'"></app-acomodo>
+
+  <ion-grid class="contenedor-catalogo">
+    <ion-row>
+      <!-- Columna lateral de filtros -->
+      <ion-col size="12" size-md="3">
+
+        <app-menu [filtros]="filtros" [filtrosAplicados]="filtrosAplicados"
+          (mostrarOpciones)="mostrarOpciones($event.event, $event.tipo)" (limpiarFiltros)="resetearFiltros()">
+        </app-menu>
+
+      </ion-col>
+
+      <!-- Columna de catálogo -->
+      <ion-col size="12" size-md="9">
+
+        <div class="catalogo-camiones">
+
+          <div *ngIf="camionesPaginados?.length === 0" class="mensaje-vacio">
+            <ion-icon name="truck-outline" class="icono-mensaje"></ion-icon><br />
+            No se encontraron camiones para esta sección.
+          </div>
+
+          <ng-container *ngFor="let camion of camionesPaginados">
+            <app-cartas [auto]="camion" [autosFavoritosIds]="camionesFavoritosIds" [ubicacion]="'mis_camiones'"
+              [esMio]="idsMisCamiones.includes(camion._id)">
+            </app-cartas>
+          </ng-container>
+
+        </div>
+
+        <!-- Paginación -->
+        <div class="contenedor-paginacion" *ngIf="totalPaginas > 1">
+          <p class="titulo-paginacion">más</p>
+          <div class="paginacion-scroll">
+            <div class="paginacion">
+              <!-- Flecha anterior -->
+              <button class="pagina" (click)="cambiarPagina(paginaActual - 1)"
+                [disabled]="paginaActual === 1">‹</button>
+
+              <!-- Botones dinámicos -->
+              <ng-container *ngFor="let i of paginasReducidas">
+                <button *ngIf="esNumero(i)" class="pagina" [class.activa]="paginaActual === i"
+                  (click)="cambiarPagina(i)">
+                  {{ i }}
+                </button>
+                <span *ngIf="!esNumero(i)" class="ellipsis">...</span>
+              </ng-container>
+
+              <!-- Flecha siguiente -->
+              <button class="pagina" (click)="cambiarPagina(paginaActual + 1)"
+                [disabled]="paginaActual === totalPaginas">›</button>
+            </div>
+          </div>
+        </div>
+
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <app-footer></app-footer>
+
+</ion-content>
