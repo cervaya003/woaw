@@ -35,12 +35,13 @@ export class CartasComponent implements OnInit {
   @Input() ubicacion: string = '';
   @Input() esMio: boolean = false;
   @Output() refrescarAutos = new EventEmitter<string>();
+  FormatoPrecios: boolean = false;
 
   autosFavoritos: any[] = [];
   public mostrarPendientes: boolean = false;
   public MyRole: string | null = null;
   public isLoggedIn: boolean = false;
-
+  
   imagenCargada = false;
   verificadorCarga: any;
 
@@ -55,7 +56,9 @@ export class CartasComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    console.log(this.auto)
+    // console.log(this.auto)
+    // console.log(this.ubicacion)
+
     this.generalService.tokenExistente$.subscribe((estado) => {
       this.isLoggedIn = estado;
     });
@@ -66,6 +69,12 @@ export class CartasComponent implements OnInit {
     if (storage) {
       const usuario = JSON.parse(storage);
       this.mostrarPendientes = usuario.email === 'glenditaa.003@gmail.com';
+    }
+
+    if (this.ubicacion === 'mis_autos_renta') {
+      this.FormatoPrecios = true;
+    } else {
+      this.FormatoPrecios = false;
     }
 
     this.verificadorCarga = setInterval(() => {
@@ -91,6 +100,8 @@ export class CartasComponent implements OnInit {
       this.router.navigate(['/ficha', 'autos', auto._id]);
     } else if (auto.vehiculo === 'moto') {
       this.router.navigate(['/ficha', 'motos', auto._id]);
+    } else if (auto.vehiculo === 'renta') {
+      this.router.navigate(['/ficha', 'rentas', auto._id]);
     } else {
       console.warn('Tipo de vehículo no reconocido:', auto.vehiculo);
     }
