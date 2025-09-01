@@ -1,0 +1,209 @@
+<section class="renta">
+  <!-- Resumen/encabezado -->
+  <div class="resumen">
+    <button type="button" class="btn-publicar" (click)="publicar()" [disabled]="enviando">
+      <ion-icon name="save-outline"></ion-icon>
+      Publicar
+    </button>
+
+    <div class="fila">
+      <p>Año: <strong>{{ anio }}</strong></p>
+      <p>Marca: <strong>{{ marca }}</strong></p>
+      <p>Modelo: <strong>{{ modelo }}</strong></p>
+    </div>
+  </div>
+
+  <!-- Ubicación + Imágenes -->
+  <div class="bloques">
+    <div class="bloque">
+      <button type="button" (click)="seleccionarUbicacion()">
+        <ion-icon name="location-outline"></ion-icon>
+        Seleccionar ubicación
+      </button>
+      <div class="ubicacion">
+        <ion-icon name="location-outline"></ion-icon>
+        <span>{{ direccionCompleta }}</span>
+      </div>
+    </div>
+
+    <div class="bloque">
+      <div class="grupo-botones">
+        <button class="btn" type="button" (click)="seleccionarImagenes()">
+          <ion-icon name="image-outline"></ion-icon>
+          Seleccionar imágenes
+        </button>
+        <button *ngIf="imagenesIntentadas" class="btn limpiar" type="button" (click)="limpiarImagenes()">
+          <ion-icon name="trash-outline"></ion-icon>
+          Limpiar
+        </button>
+      </div>
+
+      <label class="tc">
+        Tarjeta de circulación (opcional)
+        <input type="file" (change)="onFileTC($event)" accept="image/*,application/pdf">
+      </label>
+    </div>
+  </div>
+
+  <!-- Ficha rápida -->
+  <div class="grid">
+    <div class="campo">
+      <label>Versión</label>
+      <input type="text" [(ngModel)]="version" placeholder="Ej. Advance CVT">
+    </div>
+
+    <div class="campo">
+      <label>Tipo de vehículo</label>
+      <select [(ngModel)]="tipoVehiculo">
+        <option value="">Seleccione…</option>
+        <option>sedan</option>
+        <option>suv</option>
+        <option>pickup</option>
+        <option>van</option>
+        <option>hatchback</option>
+        <option>otro</option>
+      </select>
+    </div>
+
+    <div class="campo">
+      <label>Transmisión</label>
+      <select [(ngModel)]="transmision">
+        <option value="">Seleccione…</option>
+        <option>manual</option>
+        <option>automática</option>
+        <option>CVT</option>
+      </select>
+    </div>
+
+    <div class="campo">
+      <label>Combustible</label>
+      <select [(ngModel)]="combustible">
+        <option value="">Seleccione…</option>
+        <option>gasolina</option>
+        <option>diesel</option>
+        <option>híbrido</option>
+        <option>eléctrico</option>
+      </select>
+    </div>
+
+    <div class="campo">
+      <label>Color</label>
+      <input type="text" [(ngModel)]="color" placeholder="Ej. Blanco">
+    </div>
+
+    <div class="campo">
+      <label>Pasajeros</label>
+      <input type="number" min="1" [(ngModel)]="pasajeros" placeholder="Ej. 5">
+    </div>
+
+    <div class="campo">
+      <label>Kilometraje actual</label>
+      <input type="number" min="0" [(ngModel)]="kilometrajeActual" placeholder="Ej. 52000">
+    </div>
+  </div>
+
+  <!-- Precio -->
+  <div class="grid">
+    <div class="campo">
+      <label>Precio por día ({{ moneda }}) <span class="req">*</span></label>
+      <input type="number" min="0" [(ngModel)]="precioPorDia" placeholder="Ej. 900">
+    </div>
+    <div class="campo">
+      <label>Moneda</label>
+      <select [(ngModel)]="moneda">
+        <option value="MXN">MXN</option>
+        <option value="USD">USD</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Políticas / requisitos -->
+  <div class="grid">
+    <div class="campo">
+      <label>Política combustible</label>
+      <select [(ngModel)]="politicaCombustible">
+        <option value="lleno-lleno">lleno-lleno</option>
+        <option value="como-esta">como-esta</option>
+      </select>
+    </div>
+
+    <div class="campo">
+      <label>Política limpieza</label>
+      <select [(ngModel)]="politicaLimpieza">
+        <option value="normal">normal</option>
+        <option value="estricta">estricta</option>
+      </select>
+    </div>
+
+    <div class="campo">
+      <label>Edad mínima</label>
+      <input type="number" min="18" [(ngModel)]="requisitosConductor.edadMinima">
+    </div>
+
+    <div class="campo">
+      <label>Antigüedad licencia (meses)</label>
+      <input type="number" min="0" [(ngModel)]="requisitosConductor.antiguedadLicenciaMeses">
+    </div>
+
+    <div class="campo">
+      <label>Conductor adicional</label>
+      <select [(ngModel)]="requisitosConductor.permiteConductorAdicional">
+        <option [ngValue]="false">No</option>
+        <option [ngValue]="true">Sí</option>
+      </select>
+    </div>
+
+    <div class="campo" *ngIf="requisitosConductor.permiteConductorAdicional">
+      <label>Costo conductor adicional</label>
+      <input type="number" min="0" [(ngModel)]="requisitosConductor.costoConductorAdicional">
+    </div>
+  </div>
+
+  <!-- Entrega -->
+  <div class="grid">
+    <div class="campo">
+      <label>Entrega gratis hasta (km)</label>
+      <input type="number" min="0" [(ngModel)]="entrega.gratuitoHastaKm">
+    </div>
+  </div>
+
+  <!-- Póliza (obligatoria) -->
+  <div class="grid">
+    <div class="campo">
+      <label>Número de póliza <span class="req">*</span></label>
+      <input type="text" [(ngModel)]="polizaPlataforma.numero" placeholder="Ej. ABC-123456">
+    </div>
+    <div class="campo">
+      <label>Aseguradora <span class="req">*</span></label>
+      <select [(ngModel)]="polizaPlataforma.aseguradora">
+        <option value="">Seleccione…</option>
+        <option>Uber</option>
+        <option>DiDi</option>
+        <option>inDrive</option>
+        <option>Cabify</option>
+        <option>Otro</option>
+      </select>
+    </div>
+    <div class="campo">
+      <label>Cobertura <span class="req">*</span></label>
+      <select [(ngModel)]="polizaPlataforma.cobertura">
+        <option value="">Seleccione…</option>
+        <option>RC</option>
+        <option>Amplia</option>
+        <option>Amplia Plus</option>
+      </select>
+    </div>
+    <div class="campo">
+      <label>Vigencia desde <span class="req">*</span></label>
+      <input type="date" [(ngModel)]="polizaPlataforma.vigenciaDesde">
+    </div>
+    <div class="campo">
+      <label>Vigencia hasta <span class="req">*</span></label>
+      <input type="date" [(ngModel)]="polizaPlataforma.vigenciaHasta">
+    </div>
+    <div class="campo">
+      <label>URL de póliza (opcional)</label>
+      <input type="url" [(ngModel)]="polizaPlataforma.urlPoliza" placeholder="https://...">
+    </div>
+  </div>
+</section>

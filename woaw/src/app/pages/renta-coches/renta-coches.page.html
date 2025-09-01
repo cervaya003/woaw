@@ -1,25 +1,96 @@
 <app-navbar></app-navbar>
 
-<ion-content [fullscreen]="true">
+<ion-content #pageContent [fullscreen]="true">
+  <!-- Barra superior: total y orden -->
+  <app-acomodo [totalAutos]="totalCoches" [titulo]="'Renta de autos'" (ordenCambio)="ordenarAutos($event)">
+  </app-acomodo>
 
-  <img *ngIf="overlayLoaded" [src]="imgenPrincipal" alt="Próximamente WOAW" class="img-responsiva" />
+  <ion-grid class="contenedor-catalogo">
+    <ion-row>
+      <!-- Filtros -->
+      <ion-col size="12" size-md="3">
+        <app-menu [filtros]="filtros" [filtrosAplicados]="filtrosAplicados"
+          (mostrarOpciones)="mostrarOpciones($event.event, $event.tipo)" (limpiarFiltros)="resetearFiltros()">
+        </app-menu>
+      </ion-col>
 
+      <!-- Catálogo -->
+      <ion-col size="12" size-md="9">
 
-  <div class="hero-overlay">
-    <span class="eyebrow">
-      <span class="dot"></span> Próximamente
-    </span>
+        <ion-spinner *ngIf="loading" name="crescent" class="loading-spinner"></ion-spinner>
 
-    <h1>Renta de autos <span class="brand">WOAW</span></h1>
-    <p class="lead">Muy pronto una nueva forma de llegar a tu destino. Muévete facil, seguro y cómodo.</p>
-    <ul class="chips" role="list" aria-label="ventajas">
-      <li class="chip" role="listitem">Reserva inmediata</li>
-      <li class="chip" role="listitem">Sin depósito</li>
-      <li class="chip" role="listitem">Cobertura básica incluida</li>
-    </ul>
-  </div>
+        <div *ngIf="!loading && cochesFiltrados.length === 0" class="no-coches">
+          <ion-icon name="car-outline" class="icono-carro"></ion-icon>
+          <h2>No hay coches disponibles</h2>
+          <p>Vuelve a intentarlo más tarde.</p>
+        </div>
 
+        <!-- GRID DE TARJETAS -->
+        <div *ngIf="!loading && cochesPaginados.length > 0" class="cards-grid">
+          <ion-card *ngFor="let c of cochesPaginados" class="veh-card" (click)="irADetalle(c._id)">
+            <!-- Imagen -->
+            <div class="img-wrap">
+              <img [src]="c.imagenPrincipal || '/assets/placeholder-car.webp'" alt="{{ c.marca }} {{ c.modelo }}" />
+            </div>
 
+            <ion-card-content>
+              <!-- Título -->
+              <div class="title">
+                <strong>{{ c.marca }}</strong> • {{ c.modelo }} {{ c.anio }}
+              </div>
+
+              <!-- Precio -->
+              <div class="price">
+                {{ c.precio?.porDia | currency:'MXN':'symbol-narrow' }}/día
+              </div>
+
+              <!-- Meta: km / transmisión / ubicación -->
+              <div class="meta">
+                <div class="meta-item" *ngIf="c.kilometrajeActual != null">
+                  <ion-icon name="speedometer-outline"></ion-icon>
+                  <span>{{ c.kilometrajeActual | number }} km</span>
+                </div>
+                <div class="meta-item" *ngIf="c.transmision">
+                  <ion-icon name="settings-outline"></ion-icon>
+                  <span>{{ c.transmision }}</span>
+                </div>
+                <div class="meta-item" *ngIf="c.ubicacion">
+                  <ion-icon name="location-outline"></ion-icon>
+                  <span>{{ c.ubicacion.ciudad || '' }}</span>
+                </div>
+              </div>
+
+              <!-- Barra inferior decorativa -->
+              <div class="accent-bar"></div>
+            </ion-card-content>
+          </ion-card>
+        </div>
+
+        <!-- Paginación -->
+        <div class="contenedor-paginacion" *ngIf="totalPaginas > 1">
+          <p class="titulo-paginacion">más</p>
+          <div class="paginacion-scroll">
+            <div class="paginacion">
+              <button class="pagina" (click)="cambiarPagina(paginaActual - 1)"
+                [disabled]="paginaActual === 1">‹</button>
+
+              <ng-container *ngFor="let i of paginasReducidas">
+                <button *ngIf="esNumero(i)" class="pagina" [class.activa]="paginaActual === i"
+                  (click)="cambiarPagina(i)">
+                  {{ i }}
+                </button>
+                <span *ngIf="!esNumero(i)" class="ellipsis">...</span>
+              </ng-container>
+
+              <button class="pagina" (click)="cambiarPagina(paginaActual + 1)"
+                [disabled]="paginaActual === totalPaginas">›</button>
+            </div>
+          </div>
+        </div>
+
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 
   <app-footer></app-footer>
 </ion-content>

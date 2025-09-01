@@ -176,6 +176,11 @@ const routes: Routes = [
       },
     ],
   },
+  {
+    path: 'renta-ficha/:id',
+    loadChildren: () => import('./pages/renta-ficha/renta-ficha.module').then( m => m.RentaFichaPageModule)
+  },
+
 ];
 
 @NgModule({

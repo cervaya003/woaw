@@ -16,6 +16,7 @@ import { FooterComponent } from '../../components/footer/footer.component';
 import { AddComponent } from '../../components/lote/add/add.component';
 import { CarComponent } from '../../components/new-veiculo/car/car.component';
 import { MotosComponent } from '../../components/new-veiculo/motos/motos.component';
+import { RentaComponent } from "src/app/components/new-veiculo/renta/renta.component";
 /* import {} */
 
 @NgModule({
@@ -30,8 +31,9 @@ import { MotosComponent } from '../../components/new-veiculo/motos/motos.compone
     FooterComponent,
     CarComponent,
     MotosComponent,
-    AddComponent
-  ],
+    AddComponent,
+    RentaComponent
+],
   declarations: [NewCarPage],
 })
 export class NewCarPageModule { }

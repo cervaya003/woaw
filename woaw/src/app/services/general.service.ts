@@ -15,6 +15,9 @@ import { Router } from '@angular/router';
   providedIn: 'root',
 })
 export class GeneralService {
+  toast(arg0: string, arg1: string) {
+    throw new Error('Method not implemented.');
+  }
   private popoverActivo?: HTMLIonPopoverElement;
 
   public esMovil = new BehaviorSubject<boolean>(false);

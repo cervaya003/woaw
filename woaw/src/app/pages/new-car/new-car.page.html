@@ -44,13 +44,17 @@
 
   <!------- # -------->
 
-  <div class="contenedor_form" *ngIf="seleccion === 'lote' || seleccion === 'auto' || seleccion === 'moto' || seleccion === 'camion' ">
+  <!-- agregamos 'renta' a la condición -->
+  <div class="contenedor_form"
+    *ngIf="seleccion === 'lote' || seleccion === 'auto' || seleccion === 'moto' || seleccion === 'camion' || seleccion === 'renta' ">
     <div *ngIf="!isLoggedIn && seleccion != 'lote'" class="mensaje-autenticacion">
       Para publicar y vender un vehículo, primero debes iniciar sesión o crear una cuenta.
       <button class="btn-acceso" (click)="irAInicio()">Acceder</button>
     </div>
 
-    <div *ngIf="!mostrarCarComponent && isLoggedIn && (seleccion === 'auto' || seleccion === 'moto' || seleccion ==='camion')"
+    <!-- agregamos renta al formulario inicial -->
+    <div
+      *ngIf="!mostrarCarComponent && isLoggedIn && (seleccion === 'auto' || seleccion === 'moto' || seleccion === 'camion' || seleccion === 'renta')"
       class="fila-inputs">
       <div class="campo">
         <label for="anio">Año <span class="requerido">*</span></label>
@@ -67,13 +71,15 @@
           {{ mansaje_error }}
         </p>
       </div>
+
       <div class="campo">
- 
         <label for="marca">Marca <span class="requerido">*</span></label>
         <select id="marca" *ngIf="!marcaEsPersonalizada" [(ngModel)]="marcaSeleccionada"
           (change)="obtenerModelosSiCorresponde()" [disabled]="!anioValido">
           <option disabled selected value="">Selecciona una marca</option>
-          <option *ngFor="let marca of marcas" [value]="seleccion === 'auto' ? marca.key : marca._id">
+          <!-- renta se comporta como auto: usa marca.key -->
+          <option *ngFor="let marca of marcas"
+                  [value]="(seleccion === 'auto' || seleccion === 'renta') ? marca.key : marca._id">
             {{ marca.nombre }}
           </option>
           <option value="otro">Otra marca...</option>
@@ -82,7 +88,6 @@
         <input *ngIf="marcaEsPersonalizada" type="text" [(ngModel)]="marcaSeleccionada"
           (change)="obtenerModelosSiCorresponde()" placeholder="Escribe el modelo manualmente"
           class="input-personalizado" maxlength="25" />
-
       </div>
 
       <div class="campo">
@@ -92,8 +97,10 @@
         <select *ngIf="!esAnioAnteriorA2008() && !modeloEsPersonalizado" id="modelo" [(ngModel)]="modeloSeleccionado"
           (change)="selecionarModelo()" [disabled]="!marcaSeleccionada">
           <option disabled selected value="">Selecciona un modelo</option>
-          <option *ngFor="let modelo of modelos" [value]="seleccion === 'auto' ? modelo.modelo : modelo.nombre">
-            {{seleccion === 'auto' ? modelo.modelo : modelo.nombre }}
+          <!-- renta se comporta como auto: usa modelo.modelo -->
+          <option *ngFor="let modelo of modelos"
+                  [value]="(seleccion === 'auto' || seleccion === 'renta') ? modelo.modelo : modelo.nombre">
+            {{ (seleccion === 'auto' || seleccion === 'renta') ? modelo.modelo : modelo.nombre }}
           </option>
           <option value="otro">Otro modelo...</option>
         </select>
@@ -101,23 +108,22 @@
         <!-- Input cuando el usuario selecciona "otro" -->
         <input *ngIf="modeloEsPersonalizado" type="text" [(ngModel)]="modeloSeleccionado" (blur)="validarInputModelo()"
           placeholder="Escribe el modelo manualmente" class="input-personalizado" maxlength="25" />
-
       </div>
     </div>
 
+    <!-- botón continuar incluye renta -->
     <button [disabled]="!formularioValido()"
-      *ngIf="!mostrarCarComponent && isLoggedIn  && (seleccion === 'auto' || seleccion === 'moto')" class="btn-guardar"
-      (click)="mostrarComponente()">
+      *ngIf="!mostrarCarComponent && isLoggedIn  && (seleccion === 'auto' || seleccion === 'moto' || seleccion === 'renta')"
+      class="btn-guardar" (click)="mostrarComponente()">
       Continuar
       <ion-icon name="arrow-forward-outline"></ion-icon>
     </button>
+
     <div *ngIf="mostrarCarComponent" class="fila_select">
-      <!-- Botón de regresar -->
       <button type="button" class="btn-regresar" (click)="volverAtras()">
         <ion-icon name="arrow-back-outline" class="icono-regresar"></ion-icon>
         Regresar
       </button>
-      <!-- Icono + Texto del tipo seleccionado -->
       <div class="seleccion-info">
         <img [src]="mostrarIcono" alt="icono seleccionado" />
         <p>{{ mostrarSelecion }}</p>
@@ -132,6 +138,12 @@
     <app-motos *ngIf="mostrarCarComponent && seleccion === 'moto'" [anio]="obtenerAnioActual()"
       [marca]="getMarcaNombreSeleccionada()" [modelo]="modeloSeleccionado" [tipo]="seleccion">
     </app-motos>
+
+    <!-- RENTA (marca pasa la seleccionada directa para no depender de _id) -->
+    <app-renta *ngIf="mostrarCarComponent && seleccion === 'renta'" [anio]="obtenerAnioActual()"
+      [marca]="marcaSeleccionada" [modelo]="modeloSeleccionado" [tipo]="seleccion"
+      (rentaSubmit)="registrarRenta($event)">
+    </app-renta>
 
     <!-- add loter  -->
     <app-add *ngIf="mostrarCarComponent && seleccion === 'lote'"></app-add>
