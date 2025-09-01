@@ -1,7 +1,11 @@
 <section class="renta">
   <!-- Resumen/encabezado -->
   <div class="resumen">
-    <button type="button" class="btn-publicar" (click)="publicar()" [disabled]="enviando">
+    <button
+      type="button"
+      class="btn-publicar"
+      (click)="publicar()"
+      [disabled]="enviando || !imagenesValidas || !marca || !modelo || !anio || !precioPorDia || !polizaPlataforma.numero || !polizaPlataforma.aseguradora || !polizaPlataforma.cobertura || !polizaPlataforma.vigenciaDesde || !polizaPlataforma.vigenciaHasta">
       <ion-icon name="save-outline"></ion-icon>
       Publicar
     </button>
@@ -54,7 +58,7 @@
 
     <div class="campo">
       <label>Tipo de vehículo</label>
-      <select [(ngModel)]="tipoVehiculo">
+      <select [(ngModel)]="tipoVehiculoLocal">
         <option value="">Seleccione…</option>
         <option>sedan</option>
         <option>suv</option>
