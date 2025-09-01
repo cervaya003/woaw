@@ -30,13 +30,15 @@ export class RentaComponent implements OnInit {
   @Input() anio!: number;
   @Input() marca!: string;
   @Input() modelo!: string;
+  /** Tipo general del flujo (por si el padre lo usa). No lo enviamos al backend. */
   @Input() tipo!: 'renta' | 'auto' | 'moto' | 'camion' | 'lote';
 
   @Output() rentaSubmit = new EventEmitter<RentaSubmitPayload>();
 
-  // UI/estado base (similar a CarComponent)
+  // UI/estado base
   direccionCompleta: string = 'Selecciona la ubicación...';
-  ubicacionSeleccionada: [string, string, number, number] | null = null; // [ciudad, estado, lat, lng]
+  /** [ciudad, estado, lat, lng] */
+  ubicacionSeleccionada: [string, string, number, number] | null = null;
 
   // Imágenes
   imagenPrincipal: File | null = null;
@@ -46,27 +48,28 @@ export class RentaComponent implements OnInit {
   imagenesIntentadas = false;
   imagenesValidas = false;
 
-  // Campos de ficha rápida (opcionales, pero útiles para filtrar/listar)
+  // Campos de ficha rápida
   version: string = '';
-  tipoVehiculo: string = '';
+  /** nombre local para no chocar con el @Input tipo */
+  tipoVehiculoLocal: string = '';
   transmision: string = '';
   combustible: string = '';
   color: string = '';
   pasajeros: number | null = null;
   kilometrajeActual: number | null = null;
 
-  // Precio (solo por día)
+  // Precio
   precioPorDia: number | null = null;
   moneda: 'MXN' | 'USD' = 'MXN';
 
-  // Políticas / requisitos (opcionales)
+  // Políticas / requisitos
   politicaCombustible: 'lleno-lleno' | 'como-esta' = 'lleno-lleno';
   politicaLimpieza: 'normal' | 'estricta' = 'normal';
 
   requisitosConductor = {
     edadMinima: 21,
     antiguedadLicenciaMeses: 12,
-    permiteConductorAdicional: false,
+    permiteConductorAdicional: false as boolean,
     costoConductorAdicional: null as number | null,
   };
 
@@ -79,7 +82,7 @@ export class RentaComponent implements OnInit {
       costoFijo?: number | null;
       costoPorKm?: number | null;
       nota?: string | null;
-    }>
+    }>,
   };
 
   // Póliza (OBLIGATORIA)
@@ -99,11 +102,9 @@ export class RentaComponent implements OnInit {
     private modalController: ModalController,
     private generalService: GeneralService,
     private rentaService: RentaService
-  ) { }
+  ) {}
 
-  ngOnInit() {
-    // nada especial por ahora
-  }
+  ngOnInit() {}
 
   // ====== UBICACIÓN ======
   async seleccionarUbicacion() {
@@ -112,12 +113,17 @@ export class RentaComponent implements OnInit {
     const { data } = await modal.onDidDismiss();
 
     if (data) {
-      this.ubicacionSeleccionada = data;
+      this.ubicacionSeleccionada = data as [string, string, number, number];
       if (this.ubicacionSeleccionada) {
-        this.generalService
-          .obtenerDireccionDesdeCoordenadas(this.ubicacionSeleccionada[2], this.ubicacionSeleccionada[3])
-          .then(dir => (this.direccionCompleta = dir))
-          .catch(() => (this.direccionCompleta = 'No se pudo obtener la dirección.'));
+        try {
+          const dir = await this.generalService.obtenerDireccionDesdeCoordenadas(
+            this.ubicacionSeleccionada[2],
+            this.ubicacionSeleccionada[3]
+          );
+          this.direccionCompleta = dir;
+        } catch {
+          this.direccionCompleta = 'No se pudo obtener la dirección.';
+        }
       }
     }
   }
@@ -129,7 +135,6 @@ export class RentaComponent implements OnInit {
       backdropDismiss: false,
       componentProps: { estadoVehiculo: 'Renta' },
     });
-
     await modal.present();
 
     const { data } = await modal.onDidDismiss();
@@ -141,11 +146,11 @@ export class RentaComponent implements OnInit {
     }
 
     this.imagenesIntentadas = true;
-    this.imagenPrincipal = data.imagenPrincipal || null;
-    this.imagenesSecundarias = data.imagenesSecundarias || [];
+    this.imagenPrincipal = (data.imagenPrincipal as File) || null;
+    this.imagenesSecundarias = (data.imagenesSecundarias as File[]) || [];
 
     if (!this.imagenPrincipal) {
-      this.generalService.alert('Falta imagen principal', 'Selecciona una imagen principal para continuar.', 'warning');
+      await this.generalService.alert('Falta imagen principal', 'Selecciona una imagen principal para continuar.', 'warning');
       this.imagenesValidas = false;
       return;
     }
@@ -173,6 +178,14 @@ export class RentaComponent implements OnInit {
   }
 
   // ====== VALIDACIONES ======
+  private validarFechasPoliza(): boolean {
+    const { vigenciaDesde, vigenciaHasta } = this.polizaPlataforma;
+    if (!vigenciaDesde || !vigenciaHasta) return false;
+    const d1 = new Date(vigenciaDesde);
+    const d2 = new Date(vigenciaHasta);
+    return d1 <= d2;
+  }
+
   validarBasico(): boolean {
     // marca/modelo/año
     if (!this.marca || !this.modelo || !this.anio) {
@@ -180,17 +193,21 @@ export class RentaComponent implements OnInit {
       return false;
     }
 
-    // precio
-    const okPrecioDia = this.precioPorDia !== null && this.precioPorDia >= 0;
+    // precio > 0
+    const okPrecioDia = this.precioPorDia !== null && Number(this.precioPorDia) > 0;
     if (!okPrecioDia) {
-      this.generalService.alert('Precio por día', 'El precio por día es obligatorio y debe ser ≥ 0.', 'warning');
+      this.generalService.alert('Precio por día', 'El precio por día es obligatorio y debe ser mayor a 0.', 'warning');
       return false;
     }
 
-    // póliza
+    // póliza obligatoria + fechas coherentes
     const p = this.polizaPlataforma;
     if (!p.numero || !p.aseguradora || !p.cobertura || !p.vigenciaDesde || !p.vigenciaHasta) {
       this.generalService.alert('Póliza', 'Completa los campos obligatorios de la póliza.', 'warning');
+      return false;
+    }
+    if (!this.validarFechasPoliza()) {
+      this.generalService.alert('Vigencia de póliza', 'La fecha "desde" debe ser anterior o igual a la fecha "hasta".', 'warning');
       return false;
     }
 
@@ -204,14 +221,14 @@ export class RentaComponent implements OnInit {
   }
 
   // ====== PREPARAR PAYLOAD ======
-  construirPayload() {
+  private construirPayload() {
     const ubicacion = this.ubicacionSeleccionada
       ? {
-        ciudad: this.ubicacionSeleccionada[0],
-        estado: this.ubicacionSeleccionada[1],
-        lat: this.ubicacionSeleccionada[2],
-        lng: this.ubicacionSeleccionada[3],
-      }
+          ciudad: this.ubicacionSeleccionada[0],
+          estado: this.ubicacionSeleccionada[1],
+          lat: Number(this.ubicacionSeleccionada[2]),
+          lng: Number(this.ubicacionSeleccionada[3]),
+        }
       : undefined;
 
     const precio = {
@@ -219,10 +236,9 @@ export class RentaComponent implements OnInit {
       moneda: this.moneda,
     };
 
-    // entrega / requisitos pueden quedar vacíos si no se llenan
     const reqCond = {
-      edadMinima: this.requisitosConductor.edadMinima ?? 21,
-      antiguedadLicenciaMeses: this.requisitosConductor.antiguedadLicenciaMeses ?? 12,
+      edadMinima: Number(this.requisitosConductor.edadMinima ?? 21),
+      antiguedadLicenciaMeses: Number(this.requisitosConductor.antiguedadLicenciaMeses ?? 12),
       permiteConductorAdicional: !!this.requisitosConductor.permiteConductorAdicional,
       costoConductorAdicional:
         this.requisitosConductor.costoConductorAdicional != null
@@ -232,7 +248,7 @@ export class RentaComponent implements OnInit {
 
     const entrega = {
       gratuitoHastaKm: Number(this.entrega.gratuitoHastaKm || 0),
-      tarifasPorDistancia: (this.entrega.tarifasPorDistancia || []).map(t => ({
+      tarifasPorDistancia: (this.entrega.tarifasPorDistancia || []).map((t) => ({
         desdeKm: Number(t.desdeKm),
         hastaKm: Number(t.hastaKm),
         costoFijo: t.costoFijo != null ? Number(t.costoFijo) : undefined,
@@ -242,29 +258,36 @@ export class RentaComponent implements OnInit {
     };
 
     return {
-      marca: this.marca,
-      modelo: this.modelo,
-      anio: this.anio,
+      // básicos
+      marca: (this.marca || '').trim(),
+      modelo: (this.modelo || '').trim(),
+      anio: Number(this.anio),
+
+      // opcionales
       version: this.version || undefined,
-      tipoVehiculo: this.tipoVehiculo || undefined,
+      tipoVehiculo: this.tipoVehiculoLocal || undefined,
       transmision: this.transmision || undefined,
       combustible: this.combustible || undefined,
       color: this.color || undefined,
       pasajeros: this.pasajeros != null ? Number(this.pasajeros) : undefined,
       kilometrajeActual: this.kilometrajeActual != null ? Number(this.kilometrajeActual) : undefined,
 
+      // money
       precio,
+      // políticas
       politicaCombustible: this.politicaCombustible,
       politicaLimpieza: this.politicaLimpieza,
+      // requisitos
       requisitosConductor: reqCond,
-
+      // ubicación/entrega
       ubicacion,
       entrega,
 
+      // póliza
       polizaPlataforma: {
-        numero: this.polizaPlataforma.numero,
-        aseguradora: this.polizaPlataforma.aseguradora,
-        cobertura: this.polizaPlataforma.cobertura,
+        numero: (this.polizaPlataforma.numero || '').trim(),
+        aseguradora: this.polizaPlataforma.aseguradora as any,
+        cobertura: this.polizaPlataforma.cobertura as any,
         vigenciaDesde: this.polizaPlataforma.vigenciaDesde,
         vigenciaHasta: this.polizaPlataforma.vigenciaHasta,
         urlPoliza: this.polizaPlataforma.urlPoliza || undefined,
@@ -277,15 +300,14 @@ export class RentaComponent implements OnInit {
     if (!this.validarBasico()) return;
 
     const payload = this.construirPayload();
-
     const files = {
-      imagenPrincipal: this.imagenPrincipal!,
+      imagenPrincipal: this.imagenPrincipal!, // validado arriba
       imagenes: this.imagenesSecundarias || [],
       tarjetaCirculacion: this.tarjetaCirculacion || undefined,
     };
 
-    this.generalService.loading('Publicando vehículo de renta…');
     this.enviando = true;
+    await this.generalService.loading('Publicando vehículo de renta…');
 
     this.rentaService
       .addRentalCar({
@@ -293,8 +315,8 @@ export class RentaComponent implements OnInit {
         ...files,
       } as any)
       .subscribe({
-        next: (res: any) => {
-          // si backend regresó token/rol, reflejar (igual que haces en CarComponent)
+        next: async (res: any) => {
+          // si backend regresó token/rol, reflejar
           if (res?.token && res?.rol) {
             const userActual = JSON.parse(localStorage.getItem('user') || '{}');
             userActual.rol = res.rol;
@@ -302,18 +324,15 @@ export class RentaComponent implements OnInit {
             localStorage.setItem('token', res.token);
           }
 
-          this.generalService.loadingDismiss();
+          await this.generalService.loadingDismiss();
           this.enviando = false;
           this.generalService.alert('¡Listo!', 'Vehículo de renta publicado correctamente.', 'success');
 
-          // Emitir por si el padre quiere reaccionar / navegar
           this.rentaSubmit.emit({ payload, files });
-
-          // Limpieza simple
           this.resetForm();
         },
-        error: (err) => {
-          this.generalService.loadingDismiss();
+        error: async (err) => {
+          await this.generalService.loadingDismiss();
           this.enviando = false;
           const msg = err?.error?.message || 'Error al publicar el vehículo de renta';
           this.generalService.alert('Error', msg, 'danger');
@@ -324,7 +343,7 @@ export class RentaComponent implements OnInit {
 
   resetForm() {
     this.version = '';
-    this.tipoVehiculo = '';
+    this.tipoVehiculoLocal = '';
     this.transmision = '';
     this.combustible = '';
     this.color = '';
