@@ -33,7 +33,7 @@
   </div>
 
   <div class="contenido-auto">
-    <div *ngIf="FormatoPrecios" [ngClass]="generalService.getClaseTipoBarra(auto.tipoVenta)"></div>
+    <div *ngIf="!FormatoPrecios" [ngClass]="generalService.getClaseTipoBarra(auto.tipoVenta)"></div>
 
     <button *ngIf="ubicacion === 'mis_autos' || ubicacion === 'mis_motos' " class="estado-btn"
       [ngClass]="{ 'disponible': auto.estadoVehiculo === 'disponible', 'vendido': auto.estadoVehiculo === 'vendido' }"
@@ -50,21 +50,21 @@
 
 
     <!-- Si hay más de una versión (carro nuevo): Mostrar "Desde" el menor precio -->
-    <h2 class="precio" *ngIf="auto.version.length > 1 && !FormatoPrecios">
+    <h2 class="precio" *ngIf="((auto?.version?.length || 0) > 1) && !FormatoPrecios">
       Desde {{ obtenerPrecioMinimo(auto.version) | currency:'MXN':'symbol':'1.0-0' }}
     </h2>
 
     <h2 class="precio" *ngIf="FormatoPrecios">
-       {{ auto.precio.porDia | currency:'MXN':'symbol':'1.0-0' }}
+      {{ auto.precio.porDia | currency:'MXN':'symbol':'1.0-0' }}
     </h2>
 
     <!-- Si hay exactamente una versión (carro usado/seminuevo): Mostrar ese precio -->
-    <h2 class="precio" *ngIf="auto.version?.length === 1">
-      {{ auto.version[0]?.Precio | currency:'MXN':'symbol':'1.0-0' }}
+    <h2 class="precio" *ngIf="((auto?.version?.length || 0) === 1) && !FormatoPrecios">
+      {{ auto?.version?.[0]?.Precio | currency:'MXN':'symbol':'1.0-0' }}
     </h2>
 
     <!-- Si es moto o vehículo sin "version" pero con "precio" directo -->
-    <h2 class="precio" *ngIf="!auto.version && auto.precio && !FormatoPrecios">
+    <h2 class="precio" *ngIf="auto.precio && !FormatoPrecios">
       {{ auto.precio | currency:'MXN':'symbol':'1.0-0' }}
     </h2>
 
@@ -91,8 +91,8 @@
     </div>
 
     <br />
-    
-    <p *ngIf="FormatoPrecios" [ngClass]="generalService.getClaseTipo(auto.tipoVenta)">
+
+    <p *ngIf="!FormatoPrecios" [ngClass]="generalService.getClaseTipo(auto.tipoVenta)">
       {{ auto.tipoVenta }}
     </p>
 

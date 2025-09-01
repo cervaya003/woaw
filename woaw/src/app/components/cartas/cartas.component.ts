@@ -57,7 +57,7 @@ export class CartasComponent implements OnInit {
 
   ngOnInit() {
     // console.log(this.auto)
-    // console.log(this.auto.version)
+    // console.log(this.ubicacion)
     this.generalService.tokenExistente$.subscribe((estado) => {
       this.isLoggedIn = estado;
     });
@@ -69,11 +69,13 @@ export class CartasComponent implements OnInit {
       const usuario = JSON.parse(storage);
       this.mostrarPendientes = usuario.email === 'glenditaa.003@gmail.com';
     }
+
     if (this.ubicacion === 'mis_autos_renta') {
       this.FormatoPrecios = true;
     } else {
       this.FormatoPrecios = false;
     }
+
     this.verificadorCarga = setInterval(() => {
       const img = new Image();
       img.src = this.auto?.imagenes?.[0];
