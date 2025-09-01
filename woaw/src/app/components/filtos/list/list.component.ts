@@ -19,7 +19,7 @@ export class ListComponent implements OnInit {
   @Input() tipo: string = '';
   @Input() extra?: string;
 
-  // 🔎 estado de búsqueda
+  //estado de búsqueda
   query: string = '';
 
   // fuente original (sin "Quitar filtro")
@@ -33,24 +33,42 @@ export class ListComponent implements OnInit {
     private generalService: GeneralService,
     private carsService: CarsService,
     private motosService: MotosService
-  ) {}
+  ) { }
 
   ngOnInit() {
     // Construir opciones según el tipo
     if (this.tipo === 'precio') {
-      this.opcionesBase = [
-        { label: 'Menos de $100,000', rango: [0, 99999] },
-        { label: '$100,000 - $149,999', rango: [100000, 149999] },
-        { label: '$150,000 - $199,999', rango: [150000, 199999] },
-        { label: '$200,000 - $249,999', rango: [200000, 249999] },
-        { label: '$250,000 - $299,999', rango: [250000, 299999] },
-        { label: '$300,000 - $399,999', rango: [300000, 399999] },
-        { label: '$400,000 - $499,999', rango: [400000, 499999] },
-        { label: '$500,000 - $699,999', rango: [500000, 699999] },
-        { label: '$700,000 - $999,999', rango: [700000, 999999] },
-        { label: 'Más de $1,000,000', rango: [1000000, Infinity] },
-      ];
+      if (this.extra === 'renta') {
+        // Rangos de renta por día (MXN) — mínimo $500
+        this.opcionesBase = [
+          { label: '$500 - $699', rango: [500, 699] },
+          { label: '$700 - $899', rango: [700, 899] },
+          { label: '$900 - $1,099', rango: [900, 1099] },
+          { label: '$1,100 - $1,299', rango: [1100, 1299] },
+          { label: '$1,300 - $1,499', rango: [1300, 1499] },
+          { label: '$1,500 - $1,999', rango: [1500, 1999] },
+          { label: '$2,000 - $2,499', rango: [2000, 2499] },
+          { label: '$2,500 - $2,999', rango: [2500, 2999] },
+          { label: '$3,000 - $3,999', rango: [3000, 3999] },
+          { label: '$4,000 o más', rango: [4000, Infinity] },
+        ];
+      } else {
+        // Rangos originales de compra/venta
+        this.opcionesBase = [
+          { label: 'Menos de $100,000', rango: [0, 99999] },
+          { label: '$100,000 - $149,999', rango: [100000, 149999] },
+          { label: '$150,000 - $199,999', rango: [150000, 199999] },
+          { label: '$200,000 - $249,999', rango: [200000, 249999] },
+          { label: '$250,000 - $299,999', rango: [250000, 299999] },
+          { label: '$300,000 - $399,999', rango: [300000, 399999] },
+          { label: '$400,000 - $499,999', rango: [400000, 499999] },
+          { label: '$500,000 - $699,999', rango: [500000, 699999] },
+          { label: '$700,000 - $999,999', rango: [700000, 999999] },
+          { label: 'Más de $1,000,000', rango: [1000000, Infinity] },
+        ];
+      }
       this.applyFilter();
+
     } else if (this.tipo === 'anio') {
       const anioActual = new Date().getFullYear();
       const url = window.location.pathname;
@@ -63,6 +81,7 @@ export class ListComponent implements OnInit {
         this.opcionesBase = this.generarRangoAnios(anioActual, 1950);
       }
       this.applyFilter();
+
     } else if (this.tipo === 'color') {
       this.opcionesBase = [
         { label: 'Blanco' }, { label: 'Negro' }, { label: 'Gris' }, { label: 'Plateado' },
@@ -74,28 +93,29 @@ export class ListComponent implements OnInit {
         { label: 'Cobre' }, { label: 'Camaleón' }, { label: 'Otro' },
       ];
       this.applyFilter();
+
     } else if (this.tipo === 'marca') {
       if (this.extra === 'motos') {
         this.getMarcas_motos();
       } else if (this.extra === 'camiones') {
-        // si hay lógica especial para camiones, colócala aquí y luego this.applyFilter();
+        // lógica especial camiones si aplica
         this.opcionesBase = [];
         this.applyFilter();
       } else {
         this.getMarcas_cohes();
       }
+
     } else if (this.tipo === 'tipo') {
       if (this.extra === 'motos') {
-        // lógica para tipos de motos si aplica
         this.opcionesBase = [];
         this.applyFilter();
       } else if (this.extra === 'camiones') {
-        // lógica para tipos de camiones si aplica
         this.opcionesBase = [];
         this.applyFilter();
       } else {
         this.getTipos_coches();
       }
+
     } else {
       this.opcionesBase = [];
       this.applyFilter();
@@ -124,7 +144,7 @@ export class ListComponent implements OnInit {
     this.opcionesFiltradas = this.opcionesBase.filter(op => {
       // buscamos en label y también en key si existe
       const label = this.normalize(op?.label);
-      const key   = this.normalize(op?.key);
+      const key = this.normalize(op?.key);
       return label.includes(q) || key.includes(q);
     });
   }

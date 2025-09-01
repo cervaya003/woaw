@@ -210,6 +210,8 @@ export class UpdateCarPage implements OnInit {
       this.autosURL(id);
     } else if (this.tipo_veiculo === 'motos') {
       this.motosURL(id);
+    } else if (this.tipo_veiculo === 'renta') {
+      this.rentaURL(id);
     }
   }
 
@@ -315,6 +317,61 @@ export class UpdateCarPage implements OnInit {
           this.generalService
             .obtenerDireccionDesdeCoordenadas(this.ubicacionSeleccionada[2], this.ubicacionSeleccionada[3])
             .then((direccion) => (this.direccionCompleta = direccion))
+            .catch((error) => {
+              this.direccionCompleta = 'No se pudo obtener la dirección.';
+              console.warn(error);
+            });
+        }
+
+        this.tryFinalizeInit();
+      },
+      error: (err) => {
+        const mensaje = err?.error?.message || 'Ocurrió un error inesperado';
+        this.generalService.alert('Error', mensaje, 'danger');
+      },
+      complete: () => {
+        this.generalService.loadingDismiss();
+      },
+    });
+  }
+
+  async rentaURL(id: string) {
+    // Suponemos que es un auto en renta
+    this.carsService.getCar(id).subscribe({
+      next: (res: any) => {
+        this.auto = res;
+
+        // Reglas de "nuevo"
+        if (this.isNuevo) {
+          this.auto.kilometraje = 0;
+          this.auto.placas = '';
+        }
+
+        this.imagenPrincipalMostrada = this.auto.imagenPrincipal;
+        this.urlsImagenes = [...this.auto.imagenes];
+        this.urlsImagenesExistentes = [...res.imagenes];
+        this.versionesOriginales = JSON.parse(JSON.stringify(this.auto.version));
+
+        if (res.lote != null) {
+          this.tipoSeleccionado = 'lote';
+          this.loteSeleccionado = res.lote._id;
+          this.direccionSeleccionadaActual = res.ubicacion;
+          this.ubicacionesLoteSeleccionado = res.lote.direccion || [];
+          this.leerLatLng();
+        }
+
+        if (res.ubicacion && res.lote == null) {
+          this.tipoSeleccionado = 'particular';
+          this.direccionSeleccionada = res.ubicacion;
+          const ubic = res.ubicacion;
+          this.ubicacionSeleccionada = [
+            ubic.ciudad || 'Sin ciudad',
+            ubic.estado || 'Sin estado',
+            ubic.lat || 0,
+            ubic.lng || 0,
+          ];
+          this.generalService.obtenerDireccionDesdeCoordenadas(ubic.lat, ubic.lng)
+            .then((direccion) => { this.direccionCompleta = direccion; })
             .catch((error) => {
               this.direccionCompleta = 'No se pudo obtener la dirección.';
               console.warn(error);
@@ -619,7 +676,8 @@ export class UpdateCarPage implements OnInit {
     try {
       let formData = await this.generarFormDataImagenes();
 
-      if (this.tipo_veiculo === 'autos') {
+      if (this.tipo_veiculo === 'autos' || this.tipo_veiculo === 'renta') {
+
         formData = await this.agregarCamposBasicosAlFormData_autos(formData);
         formData = await this.agregarUbicacionAlFormData_autos(formData);
         formData = await this.agregarVersionesAlFormData_autos(formData);
@@ -906,8 +964,11 @@ export class UpdateCarPage implements OnInit {
     this.carsService.putCar(id, formData).subscribe({
       next: async (res: any) => {
         await this.restablecerDatos();
-        this.router.navigate(['/mis-autos']);
-        // ❌ quitamos reload para no perder estado
+        if (this.tipo_veiculo === 'renta') {
+          this.router.navigate(['/mis-rentas']);
+        } else {
+          this.router.navigate(['/mis-autos']);
+        }
         this.generalService.alert(
           'Éxito',
           'Vehículo actualizado correctamente.',

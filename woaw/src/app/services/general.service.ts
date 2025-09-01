@@ -19,6 +19,9 @@ import { NgZone } from '@angular/core';
   providedIn: 'root',
 })
 export class GeneralService {
+  toast(arg0: string, arg1: string) {
+    throw new Error('Method not implemented.');
+  }
   private popoverActivo?: HTMLIonPopoverElement;
   private preloadCache = new Map<string, Promise<void>>();
   public esMovil = new BehaviorSubject<boolean>(false);
