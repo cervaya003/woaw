@@ -28,7 +28,7 @@ ion-content.home-wrap {
 
 .hero {
     position: relative;
-    min-height: clamp(210px, 10vh, 320px);
+    min-height: clamp(210px, 5vh, 320px);
     display: grid;
     place-items: center;
     overflow: hidden;
@@ -39,8 +39,8 @@ ion-content.home-wrap {
     position: absolute;
     inset: 0;
     background:
-        radial-gradient(1200px 500px at 20% 100%, rgba(247, 37, 37, 0.259), transparent 60%),
-        radial-gradient(1200px 500px at 80% 0%, rgba(8, 123, 255, 0.483), transparent 60%),
+        radial-gradient(1200px 500px at 20% 100%, rgba(255, 255, 255, 0.259), transparent 60%),
+        radial-gradient(1200px 500px at 80% 0%, rgba(255, 8, 8, 0.483), transparent 60%),
         linear-gradient(180deg, #0b0b0e 0%, #111217 40%, #0b0b0e 100%);
     filter: saturate(1.15) contrast(1.05);
 }
@@ -88,7 +88,7 @@ ion-content.home-wrap {
 }
 
 .hero__title {
-    font-size: clamp(15px, 4.6vw, 58px);
+    font-size: clamp(15px, 4.6vw, 38px);
     font-weight: 800;
     line-height: 1.05;
     letter-spacing: -0.02em;
