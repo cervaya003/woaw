@@ -58,6 +58,7 @@ export class CartasComponent implements OnInit {
   ngOnInit() {
     // console.log(this.auto)
     // console.log(this.ubicacion)
+
     this.generalService.tokenExistente$.subscribe((estado) => {
       this.isLoggedIn = estado;
     });
