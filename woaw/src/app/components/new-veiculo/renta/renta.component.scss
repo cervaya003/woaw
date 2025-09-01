@@ -1,0 +1,142 @@
+.renta {
+  margin-top: 12px;
+}
+
+.resumen {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  .fila {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+
+    p {
+      margin: 0;
+      font-size: 13px;
+      strong { margin-left: 4px; }
+    }
+  }
+
+  .btn-publicar {
+    align-self: flex-end;
+    background: linear-gradient(90deg, #ff0000, #ff6600);
+    color: #fff;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    display: inline-flex;
+    gap: 6px;
+    align-items: center;
+    cursor: pointer;
+  }
+}
+
+.bloques {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 10px;
+
+  .bloque {
+    background: #f8f8f8;
+    border-radius: 12px;
+    padding: 10px;
+    flex: 1 1 320px;
+
+    .grupo-botones {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .btn {
+      display: inline-flex;
+      gap: 6px;
+      align-items: center;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+
+    .btn.limpiar {
+      background: #ffecec;
+      border-color: #ff6666;
+      color: #b20000;
+    }
+
+    .tc {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 13px;
+
+      input[type="file"] {
+        padding: 6px;
+        border: 1px dashed #ccc;
+        border-radius: 8px;
+        background: #fff;
+      }
+    }
+
+    .ubicacion {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+      padding: 8px 10px;
+      border-left: 4px solid #e41212;
+      background: #fff;
+      border-radius: 8px;
+      font-size: 12px;
+    }
+  }
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-top: 12px;
+  background: #f7f7f7;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 12px;
+
+  @media (max-width: 900px) { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 520px) { grid-template-columns: 1fr; }
+
+  .campo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    label {
+      font-weight: 600;
+      font-size: 13px;
+
+      .req { color: #ff3d00; }
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 8px 10px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      background: #fff;
+      color: #000;
+    }
+  }
+}
+
+.acciones {
+  margin-top: 12px;
+  display: flex;
+  justify-content: flex-end;
+}

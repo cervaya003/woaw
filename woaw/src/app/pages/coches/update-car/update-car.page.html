@@ -23,7 +23,7 @@
   <div class="contenedor">
 
     <!-- ✅ AUTOS: versiones + detalles unificados en el MISMO grid/carta -->
-    <ion-grid *ngIf="tipo_veiculo === 'autos'">
+    <ion-grid *ngIf="tipo_veiculo === 'autos' || this.tipo_veiculo === 'renta'">
 
       <!-- Título: Versiones (cuando hay múltiples) -->
       <ion-row *ngIf="auto?.version?.length > 1">

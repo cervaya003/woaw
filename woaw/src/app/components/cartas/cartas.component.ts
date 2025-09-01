@@ -55,6 +55,7 @@ export class CartasComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    console.log(this.auto)
     this.generalService.tokenExistente$.subscribe((estado) => {
       this.isLoggedIn = estado;
     });
@@ -170,8 +171,10 @@ export class CartasComponent implements OnInit {
     // console.log(auto._id)
     if (this.ubicacion === 'mis_motos') {
       this.router.navigate(['/update-car', 'motos', auto._id]);
-    } else {
+    } else if (this.ubicacion === 'mis_autos') {
       this.router.navigate(['/update-car', 'autos', auto._id]);
+    } else {
+      this.router.navigate(['/update-car', 'renta', auto._id]);
     }
   }
   onCardClick(auto: any, event: Event): void {
