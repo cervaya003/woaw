@@ -24,7 +24,7 @@
           (mostrarOpciones)="mostrarOpciones($event.event, $event.tipo)" (limpiarFiltros)="resetearFiltros()">
         </app-menu>
       </ion-col>
-      
+
       <!-- Catálogo -->
       <ion-col size="12" size-md="9">
 
@@ -40,7 +40,7 @@
 
           <!-- GRID DE TARJETAS -->
           <div *ngIf="!loading && (todosPaginados?.length || 0) > 0" class="cards-grid">
-            <ion-card *ngFor="let c of todosPaginados" class="veh-card" (click)="irADetalle(c._id)">
+            <ion-card *ngFor="let c of todosPaginados" class="veh-card" (click)="onCardClick(c)">
               <!-- Imagen -->
               <div class="img-wrap">
                 <img [src]="c.imagenPrincipal || '/assets/placeholder-car.webp'" alt="{{ c.marca }} {{ c.modelo }}" />
@@ -112,7 +112,7 @@
 
           <!-- GRID DE TARJETAS -->
           <div *ngIf="(miosPaginados?.length || 0) > 0" class="cards-grid">
-            <ion-card *ngFor="let c of miosPaginados" class="veh-card" (click)="irADetalle(c._id)">
+            <ion-card *ngFor="let c of miosPaginados" class="veh-card" (click)="onCardClick(c)">
               <!-- Imagen -->
               <div class="img-wrap">
                 <img [src]="c.imagenPrincipal || '/assets/placeholder-car.webp'" alt="{{ c.marca }} {{ c.modelo }}" />

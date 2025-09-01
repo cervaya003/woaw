@@ -4,7 +4,6 @@ import { Router } from '@angular/router';
 import { RentaService } from '../../services/renta.service';
 import { ListComponent } from '../../components/filtos/list/list.component';
 
-// Ahora permitimos string para evitar choques de tipos con la plantilla
 type NumOrDots = number | string;
 type Segmento = 'todos' | 'mios';
 
@@ -17,10 +16,21 @@ type Segmento = 'todos' | 'mios';
 export class RentaCochesPage implements OnInit, OnDestroy {
   @ViewChild('pageContent', { static: false }) pageContent!: IonContent;
 
-  // ===== Sesión simple (si hay token)
+  // ===== Sesión simple
   get isLoggedIn(): boolean {
     return !!localStorage.getItem('token');
   }
+
+  // Para detectar si un coche es mío (sirve también en la lista "Todos")
+  private myCarIds = new Set<string>();
+  private currentUserId: string | null = (() => {
+    try {
+      const raw = localStorage.getItem('user');
+      if (!raw) return null;
+      const u = JSON.parse(raw);
+      return u?._id || u?.id || u?.userId || null;
+    } catch { return null; }
+  })();
 
   // ===== Segmento activo
   vistaActiva: Segmento = 'todos';
@@ -33,7 +43,7 @@ export class RentaCochesPage implements OnInit, OnDestroy {
   paginaTodosActual = 1;
   totalPaginasTodos = 1;
 
-  // ====== MIS AUTOS (requiere token)
+  // ====== MIS AUTOS
   miosStorage: any[] = [];
   miosFiltrados: any[] = [];
   miosPaginados: any[] = [];
@@ -62,15 +72,15 @@ export class RentaCochesPage implements OnInit, OnDestroy {
     private rentaService: RentaService,
     private popoverCtrl: PopoverController,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.cargarTodos();
-    this.cargarMios(); // si no hay token, ignora silenciosamente
+    this.cargarMios(); // si no hay token solo deja vacío
   }
 
   ngOnDestroy(): void {
-    this.lastPopover?.dismiss().catch(() => {});
+    this.lastPopover?.dismiss().catch(() => { });
     this.lastPopover = null;
   }
 
@@ -84,6 +94,7 @@ export class RentaCochesPage implements OnInit, OnDestroy {
         const items = Array.isArray(res) ? res : (res?.rentals ?? res?.docs ?? res?.data ?? []);
         this.todosStorage = items || [];
         this.totalTodos = this.todosStorage.length;
+
         this.aplicarFiltros();
         this.ordenarAutos('recientes');
         this.loading = false;
@@ -103,18 +114,25 @@ export class RentaCochesPage implements OnInit, OnDestroy {
     if (!this.isLoggedIn) {
       this.miosStorage = [];
       this.totalMios = 0;
+      this.myCarIds.clear();
       return;
     }
+
     this.rentaService.misCoches().subscribe({
       next: (res) => {
         const items = Array.isArray(res) ? res : (res?.docs ?? res?.data ?? res?.rentals ?? []);
         this.miosStorage = items || [];
         this.totalMios = this.miosStorage.length;
+
+        // Poblar IDs para detectar "míos" también en la pestaña "Todos"
+        this.myCarIds = new Set(this.miosStorage.map((x) => String(x?._id)));
+
         this.aplicarFiltros();
       },
       error: () => {
         this.miosStorage = [];
         this.totalMios = 0;
+        this.myCarIds.clear();
       },
     });
   }
@@ -127,15 +145,14 @@ export class RentaCochesPage implements OnInit, OnDestroy {
     setTimeout(() => this.pageContent?.scrollToTop(300), 50);
   }
 
-  // Acepta string para lo que emita <app-acomodo>
   ordenarAutos(criterio: 'precioAsc' | 'precioDesc' | 'recientes' | '' | string) {
     const c = (criterio ?? '').toString() as 'precioAsc' | 'precioDesc' | 'recientes' | '';
     this.ordenActual = c;
 
     const base =
       this.vistaActiva === 'todos'
-        ? (this.todosFiltrados.length ? this.todosFiltrados : [...this.todosStorage])
-        : (this.miosFiltrados.length ? this.miosFiltrados : [...this.miosStorage]);
+        ? (this.todosFiltrados.length ? [...this.todosFiltrados] : [...this.todosStorage])
+        : (this.miosFiltrados.length ? [...this.miosFiltrados] : [...this.miosStorage]);
 
     if (c === 'precioAsc') {
       base.sort((a, b) => (a?.precio?.porDia ?? 0) - (b?.precio?.porDia ?? 0));
@@ -158,7 +175,7 @@ export class RentaCochesPage implements OnInit, OnDestroy {
 
   // ========= FILTROS =========
   async mostrarOpciones(ev: Event, tipo: string) {
-    await this.lastPopover?.dismiss().catch(() => {});
+    await this.lastPopover?.dismiss().catch(() => { });
     this.lastPopover = await this.popoverCtrl.create({
       component: ListComponent,
       event: ev,
@@ -172,7 +189,7 @@ export class RentaCochesPage implements OnInit, OnDestroy {
 
     if (role === 'cancel' || role === 'backdrop') return;
 
-    this.filtrosAplicados[tipo] = data === null ? null : data;
+    this.filtrosAplicados[tipo] = data === null ? null : data; // {label, rango} o string
     this.aplicarFiltros();
   }
 
@@ -195,7 +212,7 @@ export class RentaCochesPage implements OnInit, OnDestroy {
       );
     }
 
-    // año exacto (si habilitas el chip de año)
+    // año exacto
     if (anio) lista = lista.filter((c) => Number(c?.anio) === Number(anio));
 
     // color
@@ -229,12 +246,8 @@ export class RentaCochesPage implements OnInit, OnDestroy {
   calcularPaginacion(seg: Segmento) {
     const base =
       seg === 'todos'
-        ? this.todosFiltrados.length
-          ? this.todosFiltrados
-          : this.todosStorage
-        : this.miosFiltrados.length
-          ? this.miosFiltrados
-          : this.miosStorage;
+        ? (this.todosFiltrados.length ? this.todosFiltrados : this.todosStorage)
+        : (this.miosFiltrados.length ? this.miosFiltrados : this.miosStorage);
 
     const totalPag = Math.max(1, Math.ceil(base.length / this.itemsPorPagina));
 
@@ -250,12 +263,8 @@ export class RentaCochesPage implements OnInit, OnDestroy {
   mostrarPagina(seg: Segmento, pagina: number) {
     const base =
       seg === 'todos'
-        ? this.todosFiltrados.length
-          ? this.todosFiltrados
-          : this.todosStorage
-        : this.miosFiltrados.length
-          ? this.miosFiltrados
-          : this.miosStorage;
+        ? (this.todosFiltrados.length ? this.todosFiltrados : this.todosStorage)
+        : (this.miosFiltrados.length ? this.miosFiltrados : this.miosStorage);
 
     const totalPag = seg === 'todos' ? this.totalPaginasTodos : this.totalPaginasMios;
     const pagSan = Math.min(Math.max(1, pagina), totalPag);
@@ -272,7 +281,6 @@ export class RentaCochesPage implements OnInit, OnDestroy {
     }
   }
 
-  // acepta number | string desde el template
   cambiarPagina(seg: Segmento, pagina: number | string) {
     const p = typeof pagina === 'number' ? pagina : Number(pagina);
     if (!Number.isFinite(p)) return;
@@ -302,8 +310,24 @@ export class RentaCochesPage implements OnInit, OnDestroy {
     return res;
   }
 
-  // ========= Navegación =========
-  irADetalle(id: string) {
-    this.router.navigate(['/renta-ficha', id]);
+  // ========= Navegación inteligente =========
+  onCardClick(coche: any) {
+    if (this.esMio(coche)) {
+      this.router.navigate(['/disponibilidad-car', coche._id]);
+    } else {
+      this.router.navigate(['/renta-ficha', coche._id]);
+    }
+  }
+
+  private esMio(c: any): boolean {
+    // 1) Si ya lo tenemos en "míos"
+    if (c?._id && this.myCarIds.has(String(c._id))) return true;
+
+    // 2) O si el objeto trae propietario y coincide con mi userId
+    const owner = c?.propietarioId || c?.propietario?._id || c?.ownerId || c?.userId || null;
+    if (owner && this.currentUserId) {
+      return String(owner) === String(this.currentUserId);
+    }
+    return false;
   }
 }
