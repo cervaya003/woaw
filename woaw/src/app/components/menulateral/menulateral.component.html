@@ -44,6 +44,12 @@
         Mis motos
       </ion-item>
 
+      <ion-item *ngIf="isLoggedIn && (MyRole == 'admin' || MyRole == 'vendedor' || MyRole == 'lotero')"
+        (click)="redirecion('mis-camiones')" button>
+       <ion-icon name="bus-outline"color="danger"></ion-icon>
+        Mis camiones
+      </ion-item>
+
       <!-- Lotes -->
       <ion-item (click)="redirecion('lotes')" button>
         <ion-icon name="business-outline" color="danger"></ion-icon>

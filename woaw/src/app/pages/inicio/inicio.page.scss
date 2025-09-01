@@ -44,7 +44,8 @@ a.enlace-politica {
 .pantalla-dividida {
   display: flex;
   width: 100%;
-  height: 100%;
+  min-height: 100%;
+  box-sizing: border-box;
 
   .lado-izquierdo {
     flex: 1.5;
@@ -108,27 +109,25 @@ a.enlace-politica {
     flex: 1;
     background-color: #ffffff;
     display: flex;
-    // justify-content: center;
-    // align-items: center;
 
     .container_vidrio {
       display: flex;
+      overflow: visible;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      margin: 5px auto;
+      margin: 0px auto;
       width: 100%;
       max-width: 360px;
       border-radius: 20px;
       padding: 12px;
       padding-bottom: 60px;
-      transform: translateY(8px);
+      transform: translateY(0px);
 
       @media (max-width: 768px) {
         border-radius: 0px;
         padding: 7px;
-        margin: 0px auto;
-        // padding-bottom: 100%;
+        transform: translateY(5px) !important;
       }
 
       .link-registro {
@@ -155,77 +154,7 @@ a.enlace-politica {
   }
 }
 
-@media (max-width: 1024px) and (min-width: 769px) {
-  .pantalla-dividida {
-    flex-direction: row;
 
-    .lado-izquierdo {
-      flex: 1; // Reducimos el ancho del lado del video
-      height: auto;
-
-      video.video-fondo {
-        object-position: center;
-      }
-
-      .texto-izquierdo {
-        h2 {
-          font-size: 2rem;
-        }
-
-        p {
-          font-size: 15px;
-        }
-      }
-    }
-
-    .lado-derecho {
-      flex: 2;
-
-      .container_vidrio {
-        transform: translateY(12px) !important;
-      }
-    }
-
-  }
-}
-
-
-@media (max-width: 768px) {
-  .pantalla-dividida {
-    flex-direction: column;
-
-    .lado-izquierdo,
-    .lado-derecho {
-      flex: none;
-      width: 100%;
-      padding: 1rem;
-    }
-
-    .lado-izquierdo {
-      // flex: 1;
-      order: 2;
-      height: 570px;
-    }
-
-    .texto-izquierdo {
-      h2 {
-        font-size: 45px !important;
-        font-weight: bold;
-        margin-bottom: 10px;
-      }
-
-      p {
-        font-size: 0.9rem;
-        color: #ffffff;
-        font-weight: bold;
-      }
-    }
-
-    .lado-derecho {
-      order: 1;
-    }
-  }
-}
 
 
 @keyframes aparecerIzquierda {
@@ -250,4 +179,116 @@ a.enlace-politica {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+
+
+
+
+
+
+
+.video-fondo2 {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  background: #000;
+  z-index: -1;
+}
+
+.texto-titulo {
+  margin-top: 12vh;
+  text-align: center;
+  max-width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+  filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.6));
+
+  h1 {
+    color: #fff;
+    font-size: 40px;
+    font-weight: bolder;
+    opacity: 0;
+    animation: fadeDown 1s ease-out forwards;
+  }
+}
+
+/* Imagen con efecto zoom suave */
+img[alt="Imagen ilustrativa"] {
+  display: block;
+  margin: 2rem auto;
+  max-width: 320px;
+  width: min(70vw, 320px);
+  z-index: 2;
+  opacity: 0;
+  transform: scale(0.9);
+  animation: zoomIn 1.2s ease-out 0.5s forwards;
+}
+
+/* Texto inferior con efecto fadeUp */
+.texto-contenido {
+  margin-top: 2rem;
+  text-align: center;
+  color: #fff;
+  max-width: 85%;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: clamp(20px, 2.5vw, 22px);
+  font-weight: bolder;
+  line-height: 1.6;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, .55));
+  opacity: 0;
+  animation: fadeUp 1s ease-out 1s forwards;
+}
+
+@keyframes fadeDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes zoomIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.bg-img2 {
+  display: block;
+  width: 100vw;
+  max-width: none;
+  height: auto;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  border-radius: 0;
+  object-fit: cover;
+  opacity: 1;
 }

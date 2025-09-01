@@ -7,8 +7,6 @@ import { AuthPhoneGuard } from './guards/auth-phone.guard';
 
 const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
-
-  // Rutas sin protección de teléfono (login/registro y autenticación de teléfono)
   {
     path: 'inicio',
     loadChildren: () =>
@@ -23,8 +21,6 @@ const routes: Routes = [
         (m) => m.AutenticacionUserPageModule
       ),
   },
-
-  // TODO lo demás pasa por el guard de teléfono
   {
     path: '',
     canMatch: [AuthPhoneGuard],
@@ -159,20 +155,28 @@ const routes: Routes = [
       },
       {
         path: 'lote/:nombre/:id',
-        loadChildren: () => import('./pages/lote/lote.module').then( m => m.LotePageModule),
+        loadChildren: () => import('./pages/lote/lote.module').then(m => m.LotePageModule),
         data: { title: 'lotes | woaw' },
       },
       {
         path: 'politicas',
-        loadChildren: () => import('./pages/politicas/politicas.module').then( m => m.PoliticasPageModule)
+        loadChildren: () => import('./pages/politicas/politicas.module').then(m => m.PoliticasPageModule)
       },
       {
         path: 'eliminacion-cuenta',
-        loadChildren: () => import('./pages/eliminacion-cuenta/eliminacion-cuenta.module').then( m => m.EliminacionCuentaPageModule)
+        loadChildren: () => import('./pages/eliminacion-cuenta/eliminacion-cuenta.module').then(m => m.EliminacionCuentaPageModule)
       },
       {
         path: 'menu-vehiculos/:tipo',
-        loadChildren: () => import('./pages/menu-vehiculos/menu-vehiculos.module').then( m => m.MenuVehiculosPageModule)
+        loadChildren: () => import('./pages/menu-vehiculos/menu-vehiculos.module').then(m => m.MenuVehiculosPageModule)
+      },
+      {
+        path: 'todos',
+        loadChildren: () => import('./pages/camiones/todos/todos.module').then(m => m.TodosPageModule)
+      },
+      {
+        path: 'mis-camiones',
+        loadChildren: () => import('./pages/camiones/mis-camiones/mis-camiones.module').then(m => m.MisCamionesPageModule)
       },
     ],
   },
@@ -189,5 +193,5 @@ const routes: Routes = [
   ],
   exports: [RouterModule],
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }
 

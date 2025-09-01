@@ -19,6 +19,7 @@ import { MotosService } from '../../../services/motos.service';
   standalone: false,
 })
 export class NuevosPage implements OnInit {
+  esDispositivoMovil: boolean = false;
   autosAmostrar: any[] = [];
   public totalMotos: number = 0;
   public MisMotos: any[] = [];
@@ -61,6 +62,9 @@ export class NuevosPage implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.generalService.dispositivo$.subscribe((tipo) => {
+      this.esDispositivoMovil = tipo === 'telefono' || tipo === 'tablet';
+    });
     this.generalService.valorGlobal$.subscribe((valor) => {
       this.itemsPorPagina = valor;
       this.misMotos();

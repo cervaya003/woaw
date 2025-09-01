@@ -217,6 +217,9 @@ export class NewCarPage implements OnInit {
         case 'renta': // habilitamos abrir el componente de renta
           this.mostrarCarComponent = true;
           break;
+        case 'camion':
+          this.mostrarCarComponent = true;
+          break;
         default:
           this.generalService.alert(
             'Tipo no soportado',

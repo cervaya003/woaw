@@ -113,7 +113,7 @@
 
     <!-- botón continuar incluye renta -->
     <button [disabled]="!formularioValido()"
-      *ngIf="!mostrarCarComponent && isLoggedIn  && (seleccion === 'auto' || seleccion === 'moto' || seleccion === 'renta')"
+      *ngIf="!mostrarCarComponent && isLoggedIn  && (seleccion === 'auto' || seleccion === 'moto' || seleccion === 'renta' || seleccion === 'camion')"
       class="btn-guardar" (click)="mostrarComponente()">
       Continuar
       <ion-icon name="arrow-forward-outline"></ion-icon>
@@ -144,6 +144,13 @@
       [marca]="marcaSeleccionada" [modelo]="modeloSeleccionado" [tipo]="seleccion"
       (rentaSubmit)="registrarRenta($event)">
     </app-renta>
+     <!--  <app-motos *ngIf="mostrarCarComponent && seleccion === 'camion'" [anio]="obtenerAnioActual()"
+      [marca]="getMarcaNombreSeleccionada()" [modelo]="modeloSeleccionado" [tipo]="seleccion">
+    </app-motos> -->
+
+     <app-camion *ngIf="mostrarCarComponent && seleccion === 'camion'" [anio]="obtenerAnioActual()"
+      [marca]="getMarcaNombreSeleccionada()" [modelo]="modeloSeleccionado" [tipo]="seleccion">
+    </app-camion>
 
     <!-- add loter  -->
     <app-add *ngIf="mostrarCarComponent && seleccion === 'lote'"></app-add>

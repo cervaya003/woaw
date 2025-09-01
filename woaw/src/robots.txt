@@ -1,0 +1,16 @@
+User-agent: *
+Allow: /
+
+# No indexar zonas privadas o de login
+Disallow: /inicio
+Disallow: /autenticacion-user
+Disallow: /favoritos
+Disallow: /mensajes
+Disallow: /mis-autos
+Disallow: /mis-motos
+Disallow: /new-car
+Disallow: /update-car
+Disallow: /lote-edit
+Disallow: /eliminacion-cuenta
+
+Sitemap: https://wo-aw.com/sitemap.xml

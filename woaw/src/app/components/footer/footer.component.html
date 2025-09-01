@@ -1,91 +1,120 @@
-<div class="seccion-mapa">
+<br><br><br>
+<footer class="woaw-footer" #footerRoot>
+  <div class="wf-wrap">
 
-  <!-- <div class="seccion_blog">
-    <h2 class="titulo_blog">Blog</h2>
-
-    <div class="contenedor_blog">
-      <div class="card-blog" *ngFor="let post of blog | slice:0:3">
-        <a [href]="post.url" target="_blank" rel="noopener noreferrer">
-          <div class="imagen-blog" [style.backgroundImage]="'url(' + post.imagen + ')'">
-            <div class="contenido-blog">
-              <p class="categoria">{{ post.categoria }}</p>
-              <h3 class="titulo">{{ post.titulo }}</h3>
-              <div class="meta">
-                <span><ion-icon name="calendar-outline"></ion-icon> {{ post.meta }}</span>
-                <span><ion-icon name="person-outline"></ion-icon> GO AUTOS</span>
-              </div>
-            </div>
-          </div>
-        </a>
+    <!-- Marca + propósito -->
+    <section class="wf-col brand is-reveal">
+      <div class="logo-chip">
+        <img src="assets/icon/logo0.png" alt="Woaw" />
+        <span>Woaw Automotive</span>
       </div>
-    </div>
+      <p class="tagline">
+        Vehículos, personas y rutas claras. Sin ruido, sin adornos innecesarios.
+      </p>
 
-    <div class="ver-mas-blog" *ngIf="mostrarVerMas">
-      <a href="https://goautos.app/" target="_blank" rel="noopener noreferrer">Ver más artículos</a>
-    </div>
-  </div> -->
+      <!-- Legal mini -->
+      <div class="legal-mini">
+        <button type="button" class="link" (click)="mostrarAviso()">Aviso de Privacidad</button>
+        <span aria-hidden="true">·</span>
+        <button type="button" class="link" (click)="mostrarTerminos()">Términos</button>
+      </div>
+    </section>
 
-  <!-- <div class="separador"></div> -->
+    <!-- Contacto + consentimiento -->
+    <section class="wf-col contact is-reveal">
+      <h2>Contacto</h2>
 
-  <div class="contenedor-footer">
-    <!-- Columna 1: Dirección -->
-    <div class="columna-footer">
-      <h2>¿Dónde estamos?</h2>
       <p><strong>Woaw Automotive S.A. de C.V.</strong></p>
       <p>Querétaro, México</p>
 
-      <div class="separador"></div>
+      <div class="wf-divider"></div>
 
-      <p *ngIf="YaseptePopup" class="lellenda_aviso">
-        He leído el <span class="enlace" (click)="mostrarAviso()">Aviso de Privacidad</span> y los
-        <span class="enlace" (click)="mostrarTerminos()">Términos y condiciones</span><br />
-        estoy consciente del uso de mis datos.
+      <!-- Leyenda cuando ya aceptó -->
+      <p *ngIf="YaseptePopup" class="consent-ok">
+        Consentimiento registrado. Puedes escribirnos o llamarnos cuando quieras.
       </p>
-      <p>
-        <a class="link" [href]="YaseptePopup ? 'mailto:comercial@wo-aw.mx?subject=Consulta%20desde%20la%20app' : null" target="_blank"
-          [class.disabled]="!YaseptePopup">comercial&#64;wo-aw.com</a>
-      </p>
-      <p>
+
+      <!-- Acciones (bloqueadas hasta consentimiento) -->
+      <div class="cta-list">
+        <a class="link" [href]="YaseptePopup ? 'mailto:comercial@wo-aw.com?subject=Consulta%20desde%20la%20app' : null"
+          target="_blank" [class.disabled]="!YaseptePopup">
+          comercial&#64;wo-aw.com
+        </a>
+
         <a class="link" [href]="YaseptePopup ? 'tel:+524427706776' : null" [class.disabled]="!YaseptePopup">
-          +52 442 770 677 6</a>
-      </p>
+          +52 442 770 6776
+        </a>
+      </div>
 
-
+      <!-- Consentimiento (si no ha aceptado) -->
       <ion-item *ngIf="!YaseptePopup" class="checkbox-custom" lines="none">
-        <ion-checkbox [(ngModel)]="aceptoPopup" (ionChange)="onCambioConsentimiento($event)" slot="start"
-          class="check-rojo"></ion-checkbox>
-
+        <ion-checkbox [(ngModel)]="aceptoPopup" (ionChange)="onCambioConsentimiento($event)" class="check-rojo"
+          aria-label="Acepto el aviso de privacidad y términos">
+        </ion-checkbox>
         <ion-label>
-          Consiento que mis Datos Personales, Financieros y/o Patrimoniales proporcionados en esta aplicación
-          sean tratados y transferidos por GO AUTOS conforme a su
-          <span class="link" (click)="mostrarAviso()">Aviso de Privacidad</span>
+          Consiento que mis Datos Personales sean tratados por GO AUTOS conforme a su
+          <button type="button" class="link-inline" (click)="mostrarAviso()">Aviso de Privacidad</button>
+          y <button type="button" class="link-inline" (click)="mostrarTerminos()">Términos</button>.
         </ion-label>
       </ion-item>
 
-      <ion-button color="danger" *ngIf="!YaseptePopup" expand="block" (click)="aceptarConsentimiento()" [disabled]="!aceptoPopup">
-        Aceptar
+      <ion-button color="danger" *ngIf="!YaseptePopup" expand="block" (click)="aceptarConsentimiento()"
+        [disabled]="!aceptoPopup" class="accept-btn">
+        Aceptar y continuar
       </ion-button>
 
-      <p>Lunes a Viernes: 9:00 AM – 6:00 PM</p>
-    </div>
+      <p class="horario">Lunes a Viernes: 9:00–18:00</p>
 
-    <!-- Columna 3: Navegación -->
-    <div class="menu-footer">
+      <ion-button fill="outline" size="small" class="map-btn" (click)="abrirUbicacion()">
+        <ion-icon slot="start" name="navigate-outline"></ion-icon>
+        Cómo llegar
+      </ion-button>
+    </section>
+
+    <!-- Navegación -->
+    <nav class="wf-col nav is-reveal" aria-label="Navegación del sitio">
       <h3>Explora</h3>
       <ul class="footer-nav">
-        <li><a (click)="redirecion('home')">Inicio</a></li>
-        <li><a (click)="redirecion('nuevos')">Nuevos</a></li>
-        <li><a (click)="redirecion('seminuevos')">Seminuevos</a></li>
-        <li><a (click)="redirecion('usados')">Usados</a></li>
+        <li><a (click)="redirecion('home')" class="nav-link">Inicio</a></li>
+        <li><a (click)="redirecion('nuevos')" class="nav-link">Nuevos</a></li>
+        <li><a (click)="redirecion('seminuevos')" class="nav-link">Seminuevos</a></li>
+        <li><a (click)="redirecion('usados')" class="nav-link">Usados</a></li>
       </ul>
-    </div>
 
-    <!-- Columna 2: Mapa -->
-    <div class="columna-footer" *ngIf="mostrarMapa">
-      <iframe loading="lazy" referrerpolicy="no-referrer-when-downgrade"
-        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3732.1842233796044!2d-100.39657472469865!3d20.58802578096088!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85d35a0f1fd238c9%3A0x60e28fc5f05a91ae!2sBlvd.%20Bernardo%20Quintana%20Arrioja%2014%2C%20%C3%81lamos%202da%20Secc%2C%2076160%20Santiago%20de%20Quer%C3%A9taro%2C%20Qro.!5e0!3m2!1ses-419!2smx!4v1715511227795!5m2!1ses-419!2smx"
-        width="100%" height="250" style="border:0;" allowfullscreen></iframe>
-    </div>
+      <!-- Social (opcional) -->
+      <ul class="social">
+        <li>
+          <a aria-label="Instagram" href="https://www.instagram.com/woaw.mx/" target="_blank">
+            <ion-icon name="logo-instagram"></ion-icon>
+          </a>
+        </li>
+        <li>
+          <a aria-label="TikTok" href="https://www.tiktok.com/@woaw.mx" target="_blank">
+            <ion-icon name="logo-tiktok"></ion-icon>
+          </a>
+        </li>
+        <li>
+          <a aria-label="Facebook" href="https://www.facebook.com/profile.php?id=61579193880952" target="_blank">
+            <ion-icon name="logo-facebook"></ion-icon>
+          </a>
+        </li>
+        <li>
+          <a aria-label="WhatsApp" href="https://wa.me/524427706776" target="_blank">
+            <ion-icon name="logo-whatsapp"></ion-icon>
+          </a>
+        </li>
+        <li>
+          <a aria-label="LinkedIn" href="https://www.linkedin.com/company/woaw-automotive" target="_blank">
+            <ion-icon name="logo-linkedin"></ion-icon>
+          </a>
+        </li>
+      </ul>
+    </nav>
+
   </div>
 
-</div>
+  <!-- Sub-footer -->
+  <div class="wf-sub is-reveal">
+    <small>© {{ currentYear }} Woaw Automotive. Todos los derechos reservados.</small>
+  </div>
+</footer>

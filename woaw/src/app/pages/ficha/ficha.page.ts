@@ -13,6 +13,9 @@ import { PoliticasComponent } from '../../components/modal/politicas/politicas.c
 import { AvisoPrivasidadComponent } from '../../components/modal/aviso-privasidad/aviso-privasidad.component';
 import { PasosArrendamientoComponent } from '../../components/modal/pasos-arrendamiento/pasos-arrendamiento.component';
 import { ImagenesVehiculoComponent } from './../../components/modal/imagenes-vehiculo/imagenes-vehiculo.component';
+import { ActionSheetController } from '@ionic/angular';
+import { Browser } from '@capacitor/browser';
+import { Capacitor } from '@capacitor/core';
 
 @Component({
   selector: 'app-ficha',
@@ -71,24 +74,23 @@ export class FichaPage implements OnInit {
     private title: Title,
     private seoService: SeoService,
     public motosService: MotosService,
-    private location: Location
-  ) {}
+    private location: Location,
+    private actionSheetCtrl: ActionSheetController
+  ) { }
 
   async ngOnInit() {
+    this.generalService.dispositivo$.subscribe((tipo) => {
+      this.esDispositivoMovil = tipo === 'telefono' || tipo === 'tablet';
+      this.dispositivo = tipo;
+    });
     this.generalService.tokenExistente$.subscribe((estado) => {
       this.isLoggedIn = estado;
     });
     this.generalService.tipoRol$.subscribe((rol) => {
       this.MyRole = rol;
     });
-    // Detectar tipo de dispositivo
-    this.generalService.dispositivo$.subscribe((tipo) => {
-      this.esDispositivoMovil = tipo === 'telefono' || tipo === 'tablet';
-      this.dispositivo = tipo;
-    });
     await this.obtenerAuto();
   }
-
   async obtenerAuto() {
     this.tipo_veiculo = this.route.snapshot.paramMap.get('tipo') ?? '';
     this.idvehiculo = this.route.snapshot.paramMap.get('id');
@@ -99,7 +101,6 @@ export class FichaPage implements OnInit {
       this.motosURL(this.idvehiculo);
     }
   }
-
   async seo() {
     if (this.auto?.marca && this.auto?.modelo && this.auto?.anio) {
       const titulo = `${this.auto.marca} ${this.auto.modelo} ${this.auto.anio} en venta | Go Autos`;
@@ -109,7 +110,6 @@ export class FichaPage implements OnInit {
       );
     }
   }
-
   async mostrarauto() {
     this.tipo = (this.auto.tipoVenta || '').toLowerCase();
     this.imagenSeleccionada = this.auto?.imagenes?.[0] || '';
@@ -156,7 +156,7 @@ export class FichaPage implements OnInit {
     setTimeout(() => {
       this.mapAuto = new google.maps.Map(this.mapAutoContainer.nativeElement, {
         center: position,
-        zoom: this.tipoAlSubir === 'particular' ? 14 : 16,
+        zoom: this.tipoAlSubir === 'particular' ? 12 : 12,
         styles: [
           {
             featureType: 'poi',
@@ -164,6 +164,9 @@ export class FichaPage implements OnInit {
             stylers: [{ visibility: 'off' }],
           },
         ],
+        disableDefaultUI: this.esDispositivoMovil,
+        zoomControl: !this.esDispositivoMovil,
+        draggable: !this.esDispositivoMovil,
       });
 
       if (this.tipoAlSubir === 'lote') {
@@ -202,8 +205,39 @@ export class FichaPage implements OnInit {
         console.warn(error);
       });
   }
+  async openDirection() {
+    const { lat, lng, ciudad, estado } = this.auto?.ubicacion || {};
+    const label = encodeURIComponent(`${ciudad ?? ''} ${estado ?? ''}`.trim() || 'Ubicación');
 
-  // === Botones de “regresar” ===
+    // fallback si no hay coords
+    const hasCoords = typeof lat === 'number' && typeof lng === 'number';
+    const webUrl = hasCoords
+      ? `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`
+      : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(this.direccionCompleta || '')}`;
+
+    const platform = Capacitor.getPlatform();
+
+    if (platform === 'android' && hasCoords) {
+      const url = `geo:${lat},${lng}?q=${lat},${lng}(${label})`;
+      try {
+        await Browser.open({ url });
+      } catch {
+        window.open(webUrl, '_blank');
+      }
+      return;
+    }
+
+    if (platform === 'ios' && hasCoords) {
+      const url = `http://maps.apple.com/?ll=${lat},${lng}&q=${label}`;
+      try {
+        await Browser.open({ url });
+      } catch {
+        window.open(webUrl, '_blank');
+      }
+      return;
+    }
+    window.open(webUrl, '_blank');
+  }
   async regresar() {
     let origenLote = localStorage.getItem('origenLote');
     if (origenLote !== null) {
@@ -243,8 +277,6 @@ export class FichaPage implements OnInit {
       }
     }
   }
-
-  // Botón simple de la navbar: vuelve si hay historial; si no, ve a /home
   volver() {
     // 1) Si Angular tiene navigationId > 1, hubo navegación previa en esta sesión.
     const navId = (history.state && (history.state as any).navigationId) || 0;
@@ -269,7 +301,6 @@ export class FichaPage implements OnInit {
     // 3) Como último recurso, vete al home.
     this.router.navigate(['/home']); // ajusta si tu ruta de inicio es distinta
   }
-
   getEspecificacionesPorVersion(version: string) {
     const anio = this.auto.anio;
     const marca = this.auto.marca;
@@ -292,7 +323,6 @@ export class FichaPage implements OnInit {
       },
     });
   }
-
   onSeleccionarVersion(version: { nombre: string; precio: number }) {
     this.versionSeleccionada = version;
     this.getEspecificacionesPorVersion(version.nombre);
@@ -301,7 +331,6 @@ export class FichaPage implements OnInit {
       this.mostrarCotizador = true;
     });
   }
-
   getEstiloColor(color: string): any {
     const mapaColores: { [key: string]: string } = {
       Blanco: '#FFFFFF',
@@ -344,16 +373,15 @@ export class FichaPage implements OnInit {
 
     return isImagen
       ? {
-          backgroundImage: mapaColores[color],
-          backgroundSize: 'cover',
-          color: '#fff',
-        }
+        backgroundImage: mapaColores[color],
+        backgroundSize: 'cover',
+        color: '#fff',
+      }
       : {
-          backgroundColor: mapaColores[color],
-          color: this.colorEsClaro(mapaColores[color]) ? '#000' : '#fff',
-        };
+        backgroundColor: mapaColores[color],
+        color: this.colorEsClaro(mapaColores[color]) ? '#000' : '#fff',
+      };
   }
-
   colorEsClaro(hex: string): boolean {
     hex = hex.replace('#', '');
     const r = parseInt(hex.substring(0, 2), 16);
@@ -362,19 +390,15 @@ export class FichaPage implements OnInit {
     const luminancia = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
     return luminancia > 0.7;
   }
-
   onImagenPrincipalCargada() {
     this.imagenPrincipalCargada = true;
   }
-
   onMiniaturaCargada(url: string) {
     this.miniaturasCargadas[url] = true;
   }
-
   onTouchStart(event: TouchEvent) {
     this.touchStartX = event.touches[0].clientX;
   }
-
   onTouchEnd(event: TouchEvent) {
     const touchEndX = event.changedTouches[0].clientX;
     const diff = touchEndX - this.touchStartX;
@@ -386,7 +410,6 @@ export class FichaPage implements OnInit {
       }
     }
   }
-
   cambiarImagen(direccion: 'siguiente' | 'anterior') {
     const index = this.auto.imagenes.indexOf(this.imagenSeleccionada);
     const total = this.auto.imagenes.length;
@@ -396,7 +419,6 @@ export class FichaPage implements OnInit {
       this.imagenSeleccionada = this.auto.imagenes[index - 1];
     }
   }
-
   get descripcionCorta(): string {
     if (!this.auto?.descripcion) return '';
     const palabras = this.auto.descripcion.split(' ');
@@ -405,7 +427,6 @@ export class FichaPage implements OnInit {
     }
     return palabras.slice(0, 20).join(' ') + '...';
   }
-
   autosURL(id: any) {
     this.carsService.getCar(id).subscribe({
       next: async (res: any) => {
@@ -427,7 +448,6 @@ export class FichaPage implements OnInit {
       },
     });
   }
-
   motosURL(id: any) {
     this.motosService.getMoto(id).subscribe({
       next: async (res: any) => {
@@ -450,7 +470,6 @@ export class FichaPage implements OnInit {
       },
     });
   }
-
   async aviso(num: number) {
     if (num === 0) {
       let modal;
@@ -512,7 +531,6 @@ export class FichaPage implements OnInit {
       await modal.present();
     }
   }
-
   setAceptado(tipo: 'aviso' | 'terminos', valor: boolean) {
     if (valor === true) {
       localStorage.setItem(tipo, 'true');
@@ -532,7 +550,6 @@ export class FichaPage implements OnInit {
       localStorage.removeItem(tipo);
     }
   }
-
   async abrirModalArrendamiento(aut: object) {
     let modal;
     if (this.dispositivo === 'telefono') {
@@ -555,7 +572,6 @@ export class FichaPage implements OnInit {
     }
     await modal.present();
   }
-
   async abrirModalImagen(imagenes: string[], indice: number = 0) {
     const modal = await this.modalCtrl.create({
       component: ImagenesVehiculoComponent,
@@ -566,7 +582,6 @@ export class FichaPage implements OnInit {
     });
     await modal.present();
   }
-
   mostrarAutos(lote: any) {
     const nombreURL = encodeURIComponent(lote.nombre || '');
     localStorage.setItem('origenLote', `/lote/${nombreURL}/${lote._id}`);

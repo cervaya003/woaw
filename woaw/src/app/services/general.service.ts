@@ -11,6 +11,10 @@ import { PopoverController } from '@ionic/angular';
 import { AlertComponent } from '../components/alert/alert.component';
 import { Router } from '@angular/router';
 
+import { fromEvent, merge, Subscription } from 'rxjs';
+import { map, startWith, debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { NgZone } from '@angular/core';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -19,10 +23,13 @@ export class GeneralService {
     throw new Error('Method not implemented.');
   }
   private popoverActivo?: HTMLIonPopoverElement;
-
+  private preloadCache = new Map<string, Promise<void>>();
   public esMovil = new BehaviorSubject<boolean>(false);
 
   // Comportamiento reactivo del tipo de dispositivo
+  private readonly BP_PHONE = 768;
+  private readonly BP_TABLET = 1024;
+  private resizeSub?: Subscription;
   private dispositivoSubject = new BehaviorSubject<
     'telefono' | 'tablet' | 'computadora'
   >('computadora');
@@ -55,12 +62,19 @@ export class GeneralService {
     private toastController: ToastController,
     private modalController: ModalController,
     private popoverCtrl: PopoverController,
-    private router: Router
+    private router: Router,
+    private ngZone: NgZone,
   ) {
     this.detectarDispositivo();
     this.detectarDispositivoSinze();
-  }
 
+    this.resizeSub = fromEvent(window, 'resize')
+      .pipe(debounceTime(150))
+      .subscribe(() => this.detectarDispositivoSinze());
+  }
+  ngOnDestroy(): void {
+    this.resizeSub?.unsubscribe();
+  }
   // ==== Auth / User helpers ====
 
   // Obtiene el rol desde localStorage
@@ -207,10 +221,9 @@ export class GeneralService {
   // ----------------- DISPOSITIVO -----------------
   private detectarDispositivoSinze() {
     const width = window.innerWidth;
-
     if (width <= 768) {
       this.dispositivoSubject.next('telefono');
-    } else if (width > 768 && width <= 1024) {
+    } else if (width > 768 && width <= 1124) {
       this.dispositivoSubject.next('tablet');
     } else {
       this.dispositivoSubject.next('computadora');
@@ -358,38 +371,6 @@ export class GeneralService {
 
     elementos.forEach((el) => observer.observe(el));
   }
-
-  preloadHero(url: string, timeoutMs = 6000): Promise<void> {
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      (img as any).fetchPriority = 'high';
-      (img as any).decoding = 'async';
-      img.src = url;
-
-      const done = (ok: boolean) => (ok ? resolve() : reject(new Error('timeout/error')));
-
-      const timer = setTimeout(() => done(false), timeoutMs);
-
-      img.onload = async () => {
-        try {
-          if (typeof (img as any).decode === 'function') {
-            await (img as any).decode();
-          }
-        } catch { /* noop */ }
-        finally {
-          clearTimeout(timer);
-          done(true);
-        }
-      };
-
-      img.onerror = () => {
-        clearTimeout(timer);
-        done(false);
-      };
-    });
-
-  }
-  /** Llama al endpoint para registrar/actualizar el teléfono del usuario */
   actualizarTelefono(lada: string, telefono: string): Observable<any> {
     const token = localStorage.getItem('token') || '';
     const url = `${environment.api_key}/users/phone`;
@@ -397,13 +378,10 @@ export class GeneralService {
       Authorization: `Bearer ${token}`,
     });
 
-    // Ajusta si tu backend requiere otro nombre de campos
     const body = { lada, telefono };
 
     return this.http.put(url, body, { headers });
   }
-
-  /** Fusiona cambios en el objeto user de localStorage y emite cambios necesarios */
   actualizarUserLocal(patch: Partial<any>) {
     const raw = localStorage.getItem('user');
     if (!raw) return;
@@ -411,27 +389,85 @@ export class GeneralService {
       const prev = JSON.parse(raw);
       const next = { ...prev, ...patch };
       localStorage.setItem('user', JSON.stringify(next));
-
-      // Si cambió el rol u otros flags que emites, puedes re-emitir:
       this.rolSubject.next(next?.rol || null);
     } catch {
-      /* noop */
     }
   }
-  preloadVideo(src: string): Promise<void> {
-    return new Promise((resolve, reject) => {
-      const video = document.createElement('video');
-      video.src = src;
-      video.preload = 'auto';
-      video.muted = true;
-      video.playsInline = true;
 
-      video.oncanplaythrough = () => resolve();
-      video.onerror = () => reject();
-    });
+
+
+
+
+
+  private withTimeout<T>(p: Promise<T>, ms: number, key?: string): Promise<T> {
+    let t: any;
+    const killer = new Promise<never>((_, rej) =>
+      t = setTimeout(() => {
+        if (key) this.preloadCache.delete(key);
+        rej(new Error('timeout'));
+      }, ms)
+    );
+    return Promise.race([p, killer]).finally(() => clearTimeout(t));
   }
 
-  // ## ----- ----- -----
-  // Esto nunca se hace ☢️☢️☢️
-  // handleRefrescarAutos(ubicacion: string) { ... }
+  preloadHero(url: string, timeoutMs = 5000): Promise<void> {
+    if (this.preloadCache.has(url)) return this.preloadCache.get(url)!;
+
+    const job = new Promise<void>((resolve, reject) => {
+      const img = new Image();
+      (img as any).fetchPriority = 'high';
+      (img as any).decoding = 'async';
+      img.src = url;
+
+      img.onload = async () => {
+        try {
+          if (typeof (img as any).decode === 'function') {
+            await (img as any).decode();
+          }
+          resolve();
+        } catch { resolve(); }
+      };
+      img.onerror = () => reject(new Error('img error'));
+    });
+
+    const guarded = this.withTimeout(job, timeoutMs, url)
+      .catch((e) => { this.preloadCache.delete(url); throw e; });
+
+    this.preloadCache.set(url, guarded);
+    return guarded;
+  }
+
+  preloadVideo(src: string, timeoutMs = 8000): Promise<void> {
+    if (this.preloadCache.has(src)) return this.preloadCache.get(src)!;
+
+    const job = new Promise<void>((resolve, reject) => {
+      const v = document.createElement('video');
+      v.preload = 'auto';
+      v.muted = true;
+      (v as any).playsInline = true;
+      v.src = src;
+      v.oncanplaythrough = () => resolve();
+      v.onerror = () => reject(new Error('video error'));
+    });
+
+    const guarded = this.withTimeout(job, timeoutMs, src)
+      .catch((e) => { this.preloadCache.delete(src); throw e; });
+
+    this.preloadCache.set(src, guarded);
+    return guarded;
+  }
+  addPreload(url: string, as: 'image' | 'video') {
+    const link = document.createElement('link');
+    link.rel = 'preload';
+    (link as any).as = as;
+    link.href = url;
+    document.head.appendChild(link);
+  }
+  addPreconnect(origin: string) {
+    const link = document.createElement('link');
+    link.rel = 'preconnect';
+    link.href = origin;
+    link.crossOrigin = 'anonymous';
+    document.head.appendChild(link);
+  }
 }

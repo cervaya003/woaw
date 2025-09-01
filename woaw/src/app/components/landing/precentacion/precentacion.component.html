@@ -1,0 +1,36 @@
+<section class="marquee-cards">
+  <div class="row ltr" *ngIf="autosUsados.length">
+    <div class="track" [style.--duration]="durUsados">
+      <ng-container *ngTemplateOutlet="segmento; context:{ $implicit: autosUsados }"></ng-container>
+      <ng-container *ngTemplateOutlet="segmento; context:{ $implicit: autosUsados }"></ng-container>
+    </div>
+  </div>
+
+  <div class="row rtl" *ngIf="autosSeminuevos.length">
+    <div class="track" [style.--duration]="durSemis">
+      <ng-container *ngTemplateOutlet="segmento; context:{ $implicit: autosSeminuevos }"></ng-container>
+      <ng-container *ngTemplateOutlet="segmento; context:{ $implicit: autosSeminuevos }"></ng-container>
+    </div>
+  </div>
+
+  <div class="row ltr" *ngIf="autosNuevos.length">
+    <div class="track" [style.--duration]="durNuevos">
+      <ng-container *ngTemplateOutlet="segmento; context:{ $implicit: autosNuevos }"></ng-container>
+      <ng-container *ngTemplateOutlet="segmento; context:{ $implicit: autosNuevos }"></ng-container>
+    </div>
+  </div>
+
+  <ng-template #segmento let-lista>
+    <div class="segmento">
+      <div class="mini-card" *ngFor="let auto of lista" (click)="onCardClick(auto, $event)">
+        <div class="img-wrap">
+          <img [src]="auto?.imagenes?.[0]" [alt]="(auto?.marca || '') + ' ' + (auto?.modelo || '')" />
+        </div>
+        <div class="txt">
+          <h4>{{ auto?.marca || '—' }} {{ auto?.modelo || '' }}</h4>
+          <span class="precio" *ngIf="precioDe(auto) as p">MX ${{ p | number:'1.0-0' }}</span>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+</section>

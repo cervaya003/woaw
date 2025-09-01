@@ -13,16 +13,17 @@ import { MenuController } from '@ionic/angular';
   standalone: false,
 })
 export class InicioPage implements OnInit {
+
   esDispositivoMovil: boolean = false;
   showSplash: boolean = true;
-
+  splash: boolean = false;
   MostrarLogin: boolean = true;
   MostrarRegistro: boolean = false;
   MostrarRecuperacion: boolean = false;
 
   contenidos = [
     {
-      imagen: '/assets/icon/logo5.png',
+      imagen: '/assets/icon/logo4.png',
       titulo: 'Bienvenido a',
       texto: 'Compra o vende tu auto fácil, rápido y seguro.',
       color: 'blanco',
@@ -57,9 +58,11 @@ export class InicioPage implements OnInit {
   ];
 
   indexContenido = 0;
-  mostrarContenido = this.contenidos[0];
-  animarImagen = false;
+  mostrarContenido = this.contenidos[0]; animarImagen = false;
   animarTexto = false;
+  imgenPrincipal: string = '';
+  videoSrc: string = '';
+  videoSrc2: string = '';
 
   constructor(
     private generalService: GeneralService,
@@ -70,19 +73,17 @@ export class InicioPage implements OnInit {
   ) { }
 
   async ngOnInit() {
-    // this.generalService.presentToast('hey')
-
+    this.cargaimagen();
+    this.cargavideo();
     this.generalService.dispositivo$.subscribe((tipo) => {
       this.esDispositivoMovil = tipo === 'telefono' || tipo === 'tablet';
     });
     this.mostrarAnimaciones();
-    setInterval(() => {
-      this.indexContenido = (this.indexContenido + 1) % this.contenidos.length;
-      this.mostrarContenido = this.contenidos[this.indexContenido];
-      this.mostrarAnimaciones();
-    }, 10000);
   }
-
+  ionViewWillEnter() {
+    this.cargaimagen();
+    this.cargavideo();
+  }
   mostrarAnimaciones() {
     this.animarImagen = false;
     this.animarTexto = false;
@@ -143,13 +144,10 @@ export class InicioPage implements OnInit {
         break;
     }
   }
-
   recupercion() {
     this.MostrarRecuperacion = !this.MostrarRecuperacion;
   }
-
   // ## ------ POLITICAS Y AVISO DE PRIVACIDAD ------ ##
-
   async mostrarTerminos() {
     const modal = await this.modalCtrl.create({
       component: PoliticasComponent,
@@ -170,7 +168,6 @@ export class InicioPage implements OnInit {
     });
     await modal.present();
   }
-
   async mostrarAviso() {
     const modal = await this.modalCtrl.create({
       component: AvisoPrivasidadComponent,
@@ -191,7 +188,6 @@ export class InicioPage implements OnInit {
     });
     await modal.present();
   }
-
   setAceptado(tipo: 'aviso' | 'terminos', valor: boolean) {
     if (valor === true) {
       localStorage.setItem(tipo, 'true');
@@ -214,5 +210,67 @@ export class InicioPage implements OnInit {
       localStorage.removeItem(tipo);
     }
   }
+  mostrarSplash() {
+    if (this.esDispositivoMovil == true) {
+      this.mostrarContenido = this.contenidos[0];
+      this.splash = true;
+      setInterval(() => {
+        this.splash = false;
+      }, 3500);
+    } else {
+      setInterval(() => {
+        this.indexContenido = (this.indexContenido + 1) % this.contenidos.length;
+        this.mostrarContenido = this.contenidos[this.indexContenido];
+        this.mostrarAnimaciones();
+      }, 10000);
+    }
+  }
+  async cargaimagen() {
+    this.imgenPrincipal = 'assets/autos/arre5.png';
+    this.generalService.addPreload(this.imgenPrincipal, 'image');
+    try {
+      await Promise.all([
+        this.generalService.preloadHero(this.imgenPrincipal, 4500),
+      ]);
+    } finally {
+    }
+  }
+
+  async cargavideo() {
+    this.videoSrc = 'assets/img/vc1.mp4';
+    this.videoSrc2 = 'assets/img/vc3.mp4';
+    this.generalService.addPreload(this.videoSrc, 'video');
+    this.generalService.addPreload(this.videoSrc2, 'video');
+    try {
+      this.mostrarSplash();
+      await this.generalService.preloadVideo(this.videoSrc, 7000);
+      await this.generalService.preloadVideo(this.videoSrc2, 7000);
+    } finally {
+    }
+  }
 
 }
+
+
+
+/* 
+ async ngOnInit() {
+    console.log('Se ejecuta solo una vez al crear el componente');
+  }
+
+  ionViewWillEnter() {
+    console.log('Se ejecuta cada vez que entro a la página (antes de mostrarla)');
+  }
+
+  ionViewDidEnter() {
+    console.log('Se ejecuta cada vez que entro a la página (ya visible)');
+  }
+
+  ionViewWillLeave() {
+    console.log('Se ejecuta antes de salir de la página');
+  }
+
+  ionViewDidLeave() {
+    console.log('Se ejecuta después de salir de la página');
+  }
+*/

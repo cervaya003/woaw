@@ -26,6 +26,10 @@ ion-content {
 //   }
 // }
 
+ion-title {
+  font-size: 15px;
+}
+
 .perfil-header {
   display: flex;
   align-items: center;
@@ -48,10 +52,10 @@ ion-content {
 
   .logo {
     width: 5%;
-    margin-left: 10px;
+    margin-left: 15px;
 
     @media (max-width: 768px) {
-      width: 20%;
+      width: 18%;
     }
   }
 
@@ -431,6 +435,8 @@ $color in $tipos-venta {
     width: 70px;
     border-radius: 0px 0px 0px 8px;
 
+    z-index: 1;
+
     position: absolute;
     right: 0px;
     bottom: 3px;
@@ -458,6 +464,7 @@ $color in $tipos-venta {
   .tipo-barra-#{$tipo} {
     background-color: $color;
     height: .2px;
+    z-index: 1;
     width: 65%;
     position: absolute;
     left: 0px;
@@ -521,6 +528,9 @@ $color in $tipos-venta {
 }
 
 
+
+
+// -----  PAGINACION ----- 
 .contenedor-paginacion {
   position: static;
   max-width: 420px;
@@ -528,6 +538,22 @@ $color in $tipos-venta {
   padding: 1rem 1.2rem;
   border-radius: 0;
   text-align: center;
+
+  @media (max-width: 1124px) {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: env(safe-area-inset-bottom, 0);
+    z-index: 9999;
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 12px 30px;
+    background: rgba(0, 0, 0, 0.96);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
 
 
   .titulo-paginacion {
@@ -538,13 +564,23 @@ $color in $tipos-venta {
   }
 
   .paginacion-scroll {
-    overflow-x: auto;
-    display: flex;
-    justify-content: center;
-    scrollbar-width: none;
+    @media (min-width: 1125px) {
+      overflow-x: auto;
+      display: flex;
+      justify-content: center;
+      scrollbar-width: none;
 
-    &::-webkit-scrollbar {
-      display: none;
+      &::-webkit-scrollbar {
+        display: none;
+      }
+    }
+
+    @media (max-width: 1124px) {
+      width: 100%;
+      max-width: 540px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: center;
     }
   }
 
@@ -555,15 +591,21 @@ $color in $tipos-venta {
   }
 
   .pagina {
-    background-color: #2222;
+    font-size: 12px;
+    background-color: #5252527e;
     border: none;
-    color: #222;
+    color: #ffffff;
     padding: 6px 12px;
     font-weight: 600;
-    border-radius: 0px;
+    border-radius: 5px;
     min-width: 38px;
     cursor: pointer;
     transition: background 0.2s;
+
+    @media (max-width: 1124px) {
+      font-size: 10px;
+      padding: 10px 10px !important;
+    }
 
     &.activa {
       background-color: var(--ion-color-danger);
@@ -582,6 +624,8 @@ $color in $tipos-venta {
   }
 
 }
+
+
 
 
 

@@ -677,6 +677,7 @@ export class UpdateCarPage implements OnInit {
       let formData = await this.generarFormDataImagenes();
 
       if (this.tipo_veiculo === 'autos' || this.tipo_veiculo === 'renta') {
+
         formData = await this.agregarCamposBasicosAlFormData_autos(formData);
         formData = await this.agregarUbicacionAlFormData_autos(formData);
         formData = await this.agregarVersionesAlFormData_autos(formData);

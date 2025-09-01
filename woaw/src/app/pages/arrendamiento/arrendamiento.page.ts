@@ -382,9 +382,16 @@ export class ArrendamientoPage implements OnInit {
     this.imgenArre1 = 'assets/autos/arre1.png';
     this.imgenArre2 = 'assets/autos/arre2.png';
     this.imgenPrincipal = 'assets/autos/publicidad/arrendamiento.png';
+    this.generalService.addPreload(this.imgenArre1, 'image');
+    this.generalService.addPreload(this.imgenArre2, 'image');
+    this.generalService.addPreload(this.imgenPrincipal, 'image');
     try {
-      await this.generalService.preloadHero(this.imgenPrincipal);
-    } catch {
+      await Promise.all([
+        this.generalService.preloadHero(this.imgenArre1, 4500),
+        this.generalService.preloadHero(this.imgenArre2, 4500),
+        this.generalService.preloadHero(this.imgenPrincipal, 4500),
+      ]);
+    } finally {
     }
   }
 }
