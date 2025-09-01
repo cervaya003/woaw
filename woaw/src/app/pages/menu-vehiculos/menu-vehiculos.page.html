@@ -1,38 +1,77 @@
 <app-navbar></app-navbar>
 
-<ion-content [fullscreen]="true">
-  <img [src]="imgenPrincipal" alt="Fondo" class="bg-img" />
-  <!-- <img [src]="imgenPrincipal" alt="Fondo" class="bg-img2" /> -->
+<ion-content class="home-wrap" [fullscreen]="true">
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero__bg"></div>
+    <div class="hero__fx hero__fx--a"></div>
+    <div class="hero__fx hero__fx--b"></div>
 
-  <div class="hero-cards">
-    <div class="hero-card" (click)="verMas('/usados')">
-      <div class="hero-card__title">Usados</div>
-      <div class="hero-card__cta card-usados">
-        Ver más
-        <ion-icon name="arrow-forward-outline"></ion-icon>
+    <div class="hero__content">
+      <h1 class="hero__title">
+        Encuentra tu siguiente auto en minutos
+      </h1>
+      <p class="hero__subtitle">
+        Nuevos impecables, seminuevos certificados y usados con historia clara. Todo en un solo lugar.
+      </p>
+      <div class="hero__badges">
+        <div class="b">Garantía</div>
+        <div class="b">Financiamiento</div>
+        <div class="b">Verificado</div>
       </div>
     </div>
+  </section>
 
-    <div class="hero-card" (click)="verMas('/seminuevos')">
-      <div class="hero-card__title">Seminuevos</div>
-      <div class="hero-card__cta card-seminuevos">
-        Ver más
-        <ion-icon name="arrow-forward-outline"></ion-icon>
+  <!-- CATEGORÍAS TOP -->
+  <section class="cats">
+    <div class="cats__grid">
+      <article class="cat" *ngFor="let c of categorias" (click)="go(c.href)" tabindex="0" (keyup.enter)="go(c.href)">
+        <div class="cat__bg" [ngClass]="c.bg"></div>
+        <div class="cat__overlay"></div>
+        <header class="cat__head">
+          <div class="cat__icon" [innerHTML]="c.icon"></div>
+          <h2 class="cat__title">{{ c.title }}</h2>
+        </header>
+        <p class="cat__desc">{{ c.desc }}</p>
+        <footer class="cat__footer">
+          <div class="meta">
+            <span class="meta__item">
+              <ion-icon name="speedometer-outline"></ion-icon>
+              {{ c.meta.km }} km.
+            </span>
+            <span class="meta__item">
+              <ion-icon name="cash-outline"></ion-icon>
+              {{ c.meta.precio }} MXN.
+            </span>
+          </div>
+          <button class="btn__item">Explorar</button>
+        </footer>
+      </article>
+    </div>
+  </section>
+
+  <app-precentacion></app-precentacion>
+
+  <!-- BENEFICIOS / TRUST -->
+  <section class="trust">
+    <div class="trust__grid">
+      <div class="trust__item">
+        <ion-icon name="shield-checkmark-outline"></ion-icon>
+        <h3>Financiamiento en Hey Banco</h3>
+        <p>Publicaciones verificadas y procesos con identidad validada.</p>
+      </div>
+      <div class="trust__item">
+        <ion-icon name="card-outline"></ion-icon>
+        <h3>Opciones de pago</h3>
+        <p>Contado, crédito y arrendamiento con simuladores claros.</p>
+      </div>
+      <div class="trust__item">
+        <ion-icon name="leaf-outline"></ion-icon>
+        <h3>Eficiencia</h3>
+        <p>Filtros inteligentes, favoritos y seguimiento en tiempo real.</p>
       </div>
     </div>
+  </section>
 
-    <div class="hero-card" (click)="verMas('/nuevos')">
-      <div class="hero-card__title">Nuevos</div>
-      <div class="hero-card__cta card-nuevos">
-        Ver más
-        <ion-icon name="arrow-forward-outline"></ion-icon>
-      </div>
-    </div>
-  </div>
-
-  <div class="contenido">
-    <br />
-    <app-principal [tipo]="tipoVehiculo" [status]="true"></app-principal>
-    <app-footer></app-footer>
-  </div>
-</ion-content>ƒ
+  <app-footer></app-footer>
+</ion-content>

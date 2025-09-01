@@ -1,20 +1,14 @@
 <ion-header>
   <ion-toolbar color="dark">
+
     <ion-buttons slot="start">
+      <ion-back-button text="" routerDirection="back" defaultHref="/"></ion-back-button>
       <div class="perfil-header">
-        <button class="btn-regresar" (click)="volver()">
-          <ion-icon name="arrow-back-outline"></ion-icon>
-        </button>
-
         <img src="/assets/icon/logo4.png" alt="Go Autos" class="logo" />
-        <span *ngIf="auto" class="titulo-perfil">{{ auto.marca }} {{ auto.modelo }} {{ auto.anio }}</span>
       </div>
-    </ion-buttons>
-
-    <ion-buttons slot="end">
-      <ion-button (click)="regresar()">
-        <ion-icon name="close-outline"></ion-icon>
-      </ion-button>
+      <ion-title>
+        <span *ngIf="auto" class="titulo-perfil">{{ auto.marca }} {{ auto.modelo }} {{ auto.anio }}</span>
+      </ion-title>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
