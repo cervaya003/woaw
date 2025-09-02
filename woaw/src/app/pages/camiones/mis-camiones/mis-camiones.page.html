@@ -5,9 +5,7 @@
         <button class="btn-regresar" (click)="regresar()">
           <ion-icon name="arrow-back-outline"></ion-icon>
         </button>
-
         <img src="/assets/icon/logo4.png" alt="Go Autos" class="logo" />
-        <!-- <span class="titulo-perfil">Mis Camiones</span> -->
       </div>
     </ion-buttons>
 
@@ -27,7 +25,6 @@
 </ion-header>
 
 <ion-content #pageContent [fullscreen]="true">
-
   <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
     <ion-refresher-content pullingIcon="arrow-down-outline" refreshingSpinner="crescent"
       pullingText="Desliza para actualizar" refreshingText="Actualizando...">
@@ -40,18 +37,14 @@
     <ion-row>
       <!-- Columna lateral de filtros -->
       <ion-col size="12" size-md="3">
-
         <app-menu [filtros]="filtros" [filtrosAplicados]="filtrosAplicados"
           (mostrarOpciones)="mostrarOpciones($event.event, $event.tipo)" (limpiarFiltros)="resetearFiltros()">
         </app-menu>
-
       </ion-col>
 
       <!-- Columna de catálogo -->
       <ion-col size="12" size-md="9">
-
-        <div class="catalogo-camiones">
-
+        <div class="catalogo-autos">
           <div *ngIf="camionesPaginados?.length === 0" class="mensaje-vacio">
             <ion-icon name="truck-outline" class="icono-mensaje"></ion-icon><br />
             No se encontraron camiones para esta sección.
@@ -62,7 +55,6 @@
               [esMio]="idsMisCamiones.includes(camion._id)">
             </app-cartas>
           </ng-container>
-
         </div>
 
         <!-- Paginación -->
@@ -89,11 +81,9 @@
             </div>
           </div>
         </div>
-
       </ion-col>
     </ion-row>
   </ion-grid>
 
   <app-footer></app-footer>
-
 </ion-content>

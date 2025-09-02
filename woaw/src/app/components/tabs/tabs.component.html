@@ -24,9 +24,14 @@
     <ion-label>Motos</ion-label>
   </ion-tab-button>
 
-  <ion-tab-button (click)="redirecion('arrendamiento')" [ngClass]="{ 'activo': isActive('arrendamiento') }">
+  <!--<ion-tab-button (click)="redirecion('arrendamiento')" [ngClass]="{ 'activo': isActive('arrendamiento') }">
     <ion-icon name="car-sport"></ion-icon>
     <ion-label>Arrendar</ion-label>
+  </ion-tab-button> -->
+
+  <ion-tab-button (click)="redirecion('camiones/todos')" [ngClass]="{ 'activo': isActive('camiones/todos') }">
+    <ion-icon name="bus-outline"></ion-icon>
+    <ion-label>Camiones</ion-label>
   </ion-tab-button>
 
   <!-- <ion-tab-button (click)="redirecion('seguros')" [ngClass]="{ 'activo': isActive('seguros') }">

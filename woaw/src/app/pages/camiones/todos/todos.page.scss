@@ -1,0 +1,33 @@
+.mensaje-vacio {
+  text-align: center;
+  margin-top: 25vh;
+  color: var(--ion-color-medium);
+  font-size: 1.1rem;
+
+  ion-icon {
+    font-size: 48px;
+    margin-bottom: 12px;
+  }
+}
+
+.buscador-escritorio {
+  width: 100%;
+  max-width: 520px;       // ajusta a gusto (ej. 600px)
+  margin-left: auto;      // empuja a la derecha
+  --border-radius: 12px;
+  --background: #1e1e1e;
+  --color: #fff;
+  --placeholder-color: #a0a0a0;
+  --icon-color: #a0a0a0;
+}
+
+.buscador-movil {
+  --border-radius: 12px;
+}
+
+/* Por si necesitas que el contenedor del start no “coma” demasiado espacio */
+.perfil-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}

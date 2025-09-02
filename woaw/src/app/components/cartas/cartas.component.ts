@@ -56,9 +56,6 @@ export class CartasComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    // console.log(this.auto)
-    // console.log(this.ubicacion)
-
     this.generalService.tokenExistente$.subscribe((estado) => {
       this.isLoggedIn = estado;
     });
@@ -178,19 +175,20 @@ export class CartasComponent implements OnInit {
       },
     });
   }
-  update_car(auto: any, tipo: string) {
-    // console.log(auto._id)
-    if (this.ubicacion === 'mis_motos') {
-      this.router.navigate(['/update-car', 'motos', auto._id]);
-    } else if (this.ubicacion === 'mis_autos') {
+ update_car(auto: any, tipo: string) {
+  if (this.ubicacion === 'mis_motos') {
+    this.router.navigate(['/update-car', 'motos', auto._id]);
+  } else if (this.ubicacion === 'mis_camiones') {
+    this.router.navigate(['/update-car', 'camiones', auto._id]);
+  } else if (this.ubicacion === 'mis_autos') {
       this.router.navigate(['/update-car', 'autos', auto._id]);
-    } else {
+  } else {
       this.router.navigate(['/update-car', 'renta', auto._id]);
-    }
   }
+}
   onCardClick(auto: any, event: Event): void {
     event.stopPropagation();
-    if (this.ubicacion === 'mis_autos' || this.ubicacion === 'mis_motos') {
+    if (this.ubicacion === 'mis_autos' || this.ubicacion === 'mis_motos' || this.ubicacion === "mis_camiones") {
       this.update_car(auto, this.ubicacion);
     } else {
       this.ficha(auto);
