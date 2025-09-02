@@ -211,15 +211,6 @@
         <input type="number" min="0" placeholder="Ej. 45000" [(ngModel)]="kilometraje" required />
       </div>
 
-      <!-- Tipo de venta -->
-
-      <div class="campo">
-        <label>Tipo de oferta: <span class="requerido">*</span></label>
-        <select [(ngModel)]="tipoVenta" required>
-          <option value="" disabled selected>Selecciona una opción</option>
-          <option *ngFor="let tipo of tiposVenta" [value]="tipo.value">{{ tipo.label }}</option>
-        </select>
-      </div>
 
       <!-- === CAMPOS OPCIONALES === -->
       <!-- Número de ejes con validación -->

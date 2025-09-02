@@ -105,7 +105,7 @@ export class NewCarPage implements OnInit {
     this.generarListaAnios();
     this.cargarOpcionesPorRol();
   }
-  seleccionar(tipo: 'auto' | 'moto' | 'renta' | 'lote' | null, label: string, icono: string) {
+  seleccionar(tipo: 'auto' | 'moto' | 'renta' | 'lote' | 'camion' | null, label: string, icono: string) {
     if (label === 'Lote') {
       this.mostrarCarComponent = true;
     } else {

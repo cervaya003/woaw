@@ -12,7 +12,7 @@
     (click)="eliminarDeFavoritos(auto._id); $event.stopPropagation()">
     <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
   </ion-button>
-
+ 
   <div class="cinta-esquina"
     [ngClass]="{'verde': auto.estadoVehiculo === 'disponible', 'rojo': auto.estadoVehiculo === 'vendido' }"
     *ngIf="auto.estadoVehiculo != 'vendido'">
@@ -35,7 +35,7 @@
   <div class="contenido-auto">
     <div [ngClass]="generalService.getClaseTipoBarra(auto.tipoVenta)"></div>
 
-    <button *ngIf="ubicacion === 'mis_autos' || ubicacion === 'mis_motos' "  class="estado-btn"
+    <button *ngIf="ubicacion === 'mis_autos' || ubicacion === 'mis_motos' || ubicacion === 'mis_camiones'" class="estado-btn"
       [ngClass]="{ 'disponible': auto.estadoVehiculo === 'disponible', 'vendido': auto.estadoVehiculo === 'vendido' }"
       (click)="toggleEstado(auto, $event)">
       <ion-icon [name]="auto.estadoVehiculo === 'disponible' ? 'toggle-outline' : 'toggle-sharp'"
