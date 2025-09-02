@@ -1,23 +1,181 @@
 <app-navbar></app-navbar>
 
-<ion-content [fullscreen]="true">
+<ion-content #pageContent [fullscreen]="true">
+  <!-- Barra superior: total y orden -->
+  <app-acomodo [totalAutos]="vistaActiva === 'todos' ? totalTodos : totalMios" [titulo]="'Renta de autos'"
+    (ordenCambio)="ordenarAutos($event)">
+  </app-acomodo>
 
-  <img  [src]="imgenPrincipal" alt="Próximamente WOAW" class="img-responsiva" />
+  <!-- Tabs: Todos / Mis autos -->
+  <ion-segment [(ngModel)]="vistaActiva" (ionChange)="onSegmentChange()" class="mb-3">
+    <ion-segment-button value="todos">
+      <ion-label>Todos ({{ totalTodos }})</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="mios" *ngIf="isLoggedIn">
+      <ion-label>Mis coches ({{ totalMios }})</ion-label>
+    </ion-segment-button>
+  </ion-segment>
 
+  <ion-grid class="contenedor-catalogo">
+    <ion-row>
+      <!-- Filtros -->
+      <ion-col size="12" size-md="3">
+        <app-menu [filtros]="filtros" [filtrosAplicados]="filtrosAplicados"
+          (mostrarOpciones)="mostrarOpciones($event.event, $event.tipo)" (limpiarFiltros)="resetearFiltros()">
+        </app-menu>
+      </ion-col>
 
-  <div class="hero-overlay">
-    <span class="eyebrow">
-      <span class="dot"></span> Próximamente
-    </span>
+      <!-- Catálogo -->
+      <ion-col size="12" size-md="9">
 
-    <h1>Renta de autos <span class="brand">WOAW</span></h1>
-    <p class="lead">Muy pronto una nueva forma de llegar a tu destino. Muévete facil, seguro y cómodo.</p>
-    <ul class="chips" role="list" aria-label="ventajas">
-      <li class="chip" role="listitem">Reserva inmediata</li>
-      <li class="chip" role="listitem">Sin depósito</li>
-      <li class="chip" role="listitem">Cobertura básica incluida</li>
-    </ul>
-  </div>
+        <!-- ============= TODOS ============= -->
+        <ng-container *ngIf="vistaActiva === 'todos'">
+          <ion-spinner *ngIf="loading" name="crescent" class="loading-spinner"></ion-spinner>
+
+          <div *ngIf="!loading && (todosPaginados?.length || 0) === 0" class="no-coches">
+            <ion-icon name="car-outline" class="icono-carro"></ion-icon>
+            <h2>No hay coches disponibles</h2>
+            <p>Vuelve a intentarlo más tarde.</p>
+          </div>
+
+          <!-- GRID DE TARJETAS -->
+          <div *ngIf="!loading && (todosPaginados?.length || 0) > 0" class="cards-grid">
+            <ion-card *ngFor="let c of todosPaginados" class="veh-card" (click)="onCardClick(c)">
+              <!-- Imagen -->
+              <div class="img-wrap">
+                <img [src]="c.imagenPrincipal || '/assets/placeholder-car.webp'" alt="{{ c.marca }} {{ c.modelo }}" />
+              </div>
+
+              <ion-card-content>
+                <!-- Título -->
+                <div class="title">
+                  <strong>{{ c.marca }}</strong> • {{ c.modelo }} {{ c.anio }}
+                </div>
+
+                <!-- Precio -->
+                <div class="price">
+                  {{ c.precio?.porDia | currency:'MXN':'symbol-narrow' }}/día
+                </div>
+
+                <!-- Meta: km / transmisión / ubicación -->
+                <div class="meta">
+                  <div class="meta-item" *ngIf="c.kilometrajeActual != null">
+                    <ion-icon name="speedometer-outline"></ion-icon>
+                    <span>{{ c.kilometrajeActual | number }} km</span>
+                  </div>
+                  <div class="meta-item" *ngIf="c.transmision">
+                    <ion-icon name="settings-outline"></ion-icon>
+                    <span>{{ c.transmision }}</span>
+                  </div>
+                  <div class="meta-item" *ngIf="c.ubicacion">
+                    <ion-icon name="location-outline"></ion-icon>
+                    <span>{{ c.ubicacion.ciudad || '' }}</span>
+                  </div>
+                </div>
+
+                <!-- Barra inferior decorativa -->
+                <div class="accent-bar"></div>
+              </ion-card-content>
+            </ion-card>
+          </div>
+
+          <!-- Paginación -->
+          <div class="contenedor-paginacion" *ngIf="totalPaginasTodos > 1">
+            <p class="titulo-paginacion">más</p>
+            <div class="paginacion-scroll">
+              <div class="paginacion">
+                <button class="pagina" (click)="cambiarPagina('todos', paginaTodosActual - 1)"
+                  [disabled]="paginaTodosActual === 1">‹</button>
+
+                <ng-container *ngFor="let i of paginasReducidasTodos">
+                  <button *ngIf="esNumero(i)" class="pagina" [class.activa]="esNumero(i) && paginaTodosActual === i"
+                    (click)="cambiarPagina('todos', i)">
+                    {{ i }}
+                  </button>
+                  <span *ngIf="!esNumero(i)" class="ellipsis">...</span>
+                </ng-container>
+
+                <button class="pagina" (click)="cambiarPagina('todos', paginaTodosActual + 1)"
+                  [disabled]="paginaTodosActual === totalPaginasTodos">›</button>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+
+        <!-- ============= MIS COCHES ============= -->
+        <ng-container *ngIf="vistaActiva === 'mios'">
+          <div *ngIf="(miosPaginados?.length || 0) === 0" class="no-coches">
+            <ion-icon name="car-outline" class="icono-carro"></ion-icon>
+            <h2>No tienes coches de renta publicados</h2>
+            <p>Publica uno y aparecerá aquí.</p>
+          </div>
+
+          <!-- GRID DE TARJETAS -->
+          <div *ngIf="(miosPaginados?.length || 0) > 0" class="cards-grid">
+            <ion-card *ngFor="let c of miosPaginados" class="veh-card" (click)="onCardClick(c)">
+              <!-- Imagen -->
+              <div class="img-wrap">
+                <img [src]="c.imagenPrincipal || '/assets/placeholder-car.webp'" alt="{{ c.marca }} {{ c.modelo }}" />
+              </div>
+
+              <ion-card-content>
+                <!-- Título -->
+                <div class="title">
+                  <strong>{{ c.marca }}</strong> • {{ c.modelo }} {{ c.anio }}
+                </div>
+
+                <!-- Precio -->
+                <div class="price">
+                  {{ c.precio?.porDia | currency:'MXN':'symbol-narrow' }}/día
+                </div>
+
+                <!-- Meta -->
+                <div class="meta">
+                  <div class="meta-item" *ngIf="c.kilometrajeActual != null">
+                    <ion-icon name="speedometer-outline"></ion-icon>
+                    <span>{{ c.kilometrajeActual | number }} km</span>
+                  </div>
+                  <div class="meta-item" *ngIf="c.transmision">
+                    <ion-icon name="settings-outline"></ion-icon>
+                    <span>{{ c.transmision }}</span>
+                  </div>
+                  <div class="meta-item" *ngIf="c.ubicacion">
+                    <ion-icon name="location-outline"></ion-icon>
+                    <span>{{ c.ubicacion.ciudad || '' }}</span>
+                  </div>
+                </div>
+
+                <div class="accent-bar"></div>
+              </ion-card-content>
+            </ion-card>
+          </div>
+
+          <!-- Paginación -->
+          <div class="contenedor-paginacion" *ngIf="totalPaginasMios > 1">
+            <p class="titulo-paginacion">más</p>
+            <div class="paginacion-scroll">
+              <div class="paginacion">
+                <button class="pagina" (click)="cambiarPagina('mios', paginaMiosActual - 1)"
+                  [disabled]="paginaMiosActual === 1">‹</button>
+
+                <ng-container *ngFor="let i of paginasReducidasMios">
+                  <button *ngIf="esNumero(i)" class="pagina" [class.activa]="esNumero(i) && paginaMiosActual === i"
+                    (click)="cambiarPagina('mios', i)">
+                    {{ i }}
+                  </button>
+                  <span *ngIf="!esNumero(i)" class="ellipsis">...</span>
+                </ng-container>
+
+                <button class="pagina" (click)="cambiarPagina('mios', paginaMiosActual + 1)"
+                  [disabled]="paginaMiosActual === totalPaginasMios">›</button>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+
+      </ion-col>
+    </ion-row>
+  </ion-grid>
 
   <app-footer></app-footer>
 </ion-content>

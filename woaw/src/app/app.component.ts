@@ -82,7 +82,7 @@ export class AppComponent {
 
   }
   get mostrarTabs(): boolean {
-    const rutasSinTabs = ['/update-car/', '/new-car', '/usados', '/nuevos', '/seminuevos', '/m-nuevos'];
+    const rutasSinTabs = ['/update-car/', '/new-car', '/usados', '/nuevos', '/seminuevos', '/m-nuevos',];
     return (
       this.esDispositivoMovil &&
       !rutasSinTabs.some((r) => this.currentUrl.startsWith(r))
@@ -112,10 +112,6 @@ export class AppComponent {
   RedesSociales(tipo: string) {
     this.contactosService.RedesSociales(tipo);
   }
-
-
-
-
   async initializeApp() {
     await this.platform.ready();
     if (this.platform.is('android')) {
@@ -150,7 +146,6 @@ export class AppComponent {
       window.history.length > 1 ? history.back() : this.router.navigateByUrl('/home', { replaceUrl: true });
     });
   }
-
   private async handleExitGesture() {
     if (!this.platform.is('android')) return;
 

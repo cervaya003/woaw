@@ -2,8 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { GeneralService } from '../../services/general.service';
 import { CarsService } from '../../services/cars.service';
 import { MotosService } from '../../services/motos.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { MenuController } from '@ionic/angular';
+// (opcional) si vas a enviar al backend de renta desde aquí:
+// import { RentaService } from '../../services/renta.service';
 
 interface Marca {
   key: string;
@@ -23,37 +25,13 @@ export class NewCarPage implements OnInit {
   mostrarSelecion: string = '';
   mostrarIcono: string = '';
   mostrarCarComponent: boolean = false;
+
   opcionesBase = [
-    {
-      tipo: 'auto',
-      label: 'Coches',
-      icono: 'assets/img/icon-coche.png',
-      proximamente: false,
-    },
-    {
-      tipo: 'moto',
-      label: 'Motos',
-      icono: 'assets/img/icon-moto.png',
-      proximamente: false,
-    },
-    {
-      tipo: 'camion',
-      label: 'Camiones',
-      icono: 'assets/img/icon-camion.png',
-      proximamente: false,
-    },
-    {
-      tipo: 'renta',
-      label: 'Renta',
-      icono: 'assets/img/icon-renta.png',
-      proximamente: true,
-    },
-    {
-      tipo: 'lote',
-      label: 'Lote',
-      icono: 'assets/img/icon-lote.png',
-      proximamente: false,
-    },
+    { tipo: 'auto', label: 'Coches', icono: 'assets/img/icon-coche.png', proximamente: false },
+    { tipo: 'moto', label: 'Motos', icono: 'assets/img/icon-moto.png', proximamente: false },
+    { tipo: 'camion', label: 'Camiones', icono: 'assets/img/icon-camion.png', proximamente: false },
+    { tipo: 'renta', label: 'Renta', icono: 'assets/img/icon-renta.png', proximamente: false },
+    { tipo: 'lote', label: 'Lote', icono: 'assets/img/icon-lote.png', proximamente: false },
   ];
 
   opciones: any[] = [];
@@ -70,7 +48,7 @@ export class NewCarPage implements OnInit {
 
   public isLoggedIn: boolean = false;
 
-  // -----
+  // ----- data de selects
   marcas: any[] = [];
   modelos: any[] = [];
 
@@ -79,12 +57,14 @@ export class NewCarPage implements OnInit {
   public dispositivo: string = '';
   mansaje_error: string = '';
   // -----
+
   constructor(
     private generalService: GeneralService,
     private carsService: CarsService,
     private router: Router,
     private motosService: MotosService,
     private menuCtrl: MenuController,
+    // private rentaService: RentaService,
   ) {
     this.generalService.tipoRol$.subscribe((rol) => {
       this.MyRole = rol;
@@ -118,34 +98,34 @@ export class NewCarPage implements OnInit {
     this.anioSeleccionado = '';
     this.anioManual = '';
   }
+
   cargarOpcionesPorRol() {
     if (this.MyRole === 'admin') {
-      this.opciones = [...this.opcionesBase]; // todas las opciones
+      this.opciones = [...this.opcionesBase];
     } else {
-      this.opciones = this.opcionesBase.filter(
-        (op) => op.tipo !== 'arrendamiento'
-      );
+      // Antes filtrabas "arrendamiento" que no existe. Dejamos todas las válidas.
+      this.opciones = [...this.opcionesBase];
     }
   }
+
   generarListaAnios() {
     const anioActual = new Date().getFullYear();
     const anioLimite = 2008;
 
     for (let i = anioActual; i >= anioLimite; i--) {
-      // Si NO es admin y es el año actual, lo saltamos
       if (this.MyRole !== 'admin' && i === anioActual) {
         continue;
       }
       this.listaAnios.push(i);
     }
   }
+
   // verifica el año al escribir o selecionar
   verificarAnio(tipo: 'select' | 'escrito') {
     this.limpiarDependencias('all');
     this.mostrarInputOtroAnio = this.anioSeleccionado === 'otro';
 
     const anio = this.obtenerAnioActual();
-    // console.log(anio)
     this.anioValido =
       tipo === 'select' ? this.validarAnio(anio) : this.validarAniOtro(anio);
 
@@ -154,30 +134,30 @@ export class NewCarPage implements OnInit {
       this.obtenerMarcasSiCorresponde(anio);
     } else {
       this.mansaje_error = 'Seleciona un año entre 2007 y 1900';
-      // console.log(this.mansaje_error);
-      // this.limpiarDependencias('all');
       return;
     }
   }
+
   validarAniOtro(anio: number): boolean {
     return anio >= 1801 && anio < 2008;
   }
-  // Valida que el año esté en el rango permitido
+
   validarAnio(anio: number): boolean {
     const anioActual = new Date().getFullYear();
     return !isNaN(anio) && anio >= 1800 && anio <= anioActual;
   }
+
   esAnioAnteriorA2008(): boolean {
     const anio = this.obtenerAnioActual();
     return this.anioValido && anio < 2008;
   }
-  // Extrae el año seleccionado o manual
+
   obtenerAnioActual(): number {
     return this.mostrarInputOtroAnio
       ? Number(this.anioManual)
       : Number(this.anioSeleccionado);
   }
-  // Limpia los campos relacionados si el año no es válido 🚮
+
   limpiarDependencias(tipo: string): void {
     if (tipo === 'marca') {
       this.modeloSeleccionado = '';
@@ -190,18 +170,15 @@ export class NewCarPage implements OnInit {
     } else if (tipo === 'all') {
       this.marcaSeleccionada = '';
       this.modeloSeleccionado = '';
-
-      // this.anioSeleccionado = '';
-      // this.anioManual = '';
       this.modeloEsPersonalizado = false;
       this.marcaEsPersonalizada = false;
-
       this.marcas = [];
       this.modelos = [];
       this.mostrarCarComponent = false;
       this.mansaje_error = '';
     }
   }
+
   selecionarModelo() {
     this.limpiarDependencias('modelo');
     if (this.modeloSeleccionado === 'otro') {
@@ -211,13 +188,13 @@ export class NewCarPage implements OnInit {
       this.modeloEsPersonalizado = false;
     }
   }
+
   formularioValido(): boolean {
     const anio = this.obtenerAnioActual();
     const anioActual = new Date().getFullYear();
     const anioEsValido = this.anioValido && anio >= 1800 && anio <= anioActual;
 
-    const marcaValida =
-      !!this.marcaSeleccionada && this.marcaSeleccionada !== '';
+    const marcaValida = !!this.marcaSeleccionada && this.marcaSeleccionada !== '';
     const modeloValido =
       !!this.modeloSeleccionado &&
       this.modeloSeleccionado.trim().length > 0 &&
@@ -225,6 +202,7 @@ export class NewCarPage implements OnInit {
 
     return !!anioEsValido && marcaValida && modeloValido;
   }
+
   mostrarComponente() {
     const anio = this.obtenerAnioActual();
     const marca = this.marcaSeleccionada;
@@ -234,9 +212,8 @@ export class NewCarPage implements OnInit {
     if (this.anioValido && marca && modelo) {
       switch (tipo) {
         case 'auto':
-          this.mostrarCarComponent = true;
-          break;
         case 'moto':
+        case 'renta': // habilitamos abrir el componente de renta
           this.mostrarCarComponent = true;
           break;
         case 'camion':
@@ -260,29 +237,29 @@ export class NewCarPage implements OnInit {
       this.mostrarCarComponent = false;
     }
   }
+
   volverAtras() {
     this.mostrarCarComponent = false;
     if (this.seleccion === 'lote') {
       this.seleccion = null;
     }
   }
+
   regresar() {
-    // this.router.navigate(['/nuevos']);
     window.history.back();
   }
+
   getMarcaNombreSeleccionada(): string {
     if (!this.marcaEsPersonalizada) {
-      const marcaObj = this.marcas.find(
-        (m) => m._id === this.marcaSeleccionada
-      );
+      const marcaObj = this.marcas.find((m) => m._id === this.marcaSeleccionada);
       return marcaObj?.nombre || '';
     } else if (this.marcaEsPersonalizada) {
       return this.marcaSeleccionada;
     }
     return this.marcaSeleccionada;
   }
+
   validarInputModelo(): void {
-    // Aquí podrías validar que lo escrito tenga sentido
     if (!this.modeloSeleccionado || this.modeloSeleccionado.trim().length < 2) {
       this.modeloSeleccionado = '';
       this.modeloEsPersonalizado = false;
@@ -293,16 +270,14 @@ export class NewCarPage implements OnInit {
   obtenerMarcasSiCorresponde(anio: number): void {
     switch (this.seleccion) {
       case 'auto':
+      case 'renta': // reutiliza catálogo de autos para renta
         this.PeticionesMarcasDeAutos(anio);
         break;
       case 'moto':
         this.PeticionesMarcasDeMotos();
         break;
-        case 'camion':
-          this.PeticionesMarcasDeCamion();
-          break;
-      case 'renta':
-        console.log('Camiones próximamente...');
+      case 'camion':
+        this.PeticionesMarcasDeCamion();
         break;
       case 'lote':
         console.log('Arrendamiento próximamente...');
@@ -312,8 +287,8 @@ export class NewCarPage implements OnInit {
         break;
     }
   }
-  obtenerModelosSiCorresponde(): void {
 
+  obtenerModelosSiCorresponde(): void {
     this.limpiarDependencias('marca');
 
     if (this.marcaSeleccionada === 'otro') {
@@ -325,16 +300,14 @@ export class NewCarPage implements OnInit {
 
     switch (this.seleccion) {
       case 'auto':
+      case 'renta': // reutiliza catálogo de autos para renta
         this.PeticionesModelosDeAutos();
         break;
       case 'moto':
         this.PeticionesModelosDeMotos();
         break;
-        case 'camion':
+      case 'camion':
         this.PeticionesModelosDeCamion();
-        break;
-      case 'renta':
-        console.log('Camiones próximamente...');
         break;
       case 'lote':
         console.log('Arrendamiento próximamente...');
@@ -345,7 +318,6 @@ export class NewCarPage implements OnInit {
     }
   }
 
-  //
   PeticionesMarcasDeAutos(anio: number) {
     const anioActual = new Date().getFullYear();
     if (anio >= 2008 && anio <= anioActual) {
@@ -368,8 +340,7 @@ export class NewCarPage implements OnInit {
           );
         },
         error: (err) => {
-          const mensaje =
-            err?.error?.message || 'Error al cargar marcas - Carros';
+          const mensaje = err?.error?.message || 'Error al cargar marcas - Carros';
           console.warn(mensaje);
         },
         complete: () => {
@@ -380,10 +351,10 @@ export class NewCarPage implements OnInit {
       console.log('no se ejcuta nada');
     }
   }
+
   PeticionesMarcasDeMotos() {
     this.motosService.getMarcas().subscribe({
       next: (data: Marca[]) => {
-        // console.log('Motos = ',data)
         this.marcas = data.sort((a: Marca, b: Marca) =>
           a.nombre.toLowerCase().localeCompare(b.nombre.toLowerCase())
         );
@@ -397,10 +368,10 @@ export class NewCarPage implements OnInit {
       },
     });
   }
+
   PeticionesMarcasDeCamion() {
     this.carsService.GetMarcasCamiones().subscribe({
       next: (data: Marca[]) => {
-        // console.log('Motos = ',data)
         this.marcas = data.sort((a: Marca, b: Marca) =>
           a.nombre.toLowerCase().localeCompare(b.nombre.toLowerCase())
         );
@@ -414,12 +385,12 @@ export class NewCarPage implements OnInit {
       },
     });
   }
+
   PeticionesModelosDeAutos() {
     const anio = this.obtenerAnioActual();
     const marca = this.marcaSeleccionada;
 
-    if (!anio || !marca || this.seleccion !== 'auto') {
-      console.log('No se cumplen las condiciones para obtener modelos');
+    if (!anio || !marca || (this.seleccion !== 'auto' && this.seleccion !== 'renta')) {
       return;
     }
 
@@ -435,11 +406,11 @@ export class NewCarPage implements OnInit {
       },
     });
   }
+
   PeticionesModelosDeCamion() {
     const marca = this.marcaSeleccionada;
 
     if (!marca || this.seleccion !== 'camion') {
-      console.log('No se cumplen las condiciones para obtener modelos');
       return;
     }
 
@@ -455,6 +426,7 @@ export class NewCarPage implements OnInit {
       },
     });
   }
+
   PeticionesModelosDeMotos() {
     const anio = this.obtenerAnioActual();
     const marca = this.marcaSeleccionada;
@@ -482,7 +454,26 @@ export class NewCarPage implements OnInit {
       },
     });
   }
+
   irAInicio(): void {
     this.router.navigateByUrl('/inicio');
+  }
+
+  // ========= (opcional) recibir submit del componente de renta =========
+  registrarRenta(evt: { payload: any; files?: { imagenPrincipal: File; imagenes?: File[]; tarjetaCirculacion?: File } }) {
+    console.log('Submit Renta:', evt);
+    // Si decides postear desde aquí en lugar del componente:
+    // this.generalService.loading('Publicando…');
+    // const fd = new FormData();
+    // Object.entries(evt.payload).forEach(([k, v]) => {
+    //   if (v !== undefined && v !== null) fd.append(k, typeof v === 'object' ? JSON.stringify(v) : String(v));
+    // });
+    // if (evt.files?.imagenPrincipal) {
+    //   fd.append('imagenPrincipal', evt.files.imagenPrincipal);
+    //   fd.append('imagenes', evt.files.imagenPrincipal);
+    // }
+    // evt.files?.imagenes?.forEach(f => fd.append('imagenes', f));
+    // if (evt.files?.tarjetaCirculacion) fd.append('tarjetaCirculacion', evt.files.tarjetaCirculacion);
+    // this.rentaService.addRentalCar(fd).subscribe({ ... });
   }
 }

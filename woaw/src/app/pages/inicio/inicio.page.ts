@@ -216,7 +216,7 @@ export class InicioPage implements OnInit {
       this.splash = true;
       setInterval(() => {
         this.splash = false;
-      }, 5000);
+      }, 3500);
     } else {
       setInterval(() => {
         this.indexContenido = (this.indexContenido + 1) % this.contenidos.length;
@@ -225,7 +225,6 @@ export class InicioPage implements OnInit {
       }, 10000);
     }
   }
-
   async cargaimagen() {
     this.imgenPrincipal = 'assets/autos/arre5.png';
     this.generalService.addPreload(this.imgenPrincipal, 'image');

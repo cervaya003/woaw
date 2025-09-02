@@ -16,7 +16,9 @@ import { AddComponent } from '../../components/lote/add/add.component';
 // Formularios existentes
 import { CarComponent } from '../../components/new-veiculo/car/car.component';
 import { MotosComponent } from '../../components/new-veiculo/motos/motos.component';
+import { RentaComponent } from "src/app/components/new-veiculo/renta/renta.component";
 import { CamionComponent } from '../../components/new-veiculo/camion/camion.component';
+
 
 @NgModule({
   imports: [
@@ -35,6 +37,8 @@ import { CamionComponent } from '../../components/new-veiculo/camion/camion.comp
     // formularios
     CarComponent,
     MotosComponent,
+    AddComponent,
+    RentaComponent,
     CamionComponent, // <- necesario para usar <app-camion> en new-car.html
   ],
   declarations: [NewCarPage],

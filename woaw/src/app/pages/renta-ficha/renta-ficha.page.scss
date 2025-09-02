@@ -1,0 +1,299 @@
+.ficha-auto {
+    --padding-start: 0;
+    --padding-end: 0;
+}
+
+/* Header compacto */
+.perfil-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    .btn-regresar {
+        background: transparent;
+        border: 0;
+        color: #fff;
+        font-size: 18px;
+    }
+
+    .logo {
+        width: 28px;
+        height: 28px;
+        object-fit: contain;
+    }
+
+    .titulo-perfil {
+        color: #fff;
+        font-weight: 600;
+    }
+}
+
+/* Loader */
+.spinner-ficha-wrapper {
+    display: grid;
+    place-items: center;
+    padding: 40px 0;
+    color: var(--ion-color-medium);
+
+    .spinner-ficha {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: 3px solid rgba(0, 0, 0, .1);
+        border-top-color: var(--ion-color-primary);
+        animation: spin 1s linear infinite;
+        margin-bottom: 10px;
+    }
+
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+}
+
+/* ===== Contenedor centrado y sin “aire” extra ===== */
+.contenedor_ficha {
+    max-width: 1260px;
+    margin: 12px auto;
+    padding: 0 12px;
+}
+
+/* ====== LAYOUT con 3 bloques ====== */
+.layout-ficha {
+    display: grid;
+    grid-template-areas:
+        "galeria"
+        "principal"
+        "secundario";
+    gap: 16px;
+}
+
+/* Desktop: 2 columnas, secundario debajo de galería */
+@media (min-width: 992px) {
+    .layout-ficha {
+        grid-template-columns: minmax(0, 2fr) minmax(340px, 1fr);
+        grid-template-areas:
+            "galeria   principal"
+            "secundario principal";
+        align-items: start;
+    }
+
+    .bloque-principal {
+        position: sticky;
+        top: 12px;
+        height: fit-content;
+    }
+}
+
+/* Zonas */
+.bloque-galeria {
+    grid-area: galeria;
+}
+
+.bloque-principal {
+    grid-area: principal;
+    display: grid;
+    gap: 12px;
+}
+
+.bloque-secundario {
+    grid-area: secundario;
+    display: grid;
+    gap: 12px;
+}
+
+/* ====== Galería ====== */
+.contenedor-imagenes {
+    position: relative;
+}
+
+.contenedor_imagen_principal {
+    border-radius: 12px;
+    overflow: hidden;
+    background: #f6f7f8;
+    width: 100%;
+    max-width: 100%;
+    aspect-ratio: 16 / 9;
+    /* evita tarjetas larguísimas y huecos */
+}
+
+.imagen-principal {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.imagen-principal img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    /* vemos el auto completo */
+    object-position: center;
+    display: block;
+}
+
+/* Flechas */
+.flecha {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, .95);
+    border: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, .12);
+    font-size: 20px;
+    cursor: pointer;
+
+    &.izquierda {
+        left: 8px;
+    }
+
+    &.derecha {
+        right: 8px;
+    }
+}
+
+/* Miniaturas */
+.miniaturas-vertical {
+    display: grid;
+    grid-auto-flow: column;
+    gap: 8px;
+    margin-top: 8px;
+    overflow-x: auto;
+    padding-bottom: 6px;
+
+    img {
+        width: 96px;
+        height: 64px;
+        object-fit: cover;
+        border-radius: 8px;
+        opacity: .7;
+        cursor: pointer;
+        transition: opacity .2s;
+
+        &:hover {
+            opacity: .9;
+        }
+
+        &.activa {
+            outline: 2px solid var(--ion-color-primary);
+            opacity: 1;
+        }
+    }
+}
+
+/* ====== Cards ====== */
+.card-info {
+    border-radius: 12px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, .06);
+}
+
+.card-detalle {
+    border-radius: 14px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, .06);
+    padding: 14px;
+    background: #fff;
+
+    h2 {
+        font-size: 20px;
+        font-weight: 800;
+        margin-bottom: 8px;
+    }
+}
+
+.precios {
+    display: grid;
+    gap: 8px;
+    margin: 10px 0 14px;
+
+    .precio-renglon {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        span {
+            color: var(--ion-color-medium);
+        }
+
+        strong {
+            font-size: 18px;
+            color: #e53935;
+        }
+    }
+}
+
+.rating {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 12px;
+
+    ion-icon {
+        opacity: .3;
+    }
+
+    ion-icon.activa {
+        opacity: 1;
+        color: #f7b500;
+    }
+}
+
+.botones-contacto-responsive {
+    display: grid;
+    gap: 8px;
+}
+
+.btn-personalizado {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 0;
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+
+    &.success {
+        background: #25D366;
+    }
+
+    &.medium {
+        background: #607D8B;
+    }
+
+    &.primary {
+        background: var(--ion-color-primary);
+    }
+}
+
+.nota-legal {
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--ion-color-medium);
+
+    a {
+        color: var(--ion-color-primary);
+        cursor: pointer;
+    }
+}
+
+ion-card {
+    border-radius: 12px;
+}
+
+.meta-list ion-item {
+    --padding-start: 0;
+}
+
+/* Utilidades */
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

@@ -8,7 +8,7 @@ import { IonicModule } from '@ionic/angular';
 import { BienvenidaComponent } from '../../components/bienvenida/bienvenida.component';
 // importamos la navbar
 import { NavbarComponent } from '../../components/navbar/navbar.component';
-import { PrincipalComponent } from '../../components/landing/principal/principal.component';
+import { PrecentacionComponent } from '../../components/landing/precentacion/precentacion.component';
 import { HistorealSearchComponent } from '../../components/historeal-search/historeal-search.component';
 import { FooterComponent } from '../../components/footer/footer.component';
 
@@ -23,7 +23,7 @@ import { MenuVehiculosPage } from './menu-vehiculos.page';
     MenuVehiculosPageRoutingModule,
     BienvenidaComponent,
     NavbarComponent,
-    PrincipalComponent,
+    PrecentacionComponent,
     HistorealSearchComponent,
     FooterComponent
     ],

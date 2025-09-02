@@ -35,12 +35,13 @@ export class CartasComponent implements OnInit {
   @Input() ubicacion: string = '';
   @Input() esMio: boolean = false;
   @Output() refrescarAutos = new EventEmitter<string>();
+  FormatoPrecios: boolean = false;
 
   autosFavoritos: any[] = [];
   public mostrarPendientes: boolean = false;
   public MyRole: string | null = null;
   public isLoggedIn: boolean = false;
-
+  
   imagenCargada = false;
   verificadorCarga: any;
 
@@ -55,7 +56,6 @@ export class CartasComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    console.log(this.auto)
     this.generalService.tokenExistente$.subscribe((estado) => {
       this.isLoggedIn = estado;
     });
@@ -66,6 +66,12 @@ export class CartasComponent implements OnInit {
     if (storage) {
       const usuario = JSON.parse(storage);
       this.mostrarPendientes = usuario.email === 'glenditaa.003@gmail.com';
+    }
+
+    if (this.ubicacion === 'mis_autos_renta') {
+      this.FormatoPrecios = true;
+    } else {
+      this.FormatoPrecios = false;
     }
 
     this.verificadorCarga = setInterval(() => {
@@ -91,6 +97,8 @@ export class CartasComponent implements OnInit {
       this.router.navigate(['/ficha', 'autos', auto._id]);
     } else if (auto.vehiculo === 'moto') {
       this.router.navigate(['/ficha', 'motos', auto._id]);
+    } else if (auto.vehiculo === 'renta') {
+      this.router.navigate(['/ficha', 'rentas', auto._id]);
     } else {
       console.warn('Tipo de vehículo no reconocido:', auto.vehiculo);
     }
@@ -168,13 +176,14 @@ export class CartasComponent implements OnInit {
     });
   }
  update_car(auto: any, tipo: string) {
-   console.log(auto._id)
   if (this.ubicacion === 'mis_motos') {
     this.router.navigate(['/update-car', 'motos', auto._id]);
   } else if (this.ubicacion === 'mis_camiones') {
     this.router.navigate(['/update-car', 'camiones', auto._id]);
+  } else if (this.ubicacion === 'mis_autos') {
+      this.router.navigate(['/update-car', 'autos', auto._id]);
   } else {
-    this.router.navigate(['/update-car', 'autos', auto._id]);
+      this.router.navigate(['/update-car', 'renta', auto._id]);
   }
 }
   onCardClick(auto: any, event: Event): void {

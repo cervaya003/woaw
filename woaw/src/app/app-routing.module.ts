@@ -223,6 +223,14 @@ const routes: Routes = [
       },
     ],
   },
+  {
+    path: 'renta-ficha/:id',
+    loadChildren: () => import('./pages/renta-ficha/renta-ficha.module').then( m => m.RentaFichaPageModule)
+  },
+  {
+    path: 'disponibilidad-car/:id',
+    loadChildren: () => import('./pages/disponibilidad-car/disponibilidad-car.module').then( m => m.DisponibilidadCarPageModule)
+  },
 ];
 
 @NgModule({
