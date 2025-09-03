@@ -182,3 +182,15 @@ ion-footer {
 .preview-container:hover {
   border-color: #aaa;
 }
+
+.campo-principal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;   
+  text-align: center;   
+}
+
+.campo-principal .preview-placeholder,
+.campo-principal .preview-container {
+  margin: 10px auto;     
+}
