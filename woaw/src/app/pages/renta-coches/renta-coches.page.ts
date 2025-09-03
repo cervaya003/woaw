@@ -4,6 +4,8 @@ import { Router } from '@angular/router';
 import { RentaService } from '../../services/renta.service';
 import { ListComponent } from '../../components/filtos/list/list.component';
 
+import { GeneralService } from '../../services/general.service';
+
 type NumOrDots = number | string;
 type Segmento = 'todos' | 'mios';
 
@@ -15,7 +17,8 @@ type Segmento = 'todos' | 'mios';
 })
 export class RentaCochesPage implements OnInit, OnDestroy {
   @ViewChild('pageContent', { static: false }) pageContent!: IonContent;
-
+  overlayLoaded = false;
+  imgenPrincipal: string = '';
   // ===== Sesión simple
   get isLoggedIn(): boolean {
     return !!localStorage.getItem('token');
@@ -71,12 +74,14 @@ export class RentaCochesPage implements OnInit, OnDestroy {
   constructor(
     private rentaService: RentaService,
     private popoverCtrl: PopoverController,
-    private router: Router
+    private router: Router,
+    private generalService: GeneralService,
   ) { }
 
   ngOnInit() {
-    this.cargarTodos();
-    this.cargarMios(); // si no hay token solo deja vacío
+    // this.cargarTodos();
+    // this.cargarMios(); // si no hay token solo deja vacío
+    this.cargaimagen()
   }
 
   ngOnDestroy(): void {
@@ -329,5 +334,16 @@ export class RentaCochesPage implements OnInit, OnDestroy {
       return String(owner) === String(this.currentUserId);
     }
     return false;
+  }
+
+  async cargaimagen() {
+    this.imgenPrincipal = '/assets/autos/publicidad/renta.png';
+    this.generalService.addPreload(this.imgenPrincipal, 'image');
+    try {
+      await Promise.all([
+        this.generalService.preloadHero(this.imgenPrincipal, 4500),
+      ]);
+    } finally {
+    }
   }
 }

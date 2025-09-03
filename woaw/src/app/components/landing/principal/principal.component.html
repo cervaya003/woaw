@@ -1,172 +1,32 @@
-<!-- BLOQUE USADOS -->
-<section class="bloque-carrusel-minicartas">
-  <div class="contenedor_texto_minicartas" *ngIf="!status">
-    <h2 (click)="verMas('/usados')">Usados
-      <ion-icon name="arrow-forward-outline"></ion-icon>
-    </h2>
-  </div>
-  <div class="carrusel-autos_minicartas">
+<section class="grid-categorias">
+  <div class="grid-categorias__wrap">
 
-    <div class="card-auto" *ngFor="let auto of autosUsados" (click)="onCardClick(auto, $event)">
-      <img [src]="auto.imagenes[0]" alt="{{ auto.marca }} {{ auto.modelo }}" />
-      <div class="info">
-        <h3>{{ auto.marca }} {{ auto.modelo }} {{ auto.anio }}</h3>
+    <a class="cat-card" href="/menu-vehiculos/autos">
+      <img class="cat-card__bg" src="/assets/autos/A1.png" alt="Autos" />
+      <span class="cat-card__overlay">
+        <h3 class="cat-card__title">Autos</h3>
+        <p *ngIf="!esDispositivoMovil" class="cat-card__subtitle">Nuevos, seminuevos y usados</p>
+        <button class="cat-card__btn" type="button">Explorar</button>
+      </span>
+    </a>
 
-        <p *ngIf="auto.version.length > 0">
-          <span>MX ${{ auto.version[0]?.Precio | number:'1.0-0' }}</span>
-        </p>
-        <div class="detalles-auto_minicartas" *ngIf="auto.kilometraje">
-          <div class="item-detalle" *ngIf="auto.anio && Dispositivo !== 'computadora'">
-            <ion-icon name="calendar-outline"></ion-icon>
-            <span title="{{ auto.anio }}">{{ auto.anio }}</span>
-          </div>
-          <div class="item-detalle">
-            <ion-icon name="speedometer-outline"></ion-icon>
-            <span title="{{ auto.kilometraje }} km">{{ auto.kilometraje | number:'1.0-0' }} km</span>
-          </div>
-          <div class="item-detalle" *ngIf="auto.transmision && Dispositivo == 'computadora'">
-            <ion-icon name="swap-horizontal-outline"></ion-icon>
-            <span title="{{ auto.transmision }}">{{ auto.transmision }}</span>
-          </div>
-        </div>
-      </div>
+    <a class="cat-card" href="/m-nuevos">
+      <img class="cat-card__bg" src="/assets/autos/A2.png" alt="Motos" />
+      <span class="cat-card__overlay">
+        <h3 class="cat-card__title">Motos</h3>
+        <p *ngIf="!esDispositivoMovil" class="cat-card__subtitle">De calle, touring y más</p>
+        <button class="cat-card__btn" type="button">Explorar</button>
+      </span>
+    </a>
 
-      <div [ngClass]="generalService.getClaseTipoBarra(auto.tipoVenta)"></div>
-      <p [ngClass]="generalService.getClaseTipo(auto.tipoVenta)">
-        {{ auto.tipoVenta }}
-      </p>
-    </div>
-    <div class="card-auto card-vermas" (click)="verMas('/usados')">
-      <div class="info center">
-        <h3>Ver más Usados</h3>
-        <ion-icon name="arrow-forward-circle" class="flecha-icon"></ion-icon>
-        <div class="contador">{{ conUsados }}</div>
-      </div>
-    </div>
-  </div>
-</section>
+    <a class="cat-card" href="/camiones/todos">
+      <img class="cat-card__bg" src="/assets/autos/A3.png" alt="Camiones" />
+      <span class="cat-card__overlay">
+        <h3 class="cat-card__title">Camiones</h3>
+        <p *ngIf="!esDispositivoMovil" class="cat-card__subtitle">Carga y flotillas</p>
+        <button class="cat-card__btn" type="button">Explorar</button>
+      </span>
+    </a>
 
-<!-- BLOQUE SEMINUEVOS -->
-<section class="bloque-carrusel-minicartas">
-  <div class="contenedor_texto_minicartas" *ngIf="!status">
-    <h2 (click)="verMas('/seminuevos')">Seminuevos
-      <ion-icon name="arrow-forward-outline"></ion-icon>
-    </h2>
-  </div>
-
-  <div class="carrusel-autos_minicartas">
-    <div class="card-auto" *ngFor="let auto of autosSeminuevos" (click)="onCardClick(auto, $event)">
-      <img [src]="auto.imagenes[0]" alt="{{ auto.marca }} {{ auto.modelo }}" />
-      <div class="info">
-        <h3>{{ auto.marca }} {{ auto.modelo }} {{ auto.anio }}</h3>
-        <p *ngIf="auto.version.length > 0">
-          <span>MX ${{ auto.version[0]?.Precio | number:'1.0-0' }}</span>
-        </p>
-        <div class="detalles-auto_minicartas" *ngIf="auto.kilometraje">
-          <div class="item-detalle" *ngIf="auto.anio && Dispositivo !== 'computadora'">
-            <ion-icon name="calendar-outline"></ion-icon>
-            <span title="{{ auto.anio }}">{{ auto.anio }}</span>
-          </div>
-          <div class="item-detalle">
-            <ion-icon name="speedometer-outline"></ion-icon>
-            <span title="{{ auto.kilometraje }} km">{{ auto.kilometraje | number:'1.0-0' }} km</span>
-          </div>
-          <div class="item-detalle" *ngIf="auto.transmision && Dispositivo == 'computadora'">
-            <ion-icon name="swap-horizontal-outline"></ion-icon>
-            <span title="{{ auto.transmision }}">{{ auto.transmision }}</span>
-          </div>
-        </div>
-      </div>
-      <div [ngClass]="generalService.getClaseTipoBarra(auto.tipoVenta)"></div>
-      <p [ngClass]="generalService.getClaseTipo(auto.tipoVenta)">
-        {{ auto.tipoVenta }}
-      </p>
-    </div>
-
-    <div class="card-auto card-vermas" (click)="verMas('/seminuevos')">
-      <div class="info center">
-        <h3>Ver más Seminuevos</h3>
-        <ion-icon name="arrow-forward-circle" class="flecha-icon"></ion-icon>
-        <div class="contador">{{ conSeminuevos }}</div>
-      </div>
-    </div>
-  </div>
-
-</section>
-
-
-<!-- BLOQUE NUEVOS -->
-<section class="bloque-carrusel-minicartas">
-  <div class="contenedor_texto_minicartas" *ngIf="!status">
-    <h2 (click)="verMas('/nuevos')">Nuevos
-      <ion-icon name="arrow-forward-outline"></ion-icon>
-    </h2>
-  </div>
-  <div class="carrusel-autos_minicartas">
-    <div class="card-auto" *ngFor="let auto of autosNuevos" (click)="onCardClick(auto, $event)">
-      <img [src]="auto.imagenes[0]" alt="{{ auto.marca }} {{ auto.modelo }}" />
-      <div class="info">
-        <h3>{{ auto.marca }} {{ auto.modelo }} {{ auto.anio }}</h3>
-        <p *ngIf="auto.version.length > 0">
-          Desde <span>MX ${{ auto.version[0]?.Precio | number:'1.0-0' }}</span>
-        </p>
-      </div>
-      <div [ngClass]="generalService.getClaseTipoBarra(auto.tipoVenta)"></div>
-      <p [ngClass]="generalService.getClaseTipo(auto.tipoVenta)">
-        {{ auto.tipoVenta }}
-      </p>
-    </div>
-    <div class="card-auto card-vermas" (click)="verMas('/nuevos')">
-      <div class="info center">
-        <h3>Ver más Nuevos</h3>
-        <ion-icon name="arrow-forward-circle" class="flecha-icon"></ion-icon>
-        <div class="contador">{{ conNuevos }}</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- BLOQUE MOTOS -->
-<section *ngIf="tipo == 'all'" class="bloque-carrusel-minicartas">
-  <div class="contenedor_texto_minicartas" *ngIf="!status">
-    <h2 (click)="verMas('/m-nuevos')">Motos
-      <ion-icon name="arrow-forward-outline"></ion-icon>
-    </h2>
-  </div>
-  <div class="carrusel-autos_minicartas">
-    <div class="card-auto" *ngFor="let moto of misMotos" (click)="onCardClickM(moto, $event)">
-      <img [src]="moto.imagenes[0]" alt="{{ moto.marca }} {{ moto.modelo }}" />
-      <div class="info">
-        <h3>{{ moto.marca }} {{ moto.modelo }} {{ moto.anio }}</h3>
-        <p>
-          <span>MX ${{ moto.precio | number:'1.0-0' }}</span>
-        </p>
-        <div class="detalles-auto_minicartas" *ngIf="moto.cilindrada">
-          <div class="item-detalle" *ngIf="moto.anio && Dispositivo !== 'computadora'">
-            <ion-icon name="calendar-outline"></ion-icon>
-            <span title="{{ moto.anio }}">{{ moto.anio }}</span>
-          </div>
-          <div class="item-detalle">
-            <ion-icon name="speedometer-outline"></ion-icon>
-            <span>{{ moto.cilindrada }}</span>
-          </div>
-          <div class="item-detalle" *ngIf="moto.transmision && Dispositivo == 'computadora'">
-            <ion-icon name="swap-horizontal-outline"></ion-icon>
-            <span title="{{ moto.transmision }}">{{ moto.transmision }}</span>
-          </div>
-        </div>
-      </div>
-      <div [ngClass]="generalService.getClaseTipoBarra(moto.tipoVenta)"></div>
-      <p [ngClass]="generalService.getClaseTipo(moto.tipoVenta)">
-        {{ moto.tipoVenta }}
-      </p>
-    </div>
-    <div class="card-auto card-vermas" (click)="verMas('/m-nuevos')">
-      <div class="info center">
-        <h3>Ver más Motos</h3>
-        <ion-icon name="arrow-forward-circle" class="flecha-icon"></ion-icon>
-        <div class="contador">{{ conMotos }}</div>
-      </div>
-    </div>
   </div>
 </section>
