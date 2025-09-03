@@ -126,6 +126,10 @@ export class NuevosPage implements OnInit {
       },
     });
   }
+
+  regresar() {
+    this.router.navigate(['/home']);
+  }
   handleRefrescarAutos(ubicacion: string) {
     this.misMotos();
   }
