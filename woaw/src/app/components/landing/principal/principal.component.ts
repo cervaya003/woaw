@@ -30,6 +30,7 @@ export class PrincipalComponent implements OnInit {
   autosUsados: any[] = [];
   misMotos: any[] = [];
   Dispositivo: 'telefono' | 'tablet' | 'computadora' = 'computadora';
+  esDispositivoMovil: boolean = false;
   public conUsados: number = 0;
   public conSeminuevos: number = 0;
   public conNuevos: number = 0;
@@ -46,7 +47,9 @@ export class PrincipalComponent implements OnInit {
     this.generalService.dispositivo$.subscribe((tipo: 'telefono' | 'tablet' | 'computadora') => {
       this.Dispositivo = tipo;
     });
-
+    this.generalService.dispositivo$.subscribe((tipo) => {
+      this.esDispositivoMovil = tipo === 'telefono' || tipo === 'tablet';
+    });
     this.getCarsNews();
     this.getCarsSeminuevos();
     this.getCarsUsados();
@@ -66,14 +69,7 @@ export class PrincipalComponent implements OnInit {
 
 
         const autosAleatorios = [...autos].sort(() => Math.random() - 0.5);
-        this.autosNuevos = autosAleatorios.slice(0, 4);
-
-        // this.autosNuevos = autos.map((car: any) => ({
-        //   ...car,
-        //   precioMin: Math.min(...car.version.map((v: any) => v.Precio)),
-        // }))
-        //   .sort((a: { precioMin: number }, b: { precioMin: number }) => a.precioMin - b.precioMin)
-        //   .slice(Math.floor((autos.length - 4) / 2), Math.floor((autos.length - 4) / 2) + 4);
+        this.autosNuevos = autosAleatorios.slice(0, 5);
 
       },
       error: (err) => {
@@ -88,7 +84,7 @@ export class PrincipalComponent implements OnInit {
         this.conSeminuevos = res.contador;
         const autos = res?.coches || [];
         const autosAleatorios = [...autos].sort(() => Math.random() - 0.5);
-        this.autosSeminuevos = autosAleatorios.slice(0, 4);
+        this.autosSeminuevos = autosAleatorios.slice(0, 5);
       },
       error: (err) => {
         const mensaje = err?.error?.message || 'Ocurrió un error inesperado';
@@ -102,7 +98,7 @@ export class PrincipalComponent implements OnInit {
         this.conUsados = res.contador;
         const autos = res?.coches || [];
         const autosAleatorios = [...autos].sort(() => Math.random() - 0.5);
-        this.autosUsados = autosAleatorios.slice(0, 4);
+        this.autosUsados = autosAleatorios.slice(0, 5);
       },
       error: (err) => {
         const mensaje = err?.error?.message || 'Ocurrió un error inesperado';
@@ -119,7 +115,7 @@ export class PrincipalComponent implements OnInit {
         console.log(res)
         this.conMotos = res.contador;
         const moto = res?.motos || []
-        this.misMotos = moto.slice(0, 4);
+        this.misMotos = moto.slice(0, 5);
       },
       error: (err) => {
         const mensaje = err?.error?.message || 'Ocurrió un error inesperado';

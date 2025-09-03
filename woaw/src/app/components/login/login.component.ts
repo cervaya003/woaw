@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { RegistroService } from 'src/app/services/registro.service';
 import { GeneralService } from '../../services/general.service';
+import { environment } from 'src/environments/environment';
 
 import { Capacitor } from '@capacitor/core';
 import { Browser } from '@capacitor/browser';
@@ -45,36 +46,68 @@ export class LoginComponent implements OnInit, AfterViewInit {
     });
   }
 
+  private b64urlToJson<T = any>(b64url: string): T {
+    const base64 = b64url.replace(/-/g, '+').replace(/_/g, '/');
+    const json = atob(base64);
+    return JSON.parse(json);
+  }
+
+  private saveAndNavigate(token: string, user: any) {
+    this.generalService.guardarCredenciales(token, user);
+    this.router.navigate(['/home']);
+    this.generalService.alert('Bienvenido a WOAW', 'Inicio de sesión exitoso', 'success');
+  }
+
+
   ngOnInit(): void {
-    // Nativo: escuchar deep link
     if (this.isNative) {
-      App.addListener('appUrlOpen', (event: URLOpenListenerEvent) => {
-        this.zone.run(() => {
+      App.addListener('appUrlOpen', async (event: URLOpenListenerEvent) => {
+        this.zone.run(async () => {
           try {
             const url = new URL(event.url);
-            const token = url.searchParams.get('token');
-            const userRaw = url.searchParams.get('user');
 
-            if (token) {
-              const user = userRaw ? JSON.parse(decodeURIComponent(userRaw)) : null;
-              this.generalService.guardarCredenciales(token, user);
-              this.router.navigate(['/home']);
-              this.generalService.alert('Bienvenido a WOAW', 'Inicio de sesión exitoso', 'success');
-            } else {
-              this.generalService.alert('Error', 'No se recibió token de Google', 'danger');
+            // iOS: recibes code
+            const code = url.searchParams.get('code');
+            if (code) {
+              await Browser.close();
+              const resp = await fetch(
+                `${environment.api_key}/auth/mobile/session?code=${encodeURIComponent(code)}`
+              );
+              if (!resp.ok) {
+                const err = await resp.json().catch(() => ({}));
+                throw new Error(err?.message || 'No se pudo canjear el código');
+              }
+              const { token, user } = await resp.json();
+              this.saveAndNavigate(token, user);
+              return;
             }
-          } catch {
+
+            // Android: recibes token + user (Base64URL)
+            const token = url.searchParams.get('token');
+            const userB64 = url.searchParams.get('user');
+            if (token && userB64) {
+              await Browser.close();
+              const user = this.b64urlToJson(userB64);
+              this.saveAndNavigate(token, user);
+              return;
+            }
+
+            // Si no vino nada útil:
             this.generalService.alert('Error', 'URL de retorno inválida', 'danger');
+          } catch (e) {
+            console.error(e);
+            // this.generalService.alert('Error', 'No se pudo procesar el inicio de sesión', 'danger');
           }
         });
       });
     }
   }
 
+
   async ngAfterViewInit(): Promise<void> {
     if (!this.isNative) {
-      await this.waitForGoogle();      
-      await this.renderGoogleButton();  
+      await this.waitForGoogle();
+      await this.renderGoogleButton();
     }
   }
 
@@ -163,7 +196,10 @@ export class LoginComponent implements OnInit, AfterViewInit {
 
   // ANDROID (nativo)
   async loginWithGoogleMobile() {
-    const url = this.registroService.getGoogleMobileRedirectUrl('android');
+    if (!Capacitor.isNativePlatform()) return;
+    const platform = Capacitor.getPlatform() as 'ios' | 'android';
+    const url = this.registroService.getGoogleMobileRedirectUrl(platform);
     await Browser.open({ url });
   }
+
 }
