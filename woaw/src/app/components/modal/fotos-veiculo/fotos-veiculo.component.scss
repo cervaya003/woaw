@@ -1,3 +1,4 @@
+/* Estilos originales mantenidos */
 .etiqueta {
   font-weight: 600;
   font-size: 14px;
@@ -30,7 +31,6 @@
     z-index: 2;
     cursor: pointer;
   }
-
 }
 
 .preview-img {
@@ -83,19 +83,7 @@
       z-index: 2;
     }
   }
-
 }
-
-ion-footer {
-  box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.05);
-}
-
-.botones-footer {
-  display: flex;
-  gap: 10px;
-  padding: 8px;
-}
-
 
 .file-input-label {
   display: inline-flex;
@@ -118,4 +106,79 @@ ion-footer {
     font-size: 18px;
     color: #ff4d00;
   }
+}
+
+ion-footer {
+  box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.05);
+}
+
+.botones-footer {
+  display: flex;
+  gap: 10px;
+  padding: 8px;
+}
+
+/* Nuevos estilos para las mejoras visuales */
+.preview-placeholder {
+  width: 100%;
+  max-width: 150px;
+  aspect-ratio: 1 / 1;
+  border: 2px dashed #ccc;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f4f4f4;
+  cursor: pointer;
+  
+  &:hover {
+    border-color: #ff4d00;
+    
+    ion-icon {
+      color: #ff4d00;
+    }
+  }
+  
+  ion-icon {
+    font-size: 40px;
+    color: #ccc;
+  }
+}
+
+.imagenes-secundarias {
+  .add-more-placeholder {
+    width: 100px;
+    height: 100px;
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    
+    ion-icon {
+      font-size: 30px;
+      color: #ccc;
+    }
+    
+    &:hover {
+      border-color: #ff4d00;
+      
+      ion-icon {
+        color: #ff4d00;
+      }
+    }
+  }
+}
+
+/* Mejora estética para los botones y contenedores */
+.file-input-label:hover {
+  background: #e8e8e8;
+  border-color: #b8b8b8;
+}
+
+.preview-container:hover {
+  border-color: #aaa;
 }

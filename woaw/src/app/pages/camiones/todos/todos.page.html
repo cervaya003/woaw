@@ -1,22 +1,33 @@
-
-
 <app-navbar *ngIf="!esDispositivoMovil"></app-navbar>
 
 <ion-content #pageContent [fullscreen]="true">
   <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
-    <ion-refresher-content pullingIcon="arrow-down-outline" refreshingSpinner="crescent"
-      pullingText="Desliza para actualizar" refreshingText="Actualizando...">
+    <ion-refresher-content
+      pullingIcon="arrow-down-outline"
+      refreshingSpinner="crescent"
+      pullingText="Desliza para actualizar"
+      refreshingText="Actualizando..."
+    >
     </ion-refresher-content>
   </ion-refresher>
 
-  <app-acomodo [totalAutos]="totalCamiones" (ordenCambio)="ordenarCamiones($event)" [titulo]="'Camiones'"></app-acomodo>
+  <app-acomodo
+    [totalAutos]="totalCamiones"
+    (ordenCambio)="ordenarCamiones($event)"
+    [titulo]="'Camiones'"
+  ></app-acomodo>
+
 
   <ion-grid class="contenedor-catalogo">
     <ion-row>
       <!-- Columna lateral de filtros -->
       <ion-col size="12" size-md="3">
-        <app-menu [filtros]="filtros" [filtrosAplicados]="filtrosAplicados"
-          (mostrarOpciones)="mostrarOpciones($event.event, $event.tipo)" (limpiarFiltros)="resetearFiltros()">
+        <app-menu
+          [filtros]="filtros"
+          [filtrosAplicados]="filtrosAplicados"
+          (mostrarOpciones)="mostrarOpciones($event.event, $event.tipo)"
+          (limpiarFiltros)="resetearFiltros()"
+        >
         </app-menu>
       </ion-col>
 
@@ -24,62 +35,59 @@
       <ion-col size="12" size-md="9">
         <div class="catalogo-autos">
           <div *ngIf="camionesPaginados?.length === 0" class="mensaje-vacio">
-            <ion-icon name="truck-outline" class="icono-mensaje"></ion-icon><br />
+            <ion-icon name="truck-outline" class="icono-mensaje"></ion-icon
+            ><br />
             No se encontraron camiones para esta sección.
           </div>
 
           <ng-container *ngFor="let camion of camionesPaginados">
-            <app-cartas [auto]="camion" [autosFavoritosIds]="camionesFavoritosIds" [ubicacion]="'camiones'"
-              [esMio]="idsMisCamiones.includes(camion._id)">
+            <app-cartas
+              [auto]="camion"
+              [autosFavoritosIds]="camionesFavoritosIds"
+              [ubicacion]="'camiones'"
+              [esMio]="idsMisCamiones.includes(camion._id)"
+            >
             </app-cartas>
           </ng-container>
         </div>
 
-        <!-- Paginación -->
+        
+
+
         <div class="contenedor-paginacion" *ngIf="totalPaginas > 1">
           <p class="titulo-paginacion">más</p>
           <div class="paginacion-scroll">
             <div class="paginacion">
               <!-- Flecha anterior -->
-              <button class="pagina" (click)="cambiarPagina(paginaActual - 1)"
-                [disabled]="paginaActual === 1">‹</button>
+              <button
+                class="pagina"
+                (click)="cambiarPagina(paginaActual - 1)"
+                [disabled]="paginaActual === 1"
+              >
+                ‹
+              </button>
 
               <!-- Botones dinámicos -->
               <ng-container *ngFor="let i of paginasReducidas">
-                <button *ngIf="esNumero(i)" class="pagina" [class.activa]="paginaActual === i"
-                  (click)="cambiarPagina(i)">
+                <button
+                  *ngIf="esNumero(i)"
+                  class="pagina"
+                  [class.activa]="paginaActual === i"
+                  (click)="cambiarPagina(i)"
+                >
                   {{ i }}
                 </button>
                 <span *ngIf="!esNumero(i)" class="ellipsis">...</span>
               </ng-container>
 
               <!-- Flecha siguiente -->
-              <button class="pagina" (click)="cambiarPagina(paginaActual + 1)"
-                [disabled]="paginaActual === totalPaginas">›</button>
-            </div>
-          </div>
-        </div>
-
-        
-<div class="contenedor-paginacion" *ngIf="totalPaginas > 1">
-          <div class="paginacion-scroll">
-            <div class="paginacion">
-              <!-- Flecha anterior -->
-              <button class="pagina" (click)="cambiarPagina(paginaActual - 1)"
-                [disabled]="paginaActual === 1">‹</button>
-
-              <!-- Botones dinámicos -->
-              <ng-container *ngFor="let i of paginasReducidas">
-                <button *ngIf="esNumero(i)" class="pagina" [class.activa]="paginaActual === i"
-                  (click)="cambiarPagina(i)">
-                  {{ i }}
-                </button>
-                <span *ngIf="!esNumero(i)" class="ellipsis">...</span>
-              </ng-container>
-
-              <!-- Flecha siguiente -->
-              <button class="pagina" (click)="cambiarPagina(paginaActual + 1)"
-                [disabled]="paginaActual === totalPaginas">›</button>
+              <button
+                class="pagina"
+                (click)="cambiarPagina(paginaActual + 1)"
+                [disabled]="paginaActual === totalPaginas"
+              >
+                ›
+              </button>
             </div>
           </div>
         </div>
