@@ -53,15 +53,19 @@
               (click)="irABusqueda('Kia')" alt="Kia" loading="lazy" />
             <img src="https://storage.googleapis.com/wo-aw/uploads/marcas/hyundai-1752250721333.png"
               (click)="irABusqueda('Hyundai')" alt="Hyundai" loading="lazy" />
+            <!-- <img src="https://storage.googleapis.com/wo-aw/uploads/marcas/mercedes_benz-1752250726653.png"
+              (click)="irABusqueda('Bercedes Benz')" alt="Hyundai" loading="lazy" /> -->
+            <img src="https://storage.googleapis.com/wo-aw/uploads/marcas/bmw-1752250746130.png"
+              (click)="irABusqueda('bmw')" alt="Hyundai" loading="lazy" />
           </div>
 
         </div>
       </div>
     </div>
   </div>
+  
   <app-principal></app-principal>
-  <!-- <app-precentacion></app-precentacion> -->
-  <br><br>
+
   <section class="video-wrap">
     <video #videoEl class="video" [src]="videoSrc" autoplay muted loop playsinline preload="auto"
       poster="assets/img/poster.jpg">
@@ -71,11 +75,10 @@
       <h1 class="headline ">Encuentra tu siguiente vehículo</h1>
       <p class="subheadline">Coches, seminuevos y camiones.</p>
     </div>
-    <!-- <button class="mute-btn" (click)="toggleMute(videoEl)">
-      <ion-icon [name]="videoEl?.muted ? 'volume-mute' : 'volume-high'"></ion-icon>
-    </button> -->
   </section>
+
   <br><br>
+
   <section class="tipos-vehiculos">
     <h2>Tipos de Vehículos</h2>
     <div class="lista-tipos">
