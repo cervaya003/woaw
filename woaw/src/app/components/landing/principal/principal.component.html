@@ -1,32 +1,85 @@
+<div class="contenedor_titulo">
+  <h2 class="titulo_principal">Nuestros Servicios</h2>
+  <img src="/assets/icon/logo2.png" alt="Logo Go Autos" class="logo-goautos2" loading="lazy" />
+</div>
+
 <section class="grid-categorias">
   <div class="grid-categorias__wrap">
-
     <a class="cat-card" href="/menu-vehiculos/autos">
       <img class="cat-card__bg" src="/assets/autos/A1.png" alt="Autos" />
       <span class="cat-card__overlay">
         <h3 class="cat-card__title">Autos</h3>
         <p *ngIf="!esDispositivoMovil" class="cat-card__subtitle">Nuevos, seminuevos y usados</p>
-        <button class="cat-card__btn" type="button">Explorar</button>
+        <button *ngIf="!esDispositivoMovil" class="cat-card__btn" type="button">Explorar</button>
       </span>
     </a>
-
     <a class="cat-card" href="/m-nuevos">
-      <img class="cat-card__bg" src="/assets/autos/A2.png" alt="Motos" />
+      <img class="cat-card__bg" src="/assets/autos/A5.png" alt="Motos" />
       <span class="cat-card__overlay">
         <h3 class="cat-card__title">Motos</h3>
         <p *ngIf="!esDispositivoMovil" class="cat-card__subtitle">De calle, touring y más</p>
-        <button class="cat-card__btn" type="button">Explorar</button>
+        <button *ngIf="!esDispositivoMovil" class="cat-card__btn" type="button">Explorar</button>
       </span>
     </a>
-
     <a class="cat-card" href="/camiones/todos">
       <img class="cat-card__bg" src="/assets/autos/A3.png" alt="Camiones" />
       <span class="cat-card__overlay">
         <h3 class="cat-card__title">Camiones</h3>
         <p *ngIf="!esDispositivoMovil" class="cat-card__subtitle">Carga y flotillas</p>
-        <button class="cat-card__btn" type="button">Explorar</button>
+        <button *ngIf="!esDispositivoMovil" class="cat-card__btn" type="button">Explorar</button>
       </span>
     </a>
 
+    <ng-container>
+      <a class="cat-card2" href="/arrendamiento">
+        <span class="cat-card__overlay">
+          <h3 class="cat-card__title">Arrendamiento</h3>
+          <p *ngIf="!esDispositivoMovil" class="cat-card__subtitle">
+            Nuevos, seminuevos y usados
+          </p>
+          <img src="/assets/img/ic1.png" alt="icono arrendamiento" class="cat-card__icon" />
+          <!-- <button class="cat-card__btn" type="button">Explorar</button> -->
+        </span>
+      </a>
+
+      <a class="cat-card2" href="/renta-coches">
+        <span class="cat-card__overlay">
+          <h3 class="cat-card__title">Renta de autos</h3>
+          <p *ngIf="!esDispositivoMovil" class="cat-card__subtitle">
+            De calle, touring y más
+          </p>
+          <img src="/assets/img/ic4.png" alt="icono renta" class="cat-card__icon" />
+          <!-- <button class="cat-card__btn" type="button">Explorar</button> -->
+        </span>
+      </a>
+
+      <a class="cat-card2" href="/seguros">
+        <span class="cat-card__overlay">
+          <h3 class="cat-card__title">Seguros</h3>
+          <p *ngIf="!esDispositivoMovil" class="cat-card__subtitle">
+            Carga y flotillas
+          </p>
+          <img src="/assets/img/ic5.png" alt="icono seguros" class="cat-card__icon" />
+          <!-- <button class="cat-card__btn" type="button">Explorar</button> -->
+        </span>
+      </a>
+    </ng-container>
+
+  </div>
+</section>
+
+<section class="anuncio-app">
+  <div class="contenido">
+    <h2 class="titulo"> <ion-icon name="phone-portrait"></ion-icon> Próximamente: App Móvil WOAW</h2>
+    <p class="descripcion">
+      Prepárate para una experiencia única en compra, venta y gestión de vehículos.
+      Nuestra aplicación oficial estará disponible muy pronto en la
+      <span class="resaltado">Play Store</span> y la
+      <span class="resaltado">App Store</span>.
+    </p>
+    <div class="stores">
+      <img src="/assets/autos/F1.png" alt="Play Store" />
+      <img src="/assets/autos/F2.png" alt="App Store" />
+    </div>
   </div>
 </section>
