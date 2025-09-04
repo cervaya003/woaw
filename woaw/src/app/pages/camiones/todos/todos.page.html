@@ -1,5 +1,17 @@
 <app-navbar *ngIf="!esDispositivoMovil"></app-navbar>
 
+<ion-header *ngIf="esDispositivoMovil">
+  <ion-toolbar color="dark">
+    <ion-buttons slot="start">
+      <ion-back-button text="" routerDirection="back" defaultHref="/"></ion-back-button>
+      <div class="perfil-header">
+        <img src="/assets/icon/logo4.png" alt="Go Autos" class="logo" />
+      </div>
+      <ion-title>Camiones</ion-title>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
 <ion-content #pageContent [fullscreen]="true">
   <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
     <ion-refresher-content
@@ -50,9 +62,6 @@
             </app-cartas>
           </ng-container>
         </div>
-
-        
-
 
         <div class="contenedor-paginacion" *ngIf="totalPaginas > 1">
           <p class="titulo-paginacion">más</p>

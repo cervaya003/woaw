@@ -18,8 +18,10 @@
   [titulo]="'Lote'">
 </app-acomodo>
 
-<ion-content [fullscreen]="true" class="ion-padding">
-  <!-- Ficha del lote -->
+<ion-content [fullscreen]="true">
+ 
+ <ng-container class="contenedor_css">
+   <!-- Ficha del lote -->
   <div class="ficha-lote" *ngIf="lote">
     <div class="ficha-lote__head">
       <!-- Columna de texto -->
@@ -109,6 +111,7 @@
       </ion-col>
     </ion-row>
   </ion-grid>
+</ng-container>
 
   <app-footer></app-footer>
 </ion-content>

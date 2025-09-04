@@ -224,12 +224,29 @@ const routes: Routes = [
     ],
   },
   {
-    path: 'renta-ficha/:id',
-    loadChildren: () => import('./pages/renta-ficha/renta-ficha.module').then( m => m.RentaFichaPageModule)
+    path: "renta-ficha/:id",
+    loadChildren: () =>
+      import("./pages/renta-ficha/renta-ficha.module").then(
+        (m) => m.RentaFichaPageModule
+      ),
   },
   {
-    path: 'disponibilidad-car/:id',
-    loadChildren: () => import('./pages/disponibilidad-car/disponibilidad-car.module').then( m => m.DisponibilidadCarPageModule)
+    path: "disponibilidad-car/:id",
+    loadChildren: () =>
+      import("./pages/disponibilidad-car/disponibilidad-car.module").then(
+        (m) => m.DisponibilidadCarPageModule
+      ),
+  },
+  // {
+  //   path: "error",
+  //   loadChildren: () =>
+  //     import("./pages/error/error.module").then((m) => m.ErrorPageModule),
+  // },
+  {
+    path: "**",
+    loadChildren: () =>
+      import("./pages/error/error.module").then((m) => m.ErrorPageModule),
+    data: { title: "Página no encontrada | woaw" },
   },
 ];
 

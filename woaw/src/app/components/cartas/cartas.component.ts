@@ -97,8 +97,10 @@ export class CartasComponent implements OnInit {
       this.router.navigate(['/ficha', 'autos', auto._id]);
     } else if (auto.vehiculo === 'moto') {
       this.router.navigate(['/ficha', 'motos', auto._id]);
-    } else if (auto.vehiculo === 'renta') {
+    } else if (auto.vehiculo === 'renta'){ 
       this.router.navigate(['/ficha', 'rentas', auto._id]);
+    } else if (auto.vehiculo=== 'camion'){
+      this.router.navigate(['/ficha', 'camiones', auto._id]);
     } else {
       console.warn('Tipo de vehículo no reconocido:', auto.vehiculo);
     }

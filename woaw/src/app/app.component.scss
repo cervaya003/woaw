@@ -1,16 +1,85 @@
-.fab-ajustada {
-  bottom: 25px !important;
-  right: 35px !important;
-
-
-  @media (max-width: 1024px) and (min-width: 768px) {
-    bottom: 65px !important;
-    right: 25px !important;
-  }
-
-  @media (max-width: 767px) {
-    bottom: 70px !important;
-    right: 15px !important;
-  }
+.error-page {
+  --pad: clamp(16px, 3vw, 32px);
+  --radius: 22px;
+  --shadow: 0 18px 60px rgba(0, 0, 0, .35);
+  --panel: rgba(255, 255, 255, .06);
+  --border: rgba(255, 255, 255, .14);
+  --title: clamp(56px, 10vw, 120px);
+  --subtitle: clamp(16px, 2.2vw, 20px);
+  --bg-a: #0b0b0e;
+  --bg-b: #14161f;
 }
 
+.error-wrap {
+  position: relative;
+  min-height: 100%;
+  display: grid;
+  place-items: center;
+  padding: var(--pad);
+  background:
+    radial-gradient(1200px 600px at 10% 110%, rgba(255, 70, 70, .20), transparent 60%),
+    radial-gradient(1000px 520px at 90% -10%, rgba(72, 136, 255, .20), transparent 60%),
+    linear-gradient(180deg, var(--bg-a) 0%, var(--bg-b) 100%);
+  overflow: hidden;
+}
+
+.glass {
+  width: min(980px, 92vw);
+  display: grid;
+  gap: 14px;
+  text-align: center;
+  padding: clamp(18px, 3vw, 36px);
+  border-radius: var(--radius);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(12px) saturate(140%);
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+}
+
+.code {
+  margin: 0;
+  font-weight: 900;
+  font-size: var(--title);
+  line-height: .9;
+  letter-spacing: .02em;
+  color: #fff;
+}
+
+.headline {
+  margin: 0 0 6px 0;
+  font-size: clamp(18px, 2.6vw, 24px);
+  color: #cfd3dc;
+}
+
+.car {
+  width: min(760px, 90vw);
+  aspect-ratio: 16 / 9;
+  object-fit: contain;
+  margin: 6px auto 2px;
+  filter: drop-shadow(0 30px 40px rgba(0, 0, 0, .35));
+  transform: translateZ(0) scale(1.02);
+  display: block;
+}
+
+.desc {
+  margin: 2px 0 12px 0;
+  font-size: var(--subtitle);
+  color: #aeb4c2;
+}
+
+.fx {
+  position: absolute;
+  inset: -20%;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  opacity: .22;
+}
+
+.fx-a {
+  background: radial-gradient(60% 60% at 20% 80%, rgba(255, 70, 70, .35), transparent 60%);
+}
+
+.fx-b {
+  background: radial-gradient(60% 60% at 80% 20%, rgba(72, 136, 255, .35), transparent 60%);
+}

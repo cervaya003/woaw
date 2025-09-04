@@ -1,26 +1,27 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { GeneralService } from '../../services/general.service';
-import { ModalController } from '@ionic/angular';
-import { HttpClient } from '@angular/common/http';
-import { CarsService } from './../../services/cars.service';
-import { MotosService } from './../../services/motos.service';
-import { ContactosService } from './../../services/contactos.service';
-import { Title } from '@angular/platform-browser';
-import { SeoService } from '../../services/seo.service';
-import { Location } from '@angular/common';
-import { PoliticasComponent } from '../../components/modal/politicas/politicas.component';
-import { AvisoPrivasidadComponent } from '../../components/modal/aviso-privasidad/aviso-privasidad.component';
-import { PasosArrendamientoComponent } from '../../components/modal/pasos-arrendamiento/pasos-arrendamiento.component';
-import { ImagenesVehiculoComponent } from './../../components/modal/imagenes-vehiculo/imagenes-vehiculo.component';
-import { ActionSheetController } from '@ionic/angular';
-import { Browser } from '@capacitor/browser';
-import { Capacitor } from '@capacitor/core';
+import { CamionesService } from "./../../services/camiones.service";
+import { Component, OnInit, ViewChild, ElementRef } from "@angular/core";
+import { ActivatedRoute, Router } from "@angular/router";
+import { GeneralService } from "../../services/general.service";
+import { ModalController } from "@ionic/angular";
+import { HttpClient } from "@angular/common/http";
+import { CarsService } from "./../../services/cars.service";
+import { MotosService } from "./../../services/motos.service";
+import { ContactosService } from "./../../services/contactos.service";
+import { Title } from "@angular/platform-browser";
+import { SeoService } from "../../services/seo.service";
+import { Location } from "@angular/common";
+import { PoliticasComponent } from "../../components/modal/politicas/politicas.component";
+import { AvisoPrivasidadComponent } from "../../components/modal/aviso-privasidad/aviso-privasidad.component";
+import { PasosArrendamientoComponent } from "../../components/modal/pasos-arrendamiento/pasos-arrendamiento.component";
+import { ImagenesVehiculoComponent } from "./../../components/modal/imagenes-vehiculo/imagenes-vehiculo.component";
+import { ActionSheetController } from "@ionic/angular";
+import { Browser } from "@capacitor/browser";
+import { Capacitor } from "@capacitor/core";
 
 @Component({
-  selector: 'app-ficha',
-  templateUrl: './ficha.page.html',
-  styleUrls: ['./ficha.page.scss'],
+  selector: "app-ficha",
+  templateUrl: "./ficha.page.html",
+  styleUrls: ["./ficha.page.scss"],
   standalone: false,
 })
 export class FichaPage implements OnInit {
@@ -31,21 +32,21 @@ export class FichaPage implements OnInit {
   miniaturasCargadas: { [url: string]: boolean } = {};
 
   descripcionExpandida: boolean = false;
-  imagenSeleccionada: string = '';
+  imagenSeleccionada: string = "";
   versionSeleccionada: { nombre: string; precio: number } | null = null;
   versiones: { nombre: string; precio: number }[] = [];
   especificacionesAuto: any[] = [];
-  tipo: string = '';
-  public tipo_veiculo: string = '';
+  tipo: string = "";
+  public tipo_veiculo: string = "";
 
-  @ViewChild('mapAutoContainer', { static: false })
+  @ViewChild("mapAutoContainer", { static: false })
   mapAutoContainer!: ElementRef;
   mapAuto!: google.maps.Map;
   autoMarker!: google.maps.Marker;
-  direccionCompleta: string = 'Obteniendo ubicación...';
+  direccionCompleta: string = "Obteniendo ubicación...";
 
   public esDispositivoMovil: boolean = false;
-  public dispositivo: string = '';
+  public dispositivo: string = "";
   public isLoggedIn: boolean = false;
   public MyRole: string | null = null;
 
@@ -54,14 +55,14 @@ export class FichaPage implements OnInit {
 
   zoomLeft = 0;
   zoomTop = 0;
-  zoomTransform = '';
+  zoomTransform = "";
   showZoom = false;
   touchStartX: number = 0;
 
   mostrarCotizador = true;
   public idvehiculo: string | null = null;
 
-  public tipoAlSubir: 'particular' | 'lote' | null = null;
+  public tipoAlSubir: "particular" | "lote" | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -74,13 +75,14 @@ export class FichaPage implements OnInit {
     private title: Title,
     private seoService: SeoService,
     public motosService: MotosService,
+    public CamionesService: CamionesService,
     private location: Location,
     private actionSheetCtrl: ActionSheetController
-  ) { }
+  ) {}
 
   async ngOnInit() {
     this.generalService.dispositivo$.subscribe((tipo) => {
-      this.esDispositivoMovil = tipo === 'telefono' || tipo === 'tablet';
+      this.esDispositivoMovil = tipo === "telefono" || tipo === "tablet";
       this.dispositivo = tipo;
     });
     this.generalService.tokenExistente$.subscribe((estado) => {
@@ -92,15 +94,18 @@ export class FichaPage implements OnInit {
     await this.obtenerAuto();
   }
   async obtenerAuto() {
-    this.tipo_veiculo = this.route.snapshot.paramMap.get('tipo') ?? '';
-    this.idvehiculo = this.route.snapshot.paramMap.get('id');
+    this.tipo_veiculo = this.route.snapshot.paramMap.get("tipo") ?? "";
+    this.idvehiculo = this.route.snapshot.paramMap.get("id");
 
-    if (this.tipo_veiculo === 'autos') {
+    if (this.tipo_veiculo === "autos") {
       this.autosURL(this.idvehiculo);
-    } else if (this.tipo_veiculo === 'motos') {
+    } else if (this.tipo_veiculo === "motos") {
       this.motosURL(this.idvehiculo);
+    } else if (this.tipo_veiculo === "camiones") {
+      this.camionURL(this.idvehiculo);
     }
   }
+
   async seo() {
     if (this.auto?.marca && this.auto?.modelo && this.auto?.anio) {
       const titulo = `${this.auto.marca} ${this.auto.modelo} ${this.auto.anio} en venta | Go Autos`;
@@ -111,8 +116,8 @@ export class FichaPage implements OnInit {
     }
   }
   async mostrarauto() {
-    this.tipo = (this.auto.tipoVenta || '').toLowerCase();
-    this.imagenSeleccionada = this.auto?.imagenes?.[0] || '';
+    this.tipo = (this.auto.tipoVenta || "").toLowerCase();
+    this.imagenSeleccionada = this.auto?.imagenes?.[0] || "";
 
     if (this.auto?.version && Array.isArray(this.auto.version)) {
       this.versiones = this.auto.version.map((v: any) => ({
@@ -140,7 +145,7 @@ export class FichaPage implements OnInit {
         }
       }, 0);
 
-      if (this.tipo === 'nuevo') {
+      if (this.tipo === "nuevo") {
         if (this.versionSeleccionada?.nombre) {
           this.getEspecificacionesPorVersion(this.versionSeleccionada.nombre);
         }
@@ -156,12 +161,12 @@ export class FichaPage implements OnInit {
     setTimeout(() => {
       this.mapAuto = new google.maps.Map(this.mapAutoContainer.nativeElement, {
         center: position,
-        zoom: this.tipoAlSubir === 'particular' ? 12 : 12,
+        zoom: this.tipoAlSubir === "particular" ? 12 : 12,
         styles: [
           {
-            featureType: 'poi',
-            elementType: 'all',
-            stylers: [{ visibility: 'off' }],
+            featureType: "poi",
+            elementType: "all",
+            stylers: [{ visibility: "off" }],
           },
         ],
         disableDefaultUI: this.esDispositivoMovil,
@@ -169,23 +174,23 @@ export class FichaPage implements OnInit {
         draggable: !this.esDispositivoMovil,
       });
 
-      if (this.tipoAlSubir === 'lote') {
+      if (this.tipoAlSubir === "lote") {
         this.autoMarker = new google.maps.Marker({
           position,
           map: this.mapAuto,
           title: `${ciudad}, ${estado}`,
           icon: {
-            url: 'assets/icon/car_red.png',
+            url: "assets/icon/car_red.png",
             scaledSize: new google.maps.Size(30, 30),
             anchor: new google.maps.Point(15, 30),
           },
         });
       } else {
         new google.maps.Circle({
-          strokeColor: '#FF0000',
+          strokeColor: "#FF0000",
           strokeOpacity: 0.9,
           strokeWeight: 2,
-          fillColor: '#FF0000',
+          fillColor: "#FF0000",
           fillOpacity: 0.2,
           map: this.mapAuto,
           center: position,
@@ -201,78 +206,82 @@ export class FichaPage implements OnInit {
         this.direccionCompleta = direccion;
       })
       .catch((error) => {
-        this.direccionCompleta = 'No se pudo obtener la dirección.';
+        this.direccionCompleta = "No se pudo obtener la dirección.";
         console.warn(error);
       });
   }
   async openDirection() {
     const { lat, lng, ciudad, estado } = this.auto?.ubicacion || {};
-    const label = encodeURIComponent(`${ciudad ?? ''} ${estado ?? ''}`.trim() || 'Ubicación');
+    const label = encodeURIComponent(
+      `${ciudad ?? ""} ${estado ?? ""}`.trim() || "Ubicación"
+    );
 
     // fallback si no hay coords
-    const hasCoords = typeof lat === 'number' && typeof lng === 'number';
+    const hasCoords = typeof lat === "number" && typeof lng === "number";
     const webUrl = hasCoords
       ? `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`
-      : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(this.direccionCompleta || '')}`;
+      : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+          this.direccionCompleta || ""
+        )}`;
 
     const platform = Capacitor.getPlatform();
 
-    if (platform === 'android' && hasCoords) {
+    if (platform === "android" && hasCoords) {
       const url = `geo:${lat},${lng}?q=${lat},${lng}(${label})`;
       try {
         await Browser.open({ url });
       } catch {
-        window.open(webUrl, '_blank');
+        window.open(webUrl, "_blank");
       }
       return;
     }
 
-    if (platform === 'ios' && hasCoords) {
+    if (platform === "ios" && hasCoords) {
       const url = `http://maps.apple.com/?ll=${lat},${lng}&q=${label}`;
       try {
         await Browser.open({ url });
       } catch {
-        window.open(webUrl, '_blank');
+        window.open(webUrl, "_blank");
       }
       return;
     }
-    window.open(webUrl, '_blank');
+    window.open(webUrl, "_blank");
   }
   async regresar() {
-    let origenLote = localStorage.getItem('origenLote');
+    let origenLote = localStorage.getItem("origenLote");
     if (origenLote !== null) {
       await this.router.navigate([origenLote]);
       return;
     }
-    const origen = localStorage.getItem('origenFicha');
+    const origen = localStorage.getItem("origenFicha");
 
-    if (origen === 'true') {
-      localStorage.removeItem('origenFicha');
+    if (origen === "true") {
+      localStorage.removeItem("origenFicha");
       this.location.back();
       return;
     }
     switch (this.tipo_veiculo) {
-      case 'autos': {
-        if (this.tipo === 'nuevo') {
-          await this.router.navigate(['/nuevos']);
-        } else if (this.tipo === 'seminuevo') {
-          await this.router.navigate(['/seminuevos']);
-        } else if (this.tipo === 'usado') {
-          await this.router.navigate(['/usados']);
+      case "autos": {
+        if (this.tipo === "nuevo") {
+          await this.router.navigate(["/nuevos"]);
+        } else if (this.tipo === "seminuevo") {
+          await this.router.navigate(["/seminuevos"]);
+        } else if (this.tipo === "usado") {
+          await this.router.navigate(["/usados"]);
         }
         break;
       }
-      case 'motos': {
-        await this.router.navigate(['/m-nuevos']);
+      case "motos": {
+        await this.router.navigate(["/m-nuevos"]);
         break;
       }
       default: {
         console.warn(
-          'Tipo de vehículo o tipo de venta no reconocido:',
+          "Tipo de vehículo o tipo de venta no reconocido:",
           this.tipo_veiculo,
           this.tipo
         );
-        await this.router.navigate(['/']);
+        await this.router.navigate(["/"]);
         break;
       }
     }
@@ -299,7 +308,7 @@ export class FichaPage implements OnInit {
     }
 
     // 3) Como último recurso, vete al home.
-    this.router.navigate(['/home']); // ajusta si tu ruta de inicio es distinta
+    this.router.navigate(["/home"]); // ajusta si tu ruta de inicio es distinta
   }
   getEspecificacionesPorVersion(version: string) {
     const anio = this.auto.anio;
@@ -307,21 +316,28 @@ export class FichaPage implements OnInit {
     const modelo = this.auto.modelo;
     const vers = version;
 
-    this.carsService.EspesificacionesVersionFicha(anio, marca, modelo, vers).subscribe({
-      next: (res: any[]) => {
-        this.generalService.loadingDismiss();
-        this.especificacionesAuto = res;
-      },
-      error: (err) => {
-        this.generalService.loadingDismiss();
-        const mensaje =
-          err?.error?.message || 'Ocurrió un error al traer las especificaciones';
-        this.generalService.alert('Error al obtener especificaciones', mensaje, 'danger');
-      },
-      complete: () => {
-        this.generalService.loadingDismiss();
-      },
-    });
+    this.carsService
+      .EspesificacionesVersionFicha(anio, marca, modelo, vers)
+      .subscribe({
+        next: (res: any[]) => {
+          this.generalService.loadingDismiss();
+          this.especificacionesAuto = res;
+        },
+        error: (err) => {
+          this.generalService.loadingDismiss();
+          const mensaje =
+            err?.error?.message ||
+            "Ocurrió un error al traer las especificaciones";
+          this.generalService.alert(
+            "Error al obtener especificaciones",
+            mensaje,
+            "danger"
+          );
+        },
+        complete: () => {
+          this.generalService.loadingDismiss();
+        },
+      });
   }
   onSeleccionarVersion(version: { nombre: string; precio: number }) {
     this.versionSeleccionada = version;
@@ -333,57 +349,57 @@ export class FichaPage implements OnInit {
   }
   getEstiloColor(color: string): any {
     const mapaColores: { [key: string]: string } = {
-      Blanco: '#FFFFFF',
-      Negro: '#000000',
-      Gris: '#808080',
-      Plateado: '#B0B0B0',
-      Rojo: '#FF0000',
-      Azul: '#0000FF',
-      'Azul marino': '#000080',
-      'Azul cielo': '#87CEEB',
-      Verde: '#008000',
-      'Verde oscuro': '#006400',
-      Beige: '#F5F5DC',
-      Café: '#8B4513',
-      Amarillo: '#FFFF00',
-      Naranja: '#FFA500',
-      Morado: '#800080',
-      Vino: '#8B0000',
-      Oro: '#FFD700',
-      Bronce: '#CD7F32',
-      Turquesa: '#40E0D0',
-      'Gris Oxford': '#A9A9A9',
-      Arena: '#D6C29C',
-      Grafito: '#484848',
-      Champagne: '#F7E7CE',
-      Titanio: '#BFC1C2',
-      Cobre: '#B87333',
-      Camaleón: '#7F7FD5',
-      Perlado: '#F8F6F0',
-      Mate: '#CCCCCC',
-      'Negro obsidiana': '#0B0B0B',
-      'Blanco perla': '#FDF6EC',
-      'Rojo cereza': '#DE3163',
-      'Azul eléctrico': '#00FFFF',
-      'Gris plomo': '#6E7B8B',
-      'Color militar': 'url(assets/autos/militar.jpg)',
+      Blanco: "#FFFFFF",
+      Negro: "#000000",
+      Gris: "#808080",
+      Plateado: "#B0B0B0",
+      Rojo: "#FF0000",
+      Azul: "#0000FF",
+      "Azul marino": "#000080",
+      "Azul cielo": "#87CEEB",
+      Verde: "#008000",
+      "Verde oscuro": "#006400",
+      Beige: "#F5F5DC",
+      Café: "#8B4513",
+      Amarillo: "#FFFF00",
+      Naranja: "#FFA500",
+      Morado: "#800080",
+      Vino: "#8B0000",
+      Oro: "#FFD700",
+      Bronce: "#CD7F32",
+      Turquesa: "#40E0D0",
+      "Gris Oxford": "#A9A9A9",
+      Arena: "#D6C29C",
+      Grafito: "#484848",
+      Champagne: "#F7E7CE",
+      Titanio: "#BFC1C2",
+      Cobre: "#B87333",
+      Camaleón: "#7F7FD5",
+      Perlado: "#F8F6F0",
+      Mate: "#CCCCCC",
+      "Negro obsidiana": "#0B0B0B",
+      "Blanco perla": "#FDF6EC",
+      "Rojo cereza": "#DE3163",
+      "Azul eléctrico": "#00FFFF",
+      "Gris plomo": "#6E7B8B",
+      "Color militar": "url(assets/autos/militar.jpg)",
     };
 
-    const isImagen = mapaColores[color]?.startsWith('url(');
+    const isImagen = mapaColores[color]?.startsWith("url(");
 
     return isImagen
       ? {
-        backgroundImage: mapaColores[color],
-        backgroundSize: 'cover',
-        color: '#fff',
-      }
+          backgroundImage: mapaColores[color],
+          backgroundSize: "cover",
+          color: "#fff",
+        }
       : {
-        backgroundColor: mapaColores[color],
-        color: this.colorEsClaro(mapaColores[color]) ? '#000' : '#fff',
-      };
+          backgroundColor: mapaColores[color],
+          color: this.colorEsClaro(mapaColores[color]) ? "#000" : "#fff",
+        };
   }
   colorEsClaro(hex: string): boolean {
-    hex = hex.replace('#', '');
+    hex = hex.replace("#", "");
     const r = parseInt(hex.substring(0, 2), 16);
     const g = parseInt(hex.substring(2, 4), 16);
     const b = parseInt(hex.substring(4, 6), 16);
@@ -404,35 +420,35 @@ export class FichaPage implements OnInit {
     const diff = touchEndX - this.touchStartX;
     if (Math.abs(diff) > 50) {
       if (diff < 0) {
-        this.cambiarImagen('siguiente');
+        this.cambiarImagen("siguiente");
       } else {
-        this.cambiarImagen('anterior');
+        this.cambiarImagen("anterior");
       }
     }
   }
-  cambiarImagen(direccion: 'siguiente' | 'anterior') {
+  cambiarImagen(direccion: "siguiente" | "anterior") {
     const index = this.auto.imagenes.indexOf(this.imagenSeleccionada);
     const total = this.auto.imagenes.length;
-    if (direccion === 'siguiente' && index < total - 1) {
+    if (direccion === "siguiente" && index < total - 1) {
       this.imagenSeleccionada = this.auto.imagenes[index + 1];
-    } else if (direccion === 'anterior' && index > 0) {
+    } else if (direccion === "anterior" && index > 0) {
       this.imagenSeleccionada = this.auto.imagenes[index - 1];
     }
   }
   get descripcionCorta(): string {
-    if (!this.auto?.descripcion) return '';
-    const palabras = this.auto.descripcion.split(' ');
+    if (!this.auto?.descripcion) return "";
+    const palabras = this.auto.descripcion.split(" ");
     if (palabras.length <= 20 || this.descripcionExpandida) {
       return this.auto.descripcion;
     }
-    return palabras.slice(0, 20).join(' ') + '...';
+    return palabras.slice(0, 20).join(" ") + "...";
   }
   autosURL(id: any) {
     this.carsService.getCar(id).subscribe({
       next: async (res: any) => {
         this.auto = res;
-        this.tipoAlSubir = this.auto.lote == null ? 'particular' : 'lote';
-        const storage = localStorage.getItem('user');
+        this.tipoAlSubir = this.auto.lote == null ? "particular" : "lote";
+        const storage = localStorage.getItem("user");
         const usuario = storage ? JSON.parse(storage) : null;
         this.esMio = !!usuario && this.auto.usuarioId?.email === usuario.email;
         await this.mostrarauto();
@@ -440,8 +456,8 @@ export class FichaPage implements OnInit {
         await this.seo();
       },
       error: (err) => {
-        const mensaje = err?.error?.message || 'Ocurrió un error inesperado';
-        this.generalService.alert('Error', mensaje, 'danger');
+        const mensaje = err?.error?.message || "Ocurrió un error inesperado";
+        this.generalService.alert("Error", mensaje, "danger");
       },
       complete: () => {
         this.generalService.loadingDismiss();
@@ -452,8 +468,8 @@ export class FichaPage implements OnInit {
     this.motosService.getMoto(id).subscribe({
       next: async (res: any) => {
         this.auto = res;
-        this.tipoAlSubir = this.auto.lote == null ? 'particular' : 'lote';
-        const storage = localStorage.getItem('user');
+        this.tipoAlSubir = this.auto.lote == null ? "particular" : "lote";
+        const storage = localStorage.getItem("user");
         const usuario = storage ? JSON.parse(storage) : null;
         this.esMio = !!usuario && this.auto.usuarioId?.email === usuario.email;
 
@@ -462,26 +478,49 @@ export class FichaPage implements OnInit {
         await this.seo();
       },
       error: (err) => {
-        const mensaje = err?.error?.message || 'Ocurrió un error inesperado';
-        this.generalService.alert('Error', mensaje, 'danger');
+        const mensaje = err?.error?.message || "Ocurrió un error inesperado";
+        this.generalService.alert("Error", mensaje, "danger");
       },
       complete: () => {
         this.generalService.loadingDismiss();
       },
     });
   }
+  camionURL(id: any) {
+    this.CamionesService.getcamionID(id).subscribe({
+      next: async (res: any) => {
+        this.auto = res;
+        this.tipoAlSubir = this.auto.lote == null ? "particular" : "lote";
+        const storage = localStorage.getItem("user");
+        const usuario = storage ? JSON.parse(storage) : null;
+        this.esMio = !!usuario && this.auto.usuarioId?.email === usuario.email;
+
+        await this.mostrarauto();
+        this.spinner = true;
+        await this.seo();
+      },
+      error: (err) => {
+        const mensaje = err?.error?.message || "Ocurrió un error inesperado";
+        this.generalService.alert("Error", mensaje, "danger");
+      },
+      complete: () => {
+        this.generalService.loadingDismiss();
+      },
+    });
+  }
+
   async aviso(num: number) {
     if (num === 0) {
       let modal;
-      if (this.dispositivo === 'telefono') {
+      if (this.dispositivo === "telefono") {
         modal = await this.modalCtrl.create({
           component: AvisoPrivasidadComponent,
           componentProps: {
-            onAceptar: () => this.setAceptado('aviso', true),
-            onCancelar: () => this.setAceptado('aviso', false),
+            onAceptar: () => this.setAceptado("aviso", true),
+            onCancelar: () => this.setAceptado("aviso", false),
           },
           breakpoints: [0, 0.7, 1],
-          cssClass: 'modal-perfil',
+          cssClass: "modal-perfil",
           initialBreakpoint: 0.7,
           handle: true,
           backdropDismiss: true,
@@ -491,26 +530,26 @@ export class FichaPage implements OnInit {
         modal = await this.modalCtrl.create({
           component: AvisoPrivasidadComponent,
           componentProps: {
-            onAceptar: () => this.setAceptado('aviso', true),
-            onCancelar: () => this.setAceptado('aviso', false),
+            onAceptar: () => this.setAceptado("aviso", true),
+            onCancelar: () => this.setAceptado("aviso", false),
           },
           backdropDismiss: true,
           showBackdrop: true,
-          cssClass: 'modal-consentimiento',
+          cssClass: "modal-consentimiento",
         });
       }
       await modal.present();
     } else {
       let modal;
-      if (this.dispositivo === 'telefono') {
+      if (this.dispositivo === "telefono") {
         modal = await this.modalCtrl.create({
           component: PoliticasComponent,
           componentProps: {
-            onAceptar: () => this.setAceptado('terminos', true),
-            onCancelar: () => this.setAceptado('terminos', false),
+            onAceptar: () => this.setAceptado("terminos", true),
+            onCancelar: () => this.setAceptado("terminos", false),
           },
           breakpoints: [0, 0.7, 1],
-          cssClass: 'modal-perfil',
+          cssClass: "modal-perfil",
           initialBreakpoint: 0.7,
           handle: true,
           backdropDismiss: true,
@@ -520,43 +559,43 @@ export class FichaPage implements OnInit {
         modal = await this.modalCtrl.create({
           component: PoliticasComponent,
           componentProps: {
-            onAceptar: () => this.setAceptado('terminos', true),
-            onCancelar: () => this.setAceptado('terminos', false),
+            onAceptar: () => this.setAceptado("terminos", true),
+            onCancelar: () => this.setAceptado("terminos", false),
           },
           backdropDismiss: true,
           showBackdrop: true,
-          cssClass: 'modal-consentimiento',
+          cssClass: "modal-consentimiento",
         });
       }
       await modal.present();
     }
   }
-  setAceptado(tipo: 'aviso' | 'terminos', valor: boolean) {
+  setAceptado(tipo: "aviso" | "terminos", valor: boolean) {
     if (valor === true) {
-      localStorage.setItem(tipo, 'true');
+      localStorage.setItem(tipo, "true");
     } else {
-      localStorage.setItem(tipo, 'false');
+      localStorage.setItem(tipo, "false");
       const titulos: Record<typeof tipo, string> = {
-        aviso: 'Aviso de Privacidad',
-        terminos: 'Términos y Condiciones',
+        aviso: "Aviso de Privacidad",
+        terminos: "Términos y Condiciones",
       };
       const mensajes: Record<typeof tipo, string> = {
         aviso:
-          'Por tu seguridad y protección de datos, es necesario aceptar el Aviso de Privacidad.',
+          "Por tu seguridad y protección de datos, es necesario aceptar el Aviso de Privacidad.",
         terminos:
-          'Debes aceptar los Términos y Condiciones para usar este servicio de forma segura y responsable.',
+          "Debes aceptar los Términos y Condiciones para usar este servicio de forma segura y responsable.",
       };
-      this.generalService.alert(titulos[tipo], mensajes[tipo], 'info');
+      this.generalService.alert(titulos[tipo], mensajes[tipo], "info");
       localStorage.removeItem(tipo);
     }
   }
   async abrirModalArrendamiento(aut: object) {
     let modal;
-    if (this.dispositivo === 'telefono') {
+    if (this.dispositivo === "telefono") {
       modal = await this.modalCtrl.create({
         component: PasosArrendamientoComponent,
         breakpoints: [0, 0.7, 1],
-        cssClass: 'modal-perfil',
+        cssClass: "modal-perfil",
         initialBreakpoint: 0.7,
         handle: true,
         backdropDismiss: true,
@@ -567,7 +606,7 @@ export class FichaPage implements OnInit {
         component: PasosArrendamientoComponent,
         backdropDismiss: true,
         showBackdrop: true,
-        cssClass: 'modal-consentimiento',
+        cssClass: "modal-consentimiento",
       });
     }
     await modal.present();
@@ -576,15 +615,15 @@ export class FichaPage implements OnInit {
     const modal = await this.modalCtrl.create({
       component: ImagenesVehiculoComponent,
       componentProps: { imagenes, indice },
-      cssClass: 'modal-imagen-personalizado',
+      cssClass: "modal-imagen-personalizado",
       backdropDismiss: true,
       showBackdrop: true,
     });
     await modal.present();
   }
   mostrarAutos(lote: any) {
-    const nombreURL = encodeURIComponent(lote.nombre || '');
-    localStorage.setItem('origenLote', `/lote/${nombreURL}/${lote._id}`);
-    this.router.navigate(['/lote', nombreURL, lote._id]);
+    const nombreURL = encodeURIComponent(lote.nombre || "");
+    localStorage.setItem("origenLote", `/lote/${nombreURL}/${lote._id}`);
+    this.router.navigate(["/lote", nombreURL, lote._id]);
   }
 }

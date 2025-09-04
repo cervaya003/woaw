@@ -60,28 +60,17 @@ export class CamionesService {
       catchError((error) => this.headersService.handleError(error))
     );
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  getcamionID(id: any): Observable<any> {
+    return from(this.headersService.obtenerToken()).pipe(
+      switchMap((token) => {
+        const headers = this.headersService.getJsonHeaders(token);
+        return this.http.get(`${environment.api_key}/camiones/camiones/${id}`, {
+          headers,
+        });
+      }),
+      catchError((error) => this.headersService.handleError(error))
+    );
+  }
   /** Guardar camión */
   guardarCamion(body: FormData): Observable<any> {
     return from(this.headersService.obtenerToken()).pipe(
@@ -108,7 +97,6 @@ export class CamionesService {
       catchError((error) => this.headersService.handleError(error))
     );
   }
-
   getAllCamiones(): Observable<any> {
     return from(this.headersService.obtenerToken()).pipe(
       switchMap((token) => {
@@ -120,33 +108,6 @@ export class CamionesService {
       catchError((error) => this.headersService.handleError(error))
     );
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   // Obtener camiones favoritos del usuario
   getCamionesFavoritos(): Observable<any> {
