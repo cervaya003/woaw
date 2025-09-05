@@ -529,10 +529,10 @@ ion-content {
     left: 0;
     right: 0;
     height: 25%;
-    // background: linear-gradient(to bottom,
-    //     rgb(0, 0, 0) 0%,
-    //     rgba(0, 0, 0, 0.67) 60%,
-    //     rgba(0, 0, 0, 0) 100%);
+    background: linear-gradient(to bottom,
+        rgb(0, 0, 0) 0%,
+        rgba(0, 0, 0, 0.67) 60%,
+        rgba(0, 0, 0, 0) 100%);
 
     pointer-events: none;
     z-index: 1;
