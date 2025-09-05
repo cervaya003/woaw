@@ -3,16 +3,11 @@ import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { FormBuilder, Validators } from '@angular/forms';
-import { LoadingController } from '@ionic/angular';
 import { Router } from '@angular/router';
-import { AbstractControl, ValidatorFn, ValidationErrors, FormGroup, } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
-import { AlertController } from '@ionic/angular';
-import { ModalController } from '@ionic/angular';
 import { GeneralService } from '../../../services/general.service';
 import { CarsService } from '../../../services/cars.service';
 import { MotosService } from '../../../services/motos.service';
+import { Capacitor } from '@capacitor/core';
 
 @Component({
   selector: 'app-principal',
@@ -22,6 +17,7 @@ import { MotosService } from '../../../services/motos.service';
   imports: [IonicModule, CommonModule, ReactiveFormsModule],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
+
 export class PrincipalComponent implements OnInit {
   @Input() tipo: string = 'all';
   @Input() status: boolean = true;
@@ -38,6 +34,9 @@ export class PrincipalComponent implements OnInit {
   public img1: string = '';
   public img2: string = '';
   public img3: string = '';
+
+
+  public isNative = Capacitor.isNativePlatform();
 
   constructor(
     public carsService: CarsService,
@@ -57,7 +56,7 @@ export class PrincipalComponent implements OnInit {
     this.getCarsSeminuevos();
     this.getCarsUsados();
     this.getMotos();
-    this.cargaimagen();
+    this.cargaimagen(); 
   }
 
   ngAfterViewInit(): void {

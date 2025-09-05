@@ -11,6 +11,7 @@ import { environment } from 'src/environments/environment';
 import { Capacitor } from '@capacitor/core';
 import { Browser } from '@capacitor/browser';
 import { App, URLOpenListenerEvent } from '@capacitor/app';
+import { PluginListenerHandle } from '@capacitor/core';
 
 declare const google: any;
 
@@ -30,6 +31,10 @@ export class LoginComponent implements OnInit, AfterViewInit {
 
   isNative = Capacitor.isNativePlatform();
   deepLink = 'woaw://auth/google';
+
+  private urlListener?: PluginListenerHandle;
+  private deepLinkHandled = false;
+  private navDone = false;
 
   constructor(
     private fb: FormBuilder,
@@ -53,56 +58,58 @@ export class LoginComponent implements OnInit, AfterViewInit {
   }
 
   private saveAndNavigate(token: string, user: any) {
+    if (this.navDone) return;
+    this.navDone = true;
+
     this.generalService.guardarCredenciales(token, user);
     this.router.navigate(['/home']);
     this.generalService.alert('Bienvenido a WOAW', 'Inicio de sesión exitoso', 'success');
   }
 
-
   ngOnInit(): void {
-    if (this.isNative) {
-      App.addListener('appUrlOpen', async (event: URLOpenListenerEvent) => {
-        this.zone.run(async () => {
-          try {
-            const url = new URL(event.url);
+    if (this.isNative && !this.urlListener) {
+      (async () => {
+        this.urlListener = await App.addListener('appUrlOpen', async (event: URLOpenListenerEvent) => {
+          this.zone.run(async () => {
+            try {
+              if (this.deepLinkHandled) return;
+              this.deepLinkHandled = true;
 
-            // iOS: recibes code
-            const code = url.searchParams.get('code');
-            if (code) {
-              await Browser.close();
-              const resp = await fetch(
-                `${environment.api_key}/auth/mobile/session?code=${encodeURIComponent(code)}`
-              );
-              if (!resp.ok) {
-                const err = await resp.json().catch(() => ({}));
-                throw new Error(err?.message || 'No se pudo canjear el código');
+              const url = new URL(event.url);
+
+              const code = url.searchParams.get('code');
+              if (code) {
+                await Browser.close();
+                const resp = await fetch(
+                  `${environment.api_key}/auth/mobile/session?code=${encodeURIComponent(code)}`
+                );
+                if (!resp.ok) {
+                  const err = await resp.json().catch(() => ({}));
+                  throw new Error(err?.message || 'No se pudo canjear el código');
+                }
+                const { token, user } = await resp.json();
+                this.saveAndNavigate(token, user);
+                return;
               }
-              const { token, user } = await resp.json();
-              this.saveAndNavigate(token, user);
-              return;
-            }
 
-            // Android: recibes token + user (Base64URL)
-            const token = url.searchParams.get('token');
-            const userB64 = url.searchParams.get('user');
-            if (token && userB64) {
-              await Browser.close();
-              const user = this.b64urlToJson(userB64);
-              this.saveAndNavigate(token, user);
-              return;
-            }
+              const token = url.searchParams.get('token');
+              const userB64 = url.searchParams.get('user');
+              if (token && userB64) {
+                await Browser.close();
+                const user = this.b64urlToJson(userB64);
+                this.saveAndNavigate(token, user);
+                return;
+              }
 
-            // Si no vino nada útil:
-            this.generalService.alert('Error', 'URL de retorno inválida', 'danger');
-          } catch (e) {
-            console.error(e);
-            // this.generalService.alert('Error', 'No se pudo procesar el inicio de sesión', 'danger');
-          }
+              this.generalService.alert('Error', 'URL de retorno inválida', 'danger');
+            } catch (e) {
+              console.error(e);
+            }
+          });
         });
-      });
+      })();
     }
   }
-
 
   async ngAfterViewInit(): Promise<void> {
     if (!this.isNative) {
@@ -201,5 +208,8 @@ export class LoginComponent implements OnInit, AfterViewInit {
     const url = this.registroService.getGoogleMobileRedirectUrl(platform);
     await Browser.open({ url });
   }
-
+  ngOnDestroy(): void {
+    this.urlListener?.remove();
+    this.urlListener = undefined;
+  }
 }

@@ -112,7 +112,7 @@ export class InicioPage implements OnInit {
       }),
       ...(this.esDispositivoMovil && {
         breakpoints: [0, 0.7, 1],
-        initialBreakpoint: 0.7,
+        initialBreakpoint: 1,
         handle: true,
       }),
     });
@@ -162,7 +162,7 @@ export class InicioPage implements OnInit {
       }),
       ...(this.esDispositivoMovil && {
         breakpoints: [0, 0.7, 1],
-        initialBreakpoint: 0.7,
+        initialBreakpoint: 1,
         handle: true,
       }),
     });
@@ -182,7 +182,7 @@ export class InicioPage implements OnInit {
       }),
       ...(this.esDispositivoMovil && {
         breakpoints: [0, 0.7, 1],
-        initialBreakpoint: 0.7,
+        initialBreakpoint: 1,
         handle: true,
       }),
     });
