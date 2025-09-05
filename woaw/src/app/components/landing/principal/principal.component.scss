@@ -471,6 +471,11 @@
     margin-bottom: -1rem;
   }
 
+  .msj_2{
+    color: #aaaaaa;
+    font-size: clamp(8px, 1vw, 13px);
+  }
+
   .titulo {
     font-size: clamp(15px, 3vw, 42px);
     font-weight: 800;

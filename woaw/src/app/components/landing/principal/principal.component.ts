@@ -35,6 +35,9 @@ export class PrincipalComponent implements OnInit {
   public conSeminuevos: number = 0;
   public conNuevos: number = 0;
   public conMotos: number = 0;
+  public img1: string = '';
+  public img2: string = '';
+  public img3: string = '';
 
   constructor(
     public carsService: CarsService,
@@ -54,6 +57,7 @@ export class PrincipalComponent implements OnInit {
     this.getCarsSeminuevos();
     this.getCarsUsados();
     this.getMotos();
+    this.cargaimagen();
   }
 
   ngAfterViewInit(): void {
@@ -131,5 +135,22 @@ export class PrincipalComponent implements OnInit {
   }
   onCardClickM(moto: any, event: Event): void {
     this.router.navigate(['/ficha', 'motos', moto._id]);
+  }
+  async cargaimagen() {
+    this.img1 = '/assets/autos/A1.png';
+    this.img2 = '/assets/autos/A5.png';
+    this.img3 = '/assets/autos/A3.png';
+    this.generalService.addPreload(this.img1, 'image');
+    this.generalService.addPreload(this.img2, 'image');
+    this.generalService.addPreload(this.img3, 'image');
+    try {
+      await Promise.all([
+        this.generalService.preloadHero(this.img1, 4500),
+        this.generalService.preloadHero(this.img2, 4500),
+        this.generalService.preloadHero(this.img3, 4500),
+      ]);
+    } finally {
+      // this.overlayLoaded = true;
+    }
   }
 }

@@ -35,6 +35,7 @@
     "browser-image-compression": "^2.0.2",
     "ionicons": "^7.0.0",
     "joli": "file:",
+    "pdfjs-dist": "^5.4.149",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"

@@ -529,11 +529,10 @@ ion-content {
     left: 0;
     right: 0;
     height: 25%;
-    background: linear-gradient(to bottom,
-        rgb(0, 0, 0) 0%,
-        rgba(0, 0, 0, 0.67) 60%,
-        rgba(0, 0, 0, 0) 100%);
-
+    // background: linear-gradient(to bottom,
+    //     rgb(0, 0, 0) 0%,
+    //     rgba(0, 0, 0, 0.67) 60%,
+    //     rgba(0, 0, 0, 0) 100%);
     pointer-events: none;
     z-index: 1;
   }
@@ -628,12 +627,12 @@ ion-content {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 16px;
+  gap: 10px;
   margin-top: 21px;
   flex-wrap: wrap;
 
   @media (max-width: 820px) {
-    gap: 8px;
+    gap:5px;
     margin-top: 18px;
   }
 
@@ -653,8 +652,8 @@ ion-content {
     }
 
     @media (max-width: 820px) {
-      width: 39px;
-      height: 39px;
+      width: 35px;
+      height: 35px;
     }
   }
 }
