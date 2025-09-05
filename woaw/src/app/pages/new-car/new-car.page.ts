@@ -157,6 +157,7 @@ seleccionar(
     this.Pregunta = 'no';
     this.seccionFormulario = 2;
     this.tipoSeleccionado = null;
+
   }
 
   this.generarListaAnios();
@@ -280,6 +281,7 @@ formularioValido(): boolean {
   const anioActual = new Date().getFullYear();
 
   let anioEsValido = false;
+
 
   if (this.seleccion === "auto" || this.seleccion === "moto" || this.seleccion === "camion") {
     if (this.MyRole === "admin") {

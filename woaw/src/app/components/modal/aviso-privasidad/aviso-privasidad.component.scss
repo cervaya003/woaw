@@ -183,3 +183,20 @@
 ion-button {
   font-size: 14px;
 }
+
+
+.pdf-wrap {
+  height: 70vh;                  /* cuadra con initialBreakpoint: 0.7 */
+  max-height: calc(100vh - 140px);
+}
+.pdf-frame {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+
+/* Si usas el modal sheet con breakpoints */
+.modal-perfil::part(content) {
+  --height: 70vh;
+}

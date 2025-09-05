@@ -1,83 +1,77 @@
-import { CarsService } from './../../../services/cars.service';
-import { Component, OnInit, Input } from '@angular/core';
-import { IonSelect } from '@ionic/angular';
-import { IonInput } from '@ionic/angular';
+import { Component, OnInit, Input, ViewChild, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { MenuController } from '@ionic/angular';
-import { Router, NavigationStart } from '@angular/router';
-import { GeneralService } from '../../../services/general.service';
-import { AlertController } from '@ionic/angular';
-import { ModalController } from '@ionic/angular';
-import {
-  FormBuilder,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-  FormArray,
-} from '@angular/forms';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { DomSanitizer } from '@angular/platform-browser';
-import { RegistroService } from 'src/app/services/registro.service';
-
-import { ViewChild } from '@angular/core';
-import { IonContent } from '@ionic/angular';
+import { IonicModule, IonContent, ModalController } from '@ionic/angular';
+import { ReactiveFormsModule } from '@angular/forms';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-aviso-privasidad',
   templateUrl: './aviso-privasidad.component.html',
   styleUrls: ['./aviso-privasidad.component.scss'],
-  standalone: true, // Si usando componentes independientes (standalone)
+  standalone: true,
   imports: [IonicModule, CommonModule, ReactiveFormsModule],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA], //esquema personalizado
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class AvisoPrivasidadComponent implements OnInit {
   @Input() onAceptar!: () => void;
   @Input() onCancelar!: () => void;
-  mostrarFooter: boolean = false;
+
+  private readonly pdfPublicUrl =
+    'https://storage.googleapis.com/wo-aw/docs/AVISO%20DE%20PRIVACIDAD.pdf';
+  private readonly viewerUrlBase = 'https://docs.google.com/gview?embedded=true&url=';
+
+  pdfUrlSafe!: SafeResourceUrl;
+
+  mostrarFooter = false;
   scrollAlFinal = false;
+
+  iframeVisible = false;
 
   @ViewChild('contenidoPrivacidad', { static: false }) contentRef!: IonContent;
 
   constructor(
     private modalCtrl: ModalController,
-    private generalService: GeneralService
+    private sanitizer: DomSanitizer,
   ) {}
 
   ngOnInit() {
-    const AvisoAceptados = localStorage.getItem('aviso') === 'true';
+    const avisoAceptado = localStorage.getItem('aviso') === 'true';
+    if (avisoAceptado) this.mostrarFooter = true;
 
-    if (AvisoAceptados) {
-      this.mostrarFooter = true;
-    }
+    this.reloadIframe();
+  }
+
+  private reloadIframe() {
+    this.iframeVisible = false;
+    const viewerUrl =
+      `${this.viewerUrlBase}${encodeURIComponent(this.pdfPublicUrl)}&v=${Date.now()}`;
+    this.pdfUrlSafe = this.sanitizer.bypassSecurityTrustResourceUrl(viewerUrl);
+
+    setTimeout(() => {
+      this.iframeVisible = true;
+    }, 0);
   }
 
   async cerrarModal() {
+    this.iframeVisible = false;
+    this.pdfUrlSafe = this.sanitizer.bypassSecurityTrustResourceUrl('about:blank');
     this.modalCtrl.dismiss();
   }
 
   aceptar() {
     if (this.onAceptar) this.onAceptar();
-    this.modalCtrl.dismiss();
+    this.cerrarModal();
   }
 
   cancelar() {
-    if (this.onCancelar) this.onCancelar();
-    this.modalCtrl.dismiss();
+    // if (this.onCancelar) this.onCancelar();
+    this.cerrarModal();
   }
 
   async verificarScroll() {
-    const scrollElement = await this.contentRef.getScrollElement();
-
-    const scrollTop = scrollElement.scrollTop;
-    const scrollHeight = scrollElement.scrollHeight;
-    const offsetHeight = scrollElement.offsetHeight;
-
-    const haLlegadoAlFinal = scrollTop + offsetHeight >= scrollHeight - 20;
-
-    if (haLlegadoAlFinal) {
-      this.scrollAlFinal = true;
-    }
+    if (!this.contentRef) return;
+    const el = await this.contentRef.getScrollElement();
+    const haLlegadoAlFinal = el.scrollTop + el.offsetHeight >= el.scrollHeight - 20;
+    if (haLlegadoAlFinal) this.scrollAlFinal = true;
   }
 }

@@ -1,353 +1,31 @@
 <ion-header>
   <ion-toolbar class="header-toolbar">
 
-    <div class="header-flex">
+    <ion-buttons slot="start">
       <div class="logo-titulo">
         <img src="assets/icon/logo2.png" alt="WOAW" />
       </div>
-      <ion-button fill="clear" color="danger" (click)="cerrarModal()">
-        <ion-icon name="close" slot="icon-only"></ion-icon>
+      <ion-title>TÉRMINOS Y CONDICIONES</ion-title>
+    </ion-buttons>
+
+    <ion-buttons slot="end">
+      <ion-button (click)="cancelar()">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
       </ion-button>
-    </div>
+    </ion-buttons>
 
   </ion-toolbar>
 </ion-header>
 
-
 <ion-content class="ion-padding" class="ion-padding" class="ion-padding" scrollEvents="true"
   (ionScroll)="verificarScroll()" #contenidoPrivacidad>
 
-
-
-  <div class="texto-privacidad">
-
-    <h1 class="titulo-seccion">TÉRMINOS Y CONDICIONES</h1>
-
-    <p>El presente instrumento contiene de forma íntegra los Términos y Condiciones para la prestación de los Servicios
-      provistos por COMERCIO AUTOMOTRIZ WOAW, S.A. DE C.V. (en lo sucesivo "WOAW") y el uso de sus Herramientas,
-      los cuales podrán ser consultados en <a class="resaltado" href="https://wo-aw.com"
-        target="_blank">https://wo-aw.com</a>.</p>
-
-    <p>Dichos Términos y Condiciones serán vinculantes y obligatorios para el uso de la plataforma WOAW y regulan el
-      acceso o uso que usted como usuario haga de la misma, incluyendo de manera enunciativa más no limitativa la
-      plataforma de aplicaciones, páginas web, contenido, productos y servicios (en lo sucesivo denominados como los
-      “Servicios”) puestos a disposición por WOAW, una sociedad constituida en los Estados Unidos Mexicanos, con
-      domicilio en Boulevard Bernardo Quintana #14, Interior 6, colonia Álamos 2a Sección, C.P. 76160, Querétaro,
-      Querétaro, México.</p>
-
-    <p>Previamente al uso de cualquiera de los Servicios proporcionados por WOAW usted acuerda lo siguiente:</p>
-
-    <p>Mediante su acceso y uso de los Servicios usted reconoce de manera tanto expresa como tácita que conoce los
-      Términos y Condiciones y que acuerda vincularse jurídicamente por ellas, reconociendo de la misma manera que por
-      medio de dichos Términos y Condiciones se establece una relación contractual entre usted y WOAW. Si por el
-      contrario usted no está de acuerdo con lo anterior o lo establecido en las presentes Condiciones, reconoce expresa
-      y tácitamente que no deberá de acceder o usar los Servicios. Por otra parte, usted acuerda de la misma manera que
-      estos Términos y Condiciones sustituyen expresamente cualquier otro acuerdo o compromiso previamente celebrado por
-      usted y WOAW de manera previa, salvo que expresamente se haya estipulado lo contrario.</p>
-
-    <p class="titulo-seccion">MODIFICACIÓN Y TERMINACIÓN DE LOS TÉRMINOS Y CONDICIONES Y SERVICIOS</p>
-
-    <p>Usted está de acuerdo en que WOAW en cualquier tiempo podrá modificar, terminar o de cualquier forma adecuar
-      las presentes Condiciones o cualquiera de los Servicios, los cuales entrarán en vigor en un plazo de dos días
-      hábiles posteriores a que las modificaciones sean publicadas en los medios oficiales de publicación con que WOAW
-      dispone para tales efectos, por lo que una vez entradas en vigor las modificaciones la continuidad en el uso de
-      los
-      Servicios de WOAW por parte suya reconocerá la aceptación a las modificaciones de los Términos y Condiciones.
-    </p>
-
-    <p>De la misma manera expresamente acuerda que a determinados Servicios les podrá ser aplicable términos o
-      condiciones
-      específicas a la prestación de dicho servicio en particular, como políticas para un evento, una actividad o una
-      promoción particular, y Dichos Términos y Condiciones suplementarias se le comunicarán en relación con los
-      Servicios
-      aplicables. Los Términos y Condiciones suplementarios serán de la misma manera vinculantes y condicionantes como
-      las
-      aplicables de manera general y se considerarán una parte de éstos, para los fines de los Servicios aplicables. Los
-      Términos y Condiciones suplementarios prevalecerán sobre los Términos y Condiciones en el caso de conflicto con
-      respecto a los Servicios aplicables.</p>
-
-    <p>Por otra parte, usted reconoce que WOAW podrá en cualquier tiempo o momento terminar, denegar, o en general
-      dejar de ofrecerle cualquiera de los Servicios de manera total o parcial, en cualquier momento y por cualquier
-      motivo que WOAW considere apropiado sin necesidad de notificación o justificación previa.</p>
-
-
-
-    <p class="titulo-seccion">PROTECCIÓN DE DATOS PERSONALES EN POSESIÓN DE LOS PARTICULARES</p>
-
-    <p>La obtención y uso de los datos personales que son recabados para la prestación de los Servicios será apegada al
-      Aviso de Privacidad y la protección de datos personales, los cuales se encuentran a su disposición en <a
-        class="resaltado" href="https://wo-aw.com" target="_blank">https://wo-aw.com</a>.</p>
-
-    <p class="titulo-seccion">LA PRESTACIÓN DE LOS SERVICIOS</p>
-
-    <p>La prestación de los Servicios de WOAW constituyen una plataforma de tecnología que permite a los usuarios de
-      WOAW en dispositivos móviles, páginas de internet, o en cualquier otro mecanismo con el que WOAW disponga
-      para la prestación de los Servicios (cualquiera de ellos pudiendo ser referido como la “Herramienta”) revisar,
-      comparar, organizar y planear la compra de uno o varios vehículos automotores de cualquier categoría o tipo, o
-      tecnología (en lo sucesivo referidos simplemente como el o los “vehículo(s)”), que son propiedad de terceros
-      proveedores independientes privados, que cuentan con la propiedad y/o con los permisos legales para vender dichos
-      vehículo(s) (en lo sucesivo referidos como “Terceros proveedores”).</p>
-
-    <p>Salvo acuerdo en contrario celebrado de manera independiente y por escrito con usted, los Servicios
-      proporcionados por WOAW solamente son de intermediación y se ponen a disposición solo para su uso personal, no
-      comercial. En razón de lo anterior, usted reconoce que WOAW no es propietario ni responsable de la calidad,
-      funcionamiento, legalidad, garantías o vicios ocultos del vehículo(s) y que su puesta a disposición en la página
-      de WOAW es alimentada por Terceros proveedores independientes privados, que no están empleados por WOAW ni
-      por ninguna de sus afiliadas; por lo que WOAW no será responsable de manera directa o indirecta del servicio
-      que sea prestado por los Terceros Proveedores.</p>
-
-    <p class="titulo-seccion">AUTORIZACIÓN DE USO DE LAS HERRAMIENTAS</p>
-
-    <p>Sujeto al cumplimiento de estos Términos y Condiciones, WOAW le proporciona a usted una autorización limitada
-      a todo lo establecido por los Términos y Condiciones, dicha autorización no representaría de ninguna manera una
-      exclusividad de uso, la referida autorización tampoco podrá ser transferida, sublicenciable, cedida, o sujeta a
-      cualquier clase de gravamen u operación. Así mismo, se establece que WOAW otorga el acceso y uso de las
-      Herramientas en su dispositivo personal solo en relación con su uso de los Servicios; y acceso y uso de cualquier
-      contenido, información y material relacionado que pueda ponerse a disposición a través de los Servicios, en cada
-      caso solo para su uso personal, no comercial. WOAW se reserva cualquier derecho que no haya sido expresamente
-      otorgado por medio del presente instrumento.</p>
-
-    <p class="titulo-seccion">SEGURIDAD</p>
-
-    <p>WOAW autoriza a los visitantes de esta página a ver y distribuir la información en ella contenida, siempre y
-      cuando únicamente sea utilizada con propósitos informativos y que la misma no tenga fines comerciales.</p>
-
-    <p>La copia de dicha información debe contener los elementos referenciadores a los derechos de autor. Cualquier
-      programa, publicación, diseño, producto, proceso, programa de cómputo, tecnología, información, know-how o idea
-      descrita en esta página y su contenido, puede verse sujeta a otros derechos.</p>
-
-    <p>El objetivo de esta página es el proporcionar a nuestros visitantes información general sobre temas en
-      específico. La información que se encuentre dentro de la misma no puede considerarse como un servicio de
-      cualquiera que sea su índole.</p>
-
-    <p>Este documento es transmitido o presentado para nuestros visitantes de buena fe, sin embargo, WOAW no acepta
-      responsabilidad alguna por los errores que se puedan encontrar en su contenido, el uso del sitio web que haga de
-      este Sitio y de la información es bajo su propio riesgo. De la misma forma, WOAW no garantiza que la
-      información presentada en este sitio esté libre de errores. WOAW niega mediante este formato cualquier tipo de
-      garantía implícita, garantía de comerciabilidad, título, compatibilidad, no violación, seguridad y exactitud.</p>
-
-    <p>El uso del nombre y del signo distintivo son de exclusividad de WOAW, para el uso de estas características se
-      necesita autorización expresa del mismo WOAW, el uso sin autorización será declarado ilegal y se pondrá a
-      disposición aquella persona que haga uso de tal bajo las consecuencias legales que de ésta procedan.</p>
-
-    <p>Todo el contenido del sitio web <a class="resaltado" href="https://wo-aw.com"
-        target="_blank">https://wo-aw.com</a> (Sitio),
-      incluyendo, pero no limitando a textos, gráficos, fotografías, logotipos, audio, video, marcas, imágenes, bases de
-      datos, así como el diseño gráfico, código fuente y software, son de exclusiva propiedad de WOAW o terceros,
-      cuyos derechos reconoce WOAW y están sujetos a derechos de propiedad intelectual e industrial protegidos por
-      la legislación nacional e internacional aplicable.</p>
-
-    <p>Queda estrictamente prohibida la utilización de todos los elementos del contenido del Sitio web y que son objeto
-      de propiedad intelectual e industrial con cualquier fin, incluyendo su reproducción, copia, distribución,
-      modificación, alteración en forma total o parcial.</p>
-
-    <p>El usuario o visitante se obliga a usar el Sitio web en forma diligente, correcta y lícita, y conforme con la
-      moral y las buenas costumbres. El usuario o visitante responderá por los daños y perjuicios de toda naturaleza que
-      WOAW, y/o sus empleados puedan sufrir directa o indirectamente, como consecuencia del incumplimiento de
-      cualquiera de las obligaciones derivadas de estos términos y condiciones, y/o de los términos y condiciones de
-      algún servicio en particular que se incluya en el Sitio web o de la ley aplicable en relación con la utilización
-      del Sitio.</p>
-
-    <p>WOAW se reservan el derecho, a su exclusiva discreción, de interrumpir, modificar, alterar el contenido y/o
-      acceso del Sitio, en cualquier momento y sin previo aviso, ya sea por motivos técnicos, de seguridad, de control,
-      de mantenimiento, por fallos de suministro eléctrico o por cualquier otra causa.</p>
-
-    <p>WOAW no garantiza ni asume ningún tipo de responsabilidad por los daños y perjuicios sufridos por el acceso
-      al Sitio web por parte de terceros a través de conexiones, vínculos o links de los sitios webs enlazados, ni
-      tampoco por enlaces con otros sitios webs que el usuario o visitante pueda realizar desde el Sitio. WOAW
-      tampoco será responsable por los daños y perjuicios que puedan deberse a la presencia de virus o a la presencia de
-      otros elementos lesivos en los contenidos del Sitio web, que puedan producir alteración en los sistemas
-      informáticos, así como en los documentos o sistemas almacenados en los mismos.</p>
-
-    <p>El Sitio puede ligar al usuario a otros sitios webs o websites en Internet. Estos sitios web o websites pueden
-      contener información o material que pudiera considerarse como inadecuado u ofensivo. Dichos sitio webs o websites
-      no se encuentran bajo el control de WOAW. WOAW no será responsable de la veracidad, exactitud, legalidad,
-      decencia o de cualquier otro aspecto que pudiere agraviar a los usuarios de los sitios webs o websites incluidos
-      en el Sitio web. La inclusión de los sitios webs o websites en el Sitio web no genera asociación o vinculación
-      entre WOAW y los propietarios de los otros sitios webs o websites.</p>
-
-    <p>El usuario renuncia y acuerda en liberar de toda responsabilidad, así como de iniciar cualquier acción legal en
-      contra de WOAW derivados de cualquier controversia que surja entre el usuario y los sitio webs o websites
-      incluidos en el Sitio.</p>
-
-    <p>El usuario se obliga a cumplir con todas las leyes aplicables al uso del Sitio.</p>
-
-    <p class="titulo-seccion">DERECHOS DE PROPIEDAD</p>
-
-    <p>El presente instrumento forma parte íntegra de los Términos y Condiciones para la prestación de los Servicios
-      provistos por COMERCIO AUTOMOTRIZ WOAW, S.A. DE C.V. (en lo sucesivo "WOAW") y el uso de sus Herramientas,
-      los cuales podrán ser consultados en <a class="resaltado" href="https://wo-aw.com"
-        target="_blank">https://wo-aw.com</a>.</p>
-
-    <p>El término Información Confidencial comprenderá, de manera enunciativa pero no limitativa, toda la información
-      propiedad, o en posesión de WOAW sus subsidiarias, filiales, clientes y/o información de terceros
-      proporcionada, revelada o recibida ya sea de manera autorizada o no por LOS USUARIOS de forma electrónica,
-      escrita, física, visual u oral (susceptible de plasmarse en medios escritos), o de cualquier otra forma,
-      relacionada con información comercial, financiera, jurídica, de negocios, información técnica, incluyendo pero sin
-      limitarse a:</p>
-
-    <ul>
-      <li>a) Información corporativa, financiera, contable y jurídica de WOAW...</li>
-      <li>b) Especificaciones de productos y diseños de los productos de WOAW...</li>
-      <li>c) Información relacionada con nuevos productos, mejoras, desarrollos, diseños...</li>
-      <li>d) Dibujos, especificaciones de ingeniería, bases de datos, código fuente, etc.</li>
-      <li>e) Métodos y procedimientos operacionales, know-how, técnicas y manuales.</li>
-      <li>f) Información de mercadotecnia, estrategias y resultados internos.</li>
-      <li>g) Documentos, pagares, expedientes, grabaciones, programas de cómputo.</li>
-      <li>h) Información confidencial de terceros encomendada a WOAW.</li>
-      <li>i) Información desarrollada por WOAW basada en datos que proporciona.</li>
-      <li>j) Términos y condiciones de contratos con clientes, proveedores, etc.</li>
-      <li>k) Identidad y datos de contacto de proveedores, vendedores, clientes, etc.</li>
-      <li>l) Datos competitivamente sensibles de WOAW no disponibles al público.</li>
-      <li>m) Estado de resultados de investigaciones, tratos con entidades reguladoras.</li>
-    </ul>
-
-    <p>La Información Confidencial que se encuentre en las páginas, aplicaciones, herramientas o cualquier otro medio
-      diseñado, licenciado o en control de WOAW serán propiedad únicamente de este último, indistintamente si por
-      alguna razón los usuarios llegarán a tener acceso a ella; así mismo, será considerada como secreto industrial
-      conforme a lo establecido por la Ley de la Propiedad Industrial en México. Por lo tanto, la violación o uso no
-      autorizada de la misma se interpretará como revelación ilícita de un secreto industrial y la revelación de
-      información privilegiada, las cuales se encuentran sancionadas por las disposiciones de la citada Ley y los
-      Códigos Penales, Federales y Locales.</p>
-
-    <p>Los usuarios se obligan a indemnizar, sacar y dejar en paz y a salvo a WOAW por todos y cada uno de los daños
-      y perjuicios que surjan en relación a o como consecuencia de algún incumplimiento de las obligaciones de
-      Confidencialidad estipuladas en el presente instrumento.</p>
-
-    <p>Toda la Información Confidencial será propiedad de WOAW y los usuarios reconocen y acuerdan que toda aquella
-      información, obras, procesos o servicios que fueran recibidos por los usuarios derivados la relación de negocios
-      entre las partes fueron considerados como obras por encargo y en consecuencia todos los derechos derivados de las
-      mismas pertenecen a WOAW.</p>
-
-    <p class="titulo-seccion">RESTRICCIONES</p>
-
-    <p>Usted reconoce que para la prestación de los servicios de WOAW quedará estrictamente prohibido:</p>
-
-    <ul>
-      <li>Denostar como propia, replicar o imitar cualquier nota de derechos de autor, marca registrada u cualquier otra
-        información, diseño, signo distintivo, o modelo de negocio o de los Servicios ya sea que se encuentre registrado
-        o sea sujeto de registro de propiedad intelectual o industrial independientemente si es de manera total o
-        parcial.</li>
-      <li>Reproducir, modificar, preparar o, distribuir, licenciar, arrendar, revender, transferir, exhibir
-        públicamente, presentar públicamente, transmitir, retransmitir o explotar de otra forma las Herramientas o los
-        Servicios, excepto con la previa autorización formal y por escrito por parte de WOAW.</li>
-      <li>Vulnerar, descompilar, realizar ingeniería inversa o desmontar las Herramientas o los Servicios, excepto como
-        se permita por la ley aplicable.</li>
-      <li>Enlazar, reflejar o enmarcar cualquier parte de los Servicios con servicios o negociaciones propios o modelos
-        de servicios que sean independientes a WOAW sin la previa autorización por escrito de parte de WOAW.
-      </li>
-      <li>Causar o lanzar cualquier programa o script con el objeto de extraer, indexar, analizar o de otro modo
-        realizar prospección de datos de cualquier parte de los Servicios o sobrecargar o bloquear indebidamente la
-        operación y/o funcionalidad de cualquier aspecto de los Servicios.</li>
-      <li>Intentar obtener un acceso no autorizado o dañar cualquier aspecto de los Servicios o sus sistemas o redes
-        relacionados.</li>
-    </ul>
-
-    <p>Los Servicios prestados podrán estar sujetos, estar a disposición o ser accesibles por terceros prestadores de
-      servicios y contenidos de terceros incluida la publicidad que WOAW no controle; por lo anterior, usted
-      reconoce que podrán ser de aplicación diferentes condiciones y políticas de privacidad al uso que haga de dichos
-      servicios y contenido de terceros. WOAW no respalda dichos servicios y contenido de terceros y en ningún caso
-      WOAW será responsable de cualquier producto o servicio de dichos terceros proveedores.</p>
-
-    <p>Adicionalmente, Apple Inc., Google, Inc., Microsoft Corporation y/o sus correspondientes subsidiarias o afiliados
-      internacionales serán terceros beneficiarios en este contrato si usted accede a los Servicios utilizando
-      Herramientas desarrolladas para dispositivos móviles con sistema iOS, Android, Microsoft Windows, respectivamente.
-      Estos terceros beneficiarios no son parte de este contrato y no son responsables de la prestación o apoyo de los
-      Servicios de ninguna manera. Su acceso a los Servicios utilizando estos dispositivos se sujeta a los Términos y
-      Condiciones establecidas en los Términos y Condiciones de servicio de terceros beneficiarios aplicables.</p>
-
-    <p>Los Servicios y todos los derechos relativos a éstos son y permanecerán en la propiedad de WOAW o de sus
-      licenciantes. Ninguno de estos Términos y Condiciones, ni el uso de los Servicios le transfieren u otorgan ningún
-      derecho: (i) sobre o en relación con los Servicios, excepto en cuanto a la autorización limitada otorgada
-      anteriormente; o bien (ii) a utilizar o mencionar en cualquier modo a los nombres de empresa, logotipos, nombres
-      de producto y servicio, marcas comerciales o marcas de servicio de WOAW o de sus afiliados.</p>
-
-    <p class="titulo-seccion">CUENTAS</p>
-
-    <p>Como requisito para la eficiente prestación de los Servicios, usted debe registrarse y mantener activa una cuenta
-      personal de usuario de los Servicios (en lo sucesivo referida como la “Cuenta”). Para el registro y obtención de
-      una Cuenta el usuario deberá de tener como mínimo 18 años. El llenar la información requerida en los formatos de
-      registro oficiales de WOAW. En razón de lo anterior usted se compromete a mantener la información en su Cuenta
-      de forma exacta, completa y actualizada. Si no mantiene la información de Cuenta de forma exacta, completa y
-      actualizada, incluso el tener un método de pago inválido y fidedigno o que haya vencido, podrá resultar en la
-      posibilidad de que WOAW limite, restrinja o niegue el acceso a utilizar los Servicios o Herramientas de WOAW.
-      Usted es responsable de toda la actividad que ocurre en su Cuenta y se compromete a mantener en todo
-      momento de forma segura y secreta el nombre de usuario y la contraseña de su Cuenta, siendo aplicable para tales
-      efectos lo establecido en la Política de Seguridad establecida por WOAW.</p>
-
-    <p>Salvo acuerdo celebrado previamente y por escrito con WOAW, cada usuario solamente podrá poseer una cuenta.
-    </p>
-
-    <p>A razón de lo anterior quedará prohibido que permita o brinde acceso a las Herramientas o Servicios a personas
-      menores de edad o que personas menores de edad hagan uso de los mismos a través de usted; lo anterior a excepción
-      de aquellos casos en que los menores de edad sean transportados en compañía de sus padres o tutores legales.</p>
-
-    <p>La utilización por su parte de la Herramienta y los Servicios deberá de ser con apego a las legislaciones
-      aplicables en los Estados Unidos Mexicanos por lo que quedará estrictamente prohibido la transportación,
-      contratación o uso de las Herramientas y/o servicios para la transportación de materiales ilegales o peligrosos y
-      en cuyo caso WOAW dará parte a las autoridades correspondientes y hará responsable al usuario de los daños,
-      perjuicios e implicaciones que el uso igual haya generado.</p>
-
-    <p>En el uso de los Servicios con la clara intención de generar actos de hostigamiento, molestias o de cualquier
-      manera incomodar o afectar a un tercero quedará de igual manera estrictamente prohibido por lo que en dichos casos
-      se procederá en los mismos términos establecidos en el párrafo inmediato anterior.</p>
-
-    <p>Con la creación de una Cuenta usted, de manera expresa e indubitable acepta y accede a recibir mensajes de texto
-      informativos relacionados con la prestación del servicio o relacionados con la actividad comercial de WOAW.
-      Como usuario usted en cualquier momento podrá solicitar a WOAW el cese el envío de mensajes, lo anterior lo
-      podrá realizar enviando su solicitud a la información de contacto siguiente: <a class="resaltado"
-        href="mailto:contacto@wo-aw.com">comercial&#64;wo-aw.com</a>.</p>
-
-    <p>Usted reconoce que solicitar la no recepción de mensajes de texto informativos (SMS) por "WhatsApp" o a través de
-      cualquier medio electrónico, podrá afectar al uso que usted haga de los Servicios.</p>
-
-    <p class="titulo-seccion">USO DE DATOS DE RED</p>
-
-    <p>Usted es responsable de obtener el acceso a la red de datos necesario para utilizar los Servicios. Así mismo
-      reconoce que para la utilización de la Herramienta o los Servicios podrán existir cargos de las tarifas y tasas de
-      datos y mensajes de su red móvil si usted accede o utiliza los Servicios desde un dispositivo inalámbrico y usted
-      será responsable de dichas tarifas y tasas. Usted es responsable de adquirir y actualizar el hardware compatible o
-      los dispositivos necesarios para acceder y utilizar los Servicios y Aplicaciones y cualquier actualización de
-      estos. WOAW no garantiza que los Servicios, o cualquier parte de estos, funcionen en cualquier hardware o
-      dispositivo particular. Además, los Servicios podrán ser objeto de malfuncionamiento o retrasos inherentes al uso
-      de Internet y de las comunicaciones electrónicas.</p>
-
-    <p class="titulo-seccion">LEGISLACIÓN APLICABLE</p>
-
-    <p>Salvo que aquí se especifique lo contrario, las presentes Condiciones se regirán e interpretarán exclusivamente
-      en virtud de la legislación de los Estados Unidos Mexicanos.</p>
-
-    <p class="titulo-seccion">NOTIFICACIONES</p>
-
-    <p>WOAW podrá notificar por medio de una notificación general en los Servicios, mediante un correo electrónico
-      enviado a su dirección electrónica en su Cuenta o por comunicación escrita enviada a su dirección, según lo
-      dispuesto en su Cuenta. Usted podrá notificar a WOAW por comunicación escrita a la dirección de WOAW.</p>
-
-    <p class="titulo-seccion">DISPOSICIONES GENERALES</p>
-
-    <p>No podrá ceder ni transferir estos Términos y Condiciones, en todo o en parte, sin el consentimiento previo por
-      escrito de WOAW. Usted da su aprobación a WOAW para ceder o transferir estos Términos y Condiciones, en
-      todo o en parte, incluido a: (i) una subsidiaria o un afiliado; (ii) un adquirente del capital, del negocio o de
-      los activos de WOAW; o (iii) un sucesor por fusión. Se reconoce que no existe entre usted, WOAW o
-      cualquier Tercer proveedor una empresa conjunta o relación de socios, empleo o agencia como resultado del contrato
-      entre usted y WOAW o del uso de los Servicios.</p>
-
-    <p>Si cualquier disposición de estos Términos y Condiciones se considerara ilegal, nula o inexigible, ya sea en su
-      totalidad o en parte, de conformidad con cualquier legislación, dicha disposición o parte de esta se considerará
-      que no forma parte de estos Términos y Condiciones, aunque la legalidad, validez y exigibilidad del resto de las
-      disposiciones de estos Términos y Condiciones no se verá afectada. En ese caso, las partes deberán reemplazar
-      dicha disposición ilegal, nula o inexigible, en todo o en parte por una disposición legal, válida y exigible que
-      tenga, en la medida de lo posible, un efecto similar al que tenía la disposición ilegal, nula o inexigible, dados
-      los contenidos y el propósito de estos Términos y Condiciones.</p>
-
-    <p>Estos Términos y Condiciones constituyen el contrato íntegro y el entendimiento entre las partes en relación con
-      el objeto y sustituye y reemplaza a todos los contratos o acuerdos anteriores o contemporáneos en relación con
-      dicho objeto.</p>
-
-    <br />
-    <p>Querétaro, Querétaro a 1° de junio de 2025.</p>
-
+  <div class="pdf-wrap">
+    <iframe class="pdf-frame" [src]="pdfUrlSafe" title="TÉRMINOS Y CONDICIONES" allowfullscreen
+      referrerpolicy="no-referrer">
+    </iframe>
   </div>
+
 </ion-content>
 <!--  //☢️☢️ -->
 <ion-footer *ngIf="!mostrarFooter">
@@ -362,7 +40,7 @@
           <ion-icon name="close-outline"></ion-icon>
           Cancelar
         </button>
-        <button class="btn-aceptar" [disabled]="!scrollAlFinal" (click)="aceptar()">
+        <button class="btn-aceptar" (click)="aceptar()">
           <ion-icon name="checkmark-outline"></ion-icon>
           Aceptar
         </button>

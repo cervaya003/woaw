@@ -71,8 +71,6 @@
 }
 
 
-
-
 .cat-card {
   position: relative;
   display: grid;
@@ -100,10 +98,16 @@
     transition: filter .4s ease, opacity .4s ease;
   }
 
-  &:hover .cat-card__bg {
-    transform: scale(1.06);
-    filter: contrast(1.06) saturate(1.2);
-    transform: none !important;
+  &:hover .animacion__1 {
+    transform: translateX(20px);
+  }
+
+  &:hover .animacion__2 {
+    transform: translateY(-10px);
+  }
+
+  &:hover .animacion__3 {
+    transform: translateX(20px);
   }
 
   .cat-card__bg {
@@ -140,7 +144,6 @@
     text-align: center;
     gap: 10px;
     padding: clamp(14px, 2.4vw, 24px);
-    color: #ffffff;
   }
 
   .cat-card__title {
@@ -149,12 +152,14 @@
     font-size: clamp(10px, 2.4vw, 25px);
     font-weight: 800;
     letter-spacing: .2px;
+    color: #ffffff;
   }
 
   .cat-card__subtitle {
     margin: 0;
     font-size: clamp(12px, 1.6vw, 14px);
     opacity: .9;
+    color: #e3e3e3;
   }
 
   .cat-card__btn {
@@ -162,7 +167,7 @@
     max-width: 80%;
     border: 0;
     border-radius: 999px;
-    padding: clamp(6px, 1vw, 10px) clamp(5px, 2vw, 16px);
+    padding: clamp(6px, 1vw, 10px) clamp(5px, 1vw, 16px);
     font-weight: 700;
     font-size: clamp(5px, .5vw, 14px);
     background: #ff2121;
@@ -187,11 +192,6 @@
     outline-offset: 2px;
   }
 }
-
-
-
-
-
 
 
 .cat-card2 {
@@ -243,15 +243,9 @@
     height: 100%;
     object-fit: contain;
     object-position: center bottom;
-    filter: contrast(1.02) saturate(1.05);
-    transition: transform .6s cubic-bezier(.2, .8, .2, 1), filter .4s ease, opacity .4s ease;
-    transform: translateY(0);
+    transition: transform 0.4s ease-in-out;
   }
 
-  &:hover .cat-card__bg {
-    transform: translateY(-4px) scale(1.02);
-    filter: contrast(1.06) saturate(1.18);
-  }
 
   .cat-card__overlay {
     grid-area: 1 / 1;
@@ -453,8 +447,7 @@
 
 
 .anuncio-app {
-  background: linear-gradient(135deg, #000000, #000000);
-  color: #fff;
+  background-color: #ffffff;
   text-align: center;
   padding: 10px 10px;
   margin: 0px auto;
@@ -471,14 +464,25 @@
     margin-bottom: -1rem;
   }
 
+  .msj_2 {
+    color: #aaaaaa;
+    font-size: clamp(8px, 1vw, 13px);
+  }
+
   .titulo {
+    color: #ff0000;
     font-size: clamp(15px, 3vw, 42px);
     font-weight: 800;
     margin-bottom: 15px;
-    background: linear-gradient(90deg, #ff1e1e, #ff6b6b);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: glow 2s infinite alternate;
+
+    // background: linear-gradient(90deg, #ff1e1e, #ff6b6b);
+    // -webkit-background-clip: text;
+    // -webkit-text-fill-color: transparent;
+    // animation: glow 2s infinite alternate;
+    span {
+      font-size: clamp(10px, 2vw, 42px);
+      color: #0095ff;
+    }
   }
 
   .descripcion {
@@ -487,6 +491,7 @@
     max-width: 800px;
     margin: 0 auto 5px;
     opacity: 0.9;
+    color: #000000;
 
     .resaltado {
       font-weight: 700;
@@ -500,10 +505,8 @@
     gap: 25px;
 
     img {
-      width: clamp(50px, 10vw, 500px);
+      width: clamp(100px, 20vw, 500px);
       height: auto;
-      filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.4));
-      transition: transform 0.3s ease, filter 0.3s ease;
     }
   }
 }
