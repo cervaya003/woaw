@@ -70,7 +70,9 @@ export class NewCarPage implements OnInit {
   modeloSeleccionado: string = "";
   modeloEsPersonalizado: boolean = false;
   marcaEsPersonalizada: boolean = false;
-
+tipoSeleccionado: 'particular' | 'lote' | null = null;
+seccionFormulario: number = 2;
+Pregunta: 'si' | 'no' = 'no';
   public isLoggedIn: boolean = false;
 
   // ----- data de selects
@@ -110,23 +112,56 @@ export class NewCarPage implements OnInit {
     this.generarListaAnios();
     this.cargarOpcionesPorRol();
   }
-  seleccionar(
-    tipo: "auto" | "moto" | "renta" | "lote" | "camion" | null,
-    label: string,
-    icono: string
-  ) {
-    if (label === "Lote") {
-      this.mostrarCarComponent = true;
-    } else {
-      this.limpiarDependencias("all");
-    }
-    this.seleccion = tipo;
-    this.mostrarSelecion = label;
-    this.mostrarIcono = icono;
-
-    this.anioSeleccionado = "";
-    this.anioManual = "";
+seleccionar(
+  tipo: "auto" | "moto" | "renta" | "lote" | "camion" | null,
+  label: string,
+  icono: string
+) {
+  if (label === "Lote") {
+    this.mostrarCarComponent = true;
+  } else {
+    this.limpiarDependencias("all");
   }
+  this.seleccion = tipo;
+  this.mostrarSelecion = label;
+  this.mostrarIcono = icono;
+
+  this.anioSeleccionado = "";
+  this.anioManual = "";
+  this.mostrarInputOtroAnio = false;
+  this.anioValido = false;
+  this.mansaje_error = "";
+
+  // ✅ LÓGICA SOLO PARA MOSTRAR LA PREGUNTA EN LOTERO
+  if (tipo === "auto" || tipo === "moto" || tipo === "camion") {
+    if (this.MyRole === "lotero") {
+      // Mostrar la pregunta "Particular o Lote" en el hijo
+      this.Pregunta = 'si';
+      this.tipoSeleccionado = null;   // que elija
+      this.seccionFormulario = 1;     // paso de pregunta
+    } else {
+      // Otros roles: no mostrar esa pregunta (tu flujo actual)
+      this.Pregunta = 'no';
+      // Mantén tu lógica de secciones tal como ya la tienes
+      if (this.MyRole === "admin") {
+        this.seccionFormulario = 2;
+        this.tipoSeleccionado = null;
+      } else {
+        // vendedor/cliente u otros: tu lógica actual de pregunta "quién lo sube"
+        this.tipoSeleccionado = "particular";
+        this.seccionFormulario = 1;
+      }
+    }
+  } else {
+    // Renta y otros no se tocan
+    this.Pregunta = 'no';
+    this.seccionFormulario = 2;
+    this.tipoSeleccionado = null;
+
+  }
+
+  this.generarListaAnios();
+}
 
   cargarOpcionesPorRol() {
     if (this.MyRole === "admin") {
@@ -137,29 +172,26 @@ export class NewCarPage implements OnInit {
     }
   }
   generarListaAnios() {
-    const anioActual = new Date().getFullYear();
-    const anioSiguiente = anioActual + 1;
-    const anioLimite = 2008;
+  const anioActual = new Date().getFullYear();
+  const anioSiguiente = anioActual + 1; // 2026
+  const anioLimite = 2008;
 
-    this.listaAnios = [];
+  this.listaAnios = [];
 
-    if (this.MyRole === "admin") {
-      // Admin: año siguiente, actual y hasta 2008
-      this.listaAnios.push(anioSiguiente);
-      this.listaAnios.push(anioActual);
-
-      for (let i = anioActual - 1; i >= anioLimite; i--) {
-        this.listaAnios.push(i);
-      }
-    } else {
-      // Lotero o vendedor: solo actual y hasta 2008
-      this.listaAnios.push(anioActual);
-
-      for (let i = anioActual - 1; i >= anioLimite; i--) {
-        this.listaAnios.push(i);
-      }
-    }
+  // 👉 Solo ADMIN ve 2026 en auto/moto/camion
+  if (
+    this.MyRole === "admin" &&
+    (this.seleccion === "auto" || this.seleccion === "moto" || this.seleccion === "camion")
+  ) {
+    this.listaAnios.push(anioSiguiente);
   }
+
+  // Para todos: del año actual hacia 2008
+  for (let i = anioActual; i >= anioLimite; i--) {
+    this.listaAnios.push(i);
+  }
+}
+
 
   // verifica el año al escribir o selecionar
   verificarAnio(tipo: "select" | "escrito") {
@@ -184,9 +216,23 @@ export class NewCarPage implements OnInit {
   }
 
   validarAnio(anio: number): boolean {
-    const anioActual = new Date().getFullYear();
-    return !isNaN(anio) && anio >= 1800 && anio <= anioActual;
+  const anioActual = new Date().getFullYear();
+
+  // Reglas SOLO para auto/moto/camion
+  if (this.seleccion === "auto" || this.seleccion === "moto" || this.seleccion === "camion") {
+    if (this.MyRole === "admin") {
+      // Admin: 2008 .. 2026 (año actual + 1)
+      return !isNaN(anio) && anio >= 2008 && anio <= (anioActual + 1);
+    } else {
+      // Lotero / Vendedor / Cliente: 2008 .. 2025 (año actual)
+      return !isNaN(anio) && anio >= 2008 && anio <= anioActual;
+    }
   }
+
+  // Renta y otros: sin cambios (hasta año actual)
+  return !isNaN(anio) && anio >= 1800 && anio <= anioActual;
+}
+
 
   esAnioAnteriorA2008(): boolean {
     const anio = this.obtenerAnioActual();
@@ -230,20 +276,34 @@ export class NewCarPage implements OnInit {
     }
   }
 
-  formularioValido(): boolean {
-    const anio = this.obtenerAnioActual();
-    const anioActual = new Date().getFullYear();
-    const anioEsValido = this.anioValido && anio >= 1800 && anio <= anioActual;
+formularioValido(): boolean {
+  const anio = this.obtenerAnioActual();
+  const anioActual = new Date().getFullYear();
 
-    const marcaValida =
-      !!this.marcaSeleccionada && this.marcaSeleccionada !== "";
-    const modeloValido =
-      !!this.modeloSeleccionado &&
-      this.modeloSeleccionado.trim().length > 0 &&
-      this.modeloSeleccionado.length <= 25;
+  let anioEsValido = false;
 
-    return !!anioEsValido && marcaValida && modeloValido;
+
+  if (this.seleccion === "auto" || this.seleccion === "moto" || this.seleccion === "camion") {
+    if (this.MyRole === "admin") {
+      // Admin: 2008 .. 2026
+      anioEsValido = this.anioValido && anio >= 2008 && anio <= (anioActual + 1);
+    } else {
+      // Lotero/Vendedor/Cliente: 2008 .. 2025
+      anioEsValido = this.anioValido && anio >= 2008 && anio <= anioActual;
+    }
+  } else {
+    // Renta: como lo tenías (hasta año actual)
+    anioEsValido = this.anioValido && anio >= 1800 && anio <= anioActual;
   }
+
+  const marcaValida = !!this.marcaSeleccionada && this.marcaSeleccionada !== "";
+  const modeloValido =
+    !!this.modeloSeleccionado &&
+    this.modeloSeleccionado.trim().length > 0 &&
+    this.modeloSeleccionado.length <= 25;
+
+  return !!anioEsValido && marcaValida && modeloValido;
+}
 
   mostrarComponente() {
     const anio = this.obtenerAnioActual();
@@ -363,39 +423,42 @@ export class NewCarPage implements OnInit {
   }
 
   PeticionesMarcasDeAutos(anio: number) {
-    const anioActual = new Date().getFullYear();
-    if (anio >= 2008 && anio <= anioActual) {
-      this.carsService.GetMarcas(anio).subscribe({
-        next: (data) => {
-          this.marcas = data;
-        },
-        error: (error) => {
-          console.error("Error al obtener marcas:", error);
-        },
-        complete: () => {
-          this.generalService.loadingDismiss();
-        },
-      });
-    } else if (anio < 2008 && anio >= 1800) {
-      this.carsService.getMarcas_all().subscribe({
-        next: (data: Marca[]) => {
-          this.marcas = data.sort((a: Marca, b: Marca) =>
-            a.nombre.toLowerCase().localeCompare(b.nombre.toLowerCase())
-          );
-        },
-        error: (err) => {
-          const mensaje =
-            err?.error?.message || "Error al cargar marcas - Carros";
-          console.warn(mensaje);
-        },
-        complete: () => {
-          this.generalService.loadingDismiss();
-        },
-      });
-    } else {
-      console.log("no se ejcuta nada");
-    }
+  const anioActual = new Date().getFullYear();
+  const maxPermitido = (this.MyRole === "admin") ? (anioActual + 1) : anioActual;
+
+  if (anio >= 2008 && anio <= maxPermitido) {
+    this.carsService.GetMarcas(anio).subscribe({
+      next: (data) => {
+        this.marcas = data;
+      },
+      error: (error) => {
+        console.error("Error al obtener marcas:", error);
+      },
+      complete: () => {
+        this.generalService.loadingDismiss();
+      },
+    });
+  } else if (anio < 2008 && anio >= 1800) {
+    this.carsService.getMarcas_all().subscribe({
+      next: (data: Marca[]) => {
+        this.marcas = data.sort((a: Marca, b: Marca) =>
+          a.nombre.toLowerCase().localeCompare(b.nombre.toLowerCase())
+        );
+      },
+      error: (err) => {
+        const mensaje =
+          err?.error?.message || "Error al cargar marcas - Carros";
+        console.warn(mensaje);
+      },
+      complete: () => {
+        this.generalService.loadingDismiss();
+      },
+    });
+  } else {
+    console.log("no se ejecuta nada");
   }
+}
+
 
   PeticionesMarcasDeMotos() {
     this.motosService.getMarcas().subscribe({

@@ -169,7 +169,7 @@ export class CamionComponent implements OnInit {
           this.Pregunta = "si";
           this.seccionFormulario = 2;
         } else if (this.MyRole === "lotero") {
-          this.Pregunta = "no";
+          this.Pregunta = "si";
           this.seccionFormulario = 2;
           this.tipoSeleccionado = "lote";
           this.getLotes("mios");
