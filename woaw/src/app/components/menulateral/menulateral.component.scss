@@ -1,45 +1,171 @@
 ion-menu[menuId="menuLateral"] {
-  --width: 200px;
+  --width: 280px;
+
   @media (max-width: 768px) {
     --width: 200px;
   }
 
   ion-header {
     ion-toolbar {
-      height: 50px;
-      --background: #1e1e1e;
+      position: relative;
+      height: 60px;
+      --background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
       --color: #fff;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
 
-      ion-title {
-        font-weight: bold;
+      .title-center {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        width: auto;
+        text-align: center;
+        pointer-events: none;
+        font-size: 18px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
       }
+
+      ion-title { font-weight: 600; font-size: 18px; }
 
       ion-button {
         color: #ffffff;
+        transition: all 0.3s ease;
+        &:hover { color: #ff4757; transform: scale(1.1); }
       }
     }
   }
 
   ion-content {
-    padding: 0px !important;
-    margin: 0px;
+    padding: 0 !important;
+    margin: 0;
+    --background: linear-gradient(180deg, #f8f9fa 0%, #ffffff 40%, #ffffff 100%);
 
     ion-list {
       display: flex;
       flex-direction: column;
-      gap: 1px;
-      padding: 0px !important;
+      gap: clamp(0px, 0.4vw, 2px);
+      padding: clamp(4px, 1vw, 6px) clamp(4px, 1.2vw, 8px) !important;
+      background: transparent;
 
+      /* ==== HEADER DE SECCIÓN (clickeable) ==== */
+      .menu-section {
+        color: #ff4757;
+        font-weight: 700;
+        font-size: clamp(9px, 2vw, 12px);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        padding: clamp(6px, 1.2vw, 10px) clamp(8px, 1.6vw, 12px) clamp(4px, 0.8vw, 6px);
+        margin: clamp(4px, 0.8vw, 8px) 0 clamp(1px, 0.3vw, 2px);
+        position: relative;
+        background: transparent;
+
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+        user-select: none;
+
+        &:first-of-type { margin-top: 0; }
+
+        &::after {
+          content: '';
+          position: absolute;
+          bottom: clamp(1px, 0.3vw, 3px);
+          left: clamp(8px, 1.4vw, 12px);
+          right: clamp(8px, 1.4vw, 12px);
+          height: clamp(1px, 0.2vw, 2px);
+          background: linear-gradient(90deg, #ff4757 0%, rgba(255, 71, 87, 0.3) 70%, transparent 100%);
+          border-radius: 1px;
+        }
+
+        ion-icon { color: #ff4757; transition: transform .25s ease; }
+        &.expanded ion-icon { transform: rotate(180deg); }
+      }
+
+      /* pega lista y header / y entre bloques */
+      .menu-section + .menu-items { margin-top: clamp(1px, 0.3vw, 3px); }
+      .menu-items + .menu-section { margin-top: clamp(6px, 1.2vw, 10px); }
+
+      /* ==== CONTENEDOR COLAPSABLE ==== */
+      .menu-items {
+        max-height: 0;
+        overflow: hidden;
+        opacity: 0;
+        transform: translateY(clamp(-2px, -0.4vw, -1px));
+        transition: max-height .28s ease, opacity .2s ease, transform .28s ease;
+      }
+      .menu-items.expanded {
+        max-height: 1000px; /* suficiente */
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* ==== ITEMS ==== */
       ion-item {
         --border-style: none;
         --inner-border-width: 0;
-        font-size: 13px;
-        transition: background 0.2s ease-in-out;
-      }
+        --ripple-color: rgba(255, 71, 87, 0.2);
+        --padding-start: clamp(10px, 1.6vw, 12px);
+        --padding-end: clamp(10px, 1.6vw, 12px);
+        --inner-padding-top: clamp(4px, 0.8vw, 6px);
+        --inner-padding-bottom: clamp(4px, 0.8vw, 6px);
+        font-size: clamp(10px, 1vw, 14px);
+        font-weight: 500;
+        border-radius: clamp(6px, 1.4vw, 8px);
+        margin: clamp(0px, 0.3vw, 2px) 0;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        --background: transparent;
+        min-height: clamp(36px, 5.2vw, 42px);
 
-      ion-icon{
-        margin-right: 4px;
+        &:hover {
+          --background: linear-gradient(90deg, rgba(255, 71, 87, 0.08) 0%, rgba(255, 71, 87, 0.04) 100%);
+          color: #ff4757;
+          transform: translateX(4px);
+          box-shadow: 0 2px 8px rgba(255, 71, 87, 0.15);
+        }
+
+        &:active { transform: translateX(4px) scale(0.98); }
+
+        ion-icon {
+          margin-right: clamp(6px, 1vw, 8px);
+          color: #ff4757 !important;
+          font-size: clamp(16px, 2.6vw, 18px);
+          transition: all 0.3s ease;
+        }
+
+        &:hover ion-icon { transform: scale(1.1); color: #ff3742 !important; }
+
+        ion-label {
+          color: #2c3e50;
+          font-weight: 500;
+          transition: color 0.3s ease;
+        }
+        &:hover ion-label { color: #ff4757; font-weight: 600; }
       }
     }
+  }
+
+  /* Animación de entrada */
+  &.show-menu {
+    ion-content ion-list .menu-items ion-item {
+      animation: slideInLeft 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+      opacity: 0;
+      transform: translateX(-30px);
+    }
+  }
+}
+
+@keyframes slideInLeft {
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* Estados extra */
+ion-menu[menuId="menuLateral"] {
+  ion-content ion-list .menu-items ion-item.item-selected {
+    --background: linear-gradient(90deg, rgba(255, 71, 87, 0.12) 0%, rgba(255, 71, 87, 0.06) 100%);
+    color: #ff4757;
+    border-left: 3px solid #ff4757;
+    font-weight: 600;
+    ion-icon { color: #ff4757 !important; transform: scale(1.1); }
   }
 }
