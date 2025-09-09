@@ -144,9 +144,9 @@ export class PrincipalComponent implements OnInit {
     this.generalService.addPreload(this.img3, 'image');
     try {
       await Promise.all([
-        this.generalService.preloadHero(this.img1, 4500),
-        this.generalService.preloadHero(this.img2, 4500),
-        this.generalService.preloadHero(this.img3, 4500),
+        this.generalService.preloadHero(this.img1, 500),
+        this.generalService.preloadHero(this.img2, 500),
+        this.generalService.preloadHero(this.img3, 500),
       ]);
     } finally {
       // this.overlayLoaded = true;

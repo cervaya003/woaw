@@ -470,4 +470,14 @@ export class GeneralService {
     link.crossOrigin = 'anonymous';
     document.head.appendChild(link);
   }
+
+
+
+
+
+
+
+
+
+  
 }

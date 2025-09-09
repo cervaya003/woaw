@@ -1,0 +1,91 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="dark" class="woaw-toolbar">
+    <div class="brand">
+      <img src="assets/icon/logo2.png" alt="WOAW" />
+      <span>Conócenos</span>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" scrollEvents="true" (ionScroll)="onScroll($event)">
+  <!-- HERO -->
+  <section class="hero" #hero>
+    <div class="hero__bg" aria-hidden="true"></div>
+    <div class="hero__glow" aria-hidden="true"></div>
+    <div class="hero__content reveal">
+      <h1>Personas primero. <span>Rutas claras.</span></h1>
+      <p>WOAW construye tecnología automotriz que conecta gente, vehículos y oportunidades sin ruido, sin fricción.</p>
+      <!-- <div class="hero__pills">
+        <span class="pill">Web · Mobile</span>
+        <span class="pill">Ionic + Angular</span>
+        <span class="pill">Node + Mongo</span>
+      </div> -->
+    </div>
+  </section>
+
+  <!-- KPIs -->
+  <section class="kpis">
+    <div class="kpi reveal" *ngFor="let k of kpiList">
+      <div class="kpi__num" [attr.data-target]="k.valor">0</div>
+      <div class="kpi__label">{{ k.label }}</div>
+    </div>
+  </section>
+
+  <!-- QUIÉNES SOMOS -->
+  <section class="who reveal">
+    <div class="copy">
+      <h2>Quiénes somos</h2>
+      <p>
+        Equipo mexicano que diseña soluciones para compra, venta, renta y arrendamiento de vehículos. Ingeniería con
+        alma artesanal, obsesión por el detalle y respeto por lo clásico, mirando siempre al futuro.
+      </p>
+    </div>
+    <div class="poster parallax">
+      <img src="assets/img/team-joli.jpg" alt="Equipo WOAW" />
+    </div>
+  </section>
+
+  <!-- MISIÓN / VISIÓN / VALORES -->
+  <section class="mvv">
+    <article class="card reveal">
+      <ion-icon name="flag-outline" aria-hidden="true"></ion-icon>
+      <h3>Misión</h3>
+      <p>Hacer simple lo complejo del mundo automotriz, con productos rápidos, seguros y transparentes.</p>
+    </article>
+    <article class="card reveal">
+      <ion-icon name="sparkles-outline" aria-hidden="true"></ion-icon>
+      <h3>Visión</h3>
+      <p>Ser la plataforma automotriz más confiable de México, reconocida por su precisión técnica y UX impecable.</p>
+    </article>
+    <article class="card reveal">
+      <ion-icon name="shield-checkmark-outline" aria-hidden="true"></ion-icon>
+      <h3>Valores</h3>
+      <ul>
+        <li>Honestidad sin vueltas</li>
+        <li>Excelencia con disciplina</li>
+        <li>Servicio que acompaña</li>
+      </ul>
+    </article>
+  </section>
+
+  <!-- LÍNEA DE TIEMPO -->
+  <section class="timeline reveal">
+    <h2>Nuestra ruta</h2>
+    <div class="track">
+      <div class="hit" *ngFor="let h of historia; let i = index" [style.--i]="i">
+        <span class="dot"></span>
+        <h4>{{ h.titulo }}</h4>
+        <p>{{ h.desc }}</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta reveal">
+    <h2>¿Listo para acelerar con nosotros?</h2>
+    <p>Si compartes nuestra obsesión por el detalle y el servicio, hablemos.</p>
+    <a class="btn" href="mailto:comercial@wo-aw.com">Contactar</a>
+  </section>
+
+  <div class="spacer" aria-hidden="true"></div>
+</ion-content>
