@@ -4,6 +4,7 @@ import { CarsService } from "../../services/cars.service";
 import { MotosService } from "../../services/motos.service";
 import { Router } from "@angular/router";
 import { MenuController } from "@ionic/angular";
+import { CamionesService } from "src/app/services/camiones.service";
 // (opcional) si vas a enviar al backend de renta desde aquí:
 // import { RentaService } from '../../services/renta.service';
 
