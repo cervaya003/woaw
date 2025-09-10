@@ -126,24 +126,8 @@
 
         </div>
 
-        <div class="field" *ngIf="currentStep === 7">
-          <label for="nombre">Nombre completo</label>
-          <div class="control">
-            <input id="nombre" type="text" class="form-input" placeholder="Ej. JUAN PÉREZ LÓPEZ"
-              formControlName="nombre" (input)="toUpper('nombre')" />
-          </div>
-
-          <label for="email" style="margin-top:12px;">Correo electrónico</label>
-          <div class="control">
-            <input id="email" type="email" class="form-input" placeholder="tucorreo@dominio.com"
-              formControlName="email" />
-            <button type="button" class="icon-btn" aria-label="Regresar" (click)="clearPaso7()">&#x2B05;</button>
-          </div>
-
-        </div>
-
         <!-- Paso 8: Resumen -->
-        <div class="field" *ngIf="currentStep === 8">
+        <div class="field" *ngIf="currentStep === 7">
           <label>Verifica tu información</label>
 
           <div class="summary">
@@ -171,15 +155,6 @@
             <div class="summary__row">
               <span class="k">Estado civil</span><span class="v">{{ getEstadoCivilLabel() }}</span>
             </div>
-            <div class="summary__row" *ngIf="form.get('nombre')?.value">
-              <span class="k">Nombre</span>
-              <span class="v">{{ form.get('nombre')?.value }}</span>
-            </div>
-
-            <div class="summary__row" *ngIf="form.get('email')?.value">
-              <span class="k">Correo</span>
-              <span class="v">{{ form.get('email')?.value }}</span>
-            </div>
             <!-- <div class="summary__row">
               <span class="k">Duración</span><span class="v">{{ form.get('duracion')?.value }} meses</span>
             </div> -->
@@ -199,10 +174,9 @@
               (currentStep===3 && form.get('anio')?.invalid)   ||
               (currentStep===4 && form.get('version')?.invalid)||
               (currentStep===5 && form.errors)                 ||
-              (currentStep===6 && (form.get('cp')?.invalid || form.get('genero')?.invalid || form.get('estadoCivil')?.invalid)) ||
-              (currentStep===7 && (form.get('nombre')?.invalid || form.get('email')?.invalid))
+              (currentStep===6 && (form.get('cp')?.invalid || form.get('genero')?.invalid || form.get('estadoCivil')?.invalid))
             ">
-            {{ currentStep < 8 ? 'Siguiente ' : 'Cotizar' }} </button>
+            {{ currentStep < 7 ? 'Siguiente ' : 'Cotizar' }} </button>
         </div>
 
       </form>
@@ -287,8 +261,8 @@
 
               <!-- CTA -->
               <div class="paybox__cta">
-                <button type="button" class="btn-primary">Contratar próximamente ...</button>
                 <button type="button" class="btn-secondary" (click)="nuevoSeguro()">Cotiza nuevo seguro</button>
+                <button type="button" class="btn-primary" (click)="confirmarPoliza()">Contratar próximamente ...</button>
               </div>
 
               <div class="paybox-info" *ngIf="getSelectedPayment(p) as sel">

@@ -287,25 +287,14 @@ export class SegurosPage implements OnInit {
         // this.form.get('duracion')?.invalid
       ) return;
 
-      if (this.isLoggedIn === true) {
-        this.ensurePaso7();
-        this.currentStep = 7;
-        return;
-      } else {
-        this.currentStep = 8;
-        return;
-      }
+      this.currentStep = 7;
+      return;
+
     }
 
-    // 7 -> 8 
-    if (this.currentStep === 7) {
-      if (this.form.get('nombre')?.invalid || this.form.get('email')?.invalid) return;
-      this.currentStep = 8;
-      return;
-    }
 
     // 8 -> finalizar (cotizar)
-    if (this.currentStep === 8) {
+    if (this.currentStep === 7) {
       const payload = {
         marcaId: Number(this.form.get('marca')?.value),
         modeloId: Number(this.form.get('modelo')?.value),
@@ -319,8 +308,6 @@ export class SegurosPage implements OnInit {
         cp: String(this.form.get('cp')?.value),
         genero: String(this.form.get('genero')?.value),
         estadoCivil: String(this.form.get('estadoCivil')?.value),
-        nombre: String(this.form.get('nombre')?.value).toUpperCase(),
-        email: String(this.form.get('email')?.value)
         // duracionMeses: Number(this.form.get('duracion')?.value),
       };
       this.HacerCotizacion(this.buildCotizacionDTO(payload));
@@ -485,8 +472,6 @@ export class SegurosPage implements OnInit {
     cp: string;
     genero: string;
     estadoCivil: string;
-    nombre: string;
-    email: string;
   }) {
     const pad2 = (n: number) => String(n).padStart(2, '0');
 
@@ -620,6 +605,7 @@ export class SegurosPage implements OnInit {
       restCount: Math.max(count - 1, 0),
     };
   }
+
   paymentPlanLabel(pp: any): string {
     const raw = (pp?.name ?? '').toString().toUpperCase();
     const count = Array.isArray(pp?.payments) ? pp.payments.length : 1;
@@ -660,7 +646,6 @@ export class SegurosPage implements OnInit {
       restTotal
     };
   }
-
 
   async enviarEmail() {
 
@@ -785,4 +770,28 @@ export class SegurosPage implements OnInit {
     await confirm.present();
   }
 
+  async confirmarPoliza() {
+    this.generalService.confirmarAccion(
+      '¿Estás seguro de que crear tu póliza?',
+      'Crear tu póliza',
+      async () => {
+        await this.CrearPoliza();
+      }
+    );
+  }
+  
+  async CrearPoliza() {
+    const payload = {
+      marca: this.getMarcaLabel(),
+      modelo: this.getModeloLabel(),
+      anio: this.form.get('anio')?.value,
+      version: this.getVersionLabel(),
+      nacimiento: this.getNacimiento(),
+      cp: this.form.get('cp')?.value,
+      genero: this.getGeneroLabel(),
+      estadoCivil: this.getEstadoCivilLabel()
+    };
+
+    this.router.navigate(['/seguros/poliza'], { state: { datos: payload } });
+  }
 }

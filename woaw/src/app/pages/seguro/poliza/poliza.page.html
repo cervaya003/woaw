@@ -1,13 +1,120 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>poliza</ion-title>
+<app-navbar *ngIf="!esDispositivoMovil"></app-navbar>
+
+<ion-header *ngIf="esDispositivoMovil">
+  <ion-toolbar color="dark">
+    <ion-buttons slot="start">
+      <ion-back-button text="" routerDirection="back" defaultHref="/"></ion-back-button>
+      <div class="perfil-header">
+        <img src="/assets/icon/logo4.png" alt="Go Autos" class="logo" />
+      </div>
+      <ion-title>Motos</ion-title>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">poliza</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <div class="poliza">
+    <section class="poliza__card">
+
+      <form [formGroup]="form_poliza">
+
+        <div class="field_persona" *ngIf="currentStep === 1">
+          <p class="pregunta">¿Qué tipo de persona eres?</p>
+          <div class="persona-radio">
+            <label class="radio-card">
+              <input type="radio" formControlName="tipoPersona" value="fisica" />
+              <span>Física</span>
+            </label>
+
+            <label class="radio-card">
+              <input type="radio" formControlName="tipoPersona" value="moral" />
+              <span>Moral</span>
+            </label>
+          </div>
+
+          <div class="paybox__cta">
+            <button type="button" class="btn-primary" [disabled]="form_poliza.get('tipoPersona')?.invalid"
+              (click)="goPaso2()">
+              Siguiente
+            </button>
+          </div>
+        </div>
+
+        <!-- Paso 2: Datos -->
+        <div *ngIf="currentStep === 2">
+
+          <div class="resumen" *ngIf="datosPoliza">
+            <div class="grid-resumen">
+              <p><strong>Marca:</strong> {{ datosPoliza.marca }}</p>
+              <p><strong>Modelo:</strong> {{ datosPoliza.modelo }}</p>
+              <p><strong>Año:</strong> {{ datosPoliza.anio }}</p>
+              <p><strong>Nacimiento:</strong> {{ datosPoliza.nacimiento }}</p>
+              <p><strong>C.P.:</strong> {{ datosPoliza.cp }}</p>
+              <p *ngIf="tipoPersonaSeleccionada === 'fisica'"><strong>Género:</strong> {{ datosPoliza.genero }}</p>
+              <p *ngIf="tipoPersonaSeleccionada === 'fisica'"><strong>Estado civil:</strong> {{ datosPoliza.estadoCivil }}</p>
+              <p><strong>Versión:</strong> {{ datosPoliza.version }}</p>
+            </div>
+          </div>
+
+          <div class="field field-grid">
+            <div>
+              <label *ngIf="tipoPersonaSeleccionada === 'fisica'" for="nombre">Nombre completo</label>
+              <label *ngIf="tipoPersonaSeleccionada === 'moral'" for="nombre">Nombre de la empresa</label>
+              <div class="control">
+                <input id="nombre" type="text" class="form-input" placeholder="NOMBRE" formControlName="nombre"
+                  (input)="toUpper('nombre')" />
+              </div>
+            </div>
+
+            <div *ngIf="tipoPersonaSeleccionada === 'fisica'">
+              <label for="apellidoP">Apellido paterno</label>
+              <div class="control">
+                <input id="apellidoP" type="text" class="form-input" placeholder="Ej. PÉREZ" formControlName="apellidoP"
+                  (input)="toUpper('apellidoP')" />
+              </div>
+            </div>
+
+            <div *ngIf="tipoPersonaSeleccionada === 'fisica'">
+              <label for="apellidoM">Apellido materno</label>
+              <div class="control">
+                <input id="apellidoM" type="text" class="form-input" placeholder="Ej. LÓPEZ" formControlName="apellidoM"
+                  (input)="toUpper('apellidoM')" />
+              </div>
+            </div>
+
+            <div>
+              <label for="email">Correo electrónico</label>
+              <div class="control">
+                <input id="email" type="email" class="form-input" placeholder="tucorreo@dominio.com"
+                  formControlName="email" />
+              </div>
+            </div>
+
+            <div *ngIf="tipoPersonaSeleccionada === 'fisica'">
+              <label for="email">CURP</label>
+              <div class="control">
+                <input id="email" type="email" class="form-input" placeholder="tucorreo@dominio.com"
+                  formControlName="email" />
+              </div>
+            </div>
+
+            <div>
+              <label for="email">RFC</label>
+              <div class="control">
+                <input id="email" type="email" class="form-input" placeholder="tucorreo@dominio.com"
+                  formControlName="email" />
+              </div>
+            </div>
+
+          </div>
+
+          <div class="paybox__cta">
+            <button type="button" class="btn-secondary" (click)="goPaso1()">&#x2B05; Regresar</button>
+            <button type="button" class="btn-primary">Siguiente</button>
+          </div>
+
+        </div>
+      </form>
+    </section>
+  </div>
 </ion-content>
