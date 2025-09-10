@@ -12,6 +12,7 @@ import { NavbarComponent } from '../../components/navbar/navbar.component';
 import { PrincipalComponent } from '../../components/landing/principal/principal.component';
 import { HistorealSearchComponent } from '../../components/historeal-search/historeal-search.component';
 import { PrecentacionComponent } from '../../components/landing/precentacion/precentacion.component';
+import { JoliComponent } from '../../components/landing/joli/joli.component';
 import { FooterComponent } from '../../components/footer/footer.component';
 
 import { ReactiveFormsModule } from '@angular/forms';
@@ -29,8 +30,9 @@ import { HomePage } from './home.page';
     ReactiveFormsModule,
     FooterComponent,
     PrincipalComponent,
-    HistorealSearchComponent, 
-    PrecentacionComponent
+    HistorealSearchComponent,
+    PrecentacionComponent,
+    JoliComponent
   ],
   declarations: [HomePage],
 })

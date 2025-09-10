@@ -1,14 +1,18 @@
 <ion-header>
   <ion-toolbar class="header-toolbar">
 
-    <div class="header-flex">
+    <ion-buttons slot="start">
       <div class="logo-titulo">
         <img src="assets/icon/logo2.png" alt="WOAW" />
       </div>
-      <ion-button fill="clear" color="danger" (click)="cerrarModal()">
-        <ion-icon name="close" slot="icon-only"></ion-icon>
+      <ion-title>Aviso de Privacidad</ion-title>
+    </ion-buttons>
+
+    <ion-buttons slot="end">
+      <ion-button (click)="cancelar()">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
       </ion-button>
-    </div>
+    </ion-buttons>
 
   </ion-toolbar>
 </ion-header>
@@ -17,179 +21,14 @@
 <ion-content class="ion-padding" class="ion-padding" scrollEvents="true" (ionScroll)="verificarScroll()"
   #contenidoPrivacidad>
 
-
-  <div class="texto-privacidad">
-
-    <h1 class="titulo-seccion">Aviso de Privacidad</h1>
-
-    <p class="titulo-seccion">DATOS DEL RESPONSABLE</p>
-    <p>WOAW Automotive, S.A. DE C.V. (en lo sucesivo "WOAW") hace de su conocimiento sus derechos y
-      obligaciones previstos en la Nueva Ley Federal de Protección de Datos Personales en Posesión de los Particulares
-      (publicada el 20 de marzo de 2025 en el D.O.F.), y que será responsabilidad de esta empresa el uso y tratamiento
-      de los mismos.</p>
-    <p>WOAW tiene su domicilio en Boulevard Bernardo Quintana #14, Interior 6, colonia Álamos 2a Sección, C.P.
-      76160, Querétaro, Querétaro, México y nos puede contactar vía correo electrónico en:
-      <strong class="resaltado">comercial&#64;wo-aw.com</strong>.
-    </p>
-
-    <p class="titulo-seccion">RESPONSABILIDAD</p>
-    <p>WOAW se obliga y compromete a proteger aquellos Datos Personales que sean proporcionados y/o recabados del
-      TITULAR; ya sea por medio de esta página web, chat de "WhatsApp" o a través de cualquier medio electrónico,
-      formato en papel, formato electrónico de la página de internet de WOAW, teléfono u otro que tenga como
-      finalidad la obtención de Datos Personales y que se encuentre contenida en archivos de WOAW o en sus bases de
-      datos personales, con independencia de la forma o modalidad de su creación, tipo de soporte, procesamiento,
-      almacenamiento y organización; así mismo, se compromete a solamente utilizar dichos datos por el período que sea
-      requerido; o bien, tan pronto las legislaciones en materia mercantil, civil, fiscal y/o cualquier otra que regule
-      la relación entre WOAW y el TITULAR de los datos lo permita, de conformidad y en cumplimiento a las
-      obligaciones contenidas en las Leyes correspondientes.</p>
-
-    <p class="titulo-seccion">DATOS PERSONALES QUE SE RECABAN</p>
-    <p>Se consideran “Datos Personales” cualquier información que acredite la personalidad e identidad de su persona tal
-      y como son: Nombre(s) y apellidos, domicilio(s), número telefónico (casa o celular), correo electrónico, Registro
-      Federal de Contribuyente (RFC), así como los que permitan identificar de manera plena la personalidad del TITULAR.
-    </p>
-
-    <p class="titulo-seccion">DATOS PERSONALES PATRIMONIALES Y FINANCIEROS QUE SE RECABAN</p>
-    <p>WOAW hace del conocimiento del TITULAR que también podrán ser recabados los siguientes datos personales
-      patrimoniales y/o financieros relacionados con banco, sus cuentas bancarias o de financiamiento, sea cual fuere,
-      de su tarjeta de débito/crédito con la finalidad de generar el cobro de los servicios de venta de vehículos que
-      solicite, tales como nombre del titular de la tarjeta de débito/crédito, su fecha de vencimiento, el banco emisor,
-      si es afiliada a VISA o MASTERCARD u otro gestor o intermediario y los dígitos verificadores al reverso de la
-      misma.</p>
-    <p>Aunado a todo lo anterior, WOAW informa al TITULAR que de ser necesario, solicitará autorización de cobro de
-      su banco o institución emisora.</p>
-
-    <p class="titulo-seccion">FINALIDADES</p>
-    <p>Siendo estos Datos Personales y Datos Personales patrimoniales y/o financieros recabados única y exclusivamente
-      para contactarlo y por ser necesarios para los procesos de venta de vehículos y contactarlo, por lo que resulta
-      necesario el trasladar su datos personales no sensibles a los terceros vendedores de vehículos para la ejecución
-      de los servicios contratados; al igual que en su caso el probable contacto para conocer su opinión respecto al
-      servicio, así como para atender las quejas que en su caso existieren por parte del TITULAR, ya sea por personal de
-      WOAW o por las empresas que lo requieran a través de los servicios brindados por WOAW.</p>
-    <p>WOAW se compromete a que todos los Datos Personales y/o Datos Personales patrimoniales y/o financieros que el
-      TITULAR le proporcione, o que WOAW obtenga de él, serán tratados bajo las más estrictas medidas de seguridad
-      que garanticen su confidencialidad y buen uso para las finalidades descritas en el presente Aviso de Privacidad.
-    </p>
-
-    <p class="titulo-seccion">TRATAMIENTO DE LA INFORMACIÓN</p>
-    <p>WOAW garantiza que los Datos Personales que recabe u obtenga del TITULAR serán utilizados única y
-      exclusivamente para los fines mencionados en el presente aviso de privacidad, que dicha información no estará al
-      alcance ni se podrá acceder a ella por personas ajenas a los procesos mencionados, que estarán protegidos con las
-      medidas de seguridad físicas, administrativas y técnicas suficientes para su protección y confidencialidad y que
-      dichos datos serán tratados solamente por el período de tiempo que sea requerido para el cumplimiento de los fines
-      mencionados en el presente aviso de privacidad y una vez cumplidos estos fines se procederá a la cancelación,
-      bloqueo y eliminación de los mismos en los tiempos y formas que las Leyes respectivas lo indiquen.</p>
-    <p>De igual manera, y por ser necesario para el cumplimiento de los fines mencionados por este aviso de privacidad,
-      WOAW podrá transferir sus Datos Personales y/o Datos Personales patrimoniales y/o financieros a empresas que
-      requieran de los datos del TITULAR, así como a autoridades federales, o locales y/o prestadores de servicios de GO
-      AUTOS cuando los procesos de contratación, venta de vehículos y cobro, evaluación del servicio o quejas del
-      TITULAR requieran del análisis, opinión o antecedente de dichos organismos y en cuyo caso, la información que sea
-      transferida será tratada con apego a lo estipulado por este aviso de privacidad.</p>
-    <p>WOAW se compromete a no transferir los Datos Personales del TITULAR a ningún tercero distinto a los referidos
-      y/o ajeno a tales procesos sin el consentimiento del TITULAR, salvo las excepciones previstas en el artículo 36 de
-      la Nueva Ley Federal de Protección de Datos Personales en Posesión de los Particulares (publicada el 20 de marzo
-      de 2025 en el D.O.F.), así como a realizar esta transferencia con apego a los términos que fija dicha Ley que a la
-      letra dice:</p>
-    <p>“Artículo 36. Las transferencias nacionales o internacionales de datos podrán llevarse a cabo sin el
-      consentimiento de la persona titular cuando se ubiquen en alguno de los supuestos siguientes: I. La transferencia
-      esté prevista en una Ley o Tratado en los que México sea parte; II. La transferencia sea necesaria para la
-      prevención o el diagnóstico médico, la prestación de asistencia sanitaria, tratamiento médico o la gestión de
-      servicios sanitarios; III. La transferencia sea efectuada a sociedades controladoras, subsidiarias o afiliadas
-      bajo el control común del responsable, o a una sociedad matriz o a cualquier sociedad del mismo grupo del
-      responsable que opere bajo los mismos procesos y políticas internas; IV. La transferencia sea necesaria por virtud
-      de un contrato celebrado o por celebrar en interés de la persona titular, por el responsable y un tercero; V. La
-      transferencia sea necesaria o legalmente exigida para la salvaguarda de un interés público, o para la procuración
-      o administración de justicia; VI. La transferencia sea precisa para el reconocimiento, ejercicio o defensa de un
-      derecho en un proceso judicial, y VII. La transferencia sea precisa para el mantenimiento o cumplimiento de una
-      relación jurídica entre el responsable y la persona titular."</p>
-
-    <p class="titulo-seccion">DERECHO A LIMITAR EL USO Y DIVULGACIÓN DE SUS DATOS PERSONALES</p>
-    <p>Si el TITULAR desea limitar el uso o divulgación de sus Datos Personales podrá ejercer de manera gratuita y en
-      cualquier momento dichos derechos estipulados en la Nueva Ley Federal de Protección de Datos Personales en
-      Posesión de los Particulares (publicada el 20 de marzo de 2025 en el D.O.F.) vigente, para lo cual podrá solicitar
-      un formato para la delimitación de uso y divulgación, por el siguiente medio:</p>
-    <p>Para el ejercicio de dichos derechos el TITULAR podrá llenar el formato correspondiente que será proporcionado
-      por WOAW en sus instalaciones ubicadas en Boulevard Bernardo Quintana #14, Interior 6, colonia Álamos 2a
-      Sección, C.P. 76160, Querétaro, Querétaro, México.</p>
-    <p>El formato deberá ir acompañado de una copia simple de un documento oficial que acredite la identidad del TITULAR
-      e incluir una descripción clara y precisa de los Datos Personales respecto de los cuales ejercitará cualquiera de
-      los derechos que le confiere la Ley, así mismo deberá proporcionar un correo electrónico, número telefónico y
-      dirección para oír y recibir notificaciones a fin de comunicarle la respuesta a su petición y cualquier otra
-      información que facilite la búsqueda y localización de sus datos para los fines requeridos.</p>
-    <p>Así mismo con objeto de que el TITULAR pueda limitar el uso y divulgación de su información personal, le
-      ofrecemos el siguiente método: su registro en el Listado de Exclusión de WOAW, a fin de que sus datos
-      personales no sean tratados para fines mercadotécnicos, publicitarios o de prospección comercial por nuestra
-      parte. Para mayor información podrá dirigirse a los datos de contacto establecidos en el presente documento.</p>
-
-    <p class="titulo-seccion">DERECHO A LA REVOCACIÓN DEL CONSENTIMIENTO PARA EL USO DE SUS DATOS PERSONALES</p>
-    <p>El TITULAR puede revocar el consentimiento que, en su caso, nos haya otorgado para el tratamiento de sus datos
-      personales. Sin embargo, es importante que tenga en cuenta que no en todos los casos podremos atender su solicitud
-      o concluir el uso de forma inmediata, ya que es posible que por alguna obligación legal requiramos seguir tratando
-      sus Datos Personales. Asimismo, usted deberá considerar que para ciertos fines, la revocación de su consentimiento
-      implicará que no le podamos seguir prestando el servicio que nos solicitó, o la conclusión de su relación con
-      nosotros.</p>
-    <p>Para el ejercicio de dichos derechos el TITULAR podrá llenar el formato correspondiente que será proporcionado
-      por WOAW en sus instalaciones ubicadas en Boulevard Bernardo Quintana #14, Interior 6, colonia Álamos 2a
-      Sección, C.P. 76160, Querétaro, Querétaro, México.</p>
-    <p>El formato deberá ir acompañado de una copia simple de un documento oficial que acredite la identidad del TITULAR
-      e incluir una descripción clara y precisa de los Datos Personales respecto de los cuales ejercitará cualquiera de
-      los derechos que le confiere la Ley, así mismo deberá proporcionar un correo electrónico, número telefónico y
-      dirección para oír y recibir notificaciones a fin de comunicarle la respuesta a su petición y cualquier otra
-      información que facilite la búsqueda y localización de sus datos para los fines requeridos.</p>
-
-    <p class="titulo-seccion">DERECHO AL ACCESO, RECTIFICACIÓN, CANCELACIÓN Y OPOSICIÓN DE SUS DATOS PERSONALES</p>
-    <p>Si el TITULAR desea acceder, rectificar, cancelar u Oponerse al trato de sus Datos Personales podrá ejercer de
-      manera gratuita y en cualquier momento su derecho de acceso, rectificación, cancelación u oposición de sus Datos
-      Personales (Derechos ARCO estipulados en la Nueva Ley Federal de Protección de Datos Personales en Posesión de los
-      Particulares (publicada el 20 de marzo de 2025 en el D.O.F.) vigente). Así mismo, si el TITULAR desea solicitar la
-      portabilidad de sus datos y ejercer el derecho a obtener una copia de sus datos en un formato electrónico
-      estructurado.</p>
-    <p>Para el ejercicio de dichos Derechos ARCO, el TITULAR podrá llenar el formato correspondiente que será
-      proporcionado por WOAW en sus instalaciones ubicadas en Boulevard Bernardo Quintana #14, Interior 6, colonia
-      Álamos 2a Sección, C.P. 76160, Querétaro, Querétaro, México.</p>
-    <p>El formato deberá ir acompañado de una copia simple de un documento oficial que acredite la identidad del TITULAR
-      e incluir una descripción clara y precisa de los Datos Personales respecto de los cuales ejercitará cualquiera de
-      los derechos que le confiere la Ley, así mismo deberá proporcionar un correo electrónico, número telefónico y
-      dirección para oír y recibir notificaciones a fin de comunicarle la respuesta a su petición y cualquier otra
-      información que facilite la búsqueda y localización de sus datos para los fines requeridos.</p>
-    <p>WOAW tendrá un plazo de máximo veinte días hábiles contados a partir de la fecha en que se reciba la
-      solicitud del TITULAR para informar al TITULAR sobre la procedencia de su solicitud, en caso afirmativo se
-      atenderá lo solicitado por el TITULAR en un plazo no mayor a quince días hábiles siguientes a la fecha de la que
-      se acepte la procedencia de la solicitud llevada a cabo por el TITULAR.</p>
-    <p>WOAW podrá negar el acceso total o parcial de los Datos Personales o a la realización de cualquier tipo de
-      rectificación, cancelación u oposición al tratamiento de los mismos, cuando se encuentre de los supuestos
-      enmarcados en la Ley.</p>
-
-    <p class="titulo-seccion">EL USO DE LAS TECNOLOGÍAS DE RASTREO EN NUESTRO PORTAL DE INTERNET</p>
-    <p>Le informamos que tanto en esta página web, como en nuestra página de Internet la cual es
-      <a class="resaltado" href="https://wo-aw.com" target="_blank"><strong>https://wo-aw.com</strong></a>, utilizamos
-      cookies, web beacons y otras
-      tecnologías a través de las cuales es posible monitorear su comportamiento como usuario de Internet y de sus
-      servicios celulares, brindarle un mejor servicio y experiencia de usuario al utilizar la página web y/o navegar en
-      nuestra página, así como ofrecerle nuevos productos y servicios basados en sus preferencias.
-    </p>
-    <p>Los datos personales que obtenemos de estas tecnologías de rastreo son los siguientes: datos de pago, domicilios
-      de origen y destino, nombre(s) y apellidos, calificaciones del servicio, horario de navegación, tiempo de
-      navegación en nuestra página de Internet, secciones consultadas, y páginas de Internet accedidas previo a la
-      nuestra.</p>
-    <p>Así mismo, le informamos que sus Datos Personales que se obtienen a través de estas tecnologías, no serán
-      compartidos con personas, empresas, organizaciones o autoridades distintas a nosotros.</p>
-    <p>Estas tecnologías podrán deshabilitarse siguiendo las instrucciones establecidas en el procedimiento de
-      eliminación de cookies y web beacons publicadas en la página
-      <a class="resaltado" href="https://wo-aw.com" target="_blank"><strong>https://wo-aw.com</strong></a>.
-    </p>
-
-    <p class="titulo-seccion">MODIFICACIONES AL AVISO DE PRIVACIDAD</p>
-    <p>WOAW se reserva el derecho de efectuar en cualquier momento modificaciones o actualizaciones al presente
-      aviso de privacidad, en cumplimiento de novedades legislativas o jurisprudenciales, políticas internas, nuevos
-      requerimientos para la prestación u ofrecimiento de nuestros servicios o productos y prácticas del mercado; de ser
-      así, WOAW lo dará a conocer a través de su página de Internet en
-      <a class="resaltado" href="https://wo-aw.com" target="_blank"><strong>https://wo-aw.com</strong></a> a efecto de
-      enterar al TITULAR de los Datos Personales.
-    </p>
-
-    <p>Querétaro, Querétaro a 1° de junio de 2025.</p>
-
+  <div class="pdf-wrap">
+    <iframe
+      *ngIf="iframeVisible"
+      class="pdf-frame"
+      [src]="pdfUrlSafe"
+      title="Aviso de Privacidad"
+      allowfullscreen>
+    </iframe>
   </div>
 
 
@@ -207,7 +46,7 @@
           <ion-icon name="close-outline"></ion-icon>
           Cancelar
         </button>
-        <button class="btn-aceptar" [disabled]="!scrollAlFinal" (click)="aceptar()">
+        <button class="btn-aceptar"  (click)="aceptar()">
           <ion-icon name="checkmark-outline"></ion-icon>
           Aceptar
         </button>

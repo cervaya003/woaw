@@ -1,9 +1,11 @@
+
 import { Component, OnInit, ViewChild, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { IonContent, PopoverController } from '@ionic/angular';
 import { Router, NavigationStart } from '@angular/router';
 import { RentaService } from '../../services/renta.service';
 import { ListComponent } from '../../components/filtos/list/list.component';
 import { filter } from 'rxjs/operators';
+
 
 type NumOrDots = number | string;
 type Segmento = 'todos' | 'mios';
@@ -13,6 +15,7 @@ type Segmento = 'todos' | 'mios';
   templateUrl: './renta-coches.page.html',
   styleUrls: ['./renta-coches.page.scss'],
   standalone: false,
+
   changeDetection: ChangeDetectionStrategy.Default
 })
 export class RentaCochesPage implements OnInit, OnDestroy {
@@ -65,6 +68,7 @@ export class RentaCochesPage implements OnInit, OnDestroy {
   constructor(
     private rentaService: RentaService,
     private popoverCtrl: PopoverController,
+
     private router: Router
   ) {
     // Fallback: si empieza cualquier navegación, cerramos/limpiamos el modal
@@ -97,7 +101,6 @@ export class RentaCochesPage implements OnInit, OnDestroy {
       this.currentUserId = null;
     }
   }
-
   private cargarTodos() {
     this.loading = true;
     this.error = null;
@@ -105,10 +108,12 @@ export class RentaCochesPage implements OnInit, OnDestroy {
     this.rentaService.listarCoches().subscribe({
       next: (res) => {
         const items = Array.isArray(res) ? res : (res?.rentals ?? res?.docs ?? res?.data ?? []);
+
         this.todosStorage = (items || []).filter(
           (x: any) => (x?.estadoRenta ?? 'disponible') !== 'inactivo'
         );
         this.totalTodos = this.todosStorage.length;
+
         this.aplicarFiltros();
         this.ordenarAutos('recientes');
         this.loading = false;
@@ -262,6 +267,7 @@ export class RentaCochesPage implements OnInit, OnDestroy {
     }
   }
 
+
   calcularPaginacion(seg: Segmento) {
     const base =
       seg === 'todos'
@@ -307,7 +313,6 @@ export class RentaCochesPage implements OnInit, OnDestroy {
     setTimeout(() => this.pageContent?.scrollToTop(400), 100);
   }
 
-  // === Paginación estilo "Motos": rango=1 y elipsis ===
   get paginasReducidasTodos(): NumOrDots[] {
     return this.buildPaginasReducidas(this.paginaTodosActual, this.totalPaginasTodos);
   }

@@ -10,35 +10,53 @@
 </ion-header>
 
 <ion-content fullscreen class="ion-padding">
+ 
+ <!-- Imagen principal -->
+<div class="campo campo-principal">
+  <label class="etiqueta">Imagen principal *</label>
 
-  <!-- Imagen principal -->
-  <div class="campo">
-    <label class="etiqueta">Imagen principal *</label>
-    <label class="file-input-label">
-      <input type="file" accept="image/*" (change)="seleccionarImagenPrincipal($event)" />
-      <ion-icon name="cloud-upload-outline"></ion-icon> Elegir archivo
-    </label>
-    <div class="preview-container" *ngIf="imagenPrincipalMostrada">
-      <img [src]="imagenPrincipalMostrada" class="preview-img" />
-      <ion-icon name="close-circle" class="icono-borrar-principal" (click)="eliminarImagenPrincipal()"></ion-icon>
-    </div>
+  <!-- Input oculto -->
+  <input type="file" id="fileInputPrincipal" accept="image/*"
+         (change)="seleccionarImagenPrincipal($event)" hidden />
+
+  <!-- Recuadro que abre el input -->
+  <label class="preview-placeholder" for="fileInputPrincipal" *ngIf="!imagenPrincipalMostrada">
+    <ion-icon name="image-outline"></ion-icon>
+  </label>
+
+  <!-- Preview -->
+  <div class="preview-container" *ngIf="imagenPrincipalMostrada">
+    <img [src]="imagenPrincipalMostrada" class="preview-img" />
+    <ion-icon name="close-circle" class="icono-borrar-principal"
+              (click)="eliminarImagenPrincipal()"></ion-icon>
   </div>
-  <br>
-  <div class="campo">
-    <label class="etiqueta">Imágenes secundarias (máx. 10)</label>
-    <label class="file-input-label">
-      <input type="file" accept="image/*" multiple (change)="seleccionarImagenesSecundarias($event)" />
-      <ion-icon name="images-outline"></ion-icon> Elegir archivos
-    </label>
-    <div class="imagenes-secundarias">
-      <div class="preview-wrapper" *ngFor="let img of imagenesSecundariasMostradas; let i = index">
-        <img [src]="img" class="preview-img-mini" />
-        <ion-icon name="close-circle" class="icono-borrar" (click)="eliminarImagenSecundaria(i)"></ion-icon>
-      </div>
+</div>
+
+<!-- Imágenes secundarias -->
+<div class="campo">
+  <label class="etiqueta">Imágenes secundarias (máx. 10)</label>
+
+  <!-- Input oculto -->
+  <input type="file" id="fileInputSecundario" accept="image/*" multiple
+         (change)="seleccionarImagenesSecundarias($event)" hidden />
+
+  <div class="imagenes-secundarias">
+    <!-- Previews -->
+    <div class="preview-wrapper" *ngFor="let img of imagenesSecundariasMostradas; let i = index">
+      <img [src]="img" class="preview-img" />
+      <ion-icon name="close-circle" class="icono-borrar"
+                (click)="eliminarImagenSecundaria(i)"></ion-icon>
     </div>
 
-  </div>
+    <!-- Recuadro “+” -->
+    <label class="add-more-placeholder"
+           *ngIf="imagenesSecundariasMostradas.length < 10"
+           for="fileInputSecundario">
 
+      <ion-icon name="add-outline"></ion-icon>
+    </label>
+  </div>
+</div>
 </ion-content>
 
 <ion-footer>

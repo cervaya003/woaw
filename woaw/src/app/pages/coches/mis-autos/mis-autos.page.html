@@ -93,6 +93,7 @@
           </div>
         </div>
 
+
         <!-- ======== RENTA ======== -->
         <div class="catalogo-autos" *ngIf="vistaActiva === 'renta'">
           <div *ngIf="autosRentaPaginados?.length === 0" class="mensaje-vacio">
@@ -125,6 +126,7 @@
                 <button class="pagina" (click)="cambiarPagina('renta', paginaRentaActual + 1)"
                   [disabled]="paginaRentaActual === totalPaginasRenta">›</button>
               </div>
+              
             </div>
           </div>
         </div>

@@ -15,6 +15,7 @@ interface ExcepcionNoDisponible {
 type DayHighlight = { date: string; textColor?: string; backgroundColor?: string };
 type ExcepcionDTO = { inicio: any; fin: any; motivo?: string };
 
+
 @Component({
   selector: 'app-disponibilidad-car',
   templateUrl: './disponibilidad-car.page.html',
@@ -555,6 +556,7 @@ export class DisponibilidadCarPage implements OnInit {
   // 👇 dentro de la clase DisponibilidadCarPage
   get hasChanges(): boolean {
     return this.snapshotKey() !== this.lastSnapshot;
+
   }
 
 }

@@ -43,6 +43,7 @@ export class RentaComponent implements OnInit, OnChanges {
   @Input() anio!: number;
   @Input() marca!: string;
   @Input() modelo!: string;
+  /** Tipo general del flujo (por si el padre lo usa). No lo enviamos al backend. */
   @Input() tipo!: 'renta' | 'auto' | 'moto' | 'camion' | 'lote';
   @Output() rentaSubmit = new EventEmitter<RentaSubmitPayload>();
 
@@ -60,6 +61,7 @@ export class RentaComponent implements OnInit, OnChanges {
   imagenesValidas = false;
 
   version: string = '';
+
   tipoVehiculoLocal: string = '';
   transmision: string = '';
   combustible: string = '';
@@ -252,6 +254,7 @@ export class RentaComponent implements OnInit, OnChanges {
     });
   }
 
+
   onSeleccionVersion(version: string) {
     this.version = version || '';
     this.especificacionesVersion = null;
@@ -379,6 +382,7 @@ export class RentaComponent implements OnInit, OnChanges {
     if (this.kilometrajeActual !== null && Number(this.kilometrajeActual) < 0) { this.generalService.alert('Kilometraje', 'El kilometraje no puede ser negativo.', 'warning'); return false; }
     if (Number(this.requisitosConductor.edadMinima) < 18) { this.generalService.alert('Edad mínima', 'La edad mínima permitida es 18 años.', 'warning'); return false; }
 
+
     const p = this.polizaPlataforma;
     if (!p.numero || !p.aseguradora || !p.cobertura || !p.vigenciaDesde || !p.vigenciaHasta) {
       this.generalService.alert('Póliza', 'Completa los campos obligatorios de la póliza.', 'warning'); return false;
@@ -388,6 +392,10 @@ export class RentaComponent implements OnInit, OnChanges {
     }
     if (p.aseguradora === 'Otro' && !this.trim(p.aseguradoraOtra)) {
       this.generalService.alert('Aseguradora', 'Especifica la aseguradora cuando eliges "Otro".', 'warning'); return false;
+    }
+    if (!this.validarFechasPoliza()) {
+      this.generalService.alert('Vigencia de póliza', 'La fecha "desde" debe ser anterior o igual a la fecha "hasta".', 'warning');
+      return false;
     }
 
     const hayTarifas = (this.entrega.tarifasPorDistancia || []).length > 0;
@@ -496,15 +504,18 @@ export class RentaComponent implements OnInit, OnChanges {
       pasajeros: this.numOrUndef(this.pasajeros),
       kilometrajeActual: this.numOrUndef(this.kilometrajeActual),
 
+      // money
       precio,
 
       politicaCombustible: this.politicaCombustible,
       politicaLimpieza: this.politicaLimpieza,
 
       requisitosConductor: reqCond,
+      
       ubicacion,
       entrega,
 
+      // póliza
       polizaPlataforma: {
         numero: (this.polizaPlataforma.numero || '').trim(),
         aseguradora: aseguradoraFinal as any,
@@ -522,7 +533,7 @@ export class RentaComponent implements OnInit, OnChanges {
 
     const payload = this.construirPayload();
     const files = {
-      imagenPrincipal: this.imagenPrincipal!,
+      imagenPrincipal: this.imagenPrincipal!, // validado arriba
       imagenes: this.imagenesSecundarias || [],
       tarjetaCirculacion: this.tarjetaCirculacion || undefined,
     };

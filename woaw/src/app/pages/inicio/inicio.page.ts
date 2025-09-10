@@ -70,19 +70,22 @@ export class InicioPage implements OnInit {
     private activatedRoute: ActivatedRoute,
     private registroService: RegistroService,
     private menuCtrl: MenuController,
-  ) { }
+  ) {
+    this.videoSrc = 'assets/img/vc3.mp4';
+    this.videoSrc2 = 'assets/img/vc1.mp4';
+  }
 
   async ngOnInit() {
+    this.mostrarSplash();
     this.cargaimagen();
-    this.cargavideo();
     this.generalService.dispositivo$.subscribe((tipo) => {
       this.esDispositivoMovil = tipo === 'telefono' || tipo === 'tablet';
     });
     this.mostrarAnimaciones();
   }
   ionViewWillEnter() {
+    this.mostrarSplash();
     this.cargaimagen();
-    this.cargavideo();
   }
   mostrarAnimaciones() {
     this.animarImagen = false;
@@ -112,7 +115,7 @@ export class InicioPage implements OnInit {
       }),
       ...(this.esDispositivoMovil && {
         breakpoints: [0, 0.7, 1],
-        initialBreakpoint: 0.7,
+        initialBreakpoint: 1,
         handle: true,
       }),
     });
@@ -162,7 +165,7 @@ export class InicioPage implements OnInit {
       }),
       ...(this.esDispositivoMovil && {
         breakpoints: [0, 0.7, 1],
-        initialBreakpoint: 0.7,
+        initialBreakpoint: 1,
         handle: true,
       }),
     });
@@ -182,7 +185,7 @@ export class InicioPage implements OnInit {
       }),
       ...(this.esDispositivoMovil && {
         breakpoints: [0, 0.7, 1],
-        initialBreakpoint: 0.7,
+        initialBreakpoint: 1,
         handle: true,
       }),
     });
@@ -235,20 +238,6 @@ export class InicioPage implements OnInit {
     } finally {
     }
   }
-
-  async cargavideo() {
-    this.videoSrc = 'assets/img/vc1.mp4';
-    this.videoSrc2 = 'assets/img/vc3.mp4';
-    this.generalService.addPreload(this.videoSrc, 'video');
-    this.generalService.addPreload(this.videoSrc2, 'video');
-    try {
-      this.mostrarSplash();
-      await this.generalService.preloadVideo(this.videoSrc, 7000);
-      await this.generalService.preloadVideo(this.videoSrc2, 7000);
-    } finally {
-    }
-  }
-
 }
 
 

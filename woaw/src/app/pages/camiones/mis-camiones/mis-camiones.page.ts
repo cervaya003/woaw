@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MenuController } from '@ionic/angular';
 import { GeneralService } from '../../../services/general.service';
-import { CarsService } from '../../../services/cars.service';
+import { CamionesService } from '../../../services/camiones.service';
 import { ListComponent } from '../../../components/filtos/list/list.component';
 import { PopoverController } from '@ionic/angular';
 import { ModalController } from '@ionic/angular';
@@ -74,7 +74,7 @@ export class MisCamionesPage implements OnInit {
   constructor(
     public generalService: GeneralService,
     private popoverCtrl: PopoverController,
-    public carsService: CarsService, // Reutilizamos CarsService para camiones por ahora
+    public camionesService: CamionesService, // Cambiamos a CamionesService
     private modalCtrl: ModalController,
     private router: Router,
     private route: ActivatedRoute,
@@ -106,9 +106,8 @@ export class MisCamionesPage implements OnInit {
     if (!this.isLoggedIn) {
       return;
     }
-    // Aquí deberíamos llamar al servicio para obtener los IDs de los camiones del usuario
-    // Por ahora, usaremos el método de autos como ejemplo
-    this.carsService.misAutosId().subscribe({
+    // Utilizamos el nuevo servicio para camiones
+    this.camionesService.misCamionesId().subscribe({
       next: (res: any) => {
         if (res && Array.isArray(res.vehicleIds) && res.vehicleIds.length > 0) {
           this.idsMisCamiones = res.vehicleIds;
@@ -128,42 +127,52 @@ export class MisCamionesPage implements OnInit {
     });
   }
 
-  getCamionesMay() {
-    const token = localStorage.getItem('token');
-    // Deberíamos tener un método específico para camiones
-    // Por ahora, usaremos el método de autos como ejemplo
-    this.carsService.getMyCars().subscribe({
-      next: (res: any) => {
-        // Filtrar solo camiones si hay una propiedad que los identifique
-        this.camionesStorage = res
-          .filter((vehiculo: any) => vehiculo.tipo === 'camion' || vehiculo.categoria === 'camion')
-          .map((camion: any) => {
-            const precios = camion.version?.map((v: any) => v.Precio) || [];
-            const precioDesde = Math.min(...precios);
-            const precioHasta = Math.max(...precios);
-
-            return {
-              ...camion,
-              estadoVehiculo: camion.estadoVehiculo || 'disponible',
-              imagen: camion.imagenPrincipal || '/assets/default-truck.webp',
-              precioDesde,
-              precioHasta,
-            };
-          });
-
-        this.totalCamiones = this.camionesStorage.length;
-        this.getCamionesFavoritos();
-        this.calcularPaginacion();
-      },
-      error: (err) => {
-        const mensaje = err?.error?.message || 'Ocurrió un error inesperado';
-        console.error('Error al cargar camiones:', mensaje);
-      },
-    });
-  }
+ getCamionesMay() {
+  console.log("estoy aqui")
+  this.camionesService.getMyCamiones().subscribe({
+    next: (res: any) => {
+      // Procesar los camiones para añadir precioDesde
+      this.camionesStorage = res.map((camion: any) => {
+        let precioDesde = 0;
+        
+        // Obtener precio desde versiones si existen
+        if (camion.version && Array.isArray(camion.version) && camion.version.length > 0) {
+          const precios = camion.version
+            .map((v: any) => parseFloat(v.Precio || v.precio || 0))
+            .filter((p: any) => !isNaN(p) && p > 0);
+            
+          if (precios.length > 0) {
+            precioDesde = Math.min(...precios);
+          }
+        }
+        
+        // Si no hay precio en versiones, usar precio directo
+        if (precioDesde === 0 && camion.precio) {
+          precioDesde = parseFloat(camion.precio);
+        }
+        
+        // Devolver el camión con precioDesde añadido
+        return {
+          ...camion,
+          precioDesde: precioDesde
+        };
+      });
+      
+      console.log(this.camionesStorage);
+      this.totalCamiones = this.camionesStorage.length;
+      this.getCamionesFavoritos();
+      this.calcularPaginacion();
+    },
+    error: (err) => {
+      console.log("revision error");
+      const mensaje = err?.error?.message || 'Ocurrió un error inesperado';
+      console.error('Error al cargar camiones:', mensaje);
+    },
+  });
+}
 
   getCamionesFavoritos() {
-    this.carsService.getCarsFavoritos().subscribe({
+    this.camionesService.getCamionesFavoritos().subscribe({
       next: (res: any) => {
         const vehicleIds = res.vehicles
           .filter((vehicle: any) => {
@@ -276,12 +285,15 @@ export class MisCamionesPage implements OnInit {
     this.mostrarPagina(this.paginaActual);
   }
 
-  mostrarPagina(pagina: number) {
-    this.paginaActual = pagina;
-    const inicio = (pagina - 1) * this.itemsPorPagina;
-    const fin = inicio + this.itemsPorPagina;
-    this.camionesPaginados = this.camionesStorage.slice(inicio, fin);
-  }
+ mostrarPagina(pagina: number) {
+  this.paginaActual = pagina;
+  const inicio = (pagina - 1) * this.itemsPorPagina;
+  const fin = inicio + this.itemsPorPagina;
+  
+  // Usar camionesFiltrados si hay filtros aplicados
+  const base = this.camionesFiltrados.length > 0 ? this.camionesFiltrados : this.camionesStorage;
+  this.camionesPaginados = base.slice(inicio, fin);
+}
 
   async agregarAFavoritos(camionId: string) {
     if (!this.isLoggedIn) {
@@ -297,7 +309,7 @@ export class MisCamionesPage implements OnInit {
     // Mostrar spinner
     await this.generalService.loading('Agregando a favoritos...');
 
-    this.carsService.agregarFavorito(camionId).subscribe({
+    this.camionesService.agregarFavorito(camionId).subscribe({
       next: async () => {
         this.getCamionesMay();
         await this.generalService.loadingDismiss();

@@ -1,52 +1,54 @@
+import {
+  Component,
+  OnInit,
+  Input,
+  CUSTOM_ELEMENTS_SCHEMA,
+} from "@angular/core";
 
- import { Component, OnInit, Input, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { CommonModule } from "@angular/common";
+import { IonicModule, ModalController } from "@ionic/angular";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { CamionesService } from "../../../services/camiones.service";
+import { GeneralService } from "../../../services/general.service";
+import { MapaComponent } from "../../modal/mapa/mapa.component";
+import { FotosVeiculoComponent } from "../../modal/fotos-veiculo/fotos-veiculo.component";
+import { Router } from "@angular/router";
+import { RegistroService } from "../../../services/registro.service";
+import { ContactosService } from "./../../../services/contactos.service";
 
-import { CommonModule } from '@angular/common';
-import { IonicModule, ModalController } from '@ionic/angular';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { CamionesService } from '../../../services/camiones.service';
-import { GeneralService } from '../../../services/general.service';
-import { MapaComponent } from '../../modal/mapa/mapa.component';
-import { FotosVeiculoComponent } from '../../modal/fotos-veiculo/fotos-veiculo.component';
-import { Router } from '@angular/router';
-import { RegistroService } from '../../../services/registro.service';
-import { ContactosService } from './../../../services/contactos.service';
- 
 @Component({
-  selector: 'app-camion',
-  templateUrl: './camion.component.html',
-  styleUrls: ['./camion.component.scss'],
+  selector: "app-camion",
+  templateUrl: "./camion.component.html",
+  styleUrls: ["./camion.component.scss"],
   standalone: true,
   imports: [IonicModule, CommonModule, FormsModule, ReactiveFormsModule],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class CamionComponent implements OnInit {
-  estadoVehiculo: 'Nuevo' | 'Usado' | 'Seminuevo' | '' = '';
   @Input() anio!: number;
   @Input() marca!: string;
   @Input() modelo!: string;
-  @Input() tipo!: string; 
+  @Input() tipo!: string;
 
   // === Campos requeridos por el backend ===
   precio: number | null = null;
-  color: string = '';
+  color: string = "";
   kilometraje: number | null = null;
- tipoVenta: 'venta' | 'renta' | 'venta_renta' | '' = '';
-  tipoCamion: string = '';
+  tipoCamion: string = "";
 
   // === Campos opcionales ===
-  moneda: 'MXN' | 'USD' = 'MXN';
+  moneda: "MXN" | "USD" = "MXN";
   ejes: number | null = null;
   capacidadCargaToneladas: number | null = null;
-  transmision: string = '';
-  combustible: string = '';
+  transmision: string = "";
+  combustible: string = "";
   potenciaHP: number | null = null;
-  tipoCabina: string = '';
-  descripcion: string = '';
+  tipoCabina: string = "";
+  descripcion: string = "";
 
   // === UI / flujo ===
-  estadoCamion: 'Nuevo' | 'Usado' | 'Seminuevo' | '' = '';
-  estadoCamion_logico: string = '';
+  estadoCamion: "Nuevo" | "Usado" | "Seminuevo" | "" = "";
+  estadoCamion_logico: string = "";
   listaAnios: number[] = [];
   versiones: any[] = [];
   versionesDisponibles: boolean = false;
@@ -54,81 +56,87 @@ export class CamionComponent implements OnInit {
   preciosVersiones: { [version: string]: number } = {};
 
   ubicacionSeleccionada: [string, string, number, number] | null = null; // [ciudad, estado, lat, lng]
-  direccionCompleta: string = 'Obteniendo ubicación...';
+  direccionCompleta: string = "Obteniendo ubicación...";
 
-  public Pregunta: 'no' | 'si' | null = null;
-  tipoSeleccionado: 'particular' | 'lote' | 'empresa' = 'particular';
+  public Pregunta: "no" | "si" | null = null;
+  tipoSeleccionado: "particular" | "lote" | "empresa" = "particular";
 
   // Lotes
   lotes: any[] = [];
   totalLotes: number = 0;
   ubicacionesLoteSeleccionado: any[] = [];
   ubicacionesLoteLegibles: string[] = [];
-  loteSeleccionado: string | null = null;   // ObjectId
-  direccionSeleccionada: any = null;        // objeto dirección si hay varias
+  loteSeleccionado: string | null = null; // ObjectId
+  direccionSeleccionada: any = null; // objeto dirección si hay varias
 
   seccionFormulario: 1 | 2 | 3 = 1;
 
   // "Véndelo por nosotros"
-  nombreCamion: string = '';
+  nombreCamion: string = "";
   anioCamion: number | null = null;
   precioEstimado: number | null = null;
-  tipoFactura: string = '';
+  tipoFactura: string = "";
 
   // Para versiones seleccionadas
-  versionSeleccionadaTexto: string = '';
+  versionSeleccionadaTexto: string = "";
 
   // Rol
-  public MyRole: 'admin' | 'lotero' | 'transportista' | 'cliente' | null = null;
+  public MyRole: "admin" | "lotero" | "transportista" | "cliente" | null = null;
 
   // Catálogos estáticos
   colores = [
-    { label: 'Blanco' }, { label: 'Negro' }, { label: 'Gris' }, { label: 'Plateado' },
-    { label: 'Rojo' }, { label: 'Azul' }, { label: 'Azul marino' }, { label: 'Verde' },
-    { label: 'Verde oscuro' }, { label: 'Beige' }, { label: 'Café' }, { label: 'Amarillo' },
-    { label: 'Naranja' }, { label: 'Vino' }, { label: 'Oro' }, { label: 'Otro' },
+    { label: "Blanco" },
+    { label: "Negro" },
+    { label: "Gris" },
+    { label: "Plateado" },
+    { label: "Rojo" },
+    { label: "Azul" },
+    { label: "Azul marino" },
+    { label: "Verde" },
+    { label: "Verde oscuro" },
+    { label: "Beige" },
+    { label: "Café" },
+    { label: "Amarillo" },
+    { label: "Naranja" },
+    { label: "Vino" },
+    { label: "Oro" },
+    { label: "Otro" },
   ];
 
   tiposCamion = [
-    { label: 'Camión de carga', value: 'carga' },
-    { label: 'Tractocamión', value: 'tractocamion' },
-    { label: 'Camión cisterna', value: 'cisterna' },
-    { label: 'Volquete', value: 'volquete' },
-    { label: 'Camión plataforma', value: 'plataforma' },
-    { label: 'Camión frigorífico', value: 'frigorifico' },
-    { label: 'Camión grúa', value: 'grua' },
-    { label: 'Camión de pasajeros', value: 'pasajeros' },
-    { label: 'Otro', value: 'otro' }
+    { label: "Camión de carga", value: "carga" },
+    { label: "Tractocamión", value: "tractocamion" },
+    { label: "Camión cisterna", value: "cisterna" },
+    { label: "Volquete", value: "volquete" },
+    { label: "Camión plataforma", value: "plataforma" },
+    { label: "Camión frigorífico", value: "frigorifico" },
+    { label: "Camión grúa", value: "grua" },
+    { label: "Camión de pasajeros", value: "pasajeros" },
+    { label: "Otro", value: "otro" },
   ];
 
   tiposCabina = [
-    { label: 'Cabina simple', value: 'simple' },
-    { label: 'Cabina extendida', value: 'extendida' },
-    { label: 'Cabina doble', value: 'doble' },
-    { label: 'Cabina dormitorio', value: 'dormitorio' },
-    { label: 'Otro', value: 'otro' }
+    { label: "Cabina simple", value: "simple" },
+    { label: "Cabina extendida", value: "extendida" },
+    { label: "Cabina doble", value: "doble" },
+    { label: "Cabina dormitorio", value: "dormitorio" },
+    { label: "Otro", value: "otro" },
   ];
 
   tiposTransmision = [
-    { label: 'Manual', value: 'manual' },
-    { label: 'Automática', value: 'automatica' },
-    { label: 'Semiautomática', value: 'semiautomatica' },
-    { label: 'Otro', value: 'otro' }
+    { label: "Manual", value: "manual" },
+    { label: "Automática", value: "automatica" },
+    { label: "Semiautomática", value: "semiautomatica" },
+    { label: "Otro", value: "otro" },
   ];
 
   tiposCombustible = [
-    { label: 'Diésel', value: 'diesel' },
-    { label: 'Gasolina', value: 'gasolina' },
-    { label: 'Gas natural', value: 'gas_natural' },
-    { label: 'Eléctrico', value: 'electrico' },
-    { label: 'Híbrido', value: 'hibrido' },
-    { label: 'Otro', value: 'otro' }
-  ];
-
-  tiposVenta = [
-    { label: 'Venta', value: 'venta' },
-    { label: 'Renta', value: 'renta' },
-    { label: 'Venta y Renta', value: 'venta_renta' }
+    { label: "Diésel", value: "diesel" },
+    { label: "Gasolina", value: "gasolina" },
+    { label: "Gas natural", value: "gas_natural" },
+    { label: "Eléctrico", value: "electrico" },
+    { label: "Híbrido", value: "hibrido" },
+    { label: "Otro", value: "otro" },
   ];
 
   // Imágenes
@@ -143,41 +151,52 @@ export class CamionComponent implements OnInit {
     private modalController: ModalController,
     private router: Router,
     private registroService: RegistroService,
-    public contactosService: ContactosService,
+    public contactosService: ContactosService
   ) {}
 
   async ngOnInit() {
-    console.log('Modelo inicial:', this.modelo);
     // Determina rol y configura vista SIN parpadeos
     this.generalService.tipoRol$.subscribe((rol) => {
-      if (rol === 'admin' || rol === 'lotero' || rol === 'transportista' || rol === 'cliente') {
+      if (
+        rol === "admin" ||
+        rol === "lotero" ||
+        rol === "transportista" ||
+        rol === "cliente"
+      ) {
         this.MyRole = rol;
 
-        if (this.MyRole === 'admin') {
-          this.Pregunta = 'si';
+        if (this.MyRole === "admin") {
+          this.Pregunta = "si";
           this.seccionFormulario = 2;
-        } else if (this.MyRole === 'lotero') {
-          this.Pregunta = 'no';
+        } else if (this.MyRole === "lotero") {
+          this.Pregunta = "si";
           this.seccionFormulario = 2;
-          this.tipoSeleccionado = 'lote';
-          this.getLotes('mios');
+          this.tipoSeleccionado = "lote";
+          this.getLotes("mios");
         } else {
-          this.Pregunta = 'no';
+          this.Pregunta = "no";
           this.seccionFormulario = 1;
-          this.tipoSeleccionado = 'particular';
+          this.tipoSeleccionado = "particular";
         }
 
-        this.obtenerVersiones();
+
         this.generarListaAnios();
+        this.definirEstadoCamion();
       } else {
         this.generalService.eliminarToken();
-        this.generalService.alert('¡Saliste de tu sesión Error - 707!', '¡Hasta pronto!', 'info');
+        this.generalService.alert(
+          "¡Saliste de tu sesión Error - 707!",
+          "¡Hasta pronto!",
+          "info"
+        );
       }
     });
 
     // Log inicial
-    console.log('CamionComponent iniciado con:', {
-      anio: this.anio, marca: this.marca, modelo: this.modelo
+    console.log("CamionComponent iniciado con:", {
+      anio: this.anio,
+      marca: this.marca,
+      modelo: this.modelo,
     });
   }
 
@@ -190,57 +209,36 @@ export class CamionComponent implements OnInit {
   definirEstadoCamion() {
     const anioActual = new Date().getFullYear();
 
-    if (this.anio === anioActual && this.MyRole === 'admin') {
-      this.estadoCamion = 'Nuevo'; 
-      this.estadoCamion_logico = 'nuevo';
-      // Para camiones nuevos, SIEMPRE 0
+    if (this.anio === anioActual && this.MyRole === "admin") {
+      this.estadoCamion = "Nuevo";
+      this.estadoCamion_logico = "nuevo";
       this.kilometraje = 0;
-    } else if (this.anio === anioActual && this.MyRole !== 'admin') {
-      this.estadoCamion = 'Seminuevo'; 
-      this.estadoCamion_logico = 'seminuevo';
+    } else if (this.anio === anioActual && this.MyRole !== "admin") {
+      this.estadoCamion = "Seminuevo";
+      this.estadoCamion_logico = "seminuevo";
     } else if (this.anio >= anioActual - 5) {
-      this.estadoCamion = 'Seminuevo'; 
-      this.estadoCamion_logico = 'seminuevo';
+      this.estadoCamion = "Seminuevo";
+      this.estadoCamion_logico = "seminuevo";
     } else if (this.anio < 2005 && this.anio >= 1980) {
-      this.estadoCamion = 'Usado'; 
-      this.estadoCamion_logico = 'viejito';
+      this.estadoCamion = "Usado";
+      this.estadoCamion_logico = "viejito";
     } else {
-      this.estadoCamion = 'Usado'; 
-      this.estadoCamion_logico = 'usado';
+      this.estadoCamion = "Usado";
+      this.estadoCamion_logico = "usado";
     }
-    
-    // También actualizamos el estado en la propiedad estadoVehiculo para mantener compatibilidad
-    this.estadoVehiculo = this.estadoCamion;
-    
-    console.log(`Estado definido: ${this.estadoCamion}, KM: ${this.kilometraje}`);
+
+    console.log(
+      `Estado definido: ${this.estadoCamion}, KM: ${this.kilometraje}`
+    );
   }
 
-  obtenerVersiones() {
-    if (this.modelo && this.anio && this.marca) {
-      const anio = Number(this.anio);
-      this.camionesService.GetVersiones(anio, this.marca, this.modelo).subscribe({
-        next: (data: any) => {
-          this.versiones = data || [];
-          this.versionesDisponibles = Array.isArray(this.versiones) && this.versiones.length > 0;
-          this.generalService.loadingDismiss();
-          this.definirEstadoCamion();
-        },
-        error: (error: any) => {
-          console.error('Error al obtener versiones:', error);
-          this.generalService.loadingDismiss();
-          this.definirEstadoCamion();
-          this.versiones = [];
-        },
-      });
-    }
-  }
-  
+
   // Agregar método para selección de versión desde Car Component
   onSeleccionVersion(version: string) {
     this.versionSeleccionadaTexto = version;
-    console.log('Versión seleccionada:', version);
+    console.log("Versión seleccionada:", version);
   }
-  
+
   // Adaptar toggle version desde Car Component
   toggleVersion(index: number, version: string): void {
     this.versionSeleccionada[index] = !this.versionSeleccionada[index];
@@ -251,14 +249,14 @@ export class CamionComponent implements OnInit {
   }
 
   // ===== Flujo Pantallas =====
-  seleccionarTipo(tipo: 'particular' | 'lote' | 'empresa') {
+  seleccionarTipo(tipo: "particular" | "lote" | "empresa") {
     this.tipoSeleccionado = tipo;
   }
 
   continuar() {
     if (!this.tipoSeleccionado) return;
-    if (this.tipoSeleccionado === 'lote') this.getLotes('all');
-    this.Pregunta = 'no';
+    if (this.tipoSeleccionado === "lote") this.getLotes("all");
+    this.Pregunta = "no";
   }
 
   quienLovende(num: number) {
@@ -267,19 +265,6 @@ export class CamionComponent implements OnInit {
     } else {
       this.seccionFormulario = 3;
       this.generarListaAnios();
-    }
-  }
-
-  cambiarEstado(nuevoEstado: 'Nuevo' | 'Seminuevo') {
-    this.estadoCamion = nuevoEstado;
-    this.estadoVehiculo = nuevoEstado;
-    
-    if (nuevoEstado === 'Nuevo') {
-      this.estadoCamion_logico = 'nuevo';
-      // Para camiones nuevos, siempre km=0
-      this.kilometraje = 0;
-    } else {
-      this.estadoCamion_logico = 'seminuevo';
     }
   }
 
@@ -294,10 +279,14 @@ export class CamionComponent implements OnInit {
     const { data, role } = await modal.onDidDismiss();
 
     // Si cancelan o no llega payload, no marcamos ubicación
-    if (!data || role === 'cancel') {
+    if (!data || role === "cancel") {
       this.ubicacionSeleccionada = null;
-      this.direccionCompleta = 'Selecciona la ubicación en el mapa.';
-      this.generalService.alert('Ubicación requerida', 'Debes seleccionar la ubicación para continuar.', 'warning');
+      this.direccionCompleta = "Selecciona la ubicación en el mapa.";
+      this.generalService.alert(
+        "Ubicación requerida",
+        "Debes seleccionar la ubicación para continuar.",
+        "warning"
+      );
       return;
     }
 
@@ -317,50 +306,70 @@ export class CamionComponent implements OnInit {
     }
 
     // Valida que al menos tengamos coordenadas numéricas
-    if (typeof lat !== 'number' || typeof lng !== 'number') {
+    if (typeof lat !== "number" || typeof lng !== "number") {
       this.ubicacionSeleccionada = null;
-      this.direccionCompleta = 'Selecciona la ubicación en el mapa.';
-      this.generalService.alert('Ubicación inválida', 'Vuelve a seleccionar la ubicación.', 'warning');
+      this.direccionCompleta = "Selecciona la ubicación en el mapa.";
+      this.generalService.alert(
+        "Ubicación inválida",
+        "Vuelve a seleccionar la ubicación.",
+        "warning"
+      );
       return;
     }
 
     // Guarda y resuelve dirección legible
-    this.ubicacionSeleccionada = [ciudad || '', estado || '', lat, lng];
+    this.ubicacionSeleccionada = [ciudad || "", estado || "", lat, lng];
 
     try {
-      this.direccionCompleta = await this.generalService.obtenerDireccionDesdeCoordenadas(lat, lng);
+      this.direccionCompleta = await this.generalService.obtenerDireccionDesdeCoordenadas(
+        lat,
+        lng
+      );
     } catch {
-      this.direccionCompleta = 'No se pudo obtener la dirección.';
+      this.direccionCompleta = "No se pudo obtener la dirección.";
     }
   }
 
   // ===== Validación de ubicación (igual que en el original) =====
   private validarUbicacion(): boolean {
-    const esParticular = this.tipoSeleccionado === 'particular';
-    const esLoteEmpresa = this.tipoSeleccionado === 'lote' || this.tipoSeleccionado === 'empresa';
+    const esParticular = this.tipoSeleccionado === "particular";
+    const esLoteEmpresa =
+      this.tipoSeleccionado === "lote" || this.tipoSeleccionado === "empresa";
 
     if (esParticular) {
       const valida =
         this.ubicacionSeleccionada &&
         this.ubicacionSeleccionada.length === 4 &&
-        typeof this.ubicacionSeleccionada[2] === 'number' &&
-        typeof this.ubicacionSeleccionada[3] === 'number';
+        typeof this.ubicacionSeleccionada[2] === "number" &&
+        typeof this.ubicacionSeleccionada[3] === "number";
 
       if (!valida) {
-        this.generalService.alert('Ubicación requerida', 'Selecciona la ubicación del camión en el mapa.', 'warning');
+        this.generalService.alert(
+          "Ubicación requerida",
+          "Selecciona la ubicación del camión en el mapa.",
+          "warning"
+        );
         return false;
       }
       return true;
     }
 
     if (esLoteEmpresa) {
-      const lote = this.lotes.find(l => l._id === this.loteSeleccionado);
+      const lote = this.lotes.find((l) => l._id === this.loteSeleccionado);
       if (!lote) {
-        this.generalService.alert('Lote requerido', 'Selecciona un lote o empresa válido.', 'warning');
+        this.generalService.alert(
+          "Lote requerido",
+          "Selecciona un lote o empresa válido.",
+          "warning"
+        );
         return false;
       }
       if (lote.direccion.length > 1 && !this.direccionSeleccionada) {
-        this.generalService.alert('Ubicación del lote requerida', 'Selecciona una ubicación específica del lote.', 'warning');
+        this.generalService.alert(
+          "Ubicación del lote requerida",
+          "Selecciona una ubicación específica del lote.",
+          "warning"
+        );
         return false;
       }
       return true;
@@ -370,7 +379,7 @@ export class CamionComponent implements OnInit {
   }
 
   // ===== Lotes =====
-  getLotes(tipo: 'all' | 'mios') {
+  getLotes(tipo: "all" | "mios") {
     this.registroService.allLotes(tipo).subscribe({
       next: async (res) => {
         this.lotes = res.lotes || [];
@@ -384,15 +393,19 @@ export class CamionComponent implements OnInit {
         }
       },
       error: async (error) => {
-        console.error('Error al obtener lotes:', error);
+        console.error("Error al obtener lotes:", error);
         await this.generalService.loadingDismiss();
-        await this.generalService.alert('Verifica tu red', 'Error de red. Intenta más tarde.', 'danger');
+        await this.generalService.alert(
+          "Verifica tu red",
+          "Error de red. Intenta más tarde.",
+          "danger"
+        );
       },
     });
   }
 
   onLoteSeleccionado() {
-    const lote = this.lotes.find(l => l._id === this.loteSeleccionado);
+    const lote = this.lotes.find((l) => l._id === this.loteSeleccionado);
     this.ubicacionesLoteSeleccionado = lote?.direccion || [];
     this.leerLatLng();
   }
@@ -401,9 +414,14 @@ export class CamionComponent implements OnInit {
     if (this.ubicacionesLoteSeleccionado.length === 1) {
       this.direccionSeleccionada = this.ubicacionesLoteSeleccionado[0];
       this.generalService
-        .obtenerDireccionDesdeCoordenadas(this.direccionSeleccionada.lat, this.direccionSeleccionada.lng)
+        .obtenerDireccionDesdeCoordenadas(
+          this.direccionSeleccionada.lat,
+          this.direccionSeleccionada.lng
+        )
         .then((direccion) => (this.direccionCompleta = direccion))
-        .catch(() => (this.direccionCompleta = 'No se pudo obtener la dirección.'));
+        .catch(
+          () => (this.direccionCompleta = "No se pudo obtener la dirección.")
+        );
     } else {
       this.direccionSeleccionada = null;
       this.ubicacionesLoteLegibles = [];
@@ -412,7 +430,12 @@ export class CamionComponent implements OnInit {
       );
       Promise.all(promesas)
         .then((direcciones) => (this.ubicacionesLoteLegibles = direcciones))
-        .catch(() => (this.ubicacionesLoteLegibles = this.ubicacionesLoteSeleccionado.map(() => 'No disponible')));
+        .catch(
+          () =>
+            (this.ubicacionesLoteLegibles = this.ubicacionesLoteSeleccionado.map(
+              () => "No disponible"
+            ))
+        );
     }
   }
 
@@ -432,23 +455,26 @@ export class CamionComponent implements OnInit {
       this.imagenesSecundarias = data.imagenesSecundarias || [];
 
       // Validar según el estado del camión
-      if (this.estadoCamion === 'Nuevo') {
+      if (this.estadoCamion === "Nuevo") {
         if (!this.imagenPrincipal) {
           this.generalService.alert(
-            'Falta imagen principal',
-            'Selecciona una imagen principal para continuar.',
-            'warning'
+            "Falta imagen principal",
+            "Selecciona una imagen principal para continuar.",
+            "warning"
           );
           this.imagenesValidas = false;
           return false;
         }
         this.imagenesValidas = true;
-      } else if (this.estadoCamion === 'Seminuevo' || this.estadoCamion === 'Usado') {
+      } else if (
+        this.estadoCamion === "Seminuevo" ||
+        this.estadoCamion === "Usado"
+      ) {
         if (!this.imagenPrincipal) {
           this.generalService.alert(
-            'Falta imagen principal',
-            'Selecciona una imagen principal para continuar.',
-            'warning'
+            "Falta imagen principal",
+            "Selecciona una imagen principal para continuar.",
+            "warning"
           );
           this.imagenesValidas = false;
           return false;
@@ -456,9 +482,9 @@ export class CamionComponent implements OnInit {
 
         if (this.imagenesSecundarias.length < 2) {
           this.generalService.alert(
-            'Imágenes insuficientes',
-            'Debes seleccionar al menos 2 imágenes secundarias para camiones usados o seminuevos.',
-            'warning'
+            "Imágenes insuficientes",
+            "Debes seleccionar al menos 2 imágenes secundarias para camiones usados o seminuevos.",
+            "warning"
           );
           this.imagenesValidas = false;
           return false;
@@ -466,10 +492,10 @@ export class CamionComponent implements OnInit {
 
         this.imagenesValidas = true;
       }
-      
+
       return this.imagenesValidas;
     } else {
-      console.log('⛔ Modal cancelado o sin imágenes.');
+      console.log("⛔ Modal cancelado o sin imágenes.");
       this.imagenesValidas = false;
       return false;
     }
@@ -477,8 +503,8 @@ export class CamionComponent implements OnInit {
 
   limpiarImagenes() {
     this.generalService.confirmarAccion(
-      '¿Estás seguro de que deseas eliminar las imágenes seleccionadas?',
-      'Eliminar imágenes',
+      "¿Estás seguro de que deseas eliminar las imágenes seleccionadas?",
+      "Eliminar imágenes",
       () => {
         this.imagenPrincipal = null;
         this.imagenesSecundarias = [];
@@ -488,36 +514,35 @@ export class CamionComponent implements OnInit {
     );
   }
 
+  validarEjes(): boolean {
+    // Si no se ingresó ningún valor (es null), se considera válido porque es opcional
+    if (this.ejes === null) {
+      return true;
+    }
 
-validarEjes(): boolean {
-  // Si no se ingresó ningún valor (es null), se considera válido porque es opcional
-  if (this.ejes === null) {
+    // Verificar que sea un número y esté dentro del rango permitido (2-10)
+    if (!Number.isInteger(this.ejes) || this.ejes < 2 || this.ejes > 10) {
+      this.generalService.alert(
+        "Número de ejes inválido",
+        "El número de ejes debe ser un número entero entre 2 y 10.",
+        "warning"
+      );
+      return false;
+    }
+
     return true;
   }
-
-  // Verificar que sea un número y esté dentro del rango permitido (2-10)
-  if (!Number.isInteger(this.ejes) || this.ejes < 2 || this.ejes > 10) {
-    this.generalService.alert(
-      'Número de ejes inválido',
-      'El número de ejes debe ser un número entero entre 2 y 10.',
-      'warning'
-    );
-    return false;
-  }
-
-  return true;
-}
   // ===== ENVÍO DEL FORMULARIO =====
   async EnviarCamion() {
     let validado: boolean = false;
     let appdata: FormData | false = false;
-    
+
     // Asegurar que si es nuevo, kilometraje es 0
-    if (this.estadoCamion === 'Nuevo' || this.estadoCamion_logico === 'nuevo') {
+    if (this.estadoCamion === "Nuevo" || this.estadoCamion_logico === "nuevo") {
       this.kilometraje = 0;
     }
-    
-    if (this.estadoCamion === 'Nuevo' || this.estadoCamion_logico === 'nuevo') {
+
+    if (this.estadoCamion === "Nuevo" || this.estadoCamion_logico === "nuevo") {
       validado = await this.validacionesAntesdeEnviarForm_Nuevos();
       if (validado) {
         appdata = await this.prepararFormularioParaEnvio_Nuevo();
@@ -528,19 +553,19 @@ validarEjes(): boolean {
         appdata = await this.prepararFormularioParaEnvio_Usado();
       }
     }
-    
+
     if (!validado || !appdata) {
       this.generalService.loadingDismiss();
       return;
     }
 
     this.generalService.confirmarAccion(
-      '¿Estás seguro de que deseas enviar esta información?',
-      'Confirmar envío',
+      "¿Estás seguro de que deseas enviar esta información?",
+      "Confirmar envío",
       async () => {
         await this.enviarDatos(appdata);
       },
-      'Al continuar, confirmas que los datos proporcionados sobre tu camión son correctos y serán publicados.'
+      "Al continuar, confirmas que los datos proporcionados sobre tu camión son correctos y serán publicados."
     );
   }
 
@@ -554,9 +579,9 @@ validarEjes(): boolean {
     // Validar tipo de camión
     if (!this.tipoCamion) {
       this.generalService.alert(
-        'Tipo de camión requerido',
-        'Debes seleccionar el tipo de camión.',
-        'warning'
+        "Tipo de camión requerido",
+        "Debes seleccionar el tipo de camión.",
+        "warning"
       );
       return false;
     }
@@ -564,29 +589,33 @@ validarEjes(): boolean {
     // Validar color
     if (!this.color) {
       this.generalService.alert(
-        'Color requerido',
-        'Por favor, selecciona un color para el camión.',
-        'warning'
+        "Color requerido",
+        "Por favor, selecciona un color para el camión.",
+        "warning"
       );
       return false;
     }
 
     // Validar precio
-    if (!this.precio || isNaN(Number(this.precio)) || Number(this.precio) <= 0) {
+    if (
+      !this.precio ||
+      isNaN(Number(this.precio)) ||
+      Number(this.precio) <= 0
+    ) {
       this.generalService.alert(
-        'Precio requerido',
-        'Debes ingresar un precio válido.',
-        'warning'
+        "Precio requerido",
+        "Debes ingresar un precio válido.",
+        "warning"
       );
       return false;
     }
 
     // Rango de precios para camiones nuevos (mayor que autos)
-    if (this.precio < 450000 || this.precio > 10000000) {
+    if (this.precio < 50000 || this.precio > 10000000) {
       this.generalService.alert(
-        'Precio inválido',
-        'El precio debe estar entre $50,000 y $10,000,000.',
-        'warning'
+        "Precio inválido",
+        "El precio debe estar entre $50,000 y $10,000,000.",
+        "warning"
       );
       return false;
     }
@@ -594,9 +623,18 @@ validarEjes(): boolean {
     // Validar imágenes
     if (!this.imagenPrincipal) {
       this.generalService.alert(
-        'Falta imagen principal',
-        'Selecciona una imagen principal para continuar.',
-        'warning'
+        "Falta imagen principal",
+        "Selecciona una imagen principal para continuar.",
+        "warning"
+      );
+      return false;
+    }
+    // Validar tipo de venta
+    if (this.estadoCamion === "") {
+      this.generalService.alert(
+        "Tipo de venta requerido",
+        "Debes seleccionar si el camión es para venta, renta o ambos.",
+        "warning"
       );
       return false;
     }
@@ -617,19 +655,23 @@ validarEjes(): boolean {
     // Validar tipo de camión
     if (!this.tipoCamion) {
       this.generalService.alert(
-        'Tipo de camión requerido',
-        'Debes seleccionar el tipo de camión.',
-        'warning'
+        "Tipo de camión requerido",
+        "Debes seleccionar el tipo de camión.",
+        "warning"
       );
       return false;
     }
 
     // Validar precio
-    if (!this.precio || isNaN(Number(this.precio)) || Number(this.precio) <= 0) {
+    if (
+      !this.precio ||
+      isNaN(Number(this.precio)) ||
+      Number(this.precio) <= 0
+    ) {
       this.generalService.alert(
-        'Precio requerido',
-        'Debes ingresar un precio válido.',
-        'warning'
+        "Precio requerido",
+        "Debes ingresar un precio válido.",
+        "warning"
       );
       return false;
     }
@@ -637,9 +679,9 @@ validarEjes(): boolean {
     // Rango de precios para camiones usados/seminuevos
     if (this.precio < 30000 || this.precio > 10000000) {
       this.generalService.alert(
-        'Precio inválido',
-        'El precio debe estar entre $30,000 y $10,000,000.',
-        'warning'
+        "Precio inválido",
+        "El precio debe estar entre $30,000 y $10,000,000.",
+        "warning"
       );
       return false;
     }
@@ -647,80 +689,87 @@ validarEjes(): boolean {
     // Validar color
     if (!this.color) {
       this.generalService.alert(
-        'Color requerido',
-        'Por favor, selecciona un color para el camión.',
-        'warning'
+        "Color requerido",
+        "Por favor, selecciona un color para el camión.",
+        "warning"
       );
       return false;
     }
 
     // Validar kilometraje - Pieza clave en la validación
-    if (this.kilometraje === null || this.kilometraje === undefined || isNaN(Number(this.kilometraje))) {
+    if (
+      this.kilometraje === null ||
+      this.kilometraje === undefined ||
+      isNaN(Number(this.kilometraje))
+    ) {
       this.generalService.alert(
-        'Kilometraje requerido',
-        'Debes ingresar un kilometraje válido para el camión usado o seminuevo.',
-        'warning'
+        "Kilometraje requerido",
+        "Debes ingresar un kilometraje válido para el camión usado o seminuevo.",
+        "warning"
       );
       return false;
     }
 
     // Rangos de kilometraje según tipo de camión
-    if (this.estadoCamion === 'Seminuevo' && this.kilometraje > 120000) {
+    if (this.estadoCamion === "Seminuevo" && this.kilometraje > 120000) {
       this.generalService.alert(
-        'Kilometraje elevado para seminuevo',
-        'Para un camión seminuevo, el kilometraje no debería superar los 120,000 km.',
-        'warning'
+        "Kilometraje elevado para seminuevo",
+        "Para un camión seminuevo, el kilometraje no debería superar los 120,000 km.",
+        "warning"
       );
       // Decisión: seguir o no según reglas de negocio
       return false;
     }
 
-    if (this.estadoCamion === 'Usado' && this.kilometraje > 1200000) {
+    if (this.estadoCamion === "Usado" && this.kilometraje > 1200000) {
       this.generalService.alert(
-        'Kilometraje muy elevado',
-        'Este camión tiene más de 1,200,000 km. Puede ser difícil de vender o requerir mantenimiento importante.',
-        'warning'
+        "Kilometraje muy elevado",
+        "Este camión tiene más de 1,200,000 km. Puede ser difícil de vender o requerir mantenimiento importante.",
+        "warning"
       );
       // Solo alertamos pero dejamos continuar
     }
 
     // Validar tipo de venta
-   if (!this.tipoVenta) {
-    this.generalService.alert(
-      'Tipo de venta requerido',
-      'Debes seleccionar si el camión es para venta, renta o ambos.',
-      'warning'
-    );
-    return false;
-  }
-
-   if (!this.validarEjes()) {
-    return false;
-  }
-    // Validar imágenes
-    if (!this.imagenPrincipal) {
+    if (this.estadoCamion === "") {
       this.generalService.alert(
-        'Falta imagen principal',
-        'Selecciona una imagen principal para continuar.',
-        'warning'
+        "Tipo de venta requerido",
+        "Debes seleccionar si el camión es para venta, renta o ambos.",
+        "warning"
       );
       return false;
     }
 
-    if (!Array.isArray(this.imagenesSecundarias) || this.imagenesSecundarias.length < 2) {
+    if (!this.validarEjes()) {
+      return false;
+    }
+    // Validar imágenes
+    if (!this.imagenPrincipal) {
       this.generalService.alert(
-        'Imágenes secundarias insuficientes',
-        'Para camiones usados o seminuevos, debes seleccionar al menos 2 imágenes secundarias.',
-        'warning'
+        "Falta imagen principal",
+        "Selecciona una imagen principal para continuar.",
+        "warning"
+      );
+      return false;
+    }
+
+    if (
+      !Array.isArray(this.imagenesSecundarias) ||
+      this.imagenesSecundarias.length < 2
+    ) {
+      this.generalService.alert(
+        "Imágenes secundarias insuficientes",
+        "Para camiones usados o seminuevos, debes seleccionar al menos 2 imágenes secundarias.",
+        "warning"
       );
       return false;
     }
 
     if (this.imagenesSecundarias.length > 10) {
       this.generalService.alert(
-        'Demasiadas imágenes',
-        'Puedes subir un máximo de 10 imágenes secundarias.',
-        'warning'
+        "Demasiadas imágenes",
+        "Puedes subir un máximo de 10 imágenes secundarias.",
+        "warning"
       );
       return false;
     }
@@ -731,28 +780,33 @@ validarEjes(): boolean {
   // ===== PREPARACIÓN DEL FORMULARIO =====
   async prepararFormularioParaEnvio_Nuevo(): Promise<FormData | false> {
     const formData = new FormData();
-    
+
     // Datos básicos
-    formData.append('anio', this.anio.toString());
-    formData.append('marca', this.marca);
-    formData.append('modelo', this.modelo);
-    formData.append('tipoCamion', this.tipoCamion);
-    formData.append('color', this.color);
-    formData.append('precio', String(this.precio));
-    formData.append('moneda', this.moneda);
-    formData.append('tipoVenta', this.tipoVenta);
-    
+    formData.append("anio", this.anio.toString());
+    formData.append("marca", this.marca);
+    formData.append("modelo", this.modelo);
+    formData.append("tipoCamion", this.tipoCamion);
+    formData.append("color", this.color);
+    formData.append("precio", String(this.precio));
+    formData.append("moneda", this.moneda);
+    formData.append("tipoVenta", this.estadoCamion);
+
     // Para camiones nuevos, siempre es 0
-    formData.append('kilometraje', '0');
-    
+    formData.append("kilometraje", "0");
+
     // Campos opcionales
-    if (this.ejes != null) formData.append('ejes', String(this.ejes));
-    if (this.capacidadCargaToneladas != null) formData.append('capacidadCargaToneladas', String(this.capacidadCargaToneladas));
-    if (this.transmision) formData.append('transmision', this.transmision);
-    if (this.combustible) formData.append('combustible', this.combustible);
-    if (this.potenciaHP != null) formData.append('potenciaHP', String(this.potenciaHP));
-    if (this.tipoCabina) formData.append('tipoCabina', this.tipoCabina);
-    if (this.descripcion) formData.append('descripcion', this.descripcion);
+    if (this.ejes != null) formData.append("ejes", String(this.ejes));
+    if (this.capacidadCargaToneladas != null)
+      formData.append(
+        "capacidadCargaToneladas",
+        String(this.capacidadCargaToneladas)
+      );
+    if (this.transmision) formData.append("transmision", this.transmision);
+    if (this.combustible) formData.append("combustible", this.combustible);
+    if (this.potenciaHP != null)
+      formData.append("potenciaHP", String(this.potenciaHP));
+    if (this.tipoCabina) formData.append("tipoCabina", this.tipoCabina);
+    if (this.descripcion) formData.append("descripcion", this.descripcion);
 
     // Ubicación
     if (this.ubicacionSeleccionada) {
@@ -762,10 +816,16 @@ validarEjes(): boolean {
         lat: this.ubicacionSeleccionada[2],
         lng: this.ubicacionSeleccionada[3],
       };
-      formData.append('ubicacion', JSON.stringify(ubicacionObj));
-    } else if (this.tipoSeleccionado === 'lote' || this.tipoSeleccionado === 'empresa') {
-      const lote = this.lotes.find(l => l._id === this.loteSeleccionado);
-      const direccion = lote?.direccion.length > 1 ? this.direccionSeleccionada : lote?.direccion[0];
+      formData.append("ubicacion", JSON.stringify(ubicacionObj));
+    } else if (
+      this.tipoSeleccionado === "lote" ||
+      this.tipoSeleccionado === "empresa"
+    ) {
+      const lote = this.lotes.find((l) => l._id === this.loteSeleccionado);
+      const direccion =
+        lote?.direccion.length > 1
+          ? this.direccionSeleccionada
+          : lote?.direccion[0];
       if (direccion) {
         const ubicacionObj = {
           ciudad: direccion.ciudad,
@@ -773,20 +833,20 @@ validarEjes(): boolean {
           lat: direccion.lat,
           lng: direccion.lng,
         };
-        formData.append('ubicacion', JSON.stringify(ubicacionObj));
-        formData.append('lote', lote!._id);
+        formData.append("ubicacion", JSON.stringify(ubicacionObj));
+        formData.append("lote", lote!._id);
       }
     }
 
     // Imágenes
     if (this.imagenPrincipal) {
-      formData.append('imagenPrincipal', this.imagenPrincipal);
-      formData.append('imagenes', this.imagenPrincipal);
+      formData.append("imagenPrincipal", this.imagenPrincipal);
+      formData.append("imagenes", this.imagenPrincipal);
     }
 
     if (this.imagenesSecundarias && this.imagenesSecundarias.length > 0) {
       for (const file of this.imagenesSecundarias) {
-        formData.append('imagenes', file);
+        formData.append("imagenes", file);
       }
     }
 
@@ -795,28 +855,33 @@ validarEjes(): boolean {
 
   async prepararFormularioParaEnvio_Usado(): Promise<FormData | false> {
     const formData = new FormData();
-    
+
     // Datos básicos
-    formData.append('anio', this.anio.toString());
-    formData.append('marca', this.marca);
-    formData.append('modelo', this.modelo);
-    formData.append('tipoCamion', this.tipoCamion);
-    formData.append('color', this.color);
-    formData.append('precio', String(this.precio));
-    formData.append('moneda', this.moneda);
-    formData.append('tipoVenta', this.tipoVenta);
-    
+    formData.append("anio", this.anio.toString());
+    formData.append("marca", this.marca);
+    formData.append("modelo", this.modelo);
+    formData.append("tipoCamion", this.tipoCamion);
+    formData.append("color", this.color);
+    formData.append("precio", String(this.precio));
+    formData.append("moneda", this.moneda);
+    formData.append("tipoVenta", this.estadoCamion);
+
     // Kilometraje para usados/seminuevos
-    formData.append('kilometraje', String(this.kilometraje || 0));
-    
+    formData.append("kilometraje", String(this.kilometraje || 0));
+
     // Campos opcionales
-    if (this.ejes != null) formData.append('ejes', String(this.ejes));
-    if (this.capacidadCargaToneladas != null) formData.append('capacidadCargaToneladas', String(this.capacidadCargaToneladas));
-    if (this.transmision) formData.append('transmision', this.transmision);
-    if (this.combustible) formData.append('combustible', this.combustible);
-    if (this.potenciaHP != null) formData.append('potenciaHP', String(this.potenciaHP));
-    if (this.tipoCabina) formData.append('tipoCabina', this.tipoCabina);
-    if (this.descripcion) formData.append('descripcion', this.descripcion);
+    if (this.ejes != null) formData.append("ejes", String(this.ejes));
+    if (this.capacidadCargaToneladas != null)
+      formData.append(
+        "capacidadCargaToneladas",
+        String(this.capacidadCargaToneladas)
+      );
+    if (this.transmision) formData.append("transmision", this.transmision);
+    if (this.combustible) formData.append("combustible", this.combustible);
+    if (this.potenciaHP != null)
+      formData.append("potenciaHP", String(this.potenciaHP));
+    if (this.tipoCabina) formData.append("tipoCabina", this.tipoCabina);
+    if (this.descripcion) formData.append("descripcion", this.descripcion);
 
     // Ubicación
     if (this.ubicacionSeleccionada) {
@@ -826,10 +891,16 @@ validarEjes(): boolean {
         lat: this.ubicacionSeleccionada[2],
         lng: this.ubicacionSeleccionada[3],
       };
-      formData.append('ubicacion', JSON.stringify(ubicacionObj));
-    } else if (this.tipoSeleccionado === 'lote' || this.tipoSeleccionado === 'empresa') {
-      const lote = this.lotes.find(l => l._id === this.loteSeleccionado);
-      const direccion = lote?.direccion.length > 1 ? this.direccionSeleccionada : lote?.direccion[0];
+      formData.append("ubicacion", JSON.stringify(ubicacionObj));
+    } else if (
+      this.tipoSeleccionado === "lote" ||
+      this.tipoSeleccionado === "empresa"
+    ) {
+      const lote = this.lotes.find((l) => l._id === this.loteSeleccionado);
+      const direccion =
+        lote?.direccion.length > 1
+          ? this.direccionSeleccionada
+          : lote?.direccion[0];
       if (direccion) {
         const ubicacionObj = {
           ciudad: direccion.ciudad,
@@ -837,20 +908,20 @@ validarEjes(): boolean {
           lat: direccion.lat,
           lng: direccion.lng,
         };
-        formData.append('ubicacion', JSON.stringify(ubicacionObj));
-        formData.append('lote', lote!._id);
+        formData.append("ubicacion", JSON.stringify(ubicacionObj));
+        formData.append("lote", lote!._id);
       }
     }
 
     // Imágenes
     if (this.imagenPrincipal) {
-      formData.append('imagenPrincipal', this.imagenPrincipal);
-      formData.append('imagenes', this.imagenPrincipal);
+      formData.append("imagenPrincipal", this.imagenPrincipal);
+      formData.append("imagenes", this.imagenPrincipal);
     }
 
     if (this.imagenesSecundarias && this.imagenesSecundarias.length > 0) {
       for (const file of this.imagenesSecundarias) {
-        formData.append('imagenes', file);
+        formData.append("imagenes", file);
       }
     }
 
@@ -858,27 +929,31 @@ validarEjes(): boolean {
   }
 
   async enviarDatos(appdata: FormData) {
-    this.generalService.loading('Guardando camión...');
-    console.log('Enviando datos del camión...');
-    
+    this.generalService.loading("Guardando camión...");
+    console.log("Enviando datos del camión...");
+
     this.camionesService.guardarCamion(appdata).subscribe({
       next: (res: any) => {
         // El back puede regresar token/rol si hubo actualización de rol
         if (res.token && res.rol) {
-          const userActual = JSON.parse(localStorage.getItem('user') || '{}');
+          const userActual = JSON.parse(localStorage.getItem("user") || "{}");
           userActual.rol = res.rol;
-          localStorage.setItem('user', JSON.stringify(userActual));
-          localStorage.setItem('token', res.token);
+          localStorage.setItem("user", JSON.stringify(userActual));
+          localStorage.setItem("token", res.token);
         }
-        this.router.navigate(['/mis-camiones']);
+        this.router.navigate(["/mis-camiones"]);
         this.generalService.loadingDismiss();
-        this.generalService.alert('¡Camión agregado correctamente!', 'El camión fue agregado correctamente.', 'success');
+        this.generalService.alert(
+          "¡Camión agregado correctamente!",
+          "El camión fue agregado correctamente.",
+          "success"
+        );
       },
       error: (err: any) => {
         this.generalService.loadingDismiss();
-        console.error('Error al guardar camión:', err);
-        const mensaje = err?.error?.message || 'Ocurrió un error inesperado';
-        this.generalService.alert('¡Algo salió mal!', mensaje, 'danger');
+        console.error("Error al guardar camión:", err);
+        const mensaje = err?.error?.message || "Ocurrió un error inesperado";
+        this.generalService.alert("¡Algo salió mal!", mensaje, "danger");
       },
       complete: () => this.generalService.loadingDismiss(),
     });

@@ -225,8 +225,7 @@ export class UsadosPage implements OnInit {
   // ## ----- ☢️☢️☢️☢️
   aplicarFiltros() {
     let autosFiltrados = [...this.autosStorage];
-    console.log(this.filtrosAplicados);
-    // console.log(autosFiltrados);
+    
     const { precio, anio, color, marca, tipo } = this.filtrosAplicados;
 
     if (precio) {

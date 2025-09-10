@@ -72,7 +72,6 @@ export class CarComponent implements OnInit {
   tipoFactura: string = '';
 
   // -----
-  // -----
   public MyRole: 'admin' | 'lotero' | 'vendedor' | 'cliente' | null = null;
   opciones = [
     { label: 'Blanco' },

@@ -119,6 +119,11 @@ export class AppComponent {
       await StatusBar.setBackgroundColor({ color: '#D62828' });
       await StatusBar.setStyle({ style: Style.Dark });
     }
+
+    if (this.platform.is('ios')) {
+      await StatusBar.setOverlaysWebView({ overlay: false });
+      await StatusBar.setStyle({ style: Style.Dark });
+    }
   }
   private registerHardwareBack() {
     this.platform.backButton.subscribeWithPriority(9999, async () => {

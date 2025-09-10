@@ -3,16 +3,11 @@ import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { FormBuilder, Validators } from '@angular/forms';
-import { LoadingController } from '@ionic/angular';
 import { Router } from '@angular/router';
-import { AbstractControl, ValidatorFn, ValidationErrors, FormGroup, } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
-import { AlertController } from '@ionic/angular';
-import { ModalController } from '@ionic/angular';
 import { GeneralService } from '../../../services/general.service';
 import { CarsService } from '../../../services/cars.service';
 import { MotosService } from '../../../services/motos.service';
+import { Capacitor } from '@capacitor/core';
 
 @Component({
   selector: 'app-principal',
@@ -22,6 +17,7 @@ import { MotosService } from '../../../services/motos.service';
   imports: [IonicModule, CommonModule, ReactiveFormsModule],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
+
 export class PrincipalComponent implements OnInit {
   @Input() tipo: string = 'all';
   @Input() status: boolean = true;
@@ -30,10 +26,17 @@ export class PrincipalComponent implements OnInit {
   autosUsados: any[] = [];
   misMotos: any[] = [];
   Dispositivo: 'telefono' | 'tablet' | 'computadora' = 'computadora';
+  esDispositivoMovil: boolean = false;
   public conUsados: number = 0;
   public conSeminuevos: number = 0;
   public conNuevos: number = 0;
   public conMotos: number = 0;
+  public img1: string = '';
+  public img2: string = '';
+  public img3: string = '';
+
+
+  public isNative = Capacitor.isNativePlatform();
 
   constructor(
     public carsService: CarsService,
@@ -46,11 +49,14 @@ export class PrincipalComponent implements OnInit {
     this.generalService.dispositivo$.subscribe((tipo: 'telefono' | 'tablet' | 'computadora') => {
       this.Dispositivo = tipo;
     });
-
+    this.generalService.dispositivo$.subscribe((tipo) => {
+      this.esDispositivoMovil = tipo === 'telefono' || tipo === 'tablet';
+    });
     this.getCarsNews();
     this.getCarsSeminuevos();
     this.getCarsUsados();
     this.getMotos();
+    this.cargaimagen(); 
   }
 
   ngAfterViewInit(): void {
@@ -66,14 +72,7 @@ export class PrincipalComponent implements OnInit {
 
 
         const autosAleatorios = [...autos].sort(() => Math.random() - 0.5);
-        this.autosNuevos = autosAleatorios.slice(0, 4);
-
-        // this.autosNuevos = autos.map((car: any) => ({
-        //   ...car,
-        //   precioMin: Math.min(...car.version.map((v: any) => v.Precio)),
-        // }))
-        //   .sort((a: { precioMin: number }, b: { precioMin: number }) => a.precioMin - b.precioMin)
-        //   .slice(Math.floor((autos.length - 4) / 2), Math.floor((autos.length - 4) / 2) + 4);
+        this.autosNuevos = autosAleatorios.slice(0, 5);
 
       },
       error: (err) => {
@@ -88,7 +87,7 @@ export class PrincipalComponent implements OnInit {
         this.conSeminuevos = res.contador;
         const autos = res?.coches || [];
         const autosAleatorios = [...autos].sort(() => Math.random() - 0.5);
-        this.autosSeminuevos = autosAleatorios.slice(0, 4);
+        this.autosSeminuevos = autosAleatorios.slice(0, 5);
       },
       error: (err) => {
         const mensaje = err?.error?.message || 'Ocurrió un error inesperado';
@@ -102,7 +101,7 @@ export class PrincipalComponent implements OnInit {
         this.conUsados = res.contador;
         const autos = res?.coches || [];
         const autosAleatorios = [...autos].sort(() => Math.random() - 0.5);
-        this.autosUsados = autosAleatorios.slice(0, 4);
+        this.autosUsados = autosAleatorios.slice(0, 5);
       },
       error: (err) => {
         const mensaje = err?.error?.message || 'Ocurrió un error inesperado';
@@ -119,7 +118,7 @@ export class PrincipalComponent implements OnInit {
         console.log(res)
         this.conMotos = res.contador;
         const moto = res?.motos || []
-        this.misMotos = moto.slice(0, 4);
+        this.misMotos = moto.slice(0, 5);
       },
       error: (err) => {
         const mensaje = err?.error?.message || 'Ocurrió un error inesperado';
@@ -135,5 +134,22 @@ export class PrincipalComponent implements OnInit {
   }
   onCardClickM(moto: any, event: Event): void {
     this.router.navigate(['/ficha', 'motos', moto._id]);
+  }
+  async cargaimagen() {
+    this.img1 = '/assets/autos/A1.png';
+    this.img2 = '/assets/autos/A5.png';
+    this.img3 = '/assets/autos/A3.png';
+    this.generalService.addPreload(this.img1, 'image');
+    this.generalService.addPreload(this.img2, 'image');
+    this.generalService.addPreload(this.img3, 'image');
+    try {
+      await Promise.all([
+        this.generalService.preloadHero(this.img1, 500),
+        this.generalService.preloadHero(this.img2, 500),
+        this.generalService.preloadHero(this.img3, 500),
+      ]);
+    } finally {
+      // this.overlayLoaded = true;
+    }
   }
 }

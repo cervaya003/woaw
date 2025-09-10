@@ -1,11 +1,14 @@
-import { Component, OnInit, NgZone } from '@angular/core';
+import { Component, OnInit, OnDestroy, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, MenuController, ModalController } from '@ionic/angular';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 import { GeneralService } from '../../services/general.service';
 import { PerfilComponent } from '../modal/perfil/perfil.component';
+
+type SectionKey = 'configuracion' | 'servicios' | 'publicaciones';
 
 @Component({
   selector: 'app-menulateral',
@@ -15,53 +18,88 @@ import { PerfilComponent } from '../modal/perfil/perfil.component';
   imports: [IonicModule, CommonModule],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class MenulateralComponent implements OnInit {
+export class MenulateralComponent implements OnInit, OnDestroy {
   public isLoggedIn = false;
   public MyRole: string | null = null;
 
-  // Ajusta si tu animación del menú dura diferente (ms)
   private readonly MENU_CLOSE_DELAY_MS = 250;
+  private subs: Subscription[] = [];
 
+ expandedSections: Record<'configuracion' | 'servicios' | 'publicaciones', boolean> = {
+  configuracion: false,
+  servicios: false,
+  publicaciones: false,
+};
   constructor(
     private router: Router,
     private menuCtrl: MenuController,
     public generalService: GeneralService,
     private modalCtrl: ModalController,
     private zone: NgZone
-  ) { }
+  ) {}
 
   ngOnInit() {
-    this.generalService.tokenExistente$.subscribe((estado) => {
-      this.isLoggedIn = estado;
-    });
-    this.generalService.tipoRol$.subscribe((rol) => {
-      this.MyRole = rol;
-    });
+    // Suscripción al estado de sesión
+    this.subs.push(
+      this.generalService.tokenExistente$.subscribe((estado) => {
+        const before = this.isLoggedIn;
+        this.isLoggedIn = estado;
+
+        // Si NO hay sesión -> abre Configuración y Servicios
+        if (!estado) {
+          this.setSections({ configuracion: true, servicios: true });
+        }
+
+        // Si acaba de iniciar sesión -> restablece a colapsado (como pediste “en los otros así déjalo”)
+        if (before === false && estado === true) {
+          this.setSections({ configuracion: false, servicios: false });
+        }
+      })
+    );
+
+    // Suscripción al rol
+    this.subs.push(
+      this.generalService.tipoRol$.subscribe((rol) => {
+        this.MyRole = rol;
+      })
+    );
   }
 
-  /**
-   * Cierra el menú y navega. Pensado para móvil:
-   * - Cerramos el menú
-   * - Esperamos la animación
-   * - Navegamos dentro de NgZone para evitar taps dobles
-   */
+  ngOnDestroy(): void {
+    this.subs.forEach((s) => s?.unsubscribe());
+  }
+
+  // Utilidad para setear ambos flags de golpe (gatilla change detection bien)
+  private setSections(state: Partial<Record<SectionKey, boolean>>) {
+    this.expandedSections = {
+      ...this.expandedSections,
+      ...state,
+    };
+  }
+
+
+private closeAll() {
+  (Object.keys(this.expandedSections) as SectionKey[]).forEach(k => {
+    this.expandedSections[k] = false;
+  });
+}
+
+ toggleSection(section: SectionKey) {
+  const willOpen = !this.expandedSections[section]; // estado deseado para la clickeada
+  this.closeAll();                                  // cierra todas
+  this.expandedSections[section] = willOpen;        // abre solo la seleccionada (o queda todo cerrado si estaba abierta)
+}
+
   async redirecion(url: string) {
     try {
-      // Si ya estamos en esa ruta, solo cierra el menú y sal.
       const target = '/' + url.replace(/^\/+/, '');
       if (this.router.url === target) {
         await this.menuCtrl.close('menuLateral');
         return;
       }
-
       await this.menuCtrl.close('menuLateral');
-
-      // Espera a que termine la animación del menú
       await this.sleep(this.MENU_CLOSE_DELAY_MS);
-
-      this.zone.run(() => {
-        this.router.navigateByUrl(target);
-      });
+      this.zone.run(() => this.router.navigateByUrl(target));
     } catch (err) {
       console.error('❌ Redirección fallida:', err);
     }
@@ -71,6 +109,11 @@ export class MenulateralComponent implements OnInit {
     this.menuCtrl.close('menuLateral');
   }
 
+  isActive(url: string): boolean {
+    const target = '/' + url.replace(/^\/+/, '');
+    return this.router.url === target;
+  }
+
   async logout() {
     this.generalService.confirmarAccion(
       '¿Deseas salir?',
@@ -78,9 +121,7 @@ export class MenulateralComponent implements OnInit {
       async () => {
         this.generalService.eliminarToken();
         await this.menuCtrl.close('menuLateral');
-        // Pequeño delay para evitar cortes de animación
         await this.sleep(300);
-
         this.zone.run(() => {
           this.router.navigate(['/home']);
           this.generalService.alert('¡Saliste de tu sesión!', '¡Hasta pronto!', 'info');
@@ -90,20 +131,16 @@ export class MenulateralComponent implements OnInit {
   }
 
   async abrirModalPerfil() {
-    // Spinner
     await this.generalService.loading('Cargando...');
-
     await this.menuCtrl.close('menuLateral');
-    // Espera breve para que no se empalme con la animación del menú
     await this.sleep(200);
-
     await this.generalService.loadingDismiss();
 
     const modal = await this.modalCtrl.create({
       component: PerfilComponent,
-      breakpoints: [0, 0.5, 1],
+      breakpoints: [0, 0.5,0.8, 1],
       cssClass: 'modal-perfil',
-      initialBreakpoint: 1,
+      initialBreakpoint: 0.8,
       handle: true,
       showBackdrop: true,
     });

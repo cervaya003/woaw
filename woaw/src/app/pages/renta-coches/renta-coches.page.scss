@@ -46,12 +46,26 @@
   font-size: 14px;
 }
 
-/* GRID de tarjetas */
-.cards-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
-  gap: 16px;
-}
+  .eyebrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, .08);
+    border: 1px solid rgba(255, 255, 255, .12);
+    border-radius: 999px;
+    width: max-content;
+    color: #ffffff;
+    font-weight: bolder;
+    font-size: 15px;
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: #ff0000;
+    }
 
 /* CARD */
 .veh-card {
@@ -101,20 +115,14 @@
   display: block;
 }
 
-/* Título, precio y meta */
-.title {
-  font-size: 16px;
-  font-weight: 700;
-  color: #1c1c1c;
-  margin-bottom: 6px;
-}
 
-.price {
-  color: #e53935;
-  font-weight: 800;
-  margin-bottom: 10px;
-}
+    @media (max-width: 1025px) {
+      font-size: 45px;
+    }
 
+    @media (max-width: 768px) {
+      font-size: 30px;
+    }
 .meta {
   display: grid;
   grid-auto-flow: column;
@@ -142,15 +150,17 @@
   text-overflow: ellipsis;
 }
 
-/* Barra de acento inferior */
-.accent-bar {
-  height: 4px;
-  width: 100%;
-  background: linear-gradient(90deg, var(--ion-color-primary), #00c853);
-  border-radius: 0 0 14px 14px;
-  margin-top: 10px;
-}
-
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    color: #ffffff;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .06);
+    border: 1px solid rgba(255, 0, 0, 0.844);
+  }
+    
 /* Responsive */
 @media (max-width: 768px) {
   .cards-grid {
@@ -273,4 +283,5 @@ ion-modal.mio-modal::part(content) {
 :host-context(.dark) .mio-modal__box {
   background: #1e1f22;
   box-shadow: 0 12px 28px rgba(0, 0, 0, .5);
+
 }

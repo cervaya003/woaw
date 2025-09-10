@@ -1,120 +1,94 @@
-<br><br><br>
 <footer class="woaw-footer" #footerRoot>
   <div class="wf-wrap">
 
-    <!-- Marca + propósito -->
+    <!-- Marca -->
     <section class="wf-col brand is-reveal">
-      <div class="logo-chip">
-        <img src="assets/icon/logo0.png" alt="Woaw" />
-        <span>Woaw Automotive</span>
-      </div>
+      <!-- <img src="assets/icon/logo0.png" alt="Woaw" /> -->
+      <h2 class="marca_title">Woaw Automotive</h2>
+
       <p class="tagline">
         Vehículos, personas y rutas claras. Sin ruido, sin adornos innecesarios.
       </p>
 
-      <!-- Legal mini -->
       <div class="legal-mini">
         <button type="button" class="link" (click)="mostrarAviso()">Aviso de Privacidad</button>
-        <span aria-hidden="true">·</span>
+        <!-- <span aria-hidden="true">·</span> -->
         <button type="button" class="link" (click)="mostrarTerminos()">Términos</button>
       </div>
     </section>
 
-    <!-- Contacto + consentimiento -->
+    <!-- Contacto -->
     <section class="wf-col contact is-reveal">
-      <h2>Contacto</h2>
+      <h2 class="contacto_title">Contacto</h2>
 
-      <p><strong>Woaw Automotive S.A. de C.V.</strong></p>
-      <p>Querétaro, México</p>
+      <h3 class="empresa">Woaw Automotive S.A. de C.V.</h3>
+      <p class="ubicacion">Querétaro, México</p>
 
-      <div class="wf-divider"></div>
-
-      <!-- Leyenda cuando ya aceptó -->
-      <p *ngIf="YaseptePopup" class="consent-ok">
+      <p class="consent">
         Consentimiento registrado. Puedes escribirnos o llamarnos cuando quieras.
       </p>
 
-      <!-- Acciones (bloqueadas hasta consentimiento) -->
-      <div class="cta-list">
-        <a class="link" [href]="YaseptePopup ? 'mailto:comercial@wo-aw.com?subject=Consulta%20desde%20la%20app' : null"
-          target="_blank" [class.disabled]="!YaseptePopup">
-          comercial&#64;wo-aw.com
-        </a>
-
-        <a class="link" [href]="YaseptePopup ? 'tel:+524427706776' : null" [class.disabled]="!YaseptePopup">
-          +52 442 770 6776
-        </a>
-      </div>
-
-      <!-- Consentimiento (si no ha aceptado) -->
-      <ion-item *ngIf="!YaseptePopup" class="checkbox-custom" lines="none">
-        <ion-checkbox [(ngModel)]="aceptoPopup" (ionChange)="onCambioConsentimiento($event)" class="check-rojo"
-          aria-label="Acepto el aviso de privacidad y términos">
-        </ion-checkbox>
-        <ion-label>
-          Consiento que mis Datos Personales sean tratados por GO AUTOS conforme a su
-          <button type="button" class="link-inline" (click)="mostrarAviso()">Aviso de Privacidad</button>
-          y <button type="button" class="link-inline" (click)="mostrarTerminos()">Términos</button>.
-        </ion-label>
-      </ion-item>
-
-      <ion-button color="danger" *ngIf="!YaseptePopup" expand="block" (click)="aceptarConsentimiento()"
-        [disabled]="!aceptoPopup" class="accept-btn">
-        Aceptar y continuar
-      </ion-button>
+      <a href="mailto:comercial@wo-aw.com" class="dato">comercial&#64;wo-aw.com</a>
+      <a href="tel:+524427706776" class="dato">+52 442 770 6776</a>
 
       <p class="horario">Lunes a Viernes: 9:00–18:00</p>
 
-      <ion-button fill="outline" size="small" class="map-btn" (click)="abrirUbicacion()">
-        <ion-icon slot="start" name="navigate-outline"></ion-icon>
-        Cómo llegar
-      </ion-button>
+      <button type="button" class="btn-primary" (click)="abrirUbicacion()">
+        <ion-icon name="navigate-outline"></ion-icon>
+        CÓMO LLEGAR
+      </button>
     </section>
 
-    <!-- Navegación -->
-    <nav class="wf-col nav is-reveal" aria-label="Navegación del sitio">
-      <h3>Explora</h3>
-      <ul class="footer-nav">
-        <li><a (click)="redirecion('home')" class="nav-link">Inicio</a></li>
-        <li><a (click)="redirecion('nuevos')" class="nav-link">Nuevos</a></li>
-        <li><a (click)="redirecion('seminuevos')" class="nav-link">Seminuevos</a></li>
-        <li><a (click)="redirecion('usados')" class="nav-link">Usados</a></li>
-      </ul>
+    <!-- Explora -->
+    <section class="wf-col explore is-reveal">
+      <h2 class="explora_title"> Explora</h2>
 
-      <!-- Social (opcional) -->
-      <ul class="social">
-        <li>
-          <a aria-label="Instagram" href="https://www.instagram.com/woaw.mx/" target="_blank">
-            <ion-icon name="logo-instagram"></ion-icon>
-          </a>
-        </li>
-        <li>
-          <a aria-label="TikTok" href="https://www.tiktok.com/@woaw.mx" target="_blank">
-            <ion-icon name="logo-tiktok"></ion-icon>
-          </a>
-        </li>
-        <li>
-          <a aria-label="Facebook" href="https://www.facebook.com/profile.php?id=61579193880952" target="_blank">
-            <ion-icon name="logo-facebook"></ion-icon>
-          </a>
-        </li>
-        <li>
-          <a aria-label="WhatsApp" href="https://wa.me/524427706776" target="_blank">
-            <ion-icon name="logo-whatsapp"></ion-icon>
-          </a>
-        </li>
-        <li>
-          <a aria-label="LinkedIn" href="https://www.linkedin.com/company/woaw-automotive" target="_blank">
-            <ion-icon name="logo-linkedin"></ion-icon>
-          </a>
-        </li>
-      </ul>
-    </nav>
+      <nav class="nav-list">
+        <a routerLink="/">Inicio</a>
+        <a routerLink="/nuevos">Nuevos</a>
+        <a routerLink="/seminuevos">Seminuevos</a>
+        <a routerLink="/usados">Usados</a>
+      </nav>
+
+      <div class="social-row">
+        <a class="chip" href="https://www.instagram.com/woaw.mx/" target="_blank" aria-label="Instagram"><ion-icon
+            name="logo-instagram"></ion-icon></a>
+        <a class="chip" href="https://www.tiktok.com/@woaw.mx" target="_blank" aria-label="TikTok"><ion-icon
+            name="logo-tiktok"></ion-icon></a>
+        <a class="chip" href="https://www.facebook.com/share/16wiS1yd9L/?mibextid=wwXIfr" target="_blank"
+          aria-label="Facebook"><ion-icon name="logo-facebook"></ion-icon></a>
+        <a class="chip" href="https://wa.me/524427706776" target="_blank" aria-label="WhatsApp"><ion-icon
+            name="logo-whatsapp"></ion-icon></a>
+        <a class="chip" href="https://www.linkedin.com/company/woaw-automotive" target="_blank"
+          aria-label="LinkedIn"><ion-icon name="logo-linkedin"></ion-icon></a>
+      </div>
+    </section>
+
+    <!-- Alianzas -->
+    <!-- <section class="wf-col alianzas is-reveal">
+      <h2 class="alianzas_title">Alianzas</h2>
+      <div class="alianzas_logos">
+        <a href="https://joli.com.mx" target="_blank" rel="noopener">
+          <img src="assets/icon/joli.png" alt="Joli.com.mx" />
+        </a>
+        <a href="https://banco.hey.inc/" target="_blank" rel="noopener">
+          <img src="assets/icon/heybanco.png" alt="Joli.com.mx" />
+        </a>
+        <a href="https://www.crabi.com/" target="_blank" rel="noopener">
+          <img src="assets/icon/crabi.png" alt="Joli.com.mx" />
+        </a>
+        <a href="https://cotizadorautos.mapfre.com.mx/" target="_blank" rel="noopener">
+          <img src="assets/icon/mapfre.png" alt="Joli.com.mx" />
+        </a>
+        <a href="https://www.bupasalud.com.mx/" target="_blank" rel="noopener">
+          <img src="assets/icon/bupa.png" alt="Joli.com.mx" />
+        </a>
+      </div>
+    </section> -->
 
   </div>
 
-  <!-- Sub-footer -->
-  <div class="wf-sub is-reveal">
-    <small>© {{ currentYear }} Woaw Automotive. Todos los derechos reservados.</small>
+  <div class="copy">
+    © 2025 Woaw Automotive. Todos los derechos reservados.
   </div>
 </footer>

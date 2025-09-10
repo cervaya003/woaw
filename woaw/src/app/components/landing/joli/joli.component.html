@@ -1,0 +1,16 @@
+<section class="promo-joli">
+  <div class="pj-wrap">
+    <a href="https://joli.com.mx/inicio" target="_blank">
+      <img src="assets/icon/joli2.png" alt="Joli" class="pj-logo" />
+    </a>
+
+    <div class="pj-texto" [class.fade]="true">
+      <h2>{{ mensajes[indexActual].titulo }}</h2>
+      <p [innerHTML]="mensajes[indexActual].subtitulo"></p>
+    </div>
+
+    <a href="https://joli.com.mx/inicio" target="_blank" class="pj-btn">
+      Descubre más <ion-icon name="arrow-forward-outline"></ion-icon>
+    </a>
+  </div>
+</section>
