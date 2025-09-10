@@ -36,7 +36,9 @@
     </ion-buttons>
 
     <ion-buttons slot="end">
+
       <ng-container *ngIf="!esDispositivoMovil">
+
         <ion-button fill="clear" [ngClass]="{ 'activo': isActive('home') }" (click)="redirecion('home')">
           inicio
         </ion-button>
@@ -44,7 +46,6 @@
         <ion-button fill="clear" (click)="abrirPopover('Autos')"
           [ngClass]="{ 'activo': isActive('menu-vehiculos/autos') }">
           Vehiculos
-          <!-- <ion-icon name="chevron-down-outline" slot="end"></ion-icon> -->
         </ion-button>
 
         <ion-button fill="clear" [ngClass]="{ 'activo': isActive('m-nuevos') }" (click)="redirecion('m-nuevos')">
@@ -98,24 +99,20 @@
         </span>
       </ion-button>
 
-      <!-- <ion-button fill="clear" class="stack" [ngClass]="{ 'activo': isActive('arrendamiento') }"
-        (click)="redirecion('arrendamiento')" *ngIf="!mostrarBuscador && esDispositivoMovil">
-        <span class="vcol">
-          <ion-icon name="car-sport"></ion-icon>
-          <span class="label">Arrendar</span>
-        </span>
-      </ion-button> -->
-
       <ion-button fill="clear" class="stack" [ngClass]="{ 'activo': isActive('m-nuevos') }"
         (click)="redirecion('m-nuevos')" *ngIf="!mostrarBuscador && esDispositivoMovil">
         <span class="vcol">
-          <svg *ngIf="esDispositivoMovil" style="margin-right: 2px;" xmlns="http://www.w3.org/2000/svg" width="24"
-            height="24" viewBox="0 0 24 24" fill="currentColor"
-            class="icon icon-tabler icons-tabler-filled icon-tabler-motorbike">
-            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-            <path
-              d="M15 5a1 1 0 0 1 .894 .553l3.225 6.449l.08 .003a4 4 0 1 1 -4.199 3.995l.005 -.2a4 4 0 0 1 2.111 -3.33l-.557 -1.115l-3.352 3.352a1 1 0 0 1 -.707 .293h-3.626q .124 .481 .126 1a4 4 0 1 1 -8 0l.005 -.2a4 4 0 0 1 6.33 -3.049l1.749 -1.751h-3.084a1 1 0 0 1 -.993 -.883l-.007 -.117a1 1 0 0 1 1 -1h9.381l-1 -2h-1.381a1 1 0 0 1 -.993 -.883l-.007 -.117a1 1 0 0 1 1 -1z" />
-          </svg>
+          <span class="iconbox">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="-3.2 -3.2 38.40 38.40" class="icono-moto">
+              <g>
+                <polyline class="st0" points="18,7 22,7 27,22"></polyline>
+                <circle class="st0" cx="27" cy="22" r="4"></circle>
+                <circle class="st0" cx="5" cy="22" r="4"></circle>
+                <path class="st0" d="M5,14c4.4,0,8,3.6,8,8h6c0-4.4,3.6-8,8-8c0.8,0,1.7,0.1,2.4,0.4"></path>
+                <path class="st0" d="M23,11h-6l-0.4,0.6c-1.6,2.6-4.6,4-7.6,3.4"></path>
+              </g>
+            </svg>
+          </span>
           <span class="label">Motos</span>
         </span>
       </ion-button>
@@ -136,9 +133,14 @@
         </span>
       </ion-button>
 
-      <ion-button fill="clear" *ngIf="!mostrarBuscador" (click)="openMenu()">
-        <ion-icon name="menu-outline"></ion-icon>
+      <ion-button fill="clear" class="stack" (click)="openMenu()" *ngIf="!mostrarBuscador && esDispositivoMovil">
+        <span class="vcol">
+          <ion-icon name="menu-outline"></ion-icon>
+          <span class="label">Menú</span>
+        </span>
       </ion-button>
+
     </ion-buttons>
+
   </ion-toolbar>
 </ion-header>

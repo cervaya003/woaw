@@ -1,10 +1,13 @@
+.contenedor_espacio{
+  min-height: 55svh;
+}
 .contenedor-categorias {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-around;
   padding: 1rem;
   gap: 3px;
-  max-width: 700px;
+  max-width: 500px;
   margin: 0 auto;
 
   .categoria-card {
@@ -80,6 +83,8 @@
   }
 
 }
+
+
 .contenedor_form {
   max-width: 1200px;
   width: 100%;
