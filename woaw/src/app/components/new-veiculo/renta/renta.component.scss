@@ -2,6 +2,27 @@
   margin-top: 12px;
 }
 
+/* ---------- Tokens simples ---------- */
+:root {
+  --brand: #ff3d00;
+  --brand-2: #ff6600;
+  --ink: #111;
+  --muted: #6b7280;
+  --bg-soft: #f8f8f8;
+  --line: #e5e7eb;
+
+  /* nuevos tonos */
+  --green-1: #10b981;
+  /* emerald-500 */
+  --green-2: #059669;
+  /* emerald-600 */
+  --blue-1: #3b82f6;
+  /* blue-500   */
+  --blue-2: #2563eb;
+  /* blue-600   */
+}
+
+/* ---------- Header ---------- */
 .resumen {
   display: flex;
   flex-direction: column;
@@ -15,7 +36,10 @@
     p {
       margin: 0;
       font-size: 13px;
-      strong { margin-left: 4px; }
+
+      strong {
+        margin-left: 4px;
+      }
     }
   }
 
@@ -24,17 +48,151 @@
     background: linear-gradient(90deg, #ff0000, #ff6600);
     color: #fff;
     border: none;
-    padding: 8px 14px;
-    border-radius: 8px;
-    font-size: 12px;
-    font-weight: 600;
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 700;
     display: inline-flex;
-    gap: 6px;
+    gap: 8px;
     align-items: center;
     cursor: pointer;
+    box-shadow: 0 8px 18px rgba(255, 61, 0, .18);
+    transition: transform .15s ease, box-shadow .15s ease;
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 24px rgba(255, 61, 0, .22);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+
+    /* Si por accidente queda disabled, que no se vea gris */
+    &:disabled,
+    &[disabled] {
+      opacity: 1 !important;
+      filter: none !important;
+    }
   }
 }
 
+/* ---------- Botonera base ---------- */
+.btn {
+  --_bg: #fff;
+  --_fg: var(--ink);
+  --_bd: var(--line);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1.5px solid var(--_bd);
+  background: var(--_bg);
+  color: var(--_fg);
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background .15s ease, border-color .15s ease, transform .15s ease, box-shadow .15s ease;
+
+  ion-icon {
+    font-size: 18px;
+  }
+
+  &:hover {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, .06);
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+
+  &:focus-visible {
+    outline: 3px solid rgba(255, 61, 0, .25);
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    opacity: .6;
+    cursor: not-allowed;
+  }
+}
+
+.btn-lg {
+  padding: 14px 18px;
+  font-size: 15px;
+  border-radius: 12px;
+}
+
+.btn-full {
+  width: 100%;
+}
+
+.btn-primary {
+  --_bg: linear-gradient(90deg, var(--brand), var(--brand-2));
+  --_fg: #fff;
+  --_bd: transparent;
+  color: #fff;
+  box-shadow: 0 8px 18px rgba(255, 61, 0, .18);
+
+  &:hover {
+    box-shadow: 0 10px 22px rgba(255, 61, 0, .22);
+  }
+}
+
+.btn-outline {
+  --_bg: #fff;
+  --_fg: var(--ink);
+  --_bd: #d1d5db;
+
+  &:hover {
+    background: #fafafa;
+  }
+}
+
+.btn-soft {
+  --_bg: #fff6f3;
+  --_fg: var(--brand);
+  --_bd: #ffd8cc;
+
+  &:hover {
+    background: #ffece6;
+  }
+}
+
+.btn-danger {
+  --_bg: #ffecec;
+  --_fg: #b20000;
+  --_bd: #ff9e9e;
+
+  &:hover {
+    background: #ffdede;
+  }
+}
+
+/* 🎯 Utilitarias explícitas por si quieres usarlas en el HTML */
+.btn-green {
+  background: linear-gradient(90deg, #23771b, #48ff00);
+  color: #fff !important;
+  border: none !important;
+  box-shadow: 0 8px 18px rgba(16, 185, 129, .26) !important;
+}
+
+.btn-blue {
+  background: linear-gradient(90deg, #320b8d, #00e1ff);
+  color: #fff !important;
+  border: none !important;
+  box-shadow: 0 8px 18px rgba(37, 99, 235, .24) !important;
+}
+
+.btn-green ion-icon,
+.btn-blue ion-icon {
+  color: #fff !important;
+}
+
+/* ---------- Bloques superiores ---------- */
 .bloques {
   display: flex;
   flex-wrap: wrap;
@@ -42,45 +200,114 @@
   margin-top: 10px;
 
   .bloque {
-    background: #f8f8f8;
+    background: var(--bg-soft);
     border-radius: 12px;
-    padding: 10px;
-    flex: 1 1 320px;
+    padding: 12px;
+    flex: 1 1 360px;
+    min-width: 320px;
+    border: 1px solid var(--line);
 
     .grupo-botones {
-      display: flex;
+      display: grid;
+      grid-template-columns: 1fr;
       gap: 10px;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
+
+      @media (min-width: 560px) {
+        grid-template-columns: 1fr 1fr;
+      }
     }
 
-    .btn {
+    /* 🟢 Ubicación: PRIMER bloque => botón verde (fallback si no pones clases) */
+    &:first-child>button {
       display: inline-flex;
-      gap: 6px;
       align-items: center;
-      background: #fff;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      padding: 8px 12px;
-      cursor: pointer;
+      gap: 8px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      border: none;
+      background: linear-gradient(90deg, #23771b, #48ff00);
+      color: #fff !important;
+      box-shadow: 0 6px 14px rgba(16, 185, 129, .25);
+      transition: transform .15s ease, box-shadow .15s ease;
+
+      ion-icon {
+        font-size: 18px;
+        color: #fff;
+      }
+
+      &:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 10px 22px rgba(16, 185, 129, .3);
+      }
     }
 
-    .btn.limpiar {
+    /* 🔵 Imágenes: SEGUNDO bloque => primer botón azul (Seleccionar imágenes) */
+    &:nth-child(2) .grupo-botones>.btn:first-child:not(.limpiar) {
+      background: linear-gradient(90deg, #320b8d, #00e1ff);
+      border: none !important;
+      color: #fff !important;
+      box-shadow: 0 6px 14px rgba(37, 99, 235, .22);
+
+      ion-icon {
+        color: #fff;
+      }
+
+      &:hover {
+        box-shadow: 0 10px 22px rgba(37, 99, 235, .28);
+      }
+    }
+
+    /* Asegurar que no queden bordes grises en los primarios del bloque imágenes */
+    .grupo-botones>.btn:first-child:not(.limpiar) {
+      border-color: transparent !important;
+    }
+
+    /* Botón Limpiar -> rojo suave */
+    .grupo-botones .btn.limpiar {
       background: #ffecec;
-      border-color: #ff6666;
+      border: 1.5px solid #ff9e9e;
       color: #b20000;
+
+      &:hover {
+        background: #ffdede;
+      }
     }
 
+    /* Tarjeta de circulación */
     .tc {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 8px;
       font-size: 13px;
+      margin-top: 6px;
+
+      .tc__label {
+        color: var(--muted);
+        font-weight: 600;
+      }
+
+      .tc__filename {
+        color: var(--muted);
+      }
 
       input[type="file"] {
-        padding: 6px;
-        border: 1px dashed #ccc;
-        border-radius: 8px;
+        padding: 10px;
+        border: 2px dashed #d1d5db;
+        border-radius: 12px;
         background: #fff;
+      }
+
+      input[type="file"]::file-selector-button,
+      input[type="file"]::-webkit-file-upload-button {
+        margin-right: 10px;
+        padding: 8px 12px;
+        border: none;
+        border-radius: 8px;
+        background: linear-gradient(90deg, var(--brand), var(--brand-2));
+        color: #fff;
+        font-weight: 700;
+        cursor: pointer;
       }
     }
 
@@ -88,16 +315,20 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      margin-top: 8px;
-      padding: 8px 10px;
-      border-left: 4px solid #e41212;
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-left: 4px solid #16a34a;
+      /* verde */
       background: #fff;
-      border-radius: 8px;
+      border-radius: 10px;
       font-size: 12px;
+      color: var(--ink);
+      min-height: 44px;
     }
   }
 }
 
+/* ---------- Grid general del formulario ---------- */
 .grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -108,8 +339,13 @@
   border-radius: 10px;
   padding: 12px;
 
-  @media (max-width: 900px) { grid-template-columns: repeat(2, 1fr); }
-  @media (max-width: 520px) { grid-template-columns: 1fr; }
+  @media (max-width: 900px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 520px) {
+    grid-template-columns: 1fr;
+  }
 
   .campo {
     display: flex;
@@ -120,17 +356,22 @@
       font-weight: 600;
       font-size: 13px;
 
-      .req { color: #ff3d00; }
+      .req {
+        color: #ff3d00;
+      }
     }
 
-    input, select, textarea {
+    input,
+    select,
+    textarea {
       width: 100%;
-      padding: 8px 10px;
+      padding: 10px 12px;
       font-size: 14px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
       background: #fff;
       color: #000;
+      min-height: 42px;
     }
   }
 }
@@ -139,4 +380,127 @@
   margin-top: 12px;
   display: flex;
   justify-content: flex-end;
+}
+
+/* ======= Tarifas por distancia (cards apiladas y alineadas) ======= */
+.tarifas {
+  margin-top: 12px;
+  background: #f7f7f7;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px;
+
+  .tarifas__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 6px;
+
+    .tarifas__title {
+      font-weight: 700;
+      font-size: 14px;
+      margin: 0;
+    }
+  }
+
+  .tarifa-card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 14px;
+    margin-top: 10px;
+
+    &__top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    &__title {
+      margin: 0;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    /* 4 campos en la primera fila, Nota ocupa toda la segunda */
+    &__grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 12px;
+
+      .campo {
+        grid-column: span 3;
+      }
+
+      /* 12/4 = 3 */
+
+      .campo.full {
+        grid-column: 1 / -1;
+      }
+
+      @media (max-width: 900px) {
+        grid-template-columns: repeat(6, 1fr);
+
+        .campo {
+          grid-column: span 3;
+        }
+
+        /* 2 por fila */
+      }
+
+      @media (max-width: 520px) {
+        grid-template-columns: 1fr;
+
+        .campo {
+          grid-column: 1 / -1;
+        }
+
+        /* 1 por fila */
+      }
+    }
+  }
+
+  /* Estética de campos dentro de tarifas (igual que .grid) */
+  .campo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    label {
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 10px 12px;
+      font-size: 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      background: #fff;
+      color: #000;
+      min-height: 42px;
+    }
+
+    /* Asegura que los mensajes queden debajo y no “en línea” */
+    .hint {
+      display: block;
+      margin-top: 2px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.2;
+    }
+  }
+
+  /* Botón “Quitar” pequeño */
+  .btn-sm {
+    padding: 8px 10px;
+    font-size: 13px;
+    border-radius: 8px;
+  }
 }

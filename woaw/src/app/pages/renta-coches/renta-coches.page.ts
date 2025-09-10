@@ -1,8 +1,9 @@
-import { Component, OnInit, ViewChild, OnDestroy } from '@angular/core';
+import { Component, OnInit, ViewChild, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { IonContent, PopoverController } from '@ionic/angular';
-import { Router } from '@angular/router';
+import { Router, NavigationStart } from '@angular/router';
 import { RentaService } from '../../services/renta.service';
 import { ListComponent } from '../../components/filtos/list/list.component';
+import { filter } from 'rxjs/operators';
 
 type NumOrDots = number | string;
 type Segmento = 'todos' | 'mios';
@@ -12,30 +13,20 @@ type Segmento = 'todos' | 'mios';
   templateUrl: './renta-coches.page.html',
   styleUrls: ['./renta-coches.page.scss'],
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.Default
 })
 export class RentaCochesPage implements OnInit, OnDestroy {
   @ViewChild('pageContent', { static: false }) pageContent!: IonContent;
 
-  // ===== Sesión simple
   get isLoggedIn(): boolean {
     return !!localStorage.getItem('token');
   }
 
-  // Para detectar si un coche es mío (sirve también en la lista "Todos")
   private myCarIds = new Set<string>();
-  private currentUserId: string | null = (() => {
-    try {
-      const raw = localStorage.getItem('user');
-      if (!raw) return null;
-      const u = JSON.parse(raw);
-      return u?._id || u?.id || u?.userId || null;
-    } catch { return null; }
-  })();
+  private currentUserId: string | null = null;
 
-  // ===== Segmento activo
   vistaActiva: Segmento = 'todos';
 
-  // ====== TODOS (público)
   todosStorage: any[] = [];
   todosFiltrados: any[] = [];
   todosPaginados: any[] = [];
@@ -43,7 +34,6 @@ export class RentaCochesPage implements OnInit, OnDestroy {
   paginaTodosActual = 1;
   totalPaginasTodos = 1;
 
-  // ====== MIS AUTOS
   miosStorage: any[] = [];
   miosFiltrados: any[] = [];
   miosPaginados: any[] = [];
@@ -51,32 +41,46 @@ export class RentaCochesPage implements OnInit, OnDestroy {
   paginaMiosActual = 1;
   totalPaginasMios = 1;
 
-  // ===== UI / comunes
   loading = false;
   error: string | null = null;
   readonly itemsPorPagina = 12;
   ordenActual: 'precioAsc' | 'precioDesc' | 'recientes' | '' = '';
 
-  // ===== Filtros (compatibles con tu ListComponent)
   filtros = [
     { label: '$', tipo: 'precio' },
     { label: 'Color', tipo: 'color' },
     { label: 'Marca', tipo: 'marca' },
-    // { label: 'Año', tipo: 'anio' },
   ];
   filtrosAplicados: any = { precio: null, anio: null, color: null, marca: null };
 
   private lastPopover?: HTMLIonPopoverElement | null;
 
+  // ===== estado del modal propio =====
+  modalOpen = false;
+  modalCarId: string | null = null;
+
+  // navegación pendiente (se ejecuta cuando el modal termina de cerrarse)
+  private pendingNav: any[] | null = null;
+
   constructor(
     private rentaService: RentaService,
     private popoverCtrl: PopoverController,
     private router: Router
-  ) { }
+  ) {
+    // Fallback: si empieza cualquier navegación, cerramos/limpiamos el modal
+    this.router.events
+      .pipe(filter(e => e instanceof NavigationStart))
+      .subscribe(() => {
+        this.modalOpen = false;
+        this.modalCarId = null;
+        this.pendingNav = null;
+      });
+  }
 
   ngOnInit() {
+    this.refreshCurrentUserId();
     this.cargarTodos();
-    this.cargarMios(); // si no hay token solo deja vacío
+    this.cargarMios();
   }
 
   ngOnDestroy(): void {
@@ -84,7 +88,16 @@ export class RentaCochesPage implements OnInit, OnDestroy {
     this.lastPopover = null;
   }
 
-  // ========= DATA =========
+  private refreshCurrentUserId() {
+    try {
+      const raw = localStorage.getItem('user');
+      const u = raw ? JSON.parse(raw) : null;
+      this.currentUserId = u?._id || u?.id || u?.userId || null;
+    } catch {
+      this.currentUserId = null;
+    }
+  }
+
   private cargarTodos() {
     this.loading = true;
     this.error = null;
@@ -92,9 +105,10 @@ export class RentaCochesPage implements OnInit, OnDestroy {
     this.rentaService.listarCoches().subscribe({
       next: (res) => {
         const items = Array.isArray(res) ? res : (res?.rentals ?? res?.docs ?? res?.data ?? []);
-        this.todosStorage = items || [];
+        this.todosStorage = (items || []).filter(
+          (x: any) => (x?.estadoRenta ?? 'disponible') !== 'inactivo'
+        );
         this.totalTodos = this.todosStorage.length;
-
         this.aplicarFiltros();
         this.ordenarAutos('recientes');
         this.loading = false;
@@ -111,6 +125,8 @@ export class RentaCochesPage implements OnInit, OnDestroy {
   }
 
   private cargarMios() {
+    this.refreshCurrentUserId();
+
     if (!this.isLoggedIn) {
       this.miosStorage = [];
       this.totalMios = 0;
@@ -121,12 +137,11 @@ export class RentaCochesPage implements OnInit, OnDestroy {
     this.rentaService.misCoches().subscribe({
       next: (res) => {
         const items = Array.isArray(res) ? res : (res?.docs ?? res?.data ?? res?.rentals ?? []);
+        // ✅ En "mios" NO filtramos inactivos: que aparezcan siempre
         this.miosStorage = items || [];
         this.totalMios = this.miosStorage.length;
-
-        // Poblar IDs para detectar "míos" también en la pestaña "Todos"
-        this.myCarIds = new Set(this.miosStorage.map((x) => String(x?._id)));
-
+        // incluye _id o id para robustez
+        this.myCarIds = new Set(this.miosStorage.map((x) => String(x?._id ?? x?.id)).filter(Boolean));
         this.aplicarFiltros();
       },
       error: () => {
@@ -137,12 +152,22 @@ export class RentaCochesPage implements OnInit, OnDestroy {
     });
   }
 
-  // ========= SEGMENTO / ORDEN =========
   onSegmentChange() {
+    if (this.vistaActiva === 'mios' && this.isLoggedIn && this.miosStorage.length === 0) {
+      this.cargarMios();
+    }
+
     if (this.vistaActiva === 'todos') this.paginaTodosActual = 1;
     else this.paginaMiosActual = 1;
+
     this.aplicarFiltros();
     setTimeout(() => this.pageContent?.scrollToTop(300), 50);
+  }
+
+  private createdTs(x: any) {
+    const raw = x?.createdAt;
+    const t = raw ? new Date(raw).getTime() : NaN;
+    return Number.isFinite(t) ? t : 0;
   }
 
   ordenarAutos(criterio: 'precioAsc' | 'precioDesc' | 'recientes' | '' | string) {
@@ -159,7 +184,7 @@ export class RentaCochesPage implements OnInit, OnDestroy {
     } else if (c === 'precioDesc') {
       base.sort((a, b) => (b?.precio?.porDia ?? 0) - (a?.precio?.porDia ?? 0));
     } else if (c === 'recientes') {
-      base.sort((a, b) => +new Date(b?.createdAt || 0) - +new Date(a?.createdAt || 0));
+      base.sort((a, b) => this.createdTs(b) - this.createdTs(a));
     }
 
     if (this.vistaActiva === 'todos') {
@@ -173,7 +198,6 @@ export class RentaCochesPage implements OnInit, OnDestroy {
     setTimeout(() => this.pageContent?.scrollToTop(300), 50);
   }
 
-  // ========= FILTROS =========
   async mostrarOpciones(ev: Event, tipo: string) {
     await this.lastPopover?.dismiss().catch(() => { });
     this.lastPopover = await this.popoverCtrl.create({
@@ -189,7 +213,7 @@ export class RentaCochesPage implements OnInit, OnDestroy {
 
     if (role === 'cancel' || role === 'backdrop') return;
 
-    this.filtrosAplicados[tipo] = data === null ? null : data; // {label, rango} o string
+    this.filtrosAplicados[tipo] = data === null ? null : data;
     this.aplicarFiltros();
   }
 
@@ -204,7 +228,6 @@ export class RentaCochesPage implements OnInit, OnDestroy {
 
     const { precio, anio, color, marca } = this.filtrosAplicados;
 
-    // precio por día
     if (precio?.rango?.length === 2) {
       const [min, max] = precio.rango.map((n: any) => Number(n));
       lista = lista.filter(
@@ -212,10 +235,8 @@ export class RentaCochesPage implements OnInit, OnDestroy {
       );
     }
 
-    // año exacto
     if (anio) lista = lista.filter((c) => Number(c?.anio) === Number(anio));
 
-    // color
     if (color) {
       const cf = (color?.label || color).toString().toLowerCase().trim();
       lista = lista.filter(
@@ -223,7 +244,6 @@ export class RentaCochesPage implements OnInit, OnDestroy {
       );
     }
 
-    // marca
     if (marca) {
       const mf = (marca?.label || marca).toString().toLowerCase().trim();
       lista = lista.filter(
@@ -242,7 +262,6 @@ export class RentaCochesPage implements OnInit, OnDestroy {
     }
   }
 
-  // ========= PAGINACIÓN =========
   calcularPaginacion(seg: Segmento) {
     const base =
       seg === 'todos'
@@ -288,7 +307,7 @@ export class RentaCochesPage implements OnInit, OnDestroy {
     setTimeout(() => this.pageContent?.scrollToTop(400), 100);
   }
 
-  // ========= Helpers paginación reducida =========
+  // === Paginación estilo "Motos": rango=1 y elipsis ===
   get paginasReducidasTodos(): NumOrDots[] {
     return this.buildPaginasReducidas(this.paginaTodosActual, this.totalPaginasTodos);
   }
@@ -299,35 +318,97 @@ export class RentaCochesPage implements OnInit, OnDestroy {
     return typeof v === 'number';
   }
   private buildPaginasReducidas(actual: number, total: number): NumOrDots[] {
-    if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
-    const res: NumOrDots[] = [1];
-    const start = Math.max(2, actual - 1);
-    const end = Math.min(total - 1, actual + 1);
-    if (start > 2) res.push('...');
-    for (let i = start; i <= end; i++) res.push(i);
-    if (end < total - 1) res.push('...');
-    res.push(total);
-    return res;
+    const rango = 1;
+
+    if (total <= 2) {
+      return Array.from({ length: total }, (_, i) => i + 1);
+    }
+
+    const paginas: (number | string)[] = [];
+    paginas.push(1);
+
+    if (actual - rango > 2) paginas.push('...');
+    for (let i = Math.max(2, actual - rango); i <= Math.min(total - 1, actual + rango); i++) {
+      paginas.push(i);
+    }
+    if (actual + rango < total - 1) paginas.push('...');
+    paginas.push(total);
+
+    return paginas;
   }
 
-  // ========= Navegación inteligente =========
   onCardClick(coche: any) {
     if (this.esMio(coche)) {
-      this.router.navigate(['/disponibilidad-car', coche._id]);
+      this.modalCarId = coche?._id ?? coche?.id ?? null;
+      this.modalOpen = !!this.modalCarId; // abre el modal propio
     } else {
-      this.router.navigate(['/renta-ficha', coche._id]);
+      this.router.navigate(['/renta-ficha', coche._id ?? coche.id]);
     }
   }
 
   private esMio(c: any): boolean {
-    // 1) Si ya lo tenemos en "míos"
-    if (c?._id && this.myCarIds.has(String(c._id))) return true;
+    const cid = String(c?._id ?? c?.id ?? '');
+    if (cid && this.myCarIds.has(cid)) return true;
 
-    // 2) O si el objeto trae propietario y coincide con mi userId
     const owner = c?.propietarioId || c?.propietario?._id || c?.ownerId || c?.userId || null;
     if (owner && this.currentUserId) {
       return String(owner) === String(this.currentUserId);
     }
     return false;
   }
+  getEsMio(c: any): boolean {
+    return this.esMio(c);
+  }
+
+  trackCar = (_: number, c: any) => c?._id ?? c?.id ?? `${c?.marca}-${c?.modelo}-${c?.anio}`;
+
+  refrescar(ev: CustomEvent) {
+    const done = () => (ev.target as HTMLIonRefresherElement).complete();
+    if (this.vistaActiva === 'mios' && this.isLoggedIn) {
+      this.cargarMios();
+      setTimeout(done, 300);
+    } else {
+      this.cargarTodos();
+      setTimeout(done, 300);
+    }
+  }
+
+  // ===== handlers del modal propio =====
+  goToFicha() {
+    if (!this.modalCarId) return;
+    this.pendingNav = ['/renta-ficha', this.modalCarId];
+    this.modalOpen = false; // cerrar primero
+  }
+
+  goToDisponibilidad() {
+    if (!this.modalCarId) return;
+    this.pendingNav = ['/disponibilidad-car', this.modalCarId];
+    this.modalOpen = false; // cerrar primero
+  }
+
+  closeModal() {
+    this.modalOpen = false;
+  }
+
+  /** Se invoca desde el template con (didDismiss) cuando el modal YA se cerró */
+  onModalDismiss() {
+    const nav = this.pendingNav;
+    this.pendingNav = null;
+    this.modalCarId = null;
+    if (nav) {
+      this.router.navigate(nav);
+    }
+  }
+
+  ionViewWillEnter() {
+    this.refreshCurrentUserId();
+    this.cargarTodos();          
+    if (this.isLoggedIn) {
+      this.cargarMios();         
+    }
+    this.paginaTodosActual = 1;
+    this.paginaMiosActual = 1;
+    this.aplicarFiltros();
+  }
+
 }

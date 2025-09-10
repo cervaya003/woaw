@@ -58,7 +58,7 @@ export class RentaFichaPage implements OnInit {
     private router: Router,
     private rentaService: RentaService,
     private general: GeneralService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id')!;
@@ -96,7 +96,7 @@ export class RentaFichaPage implements OnInit {
   volver() {
     try {
       if (window.history.length > 2) return history.back();
-    } catch {}
+    } catch { }
     this.router.navigate(['/renta-coches']);
   }
   cerrar() { this.volver(); }
@@ -256,7 +256,7 @@ export class RentaFichaPage implements OnInit {
         title: `${this.rental?.marca} ${this.rental?.modelo} ${this.rental?.anio} en renta`,
         text: 'Checa este vehículo en renta',
         url
-      }).catch(() => {});
+      }).catch(() => { });
     } else {
       navigator.clipboard.writeText(url);
       this.general.toast('Enlace copiado', 'success');
@@ -264,14 +264,19 @@ export class RentaFichaPage implements OnInit {
   }
 
   reservar() {
-    if (!this.resumen?.valido) {
-      this.general.toast('Selecciona 1 fecha o un rango válido', 'warning');
-      return;
+    if (!this.rental?._id) return;
+
+    const inicio = this.fechaInicio || null;
+    const fin = this.fechaFin || this.fechaInicio || null;
+
+    if (inicio && fin) {
+      this.router.navigate(
+        ['/reservas', this.rental._id],
+        { queryParams: { inicio, fin } }
+      );
+    } else {
+      this.router.navigate(['/reservas', this.rental._id]);
     }
-    this.general.toast(
-      `Reserva por ${this.resumen.dias} día(s). Total: ${this.resumen.total.toLocaleString('es-MX', { style: 'currency', currency: 'MXN' })}`,
-      'primary'
-    );
   }
 
   abrirAviso() { this.general.alert('Aviso de Privacidad', 'Contenido…', 'info'); }

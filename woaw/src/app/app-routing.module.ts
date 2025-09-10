@@ -188,6 +188,16 @@ const routes: Routes = [
     path: 'disponibilidad-car/:id',
     loadChildren: () => import('./pages/disponibilidad-car/disponibilidad-car.module').then( m => m.DisponibilidadCarPageModule)
   },
+  {
+    path: 'edit-renta/:id',
+    loadChildren: () => import('./pages/edit-renta/edit-renta.module').then( m => m.EditRentaPageModule)
+  },
+  {
+    path: 'reservas/:id',
+    loadChildren: () => import('./pages/reservas/reservas.module').then( m => m.ReservasPageModule)
+  },
+
+
 
 
 ];

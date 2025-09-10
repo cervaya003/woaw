@@ -35,6 +35,7 @@ export class CartasComponent implements OnInit {
   @Input() ubicacion: string = '';
   @Input() esMio: boolean = false;
   @Output() refrescarAutos = new EventEmitter<string>();
+  FormatoPrecios: boolean = false;
 
   autosFavoritos: any[] = [];
   public mostrarPendientes: boolean = false;
@@ -55,7 +56,9 @@ export class CartasComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    console.log(this.auto)
+    // console.log(this.auto)
+    // console.log(this.ubicacion)
+
     this.generalService.tokenExistente$.subscribe((estado) => {
       this.isLoggedIn = estado;
     });
@@ -66,6 +69,12 @@ export class CartasComponent implements OnInit {
     if (storage) {
       const usuario = JSON.parse(storage);
       this.mostrarPendientes = usuario.email === 'glenditaa.003@gmail.com';
+    }
+
+    if (this.ubicacion === 'mis_autos_renta') {
+      this.FormatoPrecios = true;
+    } else {
+      this.FormatoPrecios = false;
     }
 
     this.verificadorCarga = setInterval(() => {
@@ -91,6 +100,8 @@ export class CartasComponent implements OnInit {
       this.router.navigate(['/ficha', 'autos', auto._id]);
     } else if (auto.vehiculo === 'moto') {
       this.router.navigate(['/ficha', 'motos', auto._id]);
+    } else if (auto.vehiculo === 'renta') {
+      this.router.navigate(['/renta-ficha', auto._id]);
     } else {
       console.warn('Tipo de vehículo no reconocido:', auto.vehiculo);
     }
@@ -167,23 +178,36 @@ export class CartasComponent implements OnInit {
       },
     });
   }
+  // cartas.component.ts (solo cambia update_car)
   update_car(auto: any, tipo: string) {
-    // console.log(auto._id)
     if (this.ubicacion === 'mis_motos') {
       this.router.navigate(['/update-car', 'motos', auto._id]);
     } else if (this.ubicacion === 'mis_autos') {
       this.router.navigate(['/update-car', 'autos', auto._id]);
-    } else {
-      this.router.navigate(['/update-car', 'renta', auto._id]);
+    } else if (this.ubicacion === 'mis_autos_renta') {
+      this.router.navigate(['/edit-renta', auto._id]); // 👈 correcto
     }
   }
   onCardClick(auto: any, event: Event): void {
     event.stopPropagation();
-    if (this.ubicacion === 'mis_autos' || this.ubicacion === 'mis_motos') {
+
+    if (this.ubicacion === 'mis_motos') {
       this.update_car(auto, this.ubicacion);
-    } else {
-      this.ficha(auto);
+      return;
     }
+
+    if (this.ubicacion === 'mis_autos') {
+      this.update_car(auto, this.ubicacion);
+      return;
+    }
+
+    if (this.ubicacion === 'mis_autos_renta') {
+      this.update_car(auto, this.ubicacion); // 👈 manda al editor de renta
+      return;
+    }
+
+    // Otros contextos → ficha pública
+    this.ficha(auto);
   }
   async abrirModalImagen(imagenes: string[], indice: number = 0) {
     const modal = await this.modalCtrl.create({
