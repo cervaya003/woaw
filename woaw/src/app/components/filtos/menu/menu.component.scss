@@ -1,7 +1,7 @@
 .filtros-lateral-estilo-nuevo {
   background: #ffffff;
   border-radius: 8px;
-  padding: 1rem;
+  padding: 1px;
   font-family: 'Poppins', sans-serif;
   width: 100%;
   position: sticky;
@@ -10,23 +10,26 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem;
+    margin-bottom: 2px;
 
     .texto-filtro {
-      font-size: 1.2rem;
+      font-size: clamp(9px, 1vw, 13px);
       font-weight: bold;
     }
 
     .icono-filtro {
-      font-size: 20px;
+      font-size: clamp(9px, 1vw, 13px);
       margin-left: 6px;
     }
 
     .boton-limpiar-filtros {
-      font-size: 0.9rem;
-      color: #888;
+      font-size: clamp(10px, 1vw, 13px);
+      color: #000000;
       cursor: pointer;
       display: flex;
+      background-color: #ee10103d;
+      padding: 4px;
+      border-radius: 2px;
       align-items: center;
       gap: 4px;
 
@@ -43,7 +46,7 @@
 
     .bloque-filtro {
       border-top: 1px solid #eee;
-      padding-top: 10px;
+      padding-top: 1px;
 
       .encabezado-filtro {
         background: none;
@@ -102,10 +105,6 @@
 
 
 @media (max-width: 768px) {
-  .texto-filtro {
-    font-size: 13px !important;
-  }
-
   .filtros-lateral-estilo-nuevo {
     position: relative;
     padding: 5px !important;
