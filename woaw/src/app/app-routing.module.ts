@@ -251,6 +251,18 @@ const routes: Routes = [
       import("./pages/error/error.module").then((m) => m.ErrorPageModule),
     data: { title: "Página no encontrada | woaw" },
   },
+  {
+    path: 'disponibilidad-car/:id',
+    loadChildren: () => import('./pages/disponibilidad-car/disponibilidad-car.module').then( m => m.DisponibilidadCarPageModule)
+  },
+  {
+    path: 'edit-renta/:id',
+    loadChildren: () => import('./pages/edit-renta/edit-renta.module').then( m => m.EditRentaPageModule)
+  },
+  {
+    path: 'reservas/:id',
+    loadChildren: () => import('./pages/reservas/reservas.module').then( m => m.ReservasPageModule)
+  },
 ];
 
 @NgModule({

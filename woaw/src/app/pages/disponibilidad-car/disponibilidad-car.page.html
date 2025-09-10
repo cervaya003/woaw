@@ -1,13 +1,171 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>disponibilidad-car</ion-title>
+<ion-header>
+  <ion-toolbar color="dark">
+    <ion-buttons slot="start">
+      <div class="perfil-header">
+        <button class="btn-regresar" (click)="volver()" aria-label="Regresar">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+        </button>
+        <img src="/assets/icon/logo4.png" alt="WOAW" class="logo" />
+      </div>
+    </ion-buttons>
+
+    <ion-buttons slot="end">
+      <ion-button (click)="cerrar()" aria-label="Cerrar">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">disponibilidad-car</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <ion-grid class="disp-grid">
+    <!-- Header -->
+    <ion-row class="header-row" *ngIf="coche">
+      <ion-col size="12">
+        <h1 class="titulo">
+          Disponibilidad — {{ coche?.marca }} {{ coche?.modelo }} {{ coche?.anio }}
+        </h1>
+
+        <div class="sub-row">
+          <p class="sub">
+            Ubicación: {{ coche?.ubicacion?.ciudad || '—' }}, {{ coche?.ubicacion?.estado || '—' }}
+          </p>
+
+          <span [ngClass]="['estado-chip', estadoColorClass]" aria-live="polite">
+            {{ estadoActual | titlecase }}
+          </span>
+        </div>
+
+        <ion-note color="warning" *ngIf="!esPropietario">
+          Solo el propietario puede editar. Estás en modo lectura.
+        </ion-note>
+      </ion-col>
+    </ion-row>
+
+    <!-- Estado global -->
+    <ion-row>
+      <ion-col size="12">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Estado general</ion-card-title>
+            <ion-card-subtitle>Define si el vehículo se muestra o no en el catálogo</ion-card-subtitle>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-segment [(ngModel)]="estadoActual" (ionChange)="onEstadoChange($event)" [disabled]="!esPropietario">
+              <ion-segment-button value="disponible"><ion-label>Disponible</ion-label></ion-segment-button>
+              <ion-segment-button value="inactivo"><ion-label>Inactivo</ion-label></ion-segment-button>
+            </ion-segment>
+
+            <div class="estado-help">
+              <ion-icon name="information-circle-outline"></ion-icon>
+              <span>
+                <b>Disponible</b>: visible para reservas (salvo los días marcados como no disponibles).
+                <b>Inactivo</b>: oculto del catálogo.
+              </span>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+
+    <!-- Editor: solo excepciones (oculto si está inactivo) -->
+    <ion-row *ngIf="estadoActual === 'disponible'">
+      <ion-col size="12">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Días no disponibles</ion-card-title>
+            <ion-card-subtitle>Usa el calendario para bloquear días específicos</ion-card-subtitle>
+          </ion-card-header>
+
+          <ion-card-content>
+            <!-- Presets (arriba del calendario) -->
+            <div class="preset-row">
+              <ion-button size="small" [fill]="activePreset === 'week' ? 'solid' : 'outline'"
+                (click)="applyPreset('week')" [disabled]="!esPropietario">
+                Esta semana
+              </ion-button>
+
+              <ion-button size="small" [fill]="activePreset === 'month' ? 'solid' : 'outline'"
+                (click)="applyPreset('month')" [disabled]="!esPropietario">
+                Este mes
+              </ion-button>
+
+              <!-- Días fijos (multi-select) -->
+              <div class="weekday-selector" aria-label="Días fijos no disponibles">
+                <ion-chip *ngFor="let d of weekDays" [outline]="!isWeekdaySelected(d.value)"
+                  [color]="isWeekdaySelected(d.value) ? 'danger' : 'medium'" [disabled]="!esPropietario"
+                  (click)="toggleWeekday(d.value)" class="weekday-chip">
+                  <ion-label>{{ d.label }}</ion-label>
+                </ion-chip>
+              </div>
+            </div>
+
+            <!-- Modo de selección manual -->
+            <div class="editor-bar">
+              <ion-segment [(ngModel)]="modoSeleccion" (ionChange)="resetSelection()" [disabled]="!esPropietario">
+                <ion-segment-button value="dia"><ion-label>Día</ion-label></ion-segment-button>
+                <ion-segment-button value="rango"><ion-label>Rango</ion-label></ion-segment-button>
+              </ion-segment>
+            </div>
+
+            <div class="editor-grid">
+              <!-- Calendario -->
+              <ion-item class="center-item danger-datetime" lines="none">
+                <ion-label position="stacked" class="sr-only">Calendario</ion-label>
+                <ion-datetime *ngIf="calendarMounted" presentation="date" [multiple]="modoSeleccion === 'rango'"
+                  [firstDayOfWeek]="1" [(ngModel)]="rangeUnified" (ionChange)="onUnifiedChange($event)"
+                  [highlightedDates]="highlightedCombined" [min]="minDate" [max]="maxDate"
+                  [isDateEnabled]="isDateEnabled" [disabled]="!esPropietario">
+                </ion-datetime>
+              </ion-item>
+
+              <!-- Limpiar calendario -->
+              <div class="clear-actions">
+                <ion-button size="small" fill="solid" color="danger" (click)="clearExcepciones()"
+                  [disabled]="!esPropietario" aria-label="Limpiar calendario">
+                  <ion-icon name="trash-outline" slot="start"></ion-icon>
+                  Limpiar calendario
+                </ion-button>
+              </div>
+            </div>
+
+            <!-- Ayuda contextual -->
+            <div class="editor-help">
+              <ion-icon name="hand-left-outline"></ion-icon>
+              <span *ngIf="modoSeleccion === 'dia'">Toca un <b>día</b> para agregarlo como <b>no
+                  disponible</b>.</span>
+              <span *ngIf="modoSeleccion === 'rango'">Selecciona <b>dos fechas</b> (inicio y fin) para bloquear un
+                <b>rango</b>.</span>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+
+    <!-- Errores -->
+    <ion-row *ngIf="errores.length > 0">
+      <ion-col size="12">
+        <div class="errors" aria-live="polite">
+          <strong>Revisa lo siguiente:</strong>
+          <ul>
+            <li *ngFor="let e of errores">{{ e }}</li>
+          </ul>
+        </div>
+      </ion-col>
+    </ion-row>
+
+    <!-- Guardar -->
+    <ion-row>
+      <ion-col size="12">
+        <ion-button expand="block" color="primary" (click)="guardar()"
+          [disabled]="!esPropietario || guardando || errores.length > 0 || !hasChanges">
+          <ion-spinner *ngIf="guardando" name="crescent" style="margin-inline-end:8px"></ion-spinner>
+          Guardar cambios
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <app-footer></app-footer>
 </ion-content>
+

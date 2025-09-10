@@ -1,0 +1,117 @@
+<ion-header>
+  <ion-toolbar color="dark">
+    <ion-buttons slot="start">
+      <ion-button fill="clear" (click)="volver()" aria-label="Regresar">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title class="truncate">
+      Reservar — {{ coche?.marca }} {{ coche?.modelo }} {{ coche?.anio }}
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" (click)="cerrar()" aria-label="Cerrar">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="page">
+  <!-- Info del auto -->
+  <section class="hero" *ngIf="coche">
+    <div class="hero-info">
+      <h1 class="titulo truncate">{{ coche?.marca }} {{ coche?.modelo }} {{ coche?.anio }}</h1>
+      <div class="chips">
+        <ion-badge color="primary">
+          {{ (coche?.precio?.porDia ?? coche?.precioPorDia) | currency:(coche?.precio?.moneda || 'MXN'):'symbol' }} /
+          día
+        </ion-badge>
+        <ion-badge color="medium">{{ coche?.ubicacion?.ciudad || '—' }}</ion-badge>
+      </div>
+    </div>
+    <div class="hero-media">
+      <img [src]="coche?.imagenPrincipalUrl || coche?.imagenPrincipal || '/assets/placeholder-car.jpg'" alt="Auto" />
+    </div>
+  </section>
+
+  <!-- Formulario -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Datos de la reserva</ion-card-title>
+      <ion-card-subtitle>Selecciona fechas</ion-card-subtitle>
+    </ion-card-header>
+
+    <ion-card-content>
+      <form [formGroup]="form">
+        <!-- Calendario ÚNICO (rango) -->
+        <div class="fechas-grid">
+          <ion-item class="center-item danger-datetime" lines="none">
+            <ion-label position="stacked" class="sr-only">Calendario</ion-label>
+            <ion-datetime presentation="date" [multiple]="true" [min]="minStart" [isDateEnabled]="isDateEnabled"
+              [value]="rangeValue" (ionChange)="onRangeChange($event)" (ionValueChange)="onRangeValueChange($event)">
+            </ion-datetime>
+
+          </ion-item>
+
+          <!-- Mensajes de validación -->
+          <ion-note color="danger"
+            *ngIf="form.get('fechaInicio')?.hasError('minHoy') && form.get('fechaInicio')?.touched">
+            La fecha de inicio no puede ser anterior a hoy.
+          </ion-note>
+          <ion-note color="danger" *ngIf="form.hasError('rangoInvalido') && form.touched">
+            La fecha de fin debe ser posterior a la de inicio.
+          </ion-note>
+        </div>
+
+        <!-- Notas -->
+        <ion-item>
+          <ion-textarea label="Notas para el propietario" formControlName="notasCliente"
+            placeholder="Indica preferencias de entrega, horarios, etc.">
+          </ion-textarea>
+        </ion-item>
+
+        <!-- Términos -->
+        <ion-item lines="none">
+          <ion-checkbox formControlName="aceptoTerminos" slot="start"></ion-checkbox>
+          <ion-label>Acepto los términos y condiciones</ion-label>
+        </ion-item>
+      </form>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Resumen -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Resumen</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <div class="resumen">
+        <div>Días</div>
+        <div class="val">{{ dias }}</div>
+        <div>Precio por día</div>
+        <div class="val">
+          {{ (coche?.precio?.porDia ?? coche?.precioPorDia) | currency:(coche?.precio?.moneda || 'MXN'):'symbol' }}
+        </div>
+        <div>Total</div>
+        <div class="val total">{{ total | currency:(coche?.precio?.moneda || 'MXN'):'symbol' }}</div>
+      </div>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+
+<!-- Action bar -->
+<ion-footer class="action-bar">
+  <ion-toolbar>
+    <div class="bar">
+      <div class="precio">
+        <div class="monto">{{ total | currency:(coche?.precio?.moneda || 'MXN'):'symbol' }}</div>
+        <div class="nota">Total estimado</div>
+      </div>
+      <ion-button [disabled]="!canSubmit || enviando" (click)="reservar()">
+        <ion-spinner slot="start" *ngIf="enviando"></ion-spinner>
+        <ion-icon *ngIf="!enviando" name="checkmark-circle-outline" slot="start"></ion-icon>
+        Reservar
+      </ion-button>
+    </div>
+  </ion-toolbar>
+</ion-footer>
