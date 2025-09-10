@@ -8,13 +8,20 @@ import { DisponibilidadCarPageRoutingModule } from './disponibilidad-car-routing
 
 import { DisponibilidadCarPage } from './disponibilidad-car.page';
 
+import { FooterComponent } from "src/app/components/footer/footer.component";
+import { NavbarComponent } from "src/app/components/navbar/navbar.component";
+
+
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    DisponibilidadCarPageRoutingModule
-  ],
+    DisponibilidadCarPageRoutingModule,
+    FooterComponent,
+    NavbarComponent
+],
+
   declarations: [DisponibilidadCarPage]
 })
 export class DisponibilidadCarPageModule {}

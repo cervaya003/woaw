@@ -5,13 +5,13 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { SegurosPageRoutingModule } from './seguros-routing.module';
 import { SegurosPage } from './seguros.page';
-
-import { NavbarComponent } from '../../components/navbar/navbar.component';
-import { MenuComponent } from '../../components/filtos/menu/menu.component';
-import { CartasComponent } from '../../components/cartas/cartas.component';
-import { AddComponent } from '../../components/lote/add/add.component';
-import { AcomodoComponent } from '../../components/filtos/acomodo/acomodo.component';
-import { FooterComponent } from '../../components/footer/footer.component';
+import { ReactiveFormsModule } from '@angular/forms';
+import { NavbarComponent } from '../../../components/navbar/navbar.component';
+import { MenuComponent } from '../../../components/filtos/menu/menu.component';
+import { CartasComponent } from '../../../components/cartas/cartas.component';
+import { AddComponent } from '../../../components/lote/add/add.component';
+import { AcomodoComponent } from '../../../components/filtos/acomodo/acomodo.component';
+import { FooterComponent } from '../../../components/footer/footer.component';
 
 @NgModule({
   imports: [
@@ -24,7 +24,8 @@ import { FooterComponent } from '../../components/footer/footer.component';
     CartasComponent,
     AcomodoComponent,
     FooterComponent,
-    AddComponent
+    AddComponent,
+    ReactiveFormsModule
   ],
   declarations: [SegurosPage]
 })

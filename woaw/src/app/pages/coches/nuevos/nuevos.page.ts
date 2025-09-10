@@ -82,7 +82,6 @@ export class NuevosPage implements OnInit {
       this.esDispositivoMovil = tipo === 'telefono' || tipo === 'tablet';
     });
     this.getCarsNews();
-    // this.calcularPaginacion();
 
     this.generalService.tokenExistente$.subscribe((estado) => {
       this.isLoggedIn = estado;
@@ -198,16 +197,8 @@ export class NuevosPage implements OnInit {
       );
     }
 
-    if (anio) {
-      if (anio.anio === 2024) {
-        autosFiltrados = autosFiltrados.filter((auto) => auto.anio >= 2024);
-      } else if (anio.anio === 2020) {
-        autosFiltrados = autosFiltrados.filter(
-          (auto) => auto.anio >= 2020 && auto.anio <= 2023
-        );
-      } else if (anio.anio === 2010) {
-        autosFiltrados = autosFiltrados.filter((auto) => auto.anio < 2020);
-      }
+    if (anio?.anio) {
+      autosFiltrados = autosFiltrados.filter((auto) => auto.anio === anio.anio);
     }
 
     if (color) {
@@ -244,9 +235,15 @@ export class NuevosPage implements OnInit {
 
   mostrarPagina(pagina: number) {
     this.paginaActual = pagina;
+
+    const base = this.autosFiltrados.length
+      ? this.autosFiltrados
+      : [...this.autosStorage];
+
     const inicio = (pagina - 1) * this.itemsPorPagina;
     const fin = inicio + this.itemsPorPagina;
-    this.autosPaginados = this.autosStorage.slice(inicio, fin);
+
+    this.autosPaginados = base.slice(inicio, fin);
   }
 
   cambiarPagina(pagina: number) {

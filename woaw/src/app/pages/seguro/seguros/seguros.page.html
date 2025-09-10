@@ -1,0 +1,387 @@
+<app-navbar></app-navbar>
+
+<ion-content [fullscreen]="true">
+
+  <!-- <img class="hero-bg" [src]="imgenPrincipal" alt="" loading="lazy" decoding="async" fetchpriority="low" /> -->
+
+  <div class="cotiza" *ngIf="!cotizacion">
+    <section class="cotiza__card">
+      <header class="cotiza__head" *ngIf="!cotizacion">
+        <span class="badge">Seguro de auto · Woaw</span>
+        <h1>Cotiza tu seguro de auto</h1>
+        <p>En segundos</p>
+      </header>
+
+      <div class="progress" *ngIf="!cotizacion">
+        <div class="progress__bar" [style.width.%]="progress()"></div>
+      </div>
+
+      <form [formGroup]="form" *ngIf="!cotizacion">
+
+        <div class="field" *ngIf="currentStep === 1">
+          <label for="marca">Escribe o selecciona la marca</label>
+          <div class="control">
+            <select id="marca" formControlName="marca" class="form-select">
+              <option [ngValue]="null" disabled selected>Elige una marca...</option>
+              <option *ngFor="let m of marcas" [value]="m.id">{{ m.name | titlecase }}</option>
+            </select>
+            <button type="button" class="icon-btn" aria-label="Limpiar" (click)="clearMarca()"
+              *ngIf="form.get('marca')?.value">✕</button>
+          </div>
+        </div>
+
+        <div class="field" *ngIf="currentStep === 2">
+          <label for="modelo">Selecciona el modelo</label>
+          <div class="control">
+            <select id="modelo" formControlName="modelo" class="form-select">
+              <option [ngValue]="null" disabled selected>Elige un modelo...</option>
+              <option *ngFor="let mo of modelos" [value]="mo.id">{{ mo.name | titlecase }}</option>
+            </select>
+            <button type="button" class="icon-btn" aria-label="Regresar" (click)="clearMarca()">&#x2B05;</button>
+          </div>
+        </div>
+
+        <div class="field" *ngIf="currentStep === 3">
+          <label for="año">Selecciona el año</label>
+          <div class="control">
+            <select id="anio" formControlName="anio" class="form-select">
+              <option [ngValue]="null" disabled selected>Elige un año...</option>
+              <option *ngFor="let y of anios" [value]="y">{{ y }}</option>
+            </select>
+            <button type="button" class="icon-btn" aria-label="Regresar" (click)="clearAnio()">&#x2B05;</button>
+          </div>
+        </div>
+
+        <div class="field" *ngIf="currentStep === 4">
+          <label for="versión">Selecciona el versión</label>
+          <div class="control">
+            <select id="version" formControlName="version" class="form-select">
+              <option [ngValue]="null" disabled selected>Elige una versión...</option>
+              <option *ngFor="let v of versions" [value]="v.id">{{ v.parts | titlecase }}</option>
+            </select>
+            <button type="button" class="icon-btn" aria-label="Regresar" (click)="clearVersion()">&#x2B05;</button>
+          </div>
+        </div>
+
+        <div class="field" *ngIf="currentStep === 5">
+          <label>Fecha de nacimiento</label>
+
+          <div class="fecha-flex">
+            <div class="control">
+              <select id="nacDia" class="form-select" formControlName="nacDia" aria-label="Día">
+                <option [ngValue]="null" disabled selected>Día</option>
+                <option *ngFor="let d of dias" [value]="d">{{ d }}</option>
+              </select>
+              <button type="button" class="icon-btn" aria-label="Regresar" (click)="clearFecha()">&#x2B05;</button>
+            </div>
+
+            <div class="control">
+              <select id="nacMes" class="form-select" formControlName="nacMes" aria-label="Mes">
+                <option [ngValue]="null" disabled selected>Mes</option>
+                <option *ngFor="let m of meses" [value]="m.v">{{ m.l }}</option>
+              </select>
+            </div>
+
+            <div class="control">
+              <select id="nacAnio" class="form-select" formControlName="nacAnio" aria-label="Año">
+                <option [ngValue]="null" disabled selected>Año</option>
+                <option *ngFor="let y of aniosNacimiento" [value]="y">{{ y }}</option>
+              </select>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="field" *ngIf="currentStep === 6">
+
+          <label for="cp">Código Postal</label>
+          <div class="control">
+            <input id="cp" type="text" class="form-input" maxlength="5" placeholder="Ej. 76000" formControlName="cp" />
+          </div>
+
+          <label for="genero" style="margin-top:12px;">Género</label>
+          <div class="control">
+            <select id="genero" class="form-select" formControlName="genero">
+              <option [ngValue]="null" disabled selected>Selecciona...</option>
+              <option *ngFor="let g of generoOpts" [value]="g.value">{{ g.label }}</option>
+            </select>
+          </div>
+
+          <label for="estadoCivil" style="margin-top:12px;">Estado civil</label>
+          <div class="control">
+            <select id="estadoCivil" class="form-select" formControlName="estadoCivil">
+              <option [ngValue]="null" disabled selected>Selecciona...</option>
+              <option *ngFor="let e of estadoCivilOpts" [value]="e.value">{{ e.label }}</option>
+            </select>
+            <button type="button" class="icon-btn" aria-label="Regresar" (click)="clearPaso6()">&#x2B05;</button>
+          </div>
+
+          <!-- <label for="duracion" style="margin-top:12px;">Duración (meses)</label>
+          <div class="control" >
+            <select id="duracion" class="form-select" formControlName="duracion">
+              <option [ngValue]="null" disabled selected>Selecciona...</option>
+              <option *ngFor="let d of duracionOpts" [value]="d">{{ d }}</option>
+            </select>
+          </div> -->
+
+        </div>
+
+        <div class="field" *ngIf="currentStep === 7">
+          <label for="nombre">Nombre completo</label>
+          <div class="control">
+            <input id="nombre" type="text" class="form-input" placeholder="Ej. JUAN PÉREZ LÓPEZ"
+              formControlName="nombre" (input)="toUpper('nombre')" />
+          </div>
+
+          <label for="email" style="margin-top:12px;">Correo electrónico</label>
+          <div class="control">
+            <input id="email" type="email" class="form-input" placeholder="tucorreo@dominio.com"
+              formControlName="email" />
+            <button type="button" class="icon-btn" aria-label="Regresar" (click)="clearPaso7()">&#x2B05;</button>
+          </div>
+
+        </div>
+
+        <!-- Paso 8: Resumen -->
+        <div class="field" *ngIf="currentStep === 8">
+          <label>Verifica tu información</label>
+
+          <div class="summary">
+            <div class="summary__row">
+              <span class="k">Marca</span><span class="v">{{ getMarcaLabel() }}</span>
+            </div>
+            <div class="summary__row">
+              <span class="k">Modelo</span><span class="v">{{ getModeloLabel() }}</span>
+            </div>
+            <div class="summary__row">
+              <span class="k">Año</span><span class="v">{{ form.get('anio')?.value }}</span>
+            </div>
+            <div class="summary__row">
+              <span class="k">Versión</span><span class="v">{{ getVersionLabel() }}</span>
+            </div>
+            <div class="summary__row">
+              <span class="k">Nacimiento</span><span class="v">{{ getNacimiento() }}</span>
+            </div>
+            <div class="summary__row">
+              <span class="k">C.P.</span><span class="v">{{ form.get('cp')?.value }}</span>
+            </div>
+            <div class="summary__row">
+              <span class="k">Género</span><span class="v">{{ getGeneroLabel() }}</span>
+            </div>
+            <div class="summary__row">
+              <span class="k">Estado civil</span><span class="v">{{ getEstadoCivilLabel() }}</span>
+            </div>
+            <div class="summary__row" *ngIf="form.get('nombre')?.value">
+              <span class="k">Nombre</span>
+              <span class="v">{{ form.get('nombre')?.value }}</span>
+            </div>
+
+            <div class="summary__row" *ngIf="form.get('email')?.value">
+              <span class="k">Correo</span>
+              <span class="v">{{ form.get('email')?.value }}</span>
+            </div>
+            <!-- <div class="summary__row">
+              <span class="k">Duración</span><span class="v">{{ form.get('duracion')?.value }} meses</span>
+            </div> -->
+          </div>
+
+          <button type="button" class="icon-btn" aria-label="Regresar" (click)="clearPaso8()">&#x2B05;</button>
+
+        </div>
+
+
+        <!-- Acciones -->
+        <div class="actions">
+          <!-- <button class="btn-back">hey</button> -->
+          <button class="btn-primary" type="button" (click)="siguiente()" [disabled]="
+              (currentStep===1 && form.get('marca')?.invalid) ||
+              (currentStep===2 && form.get('modelo')?.invalid) ||
+              (currentStep===3 && form.get('anio')?.invalid)   ||
+              (currentStep===4 && form.get('version')?.invalid)||
+              (currentStep===5 && form.errors)                 ||
+              (currentStep===6 && (form.get('cp')?.invalid || form.get('genero')?.invalid || form.get('estadoCivil')?.invalid)) ||
+              (currentStep===7 && (form.get('nombre')?.invalid || form.get('email')?.invalid))
+            ">
+            {{ currentStep < 8 ? 'Siguiente ' : 'Cotizar' }} </button>
+        </div>
+
+      </form>
+    </section>
+  </div>
+
+  <div class="cotizacion_carta" *ngIf="cotizacion">
+    <div class="cotizacion_carta__card">
+      <div class="contenedor_cotizacion" *ngIf="quote as q">
+        <h2>Resultado de tu cotización</h2>
+
+        <div class="quote-head">
+
+          <div class="quote-summary">
+            <div class="qs__row">
+              <span class="k">Vehículo</span>
+              <span class="v">
+                {{ q.vehicle?.brand?.name | titlecase }}
+                {{ q.vehicle?.model?.name | titlecase }}
+                {{ q.vehicle?.year?.name }} ·
+                {{ q.vehicle?.version?.name | titlecase }}
+              </span>
+            </div>
+
+            <div class="qs__row">
+              <span class="k">Ubicación</span>
+              <span class="v">CP {{ q.region?.postal_code }} · {{ q.region?.state?.name }}</span>
+            </div>
+
+            <div class="qs__row" *ngIf="q.duration">
+              <span class="k">Duración</span>
+              <span class="v">{{ q.duration }} meses</span>
+            </div>
+
+            <div class="qs__row" *ngIf="q.coupon">
+              <span class="k">Cupón</span>
+              <span class="v">{{ q.coupon }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="planes" *ngIf="q.plans?.length">
+          <section class="plan" *ngFor="let p of q.plans">
+            <div class="paybox">
+              <div class="paybox__select">
+                <select [ngModel]="selectedPaymentByPlan[p.id]" (ngModelChange)="onSelectPayment(p.id, $event)">
+                  <option *ngFor="let opt of p.payment_plans; trackBy: trackByPayment" [ngValue]="opt.id">
+                    {{ paymentPlanLabel(opt) }} — {{ fmtMoney(opt.total) }}
+                  </option>
+                </select>
+                <ion-icon name="chevron-down-outline" aria-hidden="true"></ion-icon>
+              </div>
+
+              <div class="paybox__pricecard" *ngIf="getSelectedPayment(p) as sel">
+                <ng-container *ngIf="paymentSummary(sel) as s">
+                  <div class="pricecard__row" *ngIf="s.variable">
+                    <span class="k">1er pago</span>
+                    <span class="v">{{ fmtMoney(s.first) }}</span>
+                  </div>
+                  <div class="pricecard__row" *ngIf="s.variable && s.restCount > 0">
+                    <span class="k">{{ s.restCount }} pagos de</span>
+                    <span class="v">{{ fmtMoney(s.rest) }}</span>
+                  </div>
+
+                  <div class="pricecard__row" *ngIf="!s.variable && !s.isOneShot">
+                    <span class="k">{{ s.count }} pagos de</span>
+                    <span class="v">{{ fmtMoney(s.per) }}</span>
+                  </div>
+
+                  <div class="pricecard__row" *ngIf="s.isOneShot">
+                    <span class="k">Pago único</span>
+                    <span class="v">{{ fmtMoney(s.total) }}</span>
+                  </div>
+
+                  <div class="pricecard__divider"></div>
+                  <div class="pricecard__row is-total">
+                    <span class="k">Total a pagar</span>
+                    <span class="v">{{ fmtMoney(s.total) }}</span>
+                  </div>
+                </ng-container>
+              </div>
+
+              <!-- CTA -->
+              <div class="paybox__cta">
+                <button type="button" class="btn-primary">Contratar próximamente ...</button>
+                <button type="button" class="btn-secondary" (click)="nuevoSeguro()">Cotiza nuevo seguro</button>
+              </div>
+
+              <div class="paybox-info" *ngIf="getSelectedPayment(p) as sel">
+                <ng-container *ngIf="planInfo(sel) as i">
+                  <header class="paybox-info__head">
+                    <span class="paybox-info__badge">Detalle del pago</span>
+                  </header>
+
+                  <div class="paybox-info__grid">
+                    <div class="paybox-info__row">
+                      <span class="k">Plan</span>
+                      <span class="v">{{ i.planLabel }}</span>
+                    </div>
+
+                    <div class="paybox-info__row">
+                      <span class="k">Pagos</span>
+                      <span class="v">{{ i.count === 1 ? '1 pago' : (i.count + ' pagos') }}</span>
+                    </div>
+
+                    <div class="paybox-info__row">
+                      <span class="k">Derechos de expedición</span>
+                      <span class="v">{{ fmtMoney(i.expedition_rights) }}</span>
+                    </div>
+
+                    <div class="paybox-info__row" *ngIf="i.fee">
+                      <span class="k">Cargo/fee</span>
+                      <span class="v">{{ fmtMoney(i.fee) }}</span>
+                    </div>
+
+                    <div class="paybox-info__row">
+                      <span class="k">Subtotal</span>
+                      <span class="v">{{ fmtMoney(i.subtotal) }}</span>
+                    </div>
+
+                    <div class="paybox-info__row">
+                      <span class="k">Impuestos</span>
+                      <span class="v">{{ fmtMoney(i.taxes) }}</span>
+                    </div>
+
+                    <div class="paybox-info__divider"></div>
+
+                    <div class="paybox-info__row is-total">
+                      <span class="k">Total</span>
+                      <span class="v">{{ fmtMoney(i.total) }}</span>
+                    </div>
+                  </div>
+
+                  <div class="paybox-info__hint" *ngIf="i.count > 1">
+                    <ng-container *ngIf="i.variable; else uniform">
+                      <strong>Calendario:</strong> 1er pago {{ fmtMoney(i.firstTotal) }} ·
+                      siguientes {{ i.count - 1 }} de {{ fmtMoney(i.restTotal) }}
+                    </ng-container>
+                    <ng-template #uniform>
+                      <strong>Calendario:</strong> {{ i.count }} pagos de {{ fmtMoney(i.firstTotal) }}
+                    </ng-template>
+                  </div>
+
+                  <!-- <details class="paybox-info__breakdown" *ngIf="sel.payments?.length">
+                    <summary>Ver desglose por mes &#x2193; </summary>
+                    <ul>
+                      <li *ngFor="let pay of sel.payments">
+                        <span class="n">#{{ pay.number }}</span>
+                        <span class="dot"></span>
+                        <span class="money">{{ fmtMoney(pay.total) }}</span>
+                      </li>
+                    </ul>
+                  </details> -->
+
+                </ng-container>
+              </div>
+
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="pedir_datos">
+    <div class="field" *ngIf="currentStep === 7">
+      <label for="nombre">Nombre completo</label>
+      <div class="control">
+        <input id="nombre" type="text" class="form-input" placeholder="Ej. JUAN PÉREZ LÓPEZ" formControlName="nombre"
+          (input)="toUpper('nombre')" />
+      </div>
+
+      <label for="email" style="margin-top:12px;">Correo electrónico</label>
+      <div class="control">
+        <input id="email" type="email" class="form-input" placeholder="tucorreo@dominio.com" formControlName="email" />
+        <button type="button" class="icon-btn" aria-label="Regresar" (click)="clearPaso7()">&#x2B05;</button>
+      </div>
+    </div>
+  </div>
+
+  <app-footer></app-footer>
+</ion-content>

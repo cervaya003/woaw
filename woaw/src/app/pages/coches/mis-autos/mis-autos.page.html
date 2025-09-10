@@ -65,7 +65,7 @@
           </div>
 
           <ng-container *ngFor="let auto of autosVentaPaginados; trackBy: trackById">
-            <app-cartas [auto]="auto" [autosFavoritosIds]="autosFavoritosIds" [ubicacion]="'mis_autos_venta'"
+            <app-cartas [auto]="auto" [autosFavoritosIds]="autosFavoritosIds" [ubicacion]="'mis_autos'"
               [esMio]="idsMisAutos.includes(auto._id)">
             </app-cartas>
           </ng-container>

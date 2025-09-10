@@ -166,10 +166,14 @@ const routes: Routes = [
       {
         path: "seguros",
         loadChildren: () =>
-          import("./pages/seguros/seguros.module").then(
+          import("./pages/seguro/seguros/seguros.module").then(
             (m) => m.SegurosPageModule
           ),
         data: { title: "seguros | woaw" },
+      },
+      {
+        path: 'seguros/poliza',
+        loadChildren: () => import('./pages/seguro/poliza/poliza.module').then(m => m.PolizaPageModule)
       },
       {
         path: "lote-edit/:id",
@@ -237,16 +241,27 @@ const routes: Routes = [
         (m) => m.DisponibilidadCarPageModule
       ),
   },
-  // {
-  //   path: "error",
-  //   loadChildren: () =>
-  //     import("./pages/error/error.module").then((m) => m.ErrorPageModule),
-  // },
+  {
+    path: 'conocenos',
+    loadChildren: () => import('./pages/nosotros/nosotros.module').then(m => m.NosotrosPageModule)
+  },
   {
     path: "**",
     loadChildren: () =>
       import("./pages/error/error.module").then((m) => m.ErrorPageModule),
     data: { title: "Página no encontrada | woaw" },
+  },
+  {
+    path: 'disponibilidad-car/:id',
+    loadChildren: () => import('./pages/disponibilidad-car/disponibilidad-car.module').then( m => m.DisponibilidadCarPageModule)
+  },
+  {
+    path: 'edit-renta/:id',
+    loadChildren: () => import('./pages/edit-renta/edit-renta.module').then( m => m.EditRentaPageModule)
+  },
+  {
+    path: 'reservas/:id',
+    loadChildren: () => import('./pages/reservas/reservas.module').then( m => m.ReservasPageModule)
   },
 ];
 
@@ -256,4 +271,4 @@ const routes: Routes = [
   ],
   exports: [RouterModule],
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }

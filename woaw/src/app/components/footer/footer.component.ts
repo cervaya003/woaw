@@ -74,8 +74,6 @@ export class FooterComponent implements OnInit {
       this.dispositivo = tipo;
     });
 
-    await this.getBlog();
-
     const url = window.location.pathname;
     this.mostrarMapa = url.includes('/home');
   }
@@ -123,19 +121,6 @@ export class FooterComponent implements OnInit {
     window.open(webUrl, '_blank');
   }
 
-  async getBlog() {
-    this.carsService.getBlog().subscribe({
-      next: (res: any) => {
-        this.generalService.loadingDismiss();
-        this.blog = res;
-        this.mostrarVerMas = res.length > 3;
-      },
-      error: () => {
-        this.generalService.loadingDismiss();
-      },
-    });
-  }
-
   async mostrarTerminos() {
     let modal;
     if (this.dispositivo === 'telefono') {
@@ -147,7 +132,7 @@ export class FooterComponent implements OnInit {
         },
         breakpoints: [0, 0.7, 1],
         cssClass: 'modal-perfil',
-        initialBreakpoint: 0.7,
+        initialBreakpoint: 1,
         handle: true,
         backdropDismiss: true,
         showBackdrop: true,
@@ -201,7 +186,7 @@ export class FooterComponent implements OnInit {
         },
         breakpoints: [0, 0.7, 1],
         cssClass: 'modal-perfil',
-        initialBreakpoint: 0.7,
+        initialBreakpoint: 1,
         handle: true,
         backdropDismiss: true,
         showBackdrop: true,
@@ -256,7 +241,7 @@ export class FooterComponent implements OnInit {
         component: PopUpComponent,
         breakpoints: [0, 0.7, 1],
         cssClass: 'modal-perfil',
-        initialBreakpoint: 0.7,
+        initialBreakpoint: 1,
         handle: true,
         backdropDismiss: false,
         showBackdrop: true,

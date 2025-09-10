@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../environments/environment';
-import { Observable, from } from 'rxjs';
+import { Observable, from, throwError } from 'rxjs';
 import { switchMap, catchError, map } from 'rxjs/operators';
 import { HeadersService } from './headers.service';
 
@@ -35,12 +35,100 @@ export interface BookingFiltro {
   [key: string]: any;
 }
 
+// === Booking domain (alineado a tu backend) ===
+export type BookingStatus = 'pendiente' | 'aceptada' | 'en_curso' | 'finalizada' | 'cancelada';
+
+export interface LineItem {
+  concepto: string;
+  tipo?: string;
+  cantidad: number;        // >= 1
+  precioUnitario: number;  // >= 0
+  subtotal: number;        // cantidad * precioUnitario
+}
+
+export interface Pago {
+  estatus: 'no_pagado' | 'preautorizado' | 'pagado' | 'reembolsado';
+  metodo?: string;
+  referencia?: string;
+  monto?: number;
+  moneda?: string; // MXN por defecto
+}
+
+export interface Deposito {
+  estatus: 'no_aplicado' | 'preautorizado' | 'cobrado' | 'liberado' | 'parcial_retenido';
+  referencia?: string;
+  monto?: number;
+}
+
+export interface CheckInfo {
+  fecha?: string;        // ISO
+  combustible?: number;  // 0..100
+  fotos?: string[];      // URLs
+  notas?: string;
+}
+
+export interface RentalBooking {
+  _id: string;
+  codigo?: string;
+  rentalCar: string;              // ObjectId
+  usuario: string;                // ObjectId
+  fechaInicio: string;            // ISO
+  fechaFin: string;               // ISO
+  estatus: BookingStatus;
+  moneda: string;                 // default MXN
+  items: LineItem[];
+  total: number;
+
+  pago: Pago;
+  deposito: Deposito;
+
+  checkIn?: CheckInfo | null;
+  checkOut?: CheckInfo | null;
+
+  contratoURL?: string | null;
+  politicaCancelacion?: string | null;
+  aceptoTerminos: boolean;
+  aceptoTerminosFecha?: string | null;
+
+  fechasFlujo?: {
+    aceptadaEn?: string;
+    inicioReal?: string;
+    finReal?: string;
+    canceladaEn?: string;
+  };
+
+  motivoCancelacion?: string | null;
+  notasCliente?: string | null;
+  notasOperador?: string | null;
+
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CreateBookingInput {
+  rentalCar: string;
+  fechaInicio: string | Date;    // se normaliza a ISO
+  fechaFin: string | Date;       // se normaliza a ISO
+  items?: LineItem[] | string;   // el backend hace parseMaybeJSON
+  total?: number;                // opcional (el backend lo calcula si no va)
+  moneda?: string;               // default "MXN"
+  notasCliente?: string;
+  politicaCancelacion?: string;
+  aceptoTerminos: boolean;       // requerido por el backend
+}
+
+export interface CreateBookingResponse {
+  message: string;               // "Reserva creada"
+  booking: RentalBooking;
+}
+
 @Injectable({ providedIn: 'root' })
 export class RentaService {
   private readonly _baseUrl = this.normalizeBaseUrl(environment.api_key);
-  public get baseUrl(): string {
-    return this._baseUrl;
-  }
+  public get baseUrl(): string { return this._baseUrl; }
+
+  // Prefijo correcto que te pasaron
+  private readonly BOOKING_BASE = '/booking/bookings';
 
   constructor(
     private http: HttpClient,
@@ -52,11 +140,14 @@ export class RentaService {
     return (url || '').replace(/\/+$/, '');
   }
 
-  // helper para armar HttpParams desde objeto
+  // helper para armar HttpParams desde objeto (soporta arrays)
   private toParams(obj: Record<string, any>): HttpParams {
     let params = new HttpParams();
     Object.entries(obj || {}).forEach(([k, v]) => {
-      if (v !== undefined && v !== null && v !== '') {
+      if (v === undefined || v === null || v === '') return;
+      if (Array.isArray(v)) {
+        v.forEach(item => { params = params.append(k, String(item)); });
+      } else {
         params = params.set(k, String(v));
       }
     });
@@ -77,6 +168,105 @@ export class RentaService {
         const h = this.headersService.getJsonHeaders(token) as HttpHeaders;
         // remover content-type si tu headersService lo agrega por defecto
         return h.delete('Content-Type');
+      })
+    );
+  }
+
+  // === Helpers Booking añadidos ===
+  /** Normaliza a ISO string (UTC) */
+  private toISO(d: string | Date): string {
+    return new Date(d).toISOString();
+  }
+
+  /** Días enteros entre 2 fechas (mínimo 1) */
+  private diasEntre(inicioISO: string, finISO: string): number {
+    const ms = new Date(finISO).getTime() - new Date(inicioISO).getTime();
+    const d = Math.ceil(ms / (1000 * 60 * 60 * 24));
+    return Math.max(1, d);
+  }
+
+  /** Cotiza total localmente: por día + extras */
+  public cotizarTotal(porDia: number, fechaInicio: string | Date, fechaFin: string | Date, items: LineItem[] = []): number {
+    const inicio = this.toISO(fechaInicio);
+    const fin = this.toISO(fechaFin);
+    const ndays = this.diasEntre(inicio, fin);
+    const base = (porDia || 0) * ndays;  // ← aquí estaba el typo
+    const extras = items.reduce((acc, it) => acc + (Number(it.subtotal) || 0), 0);
+    return Math.round((base + extras) * 100) / 100;
+  }
+
+  // ───────────────────────────────────────────────
+  // Fallback de rutas (/api vs sin /api) SOLO para bookings
+  // ───────────────────────────────────────────────
+
+  /** Genera par (primaria, alternativa) alternando la presencia de `/api` al final del baseUrl */
+  private buildApiCandidates(path: string): string[] {
+    const base = this.baseUrl.replace(/\/+$/, '');
+    const primary = `${base}${path.startsWith('/') ? '' : '/'}${path}`;
+
+    const hasApi = /\/api$/.test(base);
+    const altBase = hasApi ? base.replace(/\/api$/, '') : `${base}/api`;
+    const alt = `${altBase}${path.startsWith('/') ? '' : '/'}${path}`;
+
+    return primary === alt ? [primary] : [primary, alt];
+  }
+
+  private getWithApiFallback<T>(path: string, headers: any, params?: any) {
+    const [primary, alt] = this.buildApiCandidates(path);
+    return this.http.get<T>(primary, { headers, params }).pipe(
+      catchError((err) => {
+        if (err?.status === 404 && alt) {
+          return this.http.get<T>(alt, { headers, params });
+        }
+        return throwError(() => err);
+      })
+    );
+  }
+
+  private postWithApiFallback<T>(path: string, body: any, headers: any, params?: any) {
+    const [primary, alt] = this.buildApiCandidates(path);
+    return this.http.post<T>(primary, body, { headers, params }).pipe(
+      catchError((err) => {
+        if (err?.status === 404 && alt) {
+          return this.http.post<T>(alt, body, { headers, params });
+        }
+        return throwError(() => err);
+      })
+    );
+  }
+
+  private putWithApiFallback<T>(path: string, body: any, headers: any, params?: any) {
+    const [primary, alt] = this.buildApiCandidates(path);
+    return this.http.put<T>(primary, body, { headers, params }).pipe(
+      catchError((err) => {
+        if (err?.status === 404 && alt) {
+          return this.http.put<T>(alt, body, { headers, params });
+        }
+        return throwError(() => err);
+      })
+    );
+  }
+
+  private patchWithApiFallback<T>(path: string, body: any, headers: any, params?: any) {
+    const [primary, alt] = this.buildApiCandidates(path);
+    return this.http.patch<T>(primary, body, { headers, params }).pipe(
+      catchError((err) => {
+        if (err?.status === 404 && alt) {
+          return this.http.patch<T>(alt, body, { headers, params });
+        }
+        return throwError(() => err);
+      })
+    );
+  }
+
+  private deleteWithApiFallback<T>(path: string, headers: any, params?: any, body?: any) {
+    const [primary, alt] = this.buildApiCandidates(path);
+    return this.http.request<T>('DELETE', primary, { headers, params, body }).pipe(
+      catchError((err) => {
+        if (err?.status === 404 && alt) {
+          return this.http.request<T>('DELETE', alt, { headers, params, body });
+        }
+        return throwError(() => err);
       })
     );
   }
@@ -108,11 +298,8 @@ export class RentaService {
 
   /**
    * Registrar un vehículo de renta (con imágenes)
-   * Opción A (recomendada): manda `precio` como objeto { porDia, moneda }.
-   * Opción B (legacy soportada): manda `precioPorDia` + `moneda`.
    */
   addRentalCar(payload: {
-    // campos simples
     marca: string;
     modelo: string;
     anio: number;
@@ -128,14 +315,11 @@ export class RentaService {
     rines?: string;
     kilometrajeActual?: number;
     verificadoPlataforma?: boolean;
-    // money
-    precio?: { porDia: number; moneda?: string }; // << sin semana/mes
-    precioPorDia?: number; // legacy opcional (si no mandas "precio")
-    moneda?: string;       // legacy opcional (si no mandas "precio")
-    // enums/políticas
+    precio?: { porDia: number; moneda?: string };
+    precioPorDia?: number;
+    moneda?: string;
     politicaCombustible?: 'lleno-lleno' | 'como-esta';
     politicaLimpieza?: 'normal' | 'estricta';
-    // objetos que el backend espera como JSON (parseMaybeJSON)
     requisitosConductor?: any;
     ubicacion?: any;
     entrega?: any;
@@ -150,14 +334,12 @@ export class RentaService {
       urlPoliza?: string;
     };
     lote?: string | null;
-    // archivos
     imagenPrincipal: File;
     imagenes?: File[];
     tarjetaCirculacion?: File;
   }): Observable<any> {
     const fd = new FormData();
 
-    // Campos simples
     [
       'marca', 'modelo', 'version', 'tipoVehiculo', 'transmision', 'combustible', 'cilindros', 'color',
       'motor', 'potencia', 'rines', 'moneda', 'lote'
@@ -172,7 +354,6 @@ export class RentaService {
     if (payload.politicaCombustible) fd.append('politicaCombustible', payload.politicaCombustible);
     if (payload.politicaLimpieza) fd.append('politicaLimpieza', payload.politicaLimpieza);
 
-    // Objetos que el backend parsea como JSON:
     if (payload.precio) fd.append('precio', JSON.stringify(payload.precio));
     if (payload.requisitosConductor) fd.append('requisitosConductor', JSON.stringify(payload.requisitosConductor));
     if (payload.ubicacion) fd.append('ubicacion', JSON.stringify(payload.ubicacion));
@@ -181,7 +362,6 @@ export class RentaService {
     if (payload.excepcionesNoDisponibles) fd.append('excepcionesNoDisponibles', JSON.stringify(payload.excepcionesNoDisponibles));
     if (payload.polizaPlataforma) fd.append('polizaPlataforma', JSON.stringify(payload.polizaPlataforma));
 
-    // Archivos
     if (payload.imagenPrincipal) fd.append('imagenPrincipal', payload.imagenPrincipal);
     (payload.imagenes || []).forEach((f) => fd.append('imagenes', f));
     if (payload.tarjetaCirculacion) fd.append('tarjetaCirculacion', payload.tarjetaCirculacion);
@@ -198,7 +378,6 @@ export class RentaService {
   updateRentalCar(
     id: string,
     data: {
-      // simples
       marca?: string; modelo?: string; anio?: number;
       version?: string; tipoVehiculo?: string; transmision?: string;
       combustible?: string; cilindros?: string; color?: string;
@@ -207,11 +386,7 @@ export class RentaService {
       politicaCombustible?: 'lleno-lleno' | 'como-esta';
       politicaLimpieza?: 'normal' | 'estricta';
       estadoRenta?: 'disponible' | 'rentado' | 'mantenimiento' | 'inactivo';
-
-      // money
       precio?: { porDia: number; moneda?: string };
-
-      // JSON
       requisitosConductor?: any;
       ubicacion?: any;
       entrega?: any;
@@ -223,11 +398,10 @@ export class RentaService {
         cobertura: 'RC' | 'Amplia' | 'Amplia Plus';
         vigenciaDesde: string; vigenciaHasta: string; urlPoliza?: string;
       };
-
-      lote?: string | null;            // null => limpiar lote
-      imagenesExistentes?: string[];   // URLs a conservar
-      imagenPrincipal?: string;        // URL si NO subes archivo
-      tarjetaCirculacionURL?: string;  // URL si NO subes archivo
+      lote?: string | null;
+      imagenesExistentes?: string[];
+      imagenPrincipal?: string;
+      tarjetaCirculacionURL?: string;
     },
     files?: { imagenPrincipal?: File; imagenes?: File[]; tarjetaCirculacion?: File }
   ) {
@@ -244,9 +418,8 @@ export class RentaService {
       Object.entries(data || {}).forEach(([k, v]) => {
         if (v === undefined) return;
 
-        if (k === 'lote' && v === null) { fd.append('lote', ''); return; } // backend => null
+        if (k === 'lote' && v === null) { fd.append('lote', ''); return; }
 
-        // si mandas URL de principal/TC y también viene archivo, ignora la URL
         if (k === 'imagenPrincipal' && files?.imagenPrincipal) return;
         if (k === 'tarjetaCirculacionURL' && files?.tarjetaCirculacion) return;
 
@@ -264,14 +437,13 @@ export class RentaService {
       );
     } else {
       const body: any = { ...(data || {}) };
-      if (body.lote === null) body.lote = ''; // limpiar lote
+      if (body.lote === null) body.lote = '';
       return this.authJsonHeaders$().pipe(
         switchMap(headers => this.http.put(`${this.baseUrl}/rentalcars/${id}`, body, { headers })),
         catchError(err => this.headersService.handleError(err))
       );
     }
   }
-
 
   /** Eliminar un coche de renta */
   deleteRentalCar(id: string): Observable<any> {
@@ -283,7 +455,7 @@ export class RentaService {
     );
   }
 
-  /** (Opcional) Cambiar estadoRenta si tienes endpoint dedicado */
+  /** (Opcional legacy) Cambiar estadoRenta por PUT /rentalcars/:id/estado */
   updateEstadoRenta(id: string, estado: 'disponible' | 'rentado' | 'mantenimiento' | 'inactivo'): Observable<any> {
     return this.authJsonHeaders$().pipe(
       switchMap((headers) =>
@@ -293,20 +465,59 @@ export class RentaService {
     );
   }
 
+  toggleEstadoRenta(
+    id: string,
+    action: 'disponible' | 'rentado' | 'mantenimiento' | 'inactivo'
+  ): Observable<any> {
+    const params = new HttpParams().set('action', action);
+    return this.authJsonHeaders$().pipe(
+      switchMap((headers) =>
+        this.http.patch(`${this.baseUrl}/rentalcars/${id}/toggle-estado`, {}, { headers, params })
+      ),
+      catchError((error) => this.headersService.handleError(error))
+    );
+  }
+
+  /**
+   * PUT /rentalcars/:id/disponibilidad
+   */
+  setDisponibilidadCar(
+    id: string,
+    ventanas: Array<{ inicio: string | Date; fin: string | Date; nota?: string }> = [],
+    excepciones: Array<{ inicio: string | Date; fin: string | Date; motivo?: string }> = []
+  ): Observable<any> {
+    const normVentanas = (ventanas || []).map(v => ({
+      ...v, inicio: new Date(v.inicio).toISOString(), fin: new Date(v.fin).toISOString()
+    }));
+    const normExcepciones = (excepciones || []).map(e => ({
+      ...e, inicio: new Date(e.inicio).toISOString(), fin: new Date(e.fin).toISOString()
+    }));
+
+    const body = {
+      ventanasDisponibles: JSON.stringify(normVentanas),
+      excepcionesNoDisponibles: JSON.stringify(normExcepciones),
+    };
+
+    return this.authJsonHeaders$().pipe(
+      switchMap((headers) =>
+        this.http.put(`${this.baseUrl}/rentalcars/${id}/disponibilidad`, body, { headers })
+      ),
+      catchError((error) => this.headersService.handleError(error))
+    );
+  }
+
   // ───────────────────────────────────────────────
-  // BOOKINGS (reservas)
+  // BOOKINGS (reservas) — usando /booking/bookings con fallback /api
   // ───────────────────────────────────────────────
 
-  /** Listado de reservas (admin/propietario según backend) con filtros y paginación */
-  listarBookings(filtro: BookingFiltro = {}): Observable<{
-    total: number; page: number; pages: number; bookings: any[];
-  }> {
+  /** Listado de reservas */
+  listarBookings(filtro: BookingFiltro = {}): Observable<{ total: number; page: number; pages: number; bookings: any[]; }> {
     const params = this.toParams(filtro);
     return this.authJsonHeaders$().pipe(
       switchMap((headers) =>
-        this.http.get<{
-          total: number; page: number; pages: number; bookings: any[];
-        }>(`${this.baseUrl}/bookings`, { headers, params })
+        this.getWithApiFallback<{ total: number; page: number; pages: number; bookings: any[] }>(
+          `${this.BOOKING_BASE}`, headers, params
+        )
       ),
       catchError((error) => this.headersService.handleError(error))
     );
@@ -316,7 +527,7 @@ export class RentaService {
   getBookingById(id: string): Observable<any> {
     return this.authJsonHeaders$().pipe(
       switchMap((headers) =>
-        this.http.get(`${this.baseUrl}/bookings/${id}`, { headers })
+        this.getWithApiFallback(`${this.BOOKING_BASE}/${id}`, headers)
       ),
       catchError((error) => this.headersService.handleError(error))
     );
@@ -326,7 +537,7 @@ export class RentaService {
   getMyBookings(): Observable<any> {
     return this.authJsonHeaders$().pipe(
       switchMap((headers) =>
-        this.http.get(`${this.baseUrl}/bookings/mine`, { headers })
+        this.getWithApiFallback(`${this.BOOKING_BASE}/mine`, headers)
       ),
       catchError((error) => this.headersService.handleError(error))
     );
@@ -337,13 +548,13 @@ export class RentaService {
     const params = this.toParams(filtro);
     return this.authJsonHeaders$().pipe(
       switchMap((headers) =>
-        this.http.get(`${this.baseUrl}/bookings/car/${carId}`, { headers, params })
+        this.getWithApiFallback(`${this.BOOKING_BASE}/car/${carId}`, headers, params)
       ),
       catchError((error) => this.headersService.handleError(error))
     );
   }
 
-  /** Crear reserva */
+  /** Crear reserva (legacy) */
   createBooking(data: {
     rentalCar: string;
     fechaInicio: string;  // ISO
@@ -354,9 +565,33 @@ export class RentaService {
   }): Observable<any> {
     return this.authJsonHeaders$().pipe(
       switchMap((headers) =>
-        this.http.post(`${this.baseUrl}/bookings`, data, { headers })
+        this.postWithApiFallback(`${this.BOOKING_BASE}`, data, headers)
       ),
       catchError((error) => this.headersService.handleError(error))
+    );
+  }
+
+  /** Crear reserva (nuevo) */
+  createBookingV2(data: CreateBookingInput): Observable<CreateBookingResponse> {
+    const payload: any = { ...data };
+    payload.fechaInicio = this.toISO(data.fechaInicio);
+    payload.fechaFin = this.toISO(data.fechaFin);
+
+    if (!payload.rentalCar || !payload.fechaInicio || !payload.fechaFin) {
+      return throwError(() => new Error('Faltan campos: rentalCar, fechaInicio, fechaFin'));
+    }
+    if (new Date(payload.fechaFin) <= new Date(payload.fechaInicio)) {
+      return throwError(() => new Error('Rango de fechas inválido: fechaFin debe ser > fechaInicio.'));
+    }
+    if (payload.aceptoTerminos !== true) {
+      return throwError(() => new Error('Debes aceptar los términos para continuar.'));
+    }
+
+    return this.authJsonHeaders$().pipe(
+      switchMap(headers =>
+        this.postWithApiFallback<CreateBookingResponse>(`${this.BOOKING_BASE}`, payload, headers)
+      ),
+      catchError(err => this.headersService.handleError(err))
     );
   }
 
@@ -364,7 +599,7 @@ export class RentaService {
   acceptBooking(id: string): Observable<any> {
     return this.authJsonHeaders$().pipe(
       switchMap((headers) =>
-        this.http.post(`${this.baseUrl}/bookings/${id}/accept`, {}, { headers })
+        this.postWithApiFallback(`${this.BOOKING_BASE}/${id}/accept`, {}, headers)
       ),
       catchError((error) => this.headersService.handleError(error))
     );
@@ -374,7 +609,7 @@ export class RentaService {
   startBooking(id: string): Observable<any> {
     return this.authJsonHeaders$().pipe(
       switchMap((headers) =>
-        this.http.post(`${this.baseUrl}/bookings/${id}/start`, {}, { headers })
+        this.postWithApiFallback(`${this.BOOKING_BASE}/${id}/start`, {}, headers)
       ),
       catchError((error) => this.headersService.handleError(error))
     );
@@ -384,7 +619,7 @@ export class RentaService {
   finishBooking(id: string): Observable<any> {
     return this.authJsonHeaders$().pipe(
       switchMap((headers) =>
-        this.http.post(`${this.baseUrl}/bookings/${id}/finish`, {}, { headers })
+        this.postWithApiFallback(`${this.BOOKING_BASE}/${id}/finish`, {}, headers)
       ),
       catchError((error) => this.headersService.handleError(error))
     );
@@ -395,7 +630,7 @@ export class RentaService {
     const body = motivo ? { motivo } : {};
     return this.authJsonHeaders$().pipe(
       switchMap((headers) =>
-        this.http.post(`${this.baseUrl}/bookings/${id}/cancel`, body, { headers })
+        this.postWithApiFallback(`${this.BOOKING_BASE}/${id}/cancel`, body, headers)
       ),
       catchError((error) => this.headersService.handleError(error))
     );
@@ -407,7 +642,7 @@ export class RentaService {
     (fotos || []).forEach((f) => fd.append('checkInFotos', f));
     return this.authMultipartHeaders$().pipe(
       switchMap((headers) =>
-        this.http.put(`${this.baseUrl}/bookings/${id}/checkin`, fd, { headers })
+        this.putWithApiFallback(`${this.BOOKING_BASE}/${id}/checkin`, fd, headers)
       ),
       catchError((error) => this.headersService.handleError(error))
     );
@@ -419,7 +654,7 @@ export class RentaService {
     (fotos || []).forEach((f) => fd.append('checkOutFotos', f));
     return this.authMultipartHeaders$().pipe(
       switchMap((headers) =>
-        this.http.put(`${this.baseUrl}/bookings/${id}/checkout`, fd, { headers })
+        this.putWithApiFallback(`${this.BOOKING_BASE}/${id}/checkout`, fd, headers)
       ),
       catchError((error) => this.headersService.handleError(error))
     );
@@ -435,7 +670,7 @@ export class RentaService {
   }): Observable<any> {
     return this.authJsonHeaders$().pipe(
       switchMap((headers) =>
-        this.http.put(`${this.baseUrl}/bookings/${id}/payment`, data, { headers })
+        this.putWithApiFallback(`${this.BOOKING_BASE}/${id}/payment`, data, headers)
       ),
       catchError((error) => this.headersService.handleError(error))
     );
@@ -450,7 +685,7 @@ export class RentaService {
   }): Observable<any> {
     return this.authJsonHeaders$().pipe(
       switchMap((headers) =>
-        this.http.put(`${this.baseUrl}/bookings/${id}/deposit`, data, { headers })
+        this.putWithApiFallback(`${this.BOOKING_BASE}/${id}/deposit`, data, headers)
       ),
       catchError((error) => this.headersService.handleError(error))
     );
@@ -460,7 +695,7 @@ export class RentaService {
   setContractUrl(id: string, url: string): Observable<any> {
     return this.authJsonHeaders$().pipe(
       switchMap((headers) =>
-        this.http.put(`${this.baseUrl}/bookings/${id}/contract`, { url }, { headers })
+        this.putWithApiFallback(`${this.BOOKING_BASE}/${id}/contract`, { url }, headers)
       ),
       catchError((error) => this.headersService.handleError(error))
     );
@@ -470,7 +705,7 @@ export class RentaService {
   replaceItems(id: string, items: any[]): Observable<any> {
     return this.authJsonHeaders$().pipe(
       switchMap((headers) =>
-        this.http.put(`${this.baseUrl}/bookings/${id}/items`, { items }, { headers })
+        this.putWithApiFallback(`${this.BOOKING_BASE}/${id}/items`, { items }, headers)
       ),
       catchError((error) => this.headersService.handleError(error))
     );
@@ -480,7 +715,7 @@ export class RentaService {
   addLineItem(id: string, item: any): Observable<any> {
     return this.authJsonHeaders$().pipe(
       switchMap((headers) =>
-        this.http.post(`${this.baseUrl}/bookings/${id}/items`, item, { headers })
+        this.postWithApiFallback(`${this.BOOKING_BASE}/${id}/items`, item, headers)
       ),
       catchError((error) => this.headersService.handleError(error))
     );
@@ -490,10 +725,7 @@ export class RentaService {
   removeLineItem(id: string, index: number): Observable<any> {
     return this.authJsonHeaders$().pipe(
       switchMap((headers) =>
-        this.http.request('DELETE', `${this.baseUrl}/bookings/${id}/items`, {
-          headers,
-          body: { index },
-        })
+        this.deleteWithApiFallback(`${this.BOOKING_BASE}/${id}/items`, headers, undefined, { index })
       ),
       catchError((error) => this.headersService.handleError(error))
     );
@@ -503,11 +735,9 @@ export class RentaService {
   deleteBooking(id: string): Observable<any> {
     return this.authJsonHeaders$().pipe(
       switchMap((headers) =>
-        this.http.delete(`${this.baseUrl}/bookings/${id}`, { headers })
+        this.deleteWithApiFallback(`${this.BOOKING_BASE}/${id}`, headers)
       ),
       catchError((error) => this.headersService.handleError(error))
     );
   }
-
-
 }

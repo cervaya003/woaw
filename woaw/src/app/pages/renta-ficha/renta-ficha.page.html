@@ -70,14 +70,14 @@
           </div>
 
           <div class="botones-contacto-responsive">
-            <button class="btn-personalizado success" type="button" (click)="contactarWhatsApp">
+            <button class="btn-personalizado success" type="button" (click)="contactarWhatsApp()">
               <ion-icon name="logo-whatsapp"></ion-icon> WhatsApp
             </button>
             <button class="btn-personalizado medium" type="button" (click)="compartir()">
               <ion-icon name="share-social-outline"></ion-icon> Compartir
             </button>
             <button class="btn-personalizado primary" type="button"
-              [disabled]="rental.estadoRenta !== 'disponible' || !resumen?.valido" (click)="reservar()">
+              [disabled]="rental.estadoRenta !== 'disponible' " (click)="reservar()">
               <ion-icon name="calendar-outline"></ion-icon> Reservar
             </button>
           </div>

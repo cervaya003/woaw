@@ -4,7 +4,7 @@
   <ng-container *ngIf="splash">
 
     <video autoplay muted loop playsinline class="video-fondo2">
-      <source [src]="videoSrc2" type="video/mp4" />
+      <source [src]="videoSrc" type="video/mp4" />
       Tu navegador no soporta el video HTML5.
     </video>
 
@@ -29,7 +29,7 @@
     <!-- LADO IZQUIERDO -->
     <div class="lado-izquierdo" *ngIf="!esDispositivoMovil">
       <video autoplay muted loop playsinline class="video-fondo">
-        <source [src]="videoSrc" type="video/mp4" />
+        <source [src]="videoSrc2" type="video/mp4" />
         Tu navegador no soporta el video HTML5.
       </video>
       <div class="texto-izquierdo" [ngClass]="{ 'animar-arriba': animarTexto }">

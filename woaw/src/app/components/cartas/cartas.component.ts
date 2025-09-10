@@ -41,7 +41,7 @@ export class CartasComponent implements OnInit {
   public mostrarPendientes: boolean = false;
   public MyRole: string | null = null;
   public isLoggedIn: boolean = false;
-  
+
   imagenCargada = false;
   verificadorCarga: any;
 
@@ -97,8 +97,8 @@ export class CartasComponent implements OnInit {
       this.router.navigate(['/ficha', 'autos', auto._id]);
     } else if (auto.vehiculo === 'moto') {
       this.router.navigate(['/ficha', 'motos', auto._id]);
-    } else if (auto.vehiculo === 'renta'){ 
-      this.router.navigate(['/ficha', 'rentas', auto._id]);
+    } else if (auto.vehiculo === 'renta') {
+      this.router.navigate(['/renta-ficha', auto._id]);
     } else if (auto.vehiculo=== 'camion'){
       this.router.navigate(['/ficha', 'camiones', auto._id]);
     } else {
@@ -184,6 +184,8 @@ export class CartasComponent implements OnInit {
     this.router.navigate(['/update-car', 'camiones', auto._id]);
   } else if (this.ubicacion === 'mis_autos') {
       this.router.navigate(['/update-car', 'autos', auto._id]);
+  } else if (this.ubicacion === 'mis_autos_renta') {
+      this.router.navigate(['/edit-renta', auto._id]); // 👈 correcto
   } else {
       this.router.navigate(['/update-car', 'renta', auto._id]);
   }
@@ -192,9 +194,21 @@ export class CartasComponent implements OnInit {
     event.stopPropagation();
     if (this.ubicacion === 'mis_autos' || this.ubicacion === 'mis_motos' || this.ubicacion === "mis_camiones") {
       this.update_car(auto, this.ubicacion);
-    } else {
-      this.ficha(auto);
+      return;
     }
+
+    if (this.ubicacion === 'mis_autos') {
+      this.update_car(auto, this.ubicacion);
+      return;
+    }
+
+    if (this.ubicacion === 'mis_autos_renta') {
+      this.update_car(auto, this.ubicacion); // 👈 manda al editor de renta
+      return;
+    }
+
+    // Otros contextos → ficha pública
+    this.ficha(auto);
   }
   async abrirModalImagen(imagenes: string[], indice: number = 0) {
     const modal = await this.modalCtrl.create({

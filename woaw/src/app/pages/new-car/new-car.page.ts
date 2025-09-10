@@ -168,8 +168,7 @@ seleccionar(
     if (this.MyRole === "admin") {
       this.opciones = [...this.opcionesBase];
     } else {
-      // Antes filtrabas "arrendamiento" que no existe. Dejamos todas las válidas.
-      this.opciones = [...this.opcionesBase];
+    this.opciones = this.opcionesBase.filter(op => op.tipo !== "renta");
     }
   }
   generarListaAnios() {

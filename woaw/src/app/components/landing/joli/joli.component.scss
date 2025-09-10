@@ -1,0 +1,147 @@
+.promo-joli {
+    background: linear-gradient(135deg, #04b4cc, #04adce);
+    color: #fff;
+    padding: 2.5rem 1rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+
+    @media (max-width: 820px) {
+        padding: 15px 10px;
+    }
+
+    @media (max-width: 720px) {
+        padding: 15px 20px;
+    }
+
+    .pj-wrap {
+        max-width: 1100px;
+        margin: 0 auto;
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        justify-content: space-between;
+        text-align: left;
+    }
+
+    .pj-logo {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        object-fit: cover;
+        padding: 2px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        transition: transform 0.3s ease;
+
+        &:hover {
+            transform: scale(1.08);
+        }
+
+        @media (max-width: 1024px) {
+            width: 80px;
+            height: 80px;
+        }
+
+        @media (max-width: 820px) {
+            width: 50px;
+            height: 50px;
+        }
+
+        @media (max-width: 720px) {
+            width: 35px;
+            height: 35px;
+        }
+    }
+
+    .pj-texto {
+        flex: 1;
+        max-width: 600px;
+        transition: opacity 0.8s ease;
+        opacity: 1;
+        align-items: center;
+        text-align: center;
+
+        &.fade {
+            animation: fadeInOut 8s infinite;
+        }
+
+        h2 {
+            font-size: clamp(10px, 2vw, 26px);
+            margin: 0;
+            font-weight: 700;
+        }
+
+        p {
+            font-size: clamp(7px, 2vw, 16px);
+            line-height: 1.4;
+            opacity: 0.75;
+        }
+    }
+
+    @keyframes fadeInOut {
+        0% {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        10% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        80% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        100% {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+    }
+
+    .pj-btn {
+        background: #fff;
+        color: var(--ion-color-joli);
+        font-weight: 600;
+        padding: clamp(9px, 1vw, 35px) clamp(10px, 1vw, 25px);
+        font-size: clamp(5px, 1vw, 20px);
+        border-radius: 50px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+
+        ion-icon {
+            font-size: clamp(6px, 1vw, 20px);
+            transition: transform 0.3s ease;
+            animation: fadeIn 2s infinite;
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0;
+            }
+        }
+
+        &:hover {
+            background: #f2f2f2;
+            transform: translateY(-2px);
+
+            ion-icon {
+                transform: translateX(4px);
+            }
+        }
+    }
+}
