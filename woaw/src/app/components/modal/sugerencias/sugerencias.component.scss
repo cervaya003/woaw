@@ -63,7 +63,7 @@
     cursor: pointer;
     width: 100%;
     max-width: 100%;
-    height: 260px;
+    height: 290px;
     background: #fff;
     border-radius: 10px;
     box-shadow: 0 8px 10px rgba(0, 0, 0, 0.213);
@@ -83,8 +83,11 @@
 
     img {
       width: 100%;
-      height: 110px;
+      height: 165px;
       object-fit: cover;
+      object-fit: contain;   /* conserva proporción */
+  object-position: center; /* centra */
+  padding: 6px;
     }
 
     .info {

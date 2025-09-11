@@ -8,7 +8,7 @@ import { CarsService } from "./../../services/cars.service";
 import { MotosService } from "./../../services/motos.service";
 import { ContactosService } from "./../../services/contactos.service";
 import { Title } from "@angular/platform-browser";
-import { SeoService } from "../../services/seo.service";
+import { SeoService } from "../../services/seo.service"; 
 import { Location } from "@angular/common";
 import { PoliticasComponent } from "../../components/modal/politicas/politicas.component";
 import { AvisoPrivasidadComponent } from "../../components/modal/aviso-privasidad/aviso-privasidad.component";
