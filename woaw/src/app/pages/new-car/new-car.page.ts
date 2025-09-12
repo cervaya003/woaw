@@ -91,9 +91,8 @@ Pregunta: 'si' | 'no' = 'no';
     private carsService: CarsService,
     private router: Router,
     private motosService: MotosService,
-    private menuCtrl: MenuController
-  ) // private rentaService: RentaService,
-  {
+    private menuCtrl: MenuController,
+  ) {
     this.generalService.tipoRol$.subscribe((rol) => {
       this.MyRole = rol;
     });
@@ -159,6 +158,16 @@ seleccionar(
     this.seccionFormulario = 2;
     this.tipoSeleccionado = null;
 
+    this.anioSeleccionado = '';
+    this.anioManual = '';
+
+    // --- RENTA: sin año, carga marcas globales y deja modelo por <select> (se llenará con todos los años)
+    if (tipo === 'renta') {
+      this.anioValido = true;                 // para habilitar el select de marca
+      this.obtenerMarcasSiCorresponde(0);     // carga marcas sin depender de año
+      this.modeloEsPersonalizado = false;     // usaremos lista de modelos
+      this.modelos = [];
+    }
   }
 
   this.generarListaAnios();
@@ -168,7 +177,7 @@ seleccionar(
     if (this.MyRole === "admin") {
       this.opciones = [...this.opcionesBase];
     } else {
-    this.opciones = this.opcionesBase.filter(op => op.tipo !== "renta");
+      this.opciones = [...this.opcionesBase];
     }
   }
   generarListaAnios() {
@@ -185,18 +194,14 @@ seleccionar(
   ) {
     this.listaAnios.push(anioSiguiente);
   }
-
-  // Para todos: del año actual hacia 2008
-  for (let i = anioActual; i >= anioLimite; i--) {
-    this.listaAnios.push(i);
   }
-}
+  // verifica el año al escribir o seleccionar
+  verificarAnio(tipo: 'select' | 'escrito') {
+    // En renta el año no aplica
+    if (this.seleccion === 'renta') return;
 
-
-  // verifica el año al escribir o selecionar
-  verificarAnio(tipo: "select" | "escrito") {
-    this.limpiarDependencias("all");
-    this.mostrarInputOtroAnio = this.anioSeleccionado === "otro";
+    this.limpiarDependencias('all');
+    this.mostrarInputOtroAnio = this.anioSeleccionado === 'otro';
 
     const anio = this.obtenerAnioActual();
     this.anioValido =
@@ -235,6 +240,8 @@ seleccionar(
 
 
   esAnioAnteriorA2008(): boolean {
+    // En renta NO forzamos input manual: queremos lista de modelos
+    if (this.seleccion === 'renta') return false;
     const anio = this.obtenerAnioActual();
     return this.anioValido && anio < 2008;
   }
@@ -276,11 +283,21 @@ seleccionar(
     }
   }
 
-formularioValido(): boolean {
-  const anio = this.obtenerAnioActual();
-  const anioActual = new Date().getFullYear();
+  formularioValido(): boolean {
+    // RENTA: no requiere año
+    if (this.seleccion === 'renta') {
+      const marcaValida = !!this.marcaSeleccionada && this.marcaSeleccionada !== '';
+      const modeloValido =
+        !!this.modeloSeleccionado &&
+        this.modeloSeleccionado.trim().length > 0 &&
+        this.modeloSeleccionado.length <= 25;
+      return marcaValida && modeloValido;
+    }
 
-  let anioEsValido = false;
+    const anio = this.obtenerAnioActual();
+    const anioActual = new Date().getFullYear();
+    let anioEsValido = this.anioValido && anio >= 1800 && anio <= anioActual;
+
 
 
   if (this.seleccion === "auto" || this.seleccion === "moto" || this.seleccion === "camion") {
@@ -311,14 +328,26 @@ formularioValido(): boolean {
     const modelo = this.modeloSeleccionado;
     const tipo = this.seleccion;
 
+    // RENTA: sólo marca y modelo
+    if (tipo === 'renta') {
+      if (marca && modelo) {
+        this.mostrarCarComponent = true;
+      } else {
+        this.generalService.alert(
+          'Datos incompletos',
+          'Debes seleccionar una marca y un modelo para continuar.',
+          'warning'
+        );
+        this.mostrarCarComponent = false;
+      }
+      return;
+    }
+
     if (this.anioValido && marca && modelo) {
       switch (tipo) {
-        case "auto":
-        case "moto":
-        case "renta": // habilitamos abrir el componente de renta
-          this.mostrarCarComponent = true;
-          break;
-        case "camion":
+        case 'auto':
+        case 'moto':
+        case 'camion':
           this.mostrarCarComponent = true;
           break;
         default:
@@ -332,9 +361,9 @@ formularioValido(): boolean {
       }
     } else {
       this.generalService.alert(
-        "Datos incompletos",
-        "Debes seleccionar un año válido, una marca y escribir o elegir un modelo para continuar.",
-        "warning"
+        'Datos incompletos',
+        'Debes seleccionar un año válido, una marca y un modelo para continuar.',
+        'warning'
       );
       this.mostrarCarComponent = false;
     }
@@ -370,14 +399,29 @@ formularioValido(): boolean {
     }
   }
 
-  // ## ----- ----- PETICIONES DE CACHES, MOTOS, CAMIONES 🛻 ----- -----
+  // ## ----- ----- PETICIONES DE COCHES, MOTOS, CAMIONES 🛻 ----- -----
   obtenerMarcasSiCorresponde(anio: number): void {
     switch (this.seleccion) {
-      case "auto":
-      case "renta": // reutiliza catálogo de autos para renta
+      case 'auto':
         this.PeticionesMarcasDeAutos(anio);
         break;
-      case "moto":
+      case 'renta': // sin año: catálogo global
+        this.carsService.getMarcas_all().subscribe({
+          next: (data: Marca[]) => {
+            this.marcas = (data || []).sort((a: Marca, b: Marca) =>
+              (a.nombre || '').toLowerCase().localeCompare((b.nombre || '').toLowerCase())
+            );
+          },
+          error: (err) => {
+            const mensaje = err?.error?.message || 'Error al cargar marcas - Renta';
+            console.warn(mensaje);
+          },
+          complete: () => {
+            this.generalService.loadingDismiss();
+          },
+        });
+        break;
+      case 'moto':
         this.PeticionesMarcasDeMotos();
         break;
       case "camion":
@@ -403,11 +447,13 @@ formularioValido(): boolean {
     }
 
     switch (this.seleccion) {
-      case "auto":
-      case "renta": // reutiliza catálogo de autos para renta
+      case 'auto':
         this.PeticionesModelosDeAutos();
         break;
-      case "moto":
+      case 'renta': // traer modelos sin año (backend ya lo ignora)
+        this.PeticionesModelosParaRenta(this.marcaSeleccionada);
+        break;
+      case 'moto':
         this.PeticionesModelosDeMotos();
         break;
       case "camion":
@@ -422,42 +468,121 @@ formularioValido(): boolean {
     }
   }
 
-  PeticionesMarcasDeAutos(anio: number) {
-  const anioActual = new Date().getFullYear();
-  const maxPermitido = (this.MyRole === "admin") ? (anioActual + 1) : anioActual;
+  /** Modelos para AUTO (requiere año) */
+  PeticionesModelosDeAutos() {
+    const anio = this.obtenerAnioActual();
+    const marca = this.marcaSeleccionada;
 
-  if (anio >= 2008 && anio <= maxPermitido) {
-    this.carsService.GetMarcas(anio).subscribe({
+    if (!anio || !marca || this.seleccion !== 'auto') {
+      return;
+    }
+
+    this.carsService.GetModelos(marca, anio).subscribe({
       next: (data) => {
-        this.marcas = data;
+        this.modelos = data;
       },
       error: (error) => {
-        console.error("Error al obtener marcas:", error);
+        console.error('Error al obtener modelos:', error);
       },
       complete: () => {
         this.generalService.loadingDismiss();
       },
     });
-  } else if (anio < 2008 && anio >= 1800) {
-    this.carsService.getMarcas_all().subscribe({
-      next: (data: Marca[]) => {
-        this.marcas = data.sort((a: Marca, b: Marca) =>
-          a.nombre.toLowerCase().localeCompare(b.nombre.toLowerCase())
-        );
-      },
-      error: (err) => {
-        const mensaje =
-          err?.error?.message || "Error al cargar marcas - Carros";
-        console.warn(mensaje);
-      },
-      complete: () => {
-        this.generalService.loadingDismiss();
-      },
-    });
-  } else {
-    console.log("no se ejecuta nada");
   }
-}
+
+  /** Modelos para RENTA usando el mismo endpoint (sin exigir año) */
+  private PeticionesModelosParaRenta(marca: string) {
+    if (!marca) {
+      this.modelos = [];
+      return;
+    }
+
+    // Usa un año "dummy"; el backend lo ignora pero evita construir rutas inválidas
+    const dummyYear = new Date().getFullYear();
+
+    this.carsService.GetModelos(marca as any, dummyYear as any).subscribe({
+      next: (data: any) => {
+        // Acepta diferentes formas de payload
+        const raw: any[] =
+          Array.isArray(data) ? data :
+            Array.isArray(data?.modelos) ? data.modelos :
+              Array.isArray(data?.data) ? data.data :
+                [];
+
+        // Normaliza a { modelo: string }
+        const list = raw
+          .map((m: any) => {
+            if (m?.modelo) return { ...m, modelo: String(m.modelo).trim() };
+            if (m?.nombre) return { ...m, modelo: String(m.nombre).trim() };
+            if (typeof m === 'string') return { modelo: m.trim() };
+            return null;
+          })
+          .filter(Boolean) as { modelo: string }[];
+
+        // Dedup case-insensitive
+        const seen = new Set<string>();
+        const unicos: any[] = [];
+        for (const it of list) {
+          const key = it.modelo.toLowerCase();
+          if (!seen.has(key)) {
+            seen.add(key);
+            unicos.push(it);
+          }
+        }
+
+        // Orden alfabético
+        unicos.sort((a, b) => (a.modelo || '').localeCompare(b.modelo || ''));
+
+        this.modelos = unicos;
+        this.modeloEsPersonalizado = false; // mostramos select
+      },
+      error: (error) => {
+        console.error('Error al obtener modelos (renta):', error);
+        this.modelos = [];
+        // Si quieres permitir escribir manual cuando falle:
+        // this.modeloEsPersonalizado = true;
+      },
+      complete: () => {
+        this.generalService.loadingDismiss();
+      },
+    });
+  }
+
+
+  PeticionesMarcasDeAutos(anio: number) {
+    const anioActual = new Date().getFullYear();
+    if (anio >= 2008 && anio <= anioActual) {
+      this.carsService.GetMarcas(anio).subscribe({
+        next: (data) => {
+          this.marcas = data;
+        },
+        error: (error) => {
+          console.error('Error al obtener marcas:', error);
+        },
+        complete: () => {
+          this.generalService.loadingDismiss();
+        },
+      });
+    } else if (anio < 2008 && anio >= 1800) {
+      this.carsService.getMarcas_all().subscribe({
+        next: (data: Marca[]) => {
+          this.marcas = data.sort((a: Marca, b: Marca) =>
+            a.nombre.toLowerCase().localeCompare(b.nombre.toLowerCase())
+          );
+        },
+        error: (err) => {
+          const mensaje = err?.error?.message || 'Error al cargar marcas - Carros';
+          console.warn(mensaje);
+        },
+        complete: () => {
+          this.generalService.loadingDismiss();
+        },
+      });
+    } else {
+      // nada
+    }
+  }
+
 
 
   PeticionesMarcasDeMotos() {
@@ -488,31 +613,6 @@ formularioValido(): boolean {
         const mensaje =
           err?.error?.message || "Error al cargar marcas - camiones";
         console.warn(mensaje);
-      },
-      complete: () => {
-        this.generalService.loadingDismiss();
-      },
-    });
-  }
-
-  PeticionesModelosDeAutos() {
-    const anio = this.obtenerAnioActual();
-    const marca = this.marcaSeleccionada;
-
-    if (
-      !anio ||
-      !marca ||
-      (this.seleccion !== "auto" && this.seleccion !== "renta")
-    ) {
-      return;
-    }
-
-    this.carsService.GetModelos(marca, anio).subscribe({
-      next: (data) => {
-        this.modelos = data;
-      },
-      error: (error) => {
-        console.error("Error al obtener modelos:", error);
       },
       complete: () => {
         this.generalService.loadingDismiss();
@@ -573,27 +673,8 @@ formularioValido(): boolean {
   }
 
   // ========= (opcional) recibir submit del componente de renta =========
-  registrarRenta(evt: {
-    payload: any;
-    files?: {
-      imagenPrincipal: File;
-      imagenes?: File[];
-      tarjetaCirculacion?: File;
-    };
-  }) {
-    console.log("Submit Renta:", evt);
-    // Si decides postear desde aquí en lugar del componente:
-    // this.generalService.loading('Publicando…');
-    // const fd = new FormData();
-    // Object.entries(evt.payload).forEach(([k, v]) => {
-    //   if (v !== undefined && v !== null) fd.append(k, typeof v === 'object' ? JSON.stringify(v) : String(v));
-    // });
-    // if (evt.files?.imagenPrincipal) {
-    //   fd.append('imagenPrincipal', evt.files.imagenPrincipal);
-    //   fd.append('imagenes', evt.files.imagenPrincipal);
-    // }
-    // evt.files?.imagenes?.forEach(f => fd.append('imagenes', f));
-    // if (evt.files?.tarjetaCirculacion) fd.append('tarjetaCirculacion', evt.files.tarjetaCirculacion);
-    // this.rentaService.addRentalCar(fd).subscribe({ ... });
+  registrarRenta(evt: { payload: any; files?: { imagenPrincipal: File; imagenes?: File[]; tarjetaCirculacion?: File } }) {
+    console.log('Submit Renta:', evt);
+    // Si decides postear desde aquí en lugar del componente, aquí puedes usar RentaService.addRentalCar(...)
   }
 }

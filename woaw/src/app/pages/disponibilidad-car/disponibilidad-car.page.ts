@@ -2,6 +2,8 @@ import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, HostList
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController, LoadingController, ToastController } from '@ionic/angular';
 import { RentaService } from '../../services/renta.service';
+import { ReservaService, RentalBooking } from '../../services/reserva.service';
+
 
 type EstadoRenta = 'disponible' | 'inactivo';
 type Preset = 'none' | 'week' | 'month' | 'weekdays';
@@ -39,7 +41,8 @@ export class DisponibilidadCarPage implements OnInit {
   calendarMounted = true;
   private ignoreNextCalendarChange = false;
 
-  // NEW (p1): límites del calendario
+  // Límites del calendario
+
   minDate = this.toYmdLocal(new Date());                       // hoy (local)
   maxDate = this.toYmdLocal(this.addMonths(new Date(), 12));   // +12 meses
 
@@ -63,10 +66,20 @@ export class DisponibilidadCarPage implements OnInit {
   private currentUserId: string | null = null;
   private lastSnapshot = '';
 
+  // === Reservas pendientes (nuevo) ===
+  pendingBookings: Array<RentalBooking & { dias?: number }> = [];
+  loadingBookings = false;
+  actingIds = new Set<string>();
+  actingAction: 'accept' | 'cancel' | null = null;
+
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private rentaService: RentaService,
+
+    private reservaService: ReservaService,
+
     private loadingCtrl: LoadingController,
     private toastCtrl: ToastController,
     private alertCtrl: AlertController,
@@ -112,6 +125,9 @@ export class DisponibilidadCarPage implements OnInit {
         const me = this.currentUserId ? String(this.currentUserId) : null;
         this.esPropietario = !!owner && !!me && owner === me;
 
+        // Si es propietario, traer pendientes del coche
+        if (this.esPropietario) this.fetchPendingBookings();
+
         this.rebuildCalendarHighlights();
         this.selectionHighlights = [];
         this.recalcularErrores();
@@ -128,6 +144,37 @@ export class DisponibilidadCarPage implements OnInit {
     });
   }
 
+  // Traer pendientes del coche
+  private fetchPendingBookings() {
+    this.loadingBookings = true; this.cdr.markForCheck();
+    this.reservaService.getBookingsByCar(this.carId, { estatus: 'pendiente', sort: '-createdAt' })
+      .subscribe({
+        next: (arr: RentalBooking[]) => {
+          const list = (Array.isArray(arr) ? arr : []).filter(b => b?.estatus === 'pendiente');
+          this.pendingBookings = list.map(b => ({
+            ...b,
+            dias: this.calcDays(b.fechaInicio, b.fechaFin)
+          }));
+          this.loadingBookings = false;
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          console.error(err);
+          this.pendingBookings = [];
+          this.loadingBookings = false;
+          this.toast('No se pudieron cargar las solicitudes pendientes', 'danger');
+          this.cdr.markForCheck();
+        }
+      });
+  }
+
+  // util: quitar de la lista en memoria (optimista)
+  private removeFromPending(id: string) {
+    const before = this.pendingBookings.length;
+    this.pendingBookings = this.pendingBookings.filter(b => b?._id !== id);
+    if (this.pendingBookings.length !== before) this.cdr.markForCheck();
+  }
+
   // ====== ESTADO ======
   async onEstadoChange(ev?: CustomEvent) {
     if (!this.esPropietario) return;
@@ -138,6 +185,67 @@ export class DisponibilidadCarPage implements OnInit {
     this.rentaService.toggleEstadoRenta(this.carId, nuevo).subscribe({
       next: async () => { await loading.dismiss(); this.toast(`Estado cambiado a "${nuevo}"`, 'success'); },
       error: async (err) => { await loading.dismiss(); console.error(err); this.toast(err?.error?.message || 'Error al cambiar estado', 'danger'); },
+    });
+  }
+
+  // ====== Acciones de reservas (aceptar / cancelar) ======
+  async accept(b: RentalBooking) {
+    if (!b?._id) return;
+    const ok = await this.confirm('Aceptar reserva', '¿Confirmas que aceptas esta solicitud?');
+    if (!ok) return;
+
+    this.actingAction = 'accept';
+    this.actingIds.add(b._id);
+    this.cdr.markForCheck();
+
+    this.reservaService.acceptBooking(b._id).subscribe({
+      next: () => {
+        this.toast('Reserva aceptada', 'success');
+        // Optimista: quitar de la lista ya
+        this.removeFromPending(b._id);
+        // Refrescar pendientes (consistencia)
+        this.fetchPendingBookings();
+        // Opcional: recargar coche por si cambió algo de disponibilidad
+        this.loadCar();
+      },
+      error: (err) => {
+        console.error(err);
+        this.toast(err?.error?.message || 'Error al aceptar', 'danger');
+      },
+      complete: () => {
+        this.actingIds.delete(b._id);
+        this.actingAction = null;
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
+  async cancel(b: RentalBooking) {
+    if (!b?._id) return;
+    const ok = await this.confirm('Cancelar solicitud', '¿Deseas cancelar esta solicitud?');
+    if (!ok) return;
+
+    this.actingAction = 'cancel';
+    this.actingIds.add(b._id);
+    this.cdr.markForCheck();
+
+    this.reservaService.cancelBooking(b._id, 'Cancelada por propietario').subscribe({
+      next: () => {
+        this.toast('Solicitud cancelada', 'success');
+        // Optimista: quitar de la lista ya
+        this.removeFromPending(b._id);
+        // Refrescar pendientes
+        this.fetchPendingBookings();
+      },
+      error: (err) => {
+        console.error(err);
+        this.toast(err?.error?.message || 'Error al cancelar', 'danger');
+      },
+      complete: () => {
+        this.actingIds.delete(b._id);
+        this.actingAction = null;
+        this.cdr.markForCheck();
+      }
     });
   }
 
@@ -186,8 +294,6 @@ export class DisponibilidadCarPage implements OnInit {
   applyPreset(preset: Preset) {
     if (!this.esPropietario) return;
 
-    // week/month son exclusivos de weekdays → limpian la selección de días fijos,
-    // pero NO borran otras excepciones existentes.
     if (preset === 'week' || preset === 'month') this.blockedWeekdays.clear();
 
     let newEx: ExcepcionNoDisponible[] = [];
@@ -260,7 +366,7 @@ export class DisponibilidadCarPage implements OnInit {
     if (!this.esPropietario) return;
     if (this.blockedWeekdays.has(val)) this.blockedWeekdays.delete(val);
     else this.blockedWeekdays.add(val);
-    // activar preset weekdays (exclusivo)
+
     this.applyPreset('weekdays');
   }
 
@@ -398,7 +504,9 @@ export class DisponibilidadCarPage implements OnInit {
   }
 
   // Fechas por días fijos en horizonte
-  private isWeekend(d: Date) { const w = d.getUTCDay(); return w === 0 || w === 6; } // (no usado ahora, pero útil)
+
+  private isWeekend(d: Date) { const w = d.getUTCDay(); return w === 0 || w === 6; }
+
   private getWeekendHorizon(months = 6) {
     const start = new Date(); start.setUTCHours(0, 0, 0, 0);
     const end = new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth() + months, 0, 0, 0, 0));
@@ -473,7 +581,6 @@ export class DisponibilidadCarPage implements OnInit {
     const json = atob(padded); return JSON.parse(json);
   }
 
-  // NEW (p6): proteger salida con cambios sin guardar
   @HostListener('window:beforeunload', ['$event'])
   beforeUnload($event: BeforeUnloadEvent) {
     if (this.snapshotKey() !== this.lastSnapshot) {
@@ -522,14 +629,13 @@ export class DisponibilidadCarPage implements OnInit {
       if (!ok) return;
 
       this.excepciones = [];
-      this.activePreset = 'none';     // salimos de cualquier preset
+      this.activePreset = 'none';
       this.rebuildCalendarHighlights();
       this.recalcularErrores();
       this.cdr.markForCheck();
     });
   }
 
-  // ====== NEW (p1/p2) utilidades min/max y validador de fecha ======
   private addMonths(d: Date, n: number) {
     const x = new Date(d);
     x.setMonth(x.getMonth() + n);
@@ -553,10 +659,24 @@ export class DisponibilidadCarPage implements OnInit {
     return true;
   };
 
-  // 👇 dentro de la clase DisponibilidadCarPage
+  // Detecta cambios en disponibilidad/estado
   get hasChanges(): boolean {
     return this.snapshotKey() !== this.lastSnapshot;
 
+  }
+
+  // ===== Utils reservas =====
+  private calcDays(a: string, b: string): number {
+    const i = new Date(a).getTime();
+    const f = new Date(b || a).getTime();
+    const d = Math.ceil((f - i) / 86_400_000);
+    return Math.max(1, d || 1);
+  }
+
+  displayUsuario(u: any): string {
+    if (!u) return 'Usuario';
+    if (typeof u === 'string') return u;
+    return u.nombre || u.email || 'Usuario';
   }
 
 }
