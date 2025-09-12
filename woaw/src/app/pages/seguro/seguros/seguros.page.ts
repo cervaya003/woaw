@@ -93,7 +93,6 @@ export class SegurosPage implements OnInit {
       marca: [null, Validators.required],
     });
   }
-
   ngOnInit() {
     this.generalService.tokenExistente$.subscribe((estado) => {
       this.isLoggedIn = estado;
@@ -102,7 +101,6 @@ export class SegurosPage implements OnInit {
     this.obtenerMarcas();
     this.cargaimagen();
   }
-
   async cargaimagen() {
     this.imgenPrincipal = '/assets/autos/seguro.webp';
     this.generalService.addPreload(this.imgenPrincipal, 'image');
@@ -113,7 +111,6 @@ export class SegurosPage implements OnInit {
     } finally {
     }
   }
-
   private buildAniosNacimiento() {
     const hoy = new Date();
     const maxYear = hoy.getFullYear() - 18;
@@ -121,7 +118,6 @@ export class SegurosPage implements OnInit {
     this.aniosNacimiento = [];
     for (let y = maxYear; y >= minYear; y--) this.aniosNacimiento.push(y);
   }
-
   // ---------- Validadores ----------
   private fechaNacimientoValida = (): ((ctrl: AbstractControl) => ValidationErrors | null) => {
     return (ctrl: AbstractControl): ValidationErrors | null => {
@@ -141,7 +137,6 @@ export class SegurosPage implements OnInit {
       return null;
     };
   };
-
   // ---------- Data ----------
   obtenerMarcas() {
     this.seguros.getMarcas().subscribe({
@@ -151,7 +146,6 @@ export class SegurosPage implements OnInit {
       error: (error) => console.error('Error al obtener marcas:', error),
     });
   }
-
   private obtenerModelos(marcaId: number) {
     this.seguros.getModelos(marcaId).subscribe({
       next: (data) => {
@@ -160,7 +154,6 @@ export class SegurosPage implements OnInit {
       error: (error) => console.error('Error al obtener modelos:', error),
     });
   }
-
   private obtenerAnios(marcaId: number, modeloId: number) {
     this.seguros.getAnios(marcaId, modeloId).subscribe({
       next: (data) => {
@@ -173,7 +166,6 @@ export class SegurosPage implements OnInit {
       error: (error) => console.error('Error al obtener modelos:', error),
     });
   }
-
   private obtenerVersion(marcaId: number, modeloId: number, anioId: number) {
     this.seguros.getVersion(marcaId, modeloId, anioId).subscribe({
       next: (data) => {
@@ -186,14 +178,12 @@ export class SegurosPage implements OnInit {
       error: (error) => console.error('Error al obtener modelos:', error),
     });
   }
-
   // ---------- Helpers para crear controles por paso ----------
   private ensurePaso4() {
     if (!this.form.get('version')) {
       this.form.addControl('version', this.fb.control(null, Validators.required));
     }
   }
-
   private ensurePaso5() {
     if (!this.form.get('nacDia')) {
       this.form.addControl('nacDia', this.fb.control(null, Validators.required));
@@ -207,7 +197,6 @@ export class SegurosPage implements OnInit {
     this.form.setValidators(this.fechaNacimientoValida());
     this.form.updateValueAndValidity({ emitEvent: false });
   }
-
   private ensurePaso6() {
     if (!this.form.get('cp')) {
       this.form.addControl('cp', this.fb.control(null, [
@@ -225,7 +214,6 @@ export class SegurosPage implements OnInit {
     //   this.form.addControl('duracion', this.fb.control(null, Validators.required));
     // }
   }
-
   // ---------- Flow ----------
   siguiente() {
     // 1 -> 2
@@ -287,25 +275,13 @@ export class SegurosPage implements OnInit {
         // this.form.get('duracion')?.invalid
       ) return;
 
-      if (this.isLoggedIn === true) {
-        this.ensurePaso7();
-        this.currentStep = 7;
-        return;
-      } else {
-        this.currentStep = 8;
-        return;
-      }
-    }
-
-    // 7 -> 8 
-    if (this.currentStep === 7) {
-      if (this.form.get('nombre')?.invalid || this.form.get('email')?.invalid) return;
-      this.currentStep = 8;
+      this.currentStep = 7;
       return;
+
     }
 
     // 8 -> finalizar (cotizar)
-    if (this.currentStep === 8) {
+    if (this.currentStep === 7) {
       const payload = {
         marcaId: Number(this.form.get('marca')?.value),
         modeloId: Number(this.form.get('modelo')?.value),
@@ -319,8 +295,6 @@ export class SegurosPage implements OnInit {
         cp: String(this.form.get('cp')?.value),
         genero: String(this.form.get('genero')?.value),
         estadoCivil: String(this.form.get('estadoCivil')?.value),
-        nombre: String(this.form.get('nombre')?.value).toUpperCase(),
-        email: String(this.form.get('email')?.value)
         // duracionMeses: Number(this.form.get('duracion')?.value),
       };
       this.HacerCotizacion(this.buildCotizacionDTO(payload));
@@ -328,7 +302,6 @@ export class SegurosPage implements OnInit {
     }
 
   }
-
   // ------ Botones de regresar por paso ------
   clearMarca() {
     this.form.get('marca')?.reset(null);
@@ -345,7 +318,6 @@ export class SegurosPage implements OnInit {
     this.currentStep = 1;
     this.form.setErrors(null);
   }
-
   clearAnio() { // 3 -> 2
     this.form.get('anio')?.reset(null);
     if (this.form.get('version')) this.form.removeControl('version');
@@ -353,29 +325,24 @@ export class SegurosPage implements OnInit {
     this.currentStep = 2;
     this.form.setErrors(null);
   }
-
   clearVersion() { // 4 -> 3
     this.form.get('version')?.reset(null);
     this.currentStep = 3;
     this.form.setErrors(null);
   }
-
   clearFecha() { // 5 -> 4
     ['nacDia', 'nacMes', 'nacAnio'].forEach(k => this.form.get(k)?.reset(null));
     this.currentStep = 4;
     this.form.setErrors(null);
   }
-
   clearPaso6() { // 6 -> 5
     ['cp', 'genero', 'estadoCivil'].forEach(k => this.form.get(k)?.reset(null));
     this.currentStep = 5;
   }
-
   clearPaso7() { // 7 -> 6
     ['nombre', 'email'].forEach(k => this.form.get(k)?.reset(null));
     this.currentStep = 6;
   }
-
   clearPaso8() { // 8 -> 7 o 6
 
     if (this.isLoggedIn === true) {
@@ -384,14 +351,12 @@ export class SegurosPage implements OnInit {
       this.currentStep = 6;
     }
   }
-
   toUpper(ctrlName: string) {
     const c = this.form.get(ctrlName);
     if (!c) return;
     const v = (c.value ?? '').toString().toUpperCase();
     if (v !== c.value) c.setValue(v, { emitEvent: false });
   }
-
   private ensurePaso7() {
     if (!this.form.get('nombre')) {
       this.form.addControl(
@@ -426,32 +391,26 @@ export class SegurosPage implements OnInit {
       }
     }
   }
-
   getMarcaLabel(): string {
     const id = Number(this.form.get('marca')?.value);
     return this.marcas.find(m => m.id === id)?.name ?? '-';
   }
-
   getModeloLabel(): string {
     const id = Number(this.form.get('modelo')?.value);
     return this.modelos.find(m => m.id === id)?.name ?? '-';
   }
-
   getVersionLabel(): string {
     const id = Number(this.form.get('version')?.value);
     return this.versions.find(v => v.id === id)?.parts ?? '-';
   }
-
   getGeneroLabel(): string {
     const v = this.form.get('genero')?.value;
     return this.generoOpts.find(g => g.value === v)?.label ?? '-';
   }
-
   getEstadoCivilLabel(): string {
     const v = this.form.get('estadoCivil')?.value;
     return this.estadoCivilOpts.find(e => e.value === v)?.label ?? '-';
   }
-
   getNacimiento(): string {
     const d = this.form.get('nacDia')?.value;
     const m = this.form.get('nacMes')?.value;
@@ -459,8 +418,6 @@ export class SegurosPage implements OnInit {
     const pad = (n: number) => String(n).padStart(2, '0');
     return d && m && y ? `${pad(Number(d))}/${pad(Number(m))}/${y}` : '-';
   }
-
-
   // ---------- Progreso ----------
   progress(): number {
     const map: Record<number, number> = {
@@ -475,7 +432,6 @@ export class SegurosPage implements OnInit {
     };
     return map[this.currentStep] ?? 0;
   }
-
   buildCotizacionDTO(payload: {
     marcaId: number;
     modeloId: number;
@@ -485,8 +441,6 @@ export class SegurosPage implements OnInit {
     cp: string;
     genero: string;
     estadoCivil: string;
-    nombre: string;
-    email: string;
   }) {
     const pad2 = (n: number) => String(n).padStart(2, '0');
 
@@ -550,7 +504,6 @@ export class SegurosPage implements OnInit {
 
     try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch { }
   }
-
   // ---------- COTIZACION ----------
   private HacerCotizacion(data: any) {
     this.seguros.CotizacionEstimada(data).subscribe({
@@ -567,16 +520,13 @@ export class SegurosPage implements OnInit {
       error: (err) => console.error('Error al cotizar:', err),
     });
   }
-
   onSelectPayment(planId: string, paymentId: string) {
     this.selectedPaymentByPlan[planId] = paymentId;
   }
-
   getSelectedPayment(pl: any) {
     const id = this.selectedPaymentByPlan[pl.id];
     return pl?.payment_plans?.find((pp: any) => pp.id === id) ?? pl?.payment_plans?.[0];
   }
-
   paymentLabel(pp: any): string {
     const name = (pp?.name ?? '').toString();
     const count = Array.isArray(pp?.payments) ? pp.payments.length : 1;
@@ -586,9 +536,7 @@ export class SegurosPage implements OnInit {
     if (name === 'FLAT_FEE') return `${count} pagos fijos (${this.fmtMoney(pp?.payments?.[0]?.total)} c/u)`;
     return `${name} (${this.fmtMoney(pp.total)})`;
   }
-
   trackByPayment = (_: number, opt: any) => opt?.id;
-
   paymentSummary(pp: any) {
     const payments = Array.isArray(pp?.payments) ? pp.payments : [];
     const count = payments.length || 1;
@@ -630,7 +578,6 @@ export class SegurosPage implements OnInit {
       default: return raw;
     }
   }
-
   planInfo(pp: any) {
     const payments = Array.isArray(pp?.payments) ? pp.payments : [];
     const count = payments.length || 1;
@@ -660,8 +607,6 @@ export class SegurosPage implements OnInit {
       restTotal
     };
   }
-
-
   async enviarEmail() {
 
     if (!this.quote) {
@@ -760,23 +705,23 @@ export class SegurosPage implements OnInit {
           role: 'confirm',
           handler: async () => {
 
-            this.seguros.enviarEmailContratacion(dtoEmail).subscribe({
-              next: async () => {
-                await this.alertCtrl.create({
-                  header: 'Listo',
-                  message: 'Tu solicitud se envió. Te contactaremos al correo indicado.',
-                  buttons: ['OK']
-                }).then(a => a.present());
-              },
-              error: async (err) => {
-                console.error('Error al enviar correo:', err);
-                await this.alertCtrl.create({
-                  header: 'Error',
-                  message: 'No se pudo enviar el correo. Intenta de nuevo.',
-                  buttons: ['OK']
-                }).then(a => a.present());
-              }
-            });
+            // this.seguros.enviarEmailContratacion(dtoEmail).subscribe({
+            //   next: async () => {
+            //     await this.alertCtrl.create({
+            //       header: 'Listo',
+            //       message: 'Tu solicitud se envió. Te contactaremos al correo indicado.',
+            //       buttons: ['OK']
+            //     }).then(a => a.present());
+            //   },
+            //   error: async (err) => {
+            //     console.error('Error al enviar correo:', err);
+            //     await this.alertCtrl.create({
+            //       header: 'Error',
+            //       message: 'No se pudo enviar el correo. Intenta de nuevo.',
+            //       buttons: ['OK']
+            //     }).then(a => a.present());
+            //   }
+            // });
 
           }
         }
@@ -784,5 +729,27 @@ export class SegurosPage implements OnInit {
     });
     await confirm.present();
   }
+  async confirmarPoliza() {
+    this.generalService.confirmarAccion(
+      '¿Estás seguro de que crear tu póliza?',
+      'Crear tu póliza',
+      async () => {
+        await this.CrearPersona();
+      }
+    );
+  }
+  async CrearPersona() {
+    const payload = {
+      marca: this.getMarcaLabel(),
+      modelo: this.getModeloLabel(),
+      anio: this.form.get('anio')?.value,
+      version: this.getVersionLabel(),
+      nacimiento: this.getNacimiento(),
+      cp: this.form.get('cp')?.value,
+      genero: this.getGeneroLabel(),
+      estadoCivil: this.getEstadoCivilLabel()
+    };
 
+    this.router.navigate(['/seguros/persona'], { state: { datos: payload } });
+  }
 }

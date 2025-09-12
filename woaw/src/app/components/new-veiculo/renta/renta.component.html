@@ -1,15 +1,12 @@
 <section class="renta">
   <!-- Resumen/encabezado -->
   <div class="resumen">
-
-    <!-- Botón publicar -->
     <button type="button" class="btn-publicar" (click)="publicar()">
       <ion-icon name="save-outline"></ion-icon>
       Publicar
     </button>
 
     <div class="fila">
-      <p>Año: <strong>{{ anio }}</strong></p>
       <p>Marca: <strong>{{ marca }}</strong></p>
       <p>Modelo: <strong>{{ modelo }}</strong></p>
     </div>
@@ -18,7 +15,6 @@
   <!-- Ubicación + Imágenes -->
   <div class="bloques">
     <div class="bloque">
-      <!-- Botón ubicación -->
       <button type="button" class="btn btn-lg btn-green" (click)="seleccionarUbicacion()">
         <ion-icon name="location-outline"></ion-icon>
         Seleccionar ubicación
@@ -32,7 +28,6 @@
 
     <div class="bloque">
       <div class="grupo-botones">
-        <!-- Botón imágenes -->
         <button class="btn btn-lg btn-blue" type="button" (click)="seleccionarImagenes()">
           <ion-icon name="image-outline"></ion-icon>
           Seleccionar imágenes
@@ -47,14 +42,11 @@
 
       <label class="tc">
         <span class="tc__label">Tarjeta de circulación (opcional)</span>
-
-        <!-- Botón consistente con los demás -->
         <button type="button" class="btn btn-soft btn-full" (click)="fileTC.click()">
           <ion-icon name="document-attach-outline"></ion-icon>
           Subir archivo
         </button>
         <input #fileTC type="file" (change)="onFileTC($event)" accept="image/*,application/pdf" hidden>
-
         <small class="tc__filename" *ngIf="tarjetaCirculacion">{{ tarjetaCirculacion.name }}</small>
       </label>
     </div>
@@ -62,25 +54,8 @@
 
   <!-- Ficha rápida -->
   <div class="grid">
-    <!-- Versión (con opciones desde CarsService y modo manual) -->
+    <!-- Tipo de vehículo -->
     <div class="campo">
-      <label>Versión</label>
-
-      <ng-container *ngIf="versionesDisponibles; else versionManual">
-        <select [(ngModel)]="version" (ngModelChange)="onSeleccionVersion($event)">
-          <option value="">Seleccione…</option>
-          <option *ngFor="let v of versiones" [value]="v">{{ v }}</option>
-        </select>
-      </ng-container>
-
-      <ng-template #versionManual>
-        <input type="text" [(ngModel)]="version" (ngModelChange)="onSeleccionVersion($event)"
-          placeholder="Ej. Advance CVT">
-      </ng-template>
-    </div>
-
-    <!-- Estos campos manuales SOLO cuando NO hay versiones -->
-    <div class="campo" *ngIf="!versionesDisponibles">
       <label>Tipo de vehículo</label>
       <select [(ngModel)]="tipoVehiculoLocal">
         <option value="">Seleccione…</option>
@@ -93,7 +68,8 @@
       </select>
     </div>
 
-    <div class="campo" *ngIf="!versionesDisponibles">
+    <!-- Transmisión -->
+    <div class="campo">
       <label>Transmisión</label>
       <select [(ngModel)]="transmision">
         <option value="">Seleccione…</option>
@@ -103,7 +79,8 @@
       </select>
     </div>
 
-    <div class="campo" *ngIf="!versionesDisponibles">
+    <!-- Combustible -->
+    <div class="campo">
       <label>Combustible</label>
       <select [(ngModel)]="combustible">
         <option value="">Seleccione…</option>
@@ -114,81 +91,48 @@
       </select>
     </div>
 
-    <!-- Color SIEMPRE visible -->
+    <!-- Pasajeros -->
     <div class="campo">
-      <label>Color</label>
-      <select [(ngModel)]="color" (ngModelChange)="onColorChange($event)">
-        <option value="">Seleccione…</option>
-        <option *ngFor="let opcion of opcionesColores" [value]="opcion.label">
-          {{ opcion.label }}
-        </option>
-      </select>
-      <div *ngIf="color === 'Otro'" style="margin-top:6px;">
-        <input type="text" [(ngModel)]="colorOtra" placeholder="Especifica el color" />
-      </div>
-    </div>
-
-    <!-- Pasajeros SOLO cuando NO hay versiones (si hay, lo autocompleta la ficha) -->
-    <div class="campo" *ngIf="!versionesDisponibles">
       <label>Pasajeros</label>
       <input type="number" min="1" [(ngModel)]="pasajeros" placeholder="Ej. 5">
-    </div>
-
-    <!-- Kilometraje SIEMPRE visible -->
-    <div class="campo">
-      <label>Kilometraje actual</label>
-      <input type="number" min="0" [(ngModel)]="kilometrajeActual" placeholder="Ej. 52000">
-    </div>
-  </div>
-
-  <!-- Ficha técnica (como en venta) -->
-  <div class="grid" *ngIf="versionesDisponibles && especificacionesVersion">
-    <div class="campo" style="grid-column: 1 / -1;">
-      <div
-        style="background:#fff;border-left:4px solid #fa2929;border-radius:10px;padding:10px;box-shadow:0 2px 8px rgba(0,0,0,.06);max-width:600px;">
-        <h4 style="margin:0 0 8px 0;">Ficha técnica</h4>
-        <ul style="list-style:none;padding:0;margin:0;">
-          <li *ngIf="especificacionesVersion.motor"><strong>Motor:</strong> {{ especificacionesVersion.motor }}</li>
-          <li *ngIf="especificacionesVersion.potencia"><strong>Potencia:</strong> {{ especificacionesVersion.potencia }}
-          </li>
-          <li *ngIf="especificacionesVersion.cilindros"><strong>Cilindros:</strong> {{ especificacionesVersion.cilindros
-            }}</li>
-          <li *ngIf="especificacionesVersion.transmision"><strong>Transmisión:</strong> {{
-            especificacionesVersion.transmision }}</li>
-          <li *ngIf="especificacionesVersion.traccion"><strong>Tracción:</strong> {{ especificacionesVersion.traccion }}
-          </li>
-          <li *ngIf="especificacionesVersion.combustible"><strong>Combustible:</strong> {{
-            especificacionesVersion.combustible }}</li>
-          <li *ngIf="especificacionesVersion.pasajeros"><strong>Pasajeros:</strong> {{ especificacionesVersion.pasajeros
-            }}</li>
-          <li *ngIf="especificacionesVersion.puertas"><strong>Puertas:</strong> {{ especificacionesVersion.puertas }}
-          </li>
-          <li *ngIf="especificacionesVersion.rines"><strong>Rines:</strong> {{ especificacionesVersion.rines }}</li>
-          <li *ngIf="especificacionesVersion.tipoVehiculo"><strong>Tipo de vehículo:</strong> {{
-            especificacionesVersion.tipoVehiculo }}</li>
-          <li *ngIf="especificacionesVersion.extra?.length">
-            <strong>Extras:</strong>
-            <ul style="margin:6px 0 0 16px;">
-              <li *ngFor="let e of especificacionesVersion.extra">{{ e }}</li>
-            </ul>
-          </li>
-        </ul>
-      </div>
     </div>
   </div>
 
   <!-- Precio -->
   <div class="grid">
     <div class="campo">
-      <label>Precio por día ({{ moneda }}) <span class="req">*</span></label>
-      <input type="number" min="500" [(ngModel)]="precioPorDia" placeholder="Ej. 900">
+      <label>Precio por día <span class="req">*</span></label>
+      <input type="number" min="500" [(ngModel)]="precioPorDia" placeholder="Ej. 900" />
     </div>
-    <div class="campo">
-      <label>Moneda</label>
-      <select [(ngModel)]="moneda">
-        <option value="MXN">MXN</option>
-        <option value="USD">USD</option>
-      </select>
+  </div>
+
+  <!-- Extras (nuevo selector + chips) -->
+  <div class="grid">
+    <div class="campo full">
+      <label>Extras opcionales</label>
+
+      <div class="extras-row">
+        <select [(ngModel)]="extraSeleccionado" (ngModelChange)="onExtraChange($event)">
+          <option value="">Seleccione…</option>
+          <option *ngFor="let e of extrasPredefinidos" [value]="e">{{ e }}</option>
+          <option value="__OTRO__">Otro (especificar)</option>
+        </select>
+
+        <input *ngIf="extraSeleccionado === '__OTRO__'" type="text" [(ngModel)]="extraOtroTexto"
+          placeholder="Escribe el extra" (keyup.enter)="agregarExtra()" style="margin-top:6px;" />
+
+        <button type="button" class="btn btn-soft" (click)="agregarExtra()">Agregar</button>
+        <button type="button" class="btn btn-danger btn-soft" (click)="limpiarExtras()" [disabled]="!extras.length">
+          Limpiar extras
+        </button>
+      </div>
+
+      <div class="chips" *ngIf="extras?.length">
+        <span class="chip" *ngFor="let x of extras; let i = index">
+          {{ x }}
+          <button type="button" class="chip__close" (click)="quitarExtra(i)">×</button>
+        </span>
+      </div>
     </div>
   </div>
 
@@ -259,7 +203,6 @@
       </div>
 
       <div class="tarifa-card__grid">
-        <!-- Desde -->
         <div class="campo">
           <label>Desde (km)</label>
           <input type="number" min="0" [(ngModel)]="t.desdeKm"
@@ -268,79 +211,31 @@
             Fijado a {{ entrega.gratuitoHastaKm }} km (igual a “Entrega gratis hasta”).
           </small>
           <small class="hint" *ngIf="i > 0">
-            Fijado a {{ entrega.tarifasPorDistancia[i-1].hastaKm || 0 }} km (fin del rango anterior).
+            Fijado a {{ entrega.tarifasPorDistancia[i-1].hastaKm || 0 }} km.
           </small>
         </div>
 
-        <!-- Hasta -->
         <div class="campo">
           <label>Hasta (km)</label>
           <input type="number" min="0" [(ngModel)]="t.hastaKm" (ngModelChange)="onTarifaHastaChange(i)"
             placeholder="10" />
         </div>
 
-        <!-- Costo fijo -->
         <div class="campo">
           <label>Costo fijo</label>
           <input type="number" min="0" step="0.01" [(ngModel)]="t.costoFijo" placeholder="Ej. 200" />
         </div>
 
-        <!-- Costo por km -->
         <div class="campo">
           <label>Costo por km</label>
           <input type="number" min="0" step="0.01" [(ngModel)]="t.costoPorKm" placeholder="Ej. 12" />
         </div>
 
-        <!-- Nota -->
         <div class="campo full">
           <label>Nota (opcional)</label>
           <input type="text" [(ngModel)]="t.nota" placeholder="Ej. Zona centro" />
         </div>
       </div>
-    </div>
-  </div>
-
-  <!-- Póliza (obligatoria) -->
-  <div class="grid">
-    <div class="campo">
-      <label>Número de póliza <span class="req">*</span></label>
-      <input type="text" [(ngModel)]="polizaPlataforma.numero" placeholder="Ej. ABC-123456">
-    </div>
-    <div class="campo">
-      <label>Aseguradora <span class="req">*</span></label>
-      <select [(ngModel)]="polizaPlataforma.aseguradora">
-        <option value="">Seleccione…</option>
-        <option>Uber</option>
-        <option>DiDi</option>
-        <option>inDrive</option>
-        <option>Cabify</option>
-        <option>Otro</option>
-      </select>
-    </div>
-    <div class="campo" *ngIf="polizaPlataforma.aseguradora === 'Otro'">
-      <label>¿Cuál aseguradora?</label>
-      <input type="text" [(ngModel)]="polizaPlataforma.aseguradoraOtra" placeholder="Nombre de aseguradora">
-    </div>
-    <div class="campo">
-      <label>Cobertura <span class="req">*</span></label>
-      <select [(ngModel)]="polizaPlataforma.cobertura">
-        <option value="">Seleccione…</option>
-        <option>RC</option>
-        <option>Amplia</option>
-        <option>Amplia Plus</option>
-      </select>
-    </div>
-    <div class="campo">
-      <label>Vigencia desde <span class="req">*</span></label>
-      <input type="date" [(ngModel)]="polizaPlataforma.vigenciaDesde">
-    </div>
-    <div class="campo">
-      <label>Vigencia hasta <span class="req">*</span></label>
-      <input type="date" [(ngModel)]="polizaPlataforma.vigenciaHasta">
-    </div>
-    <div class="campo">
-      <label>URL de póliza (opcional)</label>
-      <input type="url" [(ngModel)]="polizaPlataforma.urlPoliza" placeholder="https://...">
     </div>
   </div>
 </section>

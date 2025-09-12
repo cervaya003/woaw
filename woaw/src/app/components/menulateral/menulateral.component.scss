@@ -6,6 +6,10 @@ ion-menu[menuId="menuLateral"] {
     --width: 200px;
   }
 
+  /* ====== HEADER ALINEADO AL NAVBAR ====== */
+  /* Desktop / Web: ajustado a tu barra (73px) */
+  --menu-toolbar-h: 60px;
+
   ion-header {
     /* elimina rellenos/safe-area que meten desnivel */
     --padding-top: 0;
