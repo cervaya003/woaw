@@ -40,7 +40,8 @@
           <div *ngIf="!loading && (todosPaginados?.length || 0) > 0" class="cards-grid">
             <ion-card *ngFor="let c of todosPaginados; trackBy: trackCar" class="veh-card" (click)="onCardClick(c)"
               tabindex="0" (keyup.enter)="onCardClick(c)"
-              [attr.aria-label]="(c.marca || '') + ' ' + (c.modelo || '') + ' ' + (c.anio || '')">
+              [attr.aria-label]="(c.marca || '') + ' ' + (c.modelo || '') + (c.anio ? (' ' + c.anio) : '')">
+
               <div class="badge" *ngIf="getEsMio(c)">Mi coche</div>
 
               <div class="img-wrap">
@@ -54,7 +55,7 @@
                 </div>
 
                 <div class="price">
-                  {{ c.precio?.porDia | currency:'MXN':'symbol-narrow' }}/día
+                  {{ precioPorDia(c) | currency:'MXN':'symbol-narrow' }}/día
                 </div>
 
                 <div class="meta">
@@ -110,7 +111,8 @@
           <div *ngIf="(miosPaginados?.length || 0) > 0" class="cards-grid">
             <ion-card *ngFor="let c of miosPaginados; trackBy: trackCar" class="veh-card" (click)="onCardClick(c)"
               tabindex="0" (keyup.enter)="onCardClick(c)"
-              [attr.aria-label]="(c.marca || '') + ' ' + (c.modelo || '') + ' ' + (c.anio || '')">
+              [attr.aria-label]="(c.marca || '') + ' ' + (c.modelo || '') + (c.anio ? (' ' + c.anio) : '')">
+
               <div class="badge" *ngIf="getEsMio(c)">Mi coche</div>
 
               <div class="img-wrap">
@@ -124,7 +126,7 @@
                 </div>
 
                 <div class="price">
-                  {{ c.precio?.porDia | currency:'MXN':'symbol-narrow' }}/día
+                  {{ precioPorDia(c) | currency:'MXN':'symbol-narrow' }}/día
                 </div>
 
                 <div class="meta">

@@ -7,6 +7,7 @@ import {
 } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { RentaService } from '../../services/renta.service';
+import { ReservaService, CreateBookingResponse } from '../../services/reserva.service';
 
 /* ============================
    Validadores personalizados
@@ -22,8 +23,7 @@ function minHoy(c: AbstractControl): ValidationErrors | null {
 function rangoFechas(group: AbstractControl): ValidationErrors | null {
   const ini = group.get('fechaInicio')?.value;
   const fin = group.get('fechaFin')?.value;
-  // Si falta alguno, no hay error (permite 1 solo día)
-  if (!ini || !fin) return null;
+  if (!ini || !fin) return null; // permite 1 solo día
   const i = new Date(ini);
   const f = new Date(fin);
   return f < i ? { rangoInvalido: true } : null;
@@ -55,7 +55,8 @@ export class ReservasPage implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private fb: FormBuilder,
-    private rentaService: RentaService,
+    private rentaService: RentaService,        // coches
+    private reservaService: ReservaService,    // bookings
     private loadingCtrl: LoadingController,
     private toastCtrl: ToastController,
     private alertCtrl: AlertController
@@ -166,10 +167,6 @@ export class ReservasPage implements OnInit {
     }
 
     const porDia = this.coche?.precio?.porDia ?? this.coche?.precioPorDia ?? 0;
-
-    // Si quieres usar tu servicio:
-    // this.total = this.rentaService.cotizarTotal(porDia, inicio, finUsado, []);
-    // Cálculo directo:
     const dias = this.dias || 1;
     this.total = (porDia || 0) * dias;
   }
@@ -189,9 +186,7 @@ export class ReservasPage implements OnInit {
 
   /** Handler por ionValueChange (más confiable en varias versiones) */
   onRangeValueChange(ev: any) {
-    // Puede llegar como array, como valor simple, o como { detail: { value } }
     const value = Array.isArray(ev) ? ev : (ev?.detail?.value ?? ev);
-    // console.log('ionValueChange datetime =>', value); // <- debug opcional
     this.applyPicked(value);
   }
 
@@ -210,10 +205,8 @@ export class ReservasPage implements OnInit {
       this.form.patchValue({ fechaInicio: picked[0], fechaFin: picked[1] }, { emitEvent: true });
     }
 
-    // Fuerza revalidar el grupo (rangoFechas)
+    // Revalida el grupo (rangoFechas)
     this.form.updateValueAndValidity({ onlySelf: false, emitEvent: true });
-
-    // Sincroniza el valor mostrado en el datetime
     this.syncRangeFromForm();
   }
 
@@ -233,17 +226,17 @@ export class ReservasPage implements OnInit {
     const loading = await this.loadingCtrl.create({ message: 'Creando reserva...' });
     await loading.present();
 
-    this.rentaService.createBookingV2({
+    this.reservaService.createBookingV2({
       rentalCar: this.coche._id,
       fechaInicio,
       fechaFin,
-      items: [], // ya no hay extras
+      items: [],
       moneda: this.coche?.precio?.moneda ?? 'MXN',
       notasCliente,
       politicaCancelacion: 'flex',
       aceptoTerminos,
     }).subscribe({
-      next: async (res) => {
+      next: async (res: CreateBookingResponse) => {
         await loading.dismiss();
         this.enviando = false;
         const alert = await this.alertCtrl.create({
@@ -254,7 +247,7 @@ export class ReservasPage implements OnInit {
         await alert.present();
         this.router.navigate(['/']);
       },
-      error: async (e) => {
+      error: async (e: any) => {
         await loading.dismiss();
         this.enviando = false;
         this.toast(e?.message || 'Error al crear la reserva.');

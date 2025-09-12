@@ -23,7 +23,7 @@
 <ion-content [fullscreen]="true">
   <div class="contenedor">
 
-    <!-- Precio y moneda -->
+    <!-- Precio y moneda (moneda es UI, no se envía) -->
     <ion-grid>
       <ion-row>
         <ion-col size="12" size-md="6">
@@ -172,76 +172,6 @@
       </ion-row>
     </ion-grid>
 
-    <!-- Póliza -->
-    <ion-grid>
-      <ion-row>
-        <ion-col size="12" size-md="6">
-          <ion-item>
-            <ion-label position="stacked">Número de póliza <span class="req">*</span></ion-label>
-            <ion-input type="text" [(ngModel)]="renta.polizaPlataforma.numero" (ionInput)="markDirty()"></ion-input>
-          </ion-item>
-        </ion-col>
-
-        <ion-col size="12" size-md="6">
-          <ion-item>
-            <ion-label position="stacked">Aseguradora <span class="req">*</span></ion-label>
-            <ion-select [(ngModel)]="renta.polizaPlataforma.aseguradora" (ionChange)="markDirty()">
-              <ion-select-option value="">Seleccione…</ion-select-option>
-              <ion-select-option>Uber</ion-select-option>
-              <ion-select-option>DiDi</ion-select-option>
-              <ion-select-option>inDrive</ion-select-option>
-              <ion-select-option>Cabify</ion-select-option>
-              <ion-select-option>Otro</ion-select-option>
-            </ion-select>
-          </ion-item>
-        </ion-col>
-
-        <ion-col size="12" size-md="6" *ngIf="renta.polizaPlataforma.aseguradora === 'Otro'">
-          <ion-item>
-            <ion-label position="stacked">¿Cuál aseguradora?</ion-label>
-            <ion-input type="text" [(ngModel)]="renta.polizaPlataforma.aseguradoraOtra"
-              (ionInput)="markDirty()"></ion-input>
-          </ion-item>
-        </ion-col>
-
-        <ion-col size="12" size-md="6">
-          <ion-item>
-            <ion-label position="stacked">Cobertura <span class="req">*</span></ion-label>
-            <ion-select [(ngModel)]="renta.polizaPlataforma.cobertura" (ionChange)="markDirty()">
-              <ion-select-option value="">Seleccione…</ion-select-option>
-              <ion-select-option>RC</ion-select-option>
-              <ion-select-option>Amplia</ion-select-option>
-              <ion-select-option>Amplia Plus</ion-select-option>
-            </ion-select>
-          </ion-item>
-        </ion-col>
-
-        <ion-col size="12" size-md="6">
-          <ion-item>
-            <ion-label position="stacked">Vigencia desde <span class="req">*</span></ion-label>
-            <ion-input type="date" [(ngModel)]="renta.polizaPlataforma.vigenciaDesde"
-              (ionInput)="markDirty()"></ion-input>
-          </ion-item>
-        </ion-col>
-
-        <ion-col size="12" size-md="6">
-          <ion-item>
-            <ion-label position="stacked">Vigencia hasta <span class="req">*</span></ion-label>
-            <ion-input type="date" [(ngModel)]="renta.polizaPlataforma.vigenciaHasta"
-              (ionInput)="markDirty()"></ion-input>
-          </ion-item>
-        </ion-col>
-
-        <ion-col size="12">
-          <ion-item>
-            <ion-label position="stacked">URL de póliza (opcional)</ion-label>
-            <ion-input type="url" [(ngModel)]="renta.polizaPlataforma.urlPoliza" (ionInput)="markDirty()"
-              placeholder="https://..."></ion-input>
-          </ion-item>
-        </ion-col>
-      </ion-row>
-    </ion-grid>
-
     <!-- Ubicación -->
     <ion-grid>
       <ion-row>
@@ -331,12 +261,6 @@
         <ion-button fill="outline" color="warning" (click)="onRestablecerClick()" [disabled]="!dirty">
           <ion-icon name="refresh-outline"></ion-icon>
           <span>Restablecer</span>
-        </ion-button>
-
-        <!-- Botón Eliminar (requiere método eliminarRenta() en el TS) -->
-        <ion-button fill="outline" color="danger" (click)="eliminarRenta()">
-          <ion-icon name="trash-outline"></ion-icon>
-          <span>Eliminar</span>
         </ion-button>
 
         <ion-button color="success" (click)="onGuardarClick()" [disabled]="!dirty">

@@ -68,6 +68,67 @@
       </ion-col>
     </ion-row>
 
+    <!-- Solicitudes de reserva (sólo propietario) -->
+    <ion-row *ngIf="esPropietario">
+      <ion-col size="12">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Solicitudes de reserva</ion-card-title>
+            <ion-card-subtitle *ngIf="!loadingBookings">
+              {{ pendingBookings.length || 0 }} pendiente(s)
+            </ion-card-subtitle>
+          </ion-card-header>
+
+          <ion-card-content>
+            <!-- Cargando -->
+            <ion-list *ngIf="loadingBookings">
+              <ion-item *ngFor="let s of [1,2,3]">
+                <ion-skeleton-text animated style="width: 60%"></ion-skeleton-text>
+              </ion-item>
+            </ion-list>
+
+            <!-- Vacío -->
+            <ion-item *ngIf="!loadingBookings && pendingBookings.length === 0" lines="none">
+              <ion-icon name="checkmark-circle-outline" slot="start" color="success"></ion-icon>
+              <ion-label>Sin solicitudes pendientes por ahora.</ion-label>
+            </ion-item>
+
+            <!-- Pendientes -->
+            <ion-list *ngIf="!loadingBookings && pendingBookings.length > 0">
+              <ion-item *ngFor="let b of pendingBookings" lines="full">
+                <ion-label>
+                  <h3>
+                    {{ displayUsuario(b?.usuario) }}
+                    <ion-note color="medium"> • {{ b?.moneda || 'MXN' }} {{ b?.total | number:'1.0-0' }}</ion-note>
+                  </h3>
+                  <p>
+                    {{ b?.fechaInicio | date:'mediumDate' }} → {{ b?.fechaFin | date:'mediumDate' }}
+                    <ion-note color="medium"> ({{ b?.dias }} día(s))</ion-note>
+                  </p>
+                  <p *ngIf="b?.notasCliente" class="ion-text-wrap">
+                    <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
+                    {{ b?.notasCliente }}
+                  </p>
+                </ion-label>
+
+                <div slot="end" class="actions">
+                  <ion-button size="small" color="success" (click)="accept(b)" [disabled]="actingIds.has(b._id)">
+                    <ion-spinner *ngIf="actingIds.has(b._id) && actingAction==='accept'" name="crescent"></ion-spinner>
+                    <span *ngIf="!(actingIds.has(b._id) && actingAction==='accept')">Aceptar</span>
+                  </ion-button>
+                  <ion-button size="small" color="danger" fill="outline" (click)="cancel(b)"
+                    [disabled]="actingIds.has(b._id)">
+                    <ion-spinner *ngIf="actingIds.has(b._id) && actingAction==='cancel'" name="crescent"></ion-spinner>
+                    <span *ngIf="!(actingIds.has(b._id) && actingAction==='cancel')">Cancelar</span>
+                  </ion-button>
+                </div>
+              </ion-item>
+            </ion-list>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+
     <!-- Editor: solo excepciones (oculto si está inactivo) -->
     <ion-row *ngIf="estadoActual === 'disponible'">
       <ion-col size="12">

@@ -32,7 +32,7 @@
 
 .no-coches .icono-carro {
   font-size: 64px;
-  color: var(--ion-color-primary);
+  color: var(--ion-color-danger);
 }
 
 .no-coches h2 {
@@ -150,17 +150,16 @@
   text-overflow: ellipsis;
 }
 
-  .chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 14px;
-    color: #ffffff;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, .06);
-    border: 1px solid rgba(255, 0, 0, 0.844);
-  }
-    
+/* Barra de acento inferior */
+.accent-bar {
+  height: 4px;
+  width: 100%;
+  background: linear-gradient(90deg, var(--ion-color-danger), #000000);
+  border-radius: 0 0 14px 14px;
+  opacity: 0.7;
+  margin-top: 10px;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .cards-grid {
@@ -285,3 +284,4 @@ ion-modal.mio-modal::part(content) {
   box-shadow: 0 12px 28px rgba(0, 0, 0, .5);
 
 }
+  }

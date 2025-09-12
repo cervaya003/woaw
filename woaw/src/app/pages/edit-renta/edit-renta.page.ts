@@ -19,14 +19,13 @@ export class EditRentaPage implements OnInit {
 
   id!: string;
 
-  // ✅ Estado seguro por defecto
+
   renta: any = {
     marca: '',
     modelo: '',
-    anio: null,
-    // ❌ no manejamos estado aquí
+    anio: null, // visual only
     precioPorDia: 0,
-    moneda: 'MXN',
+    moneda: 'MXN', // visual only (no se envía)
     politicaCombustible: 'lleno-lleno',
     politicaLimpieza: 'normal',
     requisitosConductor: {
@@ -81,7 +80,7 @@ export class EditRentaPage implements OnInit {
     this.cargarRenta();
   }
 
-  // ===== Helpers de fecha =====
+  // ===== Helpers de fecha (sólo UI de póliza) =====
   private toYMD(value: any): string {
     if (!value) return '';
     const d = new Date(value);
@@ -90,11 +89,6 @@ export class EditRentaPage implements OnInit {
     const mm = String(d.getMonth() + 1).padStart(2, '0');
     const dd = String(d.getDate()).padStart(2, '0');
     return `${yyyy}-${mm}-${dd}`;
-  }
-  private ymdToISO(ymd: string): string {
-    if (!ymd) return '';
-    const d = new Date(`${ymd}T00:00:00`);
-    return isNaN(d.getTime()) ? '' : d.toISOString();
   }
 
   // ===== snapshot/dirty =====
@@ -117,16 +111,16 @@ export class EditRentaPage implements OnInit {
         const price = res?.precio ?? {};
         const req = res?.requisitosConductor ?? {};
         const ent = res?.entrega ?? {};
-        const pol = res?.polizaPlataforma ?? {};
+        const pol = res?.polizaPlataforma ?? {}; // sólo UI
 
         const normalizada = {
           marca: res?.marca ?? this.renta.marca,
           modelo: res?.modelo ?? this.renta.modelo,
-          anio: res?.anio ?? this.renta.anio,
+          anio: res?.anio ?? this.renta.anio, // visual only
 
-          // precio/moneda
-          precioPorDia: Number(price?.porDia ?? res?.precioPorDia ?? this.renta.precioPorDia),
-          moneda: price?.moneda ?? res?.moneda ?? this.renta.moneda,
+          // precio (normaliza por compatibilidad)
+          precioPorDia: Number(price?.porDia ?? res?.precioPorDia ?? res?.precio ?? this.renta.precioPorDia),
+          moneda: price?.moneda ?? res?.moneda ?? this.renta.moneda, // visual only
 
           // políticas
           politicaCombustible: res?.politicaCombustible ?? this.renta.politicaCombustible,
@@ -148,7 +142,7 @@ export class EditRentaPage implements OnInit {
               : [...this.renta.entrega.tarifasPorDistancia],
           },
 
-          // póliza (normaliza fechas a YYYY-MM-DD para <ion-input type="date">)
+          // póliza solo UI
           polizaPlataforma: {
             numero: pol?.numero ?? this.renta.polizaPlataforma.numero,
             aseguradora: pol?.aseguradora ?? this.renta.polizaPlataforma.aseguradora,
@@ -219,7 +213,7 @@ export class EditRentaPage implements OnInit {
     }
     const anterior = this.renta.entrega.tarifasPorDistancia.at(-1);
     this.renta.entrega.tarifasPorDistancia.push({
-      desdeKm: anterior ? (anterior.hastaKm || 0) : (this.renta.entrega.gratuitoHastaKm || 0),
+      desdeKm: anterior ? (Number(anterior.hastaKm) || 0) : (Number(this.renta.entrega.gratuitoHastaKm) || 0),
       hastaKm: 0,
       costoFijo: 0,
       costoPorKm: 0,
@@ -314,32 +308,39 @@ export class EditRentaPage implements OnInit {
       this.general.alert('Ubicación', 'Selecciona una ubicación.', 'warning');
       return;
     }
-    const pol = this.renta?.polizaPlataforma || {};
-    if (!pol?.numero || !pol?.aseguradora || !pol?.cobertura || !pol?.vigenciaDesde || !pol?.vigenciaHasta) {
-      this.general.alert('Póliza', 'Completa los campos obligatorios de póliza.', 'warning');
-      return;
-    }
 
     await this.general.loading('Guardando...');
 
     try {
       const [ciudad, estado, lat, lng] = this.ubicacionSeleccionada!;
 
-      // Data para updateRentalCar (JSON) — convierte fechas a ISO
+      // ⚠️ Backend nuevo: NO enviar anio, version, color, kilometraje, NI póliza.
+      // También 'precio' como number (no objeto) y sin 'moneda'.
       const data: any = {
-        // ❌ no mandamos estadoRenta aquí
-        precio: { porDia: Number(this.renta.precioPorDia), moneda: this.renta.moneda || 'MXN' },
+        precio: Number(this.renta.precioPorDia),
         politicaCombustible: this.renta.politicaCombustible || 'lleno-lleno',
         politicaLimpieza: this.renta.politicaLimpieza || 'normal',
-        requisitosConductor: { ...this.renta.requisitosConductor },
-        entrega: { ...this.renta.entrega },
-        polizaPlataforma: {
-          ...this.renta.polizaPlataforma,
-          vigenciaDesde: this.ymdToISO(this.renta.polizaPlataforma.vigenciaDesde),
-          vigenciaHasta: this.ymdToISO(this.renta.polizaPlataforma.vigenciaHasta),
+        requisitosConductor: {
+          edadMinima: Number(this.renta.requisitosConductor.edadMinima ?? 21),
+          antiguedadLicenciaMeses: Number(this.renta.requisitosConductor.antiguedadLicenciaMeses ?? 12),
+          permiteConductorAdicional: !!this.renta.requisitosConductor.permiteConductorAdicional,
+          costoConductorAdicional:
+            this.renta.requisitosConductor.costoConductorAdicional != null
+              ? Number(this.renta.requisitosConductor.costoConductorAdicional)
+              : undefined,
+        },
+        entrega: {
+          gratuitoHastaKm: Number(this.renta.entrega.gratuitoHastaKm) || 0,
+          tarifasPorDistancia: (this.renta.entrega.tarifasPorDistancia || []).map((t: any) => ({
+            desdeKm: Number(t.desdeKm) || 0,
+            hastaKm: Number(t.hastaKm) || 0,
+            costoFijo: t.costoFijo != null ? Number(t.costoFijo) : undefined,
+            costoPorKm: t.costoPorKm != null ? Number(t.costoPorKm) : undefined,
+            nota: t.nota || undefined,
+          })),
         },
         ubicacion: { ciudad, estado, lat, lng },
-        imagenesExistentes: this.urlsImagenesExistentes,
+        imagenesExistentes: this.urlsImagenesExistentes, // para que backend conserve las que queden
       };
 
       // Si NO subes archivo para principal, manda URL
@@ -375,22 +376,4 @@ export class EditRentaPage implements OnInit {
   }
 
   regresar() { this.router.navigate(['/mis-autos']); }
-
-  eliminarRenta() {
-    this.general.confirmarAccion('¿Eliminar este vehículo de renta?', 'Eliminar', () => {
-      this.general.loading('Eliminando...');
-      this.rentaService.deleteRentalCar(this.id).subscribe({
-        next: async () => {
-          await this.general.loadingDismiss();
-          this.general.alert('Éxito', 'Vehículo eliminado.', 'success');
-          this.regresar();
-        },
-        error: async (err: any) => {
-          await this.general.loadingDismiss();
-          this.general.alert('Error', err?.error?.message || 'No se pudo eliminar', 'danger');
-        }
-      });
-    });
-  }
-
 }

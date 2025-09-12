@@ -2,7 +2,7 @@
 import { Component, OnInit, ViewChild, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { IonContent, PopoverController } from '@ionic/angular';
 import { Router, NavigationStart } from '@angular/router';
-import { RentaService } from '../../services/renta.service';
+import { RentaService, ListarCochesResp } from '../../services/renta.service';
 import { ListComponent } from '../../components/filtos/list/list.component';
 import { filter } from 'rxjs/operators';
 
@@ -82,6 +82,9 @@ export class RentaCochesPage implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    // Log útil para confirmar que el servicio usa /rental-cars (con guion)
+    console.log('[RentaCoches] rentaService.baseUrl =', this.rentaService.baseUrl);
+
     this.refreshCurrentUserId();
     this.cargarTodos();
     this.cargarMios();
@@ -101,14 +104,26 @@ export class RentaCochesPage implements OnInit, OnDestroy {
       this.currentUserId = null;
     }
   }
+
+  /** Normaliza precio por día desde varias formas posibles del backend */
+  precioPorDia(c: any): number {
+    const v =
+      c?.precio?.porDia ??   // esquema viejo (objeto)
+      c?.precioPorDia ??     // por si la UI lo trae así
+      c?.precio ??           // backend nuevo (number)
+      0;
+    const n = Number(v);
+    return Number.isFinite(n) ? n : 0;
+  }
+
   private cargarTodos() {
     this.loading = true;
     this.error = null;
 
     this.rentaService.listarCoches().subscribe({
-      next: (res) => {
-        const items = Array.isArray(res) ? res : (res?.rentals ?? res?.docs ?? res?.data ?? []);
-
+      next: (res: ListarCochesResp) => {
+        const items = res?.rentals ?? [];
+        // En "todos", ocultamos inactivos
         this.todosStorage = (items || []).filter(
           (x: any) => (x?.estadoRenta ?? 'disponible') !== 'inactivo'
         );
@@ -119,7 +134,7 @@ export class RentaCochesPage implements OnInit, OnDestroy {
         this.loading = false;
       },
       error: (err) => {
-        console.error(err);
+        console.error('[RentaCoches] listarCoches error:', err);
         this.error = 'Error al cargar coches';
         this.todosStorage = [];
         this.totalTodos = 0;
@@ -140,16 +155,18 @@ export class RentaCochesPage implements OnInit, OnDestroy {
     }
 
     this.rentaService.misCoches().subscribe({
-      next: (res) => {
-        const items = Array.isArray(res) ? res : (res?.docs ?? res?.data ?? res?.rentals ?? []);
-        // ✅ En "mios" NO filtramos inactivos: que aparezcan siempre
+      next: (res: any[]) => {
+        const items = Array.isArray(res) ? res : [];
+        // En "mios" mostramos todo (incluye inactivos)
         this.miosStorage = items || [];
         this.totalMios = this.miosStorage.length;
         // incluye _id o id para robustez
         this.myCarIds = new Set(this.miosStorage.map((x) => String(x?._id ?? x?.id)).filter(Boolean));
         this.aplicarFiltros();
       },
-      error: () => {
+      error: (err) => {
+        console.error('[RentaCoches] misCoches error:', err);
+        // Tip: si ves 401/403 aquí, revisa que haya token y que el backend lo acepte
         this.miosStorage = [];
         this.totalMios = 0;
         this.myCarIds.clear();
@@ -185,9 +202,9 @@ export class RentaCochesPage implements OnInit, OnDestroy {
         : (this.miosFiltrados.length ? [...this.miosFiltrados] : [...this.miosStorage]);
 
     if (c === 'precioAsc') {
-      base.sort((a, b) => (a?.precio?.porDia ?? 0) - (b?.precio?.porDia ?? 0));
+      base.sort((a, b) => this.precioPorDia(a) - this.precioPorDia(b));
     } else if (c === 'precioDesc') {
-      base.sort((a, b) => (b?.precio?.porDia ?? 0) - (a?.precio?.porDia ?? 0));
+      base.sort((a, b) => this.precioPorDia(b) - this.precioPorDia(a));
     } else if (c === 'recientes') {
       base.sort((a, b) => this.createdTs(b) - this.createdTs(a));
     }
@@ -236,7 +253,7 @@ export class RentaCochesPage implements OnInit, OnDestroy {
     if (precio?.rango?.length === 2) {
       const [min, max] = precio.rango.map((n: any) => Number(n));
       lista = lista.filter(
-        (c) => (c?.precio?.porDia ?? 0) >= min && (c?.precio?.porDia ?? 0) <= max
+        (c) => this.precioPorDia(c) >= min && this.precioPorDia(c) <= max
       );
     }
 
@@ -407,13 +424,12 @@ export class RentaCochesPage implements OnInit, OnDestroy {
 
   ionViewWillEnter() {
     this.refreshCurrentUserId();
-    this.cargarTodos();          
+    this.cargarTodos();
     if (this.isLoggedIn) {
-      this.cargarMios();         
+      this.cargarMios();
     }
     this.paginaTodosActual = 1;
     this.paginaMiosActual = 1;
     this.aplicarFiltros();
   }
-
 }
