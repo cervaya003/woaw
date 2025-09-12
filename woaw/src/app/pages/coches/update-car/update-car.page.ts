@@ -1329,6 +1329,13 @@ export class UpdateCarPage implements OnInit {
       this.precioMoto = this.auto.precio ?? null;
     }
 
+if (this.tipo_veiculo === "camiones") {
+  if (this.versionesOriginales) {
+    this.auto.version = JSON.parse(JSON.stringify(this.versionesOriginales));
+  }
+}
+
+
     this.loteSeleccionado = null;
     this.ubicacionesLoteSeleccionado = [];
     this.direccionSeleccionada = null;

@@ -21,6 +21,8 @@ import { ContactosService } from './../../services/contactos.service';
 import { ImagenesVehiculoComponent } from './../../components/modal/imagenes-vehiculo/imagenes-vehiculo.component';
 import { ModalController } from '@ionic/angular';
 import { MotosService } from '../../services/motos.service';
+import { CamionesService } from '../../services/camiones.service';
+
 @Component({
   selector: 'app-cartas',
   templateUrl: './cartas.component.html',
@@ -52,7 +54,8 @@ export class CartasComponent implements OnInit {
     public contactosService: ContactosService,
     private modalCtrl: ModalController,
     private route: ActivatedRoute,
-    public motosService: MotosService
+    public motosService: MotosService,
+    public camionesService: CamionesService 
   ) { }
 
   ngOnInit() {
@@ -135,27 +138,34 @@ export class CartasComponent implements OnInit {
     });
   }
 
-  toggleEstado(auto: any, event: Event) {
-    event.stopPropagation();
+toggleEstado(auto: any, event: Event) {
+  event.stopPropagation();
 
-    const esMoto = this.ubicacion === 'mis_motos';
-    const svc = esMoto ? this.motosService : this.carsService;
+  const esMoto = this.ubicacion === 'mis_motos';
+  const esCamion = this.ubicacion === 'mis_camiones';
 
-    svc.toggleEstadoVehiculo(auto._id).subscribe({
-      next: () => {
-        auto.estadoVehiculo = auto.estadoVehiculo === 'disponible' ? 'vendido' : 'disponible';
-        this.generalService.alert(
-          'Estado actualizado',
-          `Estado cambiado a "${auto.estadoVehiculo.toUpperCase()}".`,
-          'success'
-        );
-      },
-      error: (err) => {
-        const mensaje = err?.error?.message || 'Error al cambiar el estado.';
-        this.generalService.alert('Error', mensaje, 'danger');
-      },
-    });
-  }
+  const svc = esMoto
+    ? this.motosService
+    : esCamion
+      ? this.camionesService
+      : this.carsService;
+
+  svc.toggleEstadoVehiculo(auto._id).subscribe({
+    next: () => {
+      auto.estadoVehiculo =
+        auto.estadoVehiculo === 'disponible' ? 'vendido' : 'disponible';
+      this.generalService.alert(
+        'Estado actualizado',
+        `Estado cambiado a "${auto.estadoVehiculo.toUpperCase()}".`,
+        'success'
+      );
+    },
+    error: (err) => {
+      const mensaje = err?.error?.message || 'Error al cambiar el estado.';
+      this.generalService.alert('Error', mensaje, 'danger');
+    },
+  });
+}
   eliminarDeFavoritos(autoId: string) {
     this.carsService.eliminarFavorito(autoId).subscribe({
       next: () => {

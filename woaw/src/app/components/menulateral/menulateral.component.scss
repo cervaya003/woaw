@@ -1,5 +1,6 @@
 ion-menu[menuId="menuLateral"] {
   --width: 280px;
+  --menu-toolbar-h: 60px;
 
   @media (max-width: 768px) {
     --width: 200px;

@@ -7,7 +7,6 @@ import { filter } from 'rxjs/operators';
 import { GeneralService } from '../../services/general.service';
 import { PopoverController } from '@ionic/angular';
 import { ModalController } from '@ionic/angular';
-import { MenuVehiculosComponent } from '../../components/menu-vehiculos/menu-vehiculos.component';
 import { HistorealSearchComponent } from '../../components/historeal-search/historeal-search.component';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { PerfilComponent } from '../modal/perfil/perfil.component';
@@ -26,7 +25,10 @@ export class NavbarComponent implements OnInit {
   estaEnHome: boolean = false;
   public isLoggedIn: boolean = false;
   menuCochesAbierto = false;
-  public usuario: string = '...'
+
+  public usuario: string = '...';
+  public fotoPerfil: string | null = null; // ← NUEVO
+
   // -----
   popoverRef: HTMLIonPopoverElement | null = null;
   terminoBusqueda: string = '';
@@ -43,49 +45,92 @@ export class NavbarComponent implements OnInit {
     private popoverCtrl: PopoverController,
     private route: ActivatedRoute,
     public motoservice: MotosService
-  ) { }
+  ) {}
 
   ngOnInit() {
     // Detectar tipo de dispositivo
     this.generalService.dispositivo$.subscribe((tipo) => {
       this.esDispositivoMovil = tipo === 'telefono' || tipo === 'tablet';
     });
+
     // Detectar ruta actual
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe((event: any) => {
         this.estaEnHome = event.urlAfterRedirects === '/home';
       });
+
     this.generalService.tokenExistente$.subscribe((estado) => {
       this.isLoggedIn = estado;
+      // Relee datos por si cambió el usuario en runtime
+      if (estado) this.leerUsuarioLocal();
     });
+
     this.route.params.subscribe((params) => {
       if (this.router.url.includes('/search/vehiculos') && params['termino']) {
         this.terminoBusquedaURL = decodeURIComponent(params['termino']);
       }
     });
+
+    // Leer usuario/foto del storage
+    this.leerUsuarioLocal();
+  }
+
+  // --- helper para leer nombre y foto del localStorage ---
+  private leerUsuarioLocal() {
     const storage = localStorage.getItem('user');
     if (storage) {
-      const usuario = JSON.parse(storage);
-      this.usuario = usuario.nombre?.split(' ')[0] || '';
+      try {
+        const usuario = JSON.parse(storage);
+        // Nombre: tu lógica original
+        this.usuario = usuario.nombre?.split(' ')[0] || '';
+
+        // Foto: busca en múltiples campos comunes
+        this.fotoPerfil = this.getFotoFromUser(usuario);
+      } catch {
+        this.usuario = '...';
+        this.fotoPerfil = null;
+      }
+    } else {
+      this.usuario = '...';
+      this.fotoPerfil = null;
     }
   }
+
+  // --- busca la URL de foto en varias claves posibles ---
+  private getFotoFromUser(u: any): string | null {
+    const candidatos: any[] = [
+      u?.foto, u?.picture, u?.photoURL, u?.photoUrl, u?.image, u?.imageUrl,
+      u?.avatar, u?.avatarUrl, u?.profilePic, u?.profile_picture, u?.profilePhoto,
+      u?._json?.picture, u?._json?.image,
+      u?.providerData?.[0]?.photoURL, u?.datosGoogle?.picture
+    ].filter(Boolean);
+
+    if (!candidatos.length) return null;
+
+    const urlHttp = candidatos.find((v: any) => /^https?:\/\//i.test(String(v)));
+    const url = (urlHttp || String(candidatos[0])).toString().trim();
+
+    return url || null;
+  }
+
   openMenu() {
     this.menu.enable(true, 'menuLateral');
     this.menu.open('menuLateral');
   }
+
   redirecion(url: string) {
     this.router.navigate([url]);
   }
+
   isActive(ruta: string): boolean {
     const url = this.router.url;
-
     if (ruta === 'home') {
       return url === '/home' || url === '/';
     }
-
     return url === `/${ruta}` || url.startsWith(`/${ruta}/`);
   }
+
   getTituloSeccion(): string {
     const ruta = this.router.url;
 
@@ -107,27 +152,15 @@ export class NavbarComponent implements OnInit {
 
     return 'wo-aw';
   }
+
   redirecion_logo() {
     this.router.navigate(['/home']);
   }
+
   async abrirPopover(tipo: 'Autos' | 'Motos' | 'Camiones') {
     this.router.navigate(['/menu-vehiculos', tipo.toLowerCase()]);
   }
-  // async abrirPopover(event: any, tipo: 'Autos' | 'Motos' | 'Camiones') {
-  //   const popover = await this.popoverCtrl.create({
-  //     component: MenuVehiculosComponent,
-  //     event,
-  //     translucent: true,
-  //     showBackdrop: false,
-  //     cssClass: 'popover-coches',
-  //     componentProps: {
-  //       tipoVehiculo: tipo,
-  //     },
-  //   });
 
-  //   await popover.present();
-  // }
-  // ----- -----
   async abrirHistorial(ev: Event) {
     if (this.popoverRef) return;
 
@@ -154,17 +187,17 @@ export class NavbarComponent implements OnInit {
       this.popoverRef = null;
     });
   }
+
   onInputChange(ev: any) {
     const value = ev.detail.value;
     this.terminoBusqueda = value;
     if (this.popoverRef) {
-      this.popoverRef.componentProps = {
-        termino: value,
-      };
+      this.popoverRef.componentProps = { termino: value };
     } else {
       this.abrirHistorial(ev);
     }
   }
+
   irABusqueda(sugerencia: string) {
     const termino = sugerencia.trim();
     if (!termino) return;
@@ -177,6 +210,7 @@ export class NavbarComponent implements OnInit {
     }
     this.router.navigate(['/search/vehiculos', termino]);
   }
+
   guardarStorage(termino: string) {
     const guardado = localStorage.getItem('historialBusqueda');
     let historial: string[] = guardado ? JSON.parse(guardado) : [];
@@ -185,19 +219,17 @@ export class NavbarComponent implements OnInit {
     );
     historial.unshift(termino);
     historial = historial.slice(0, 10);
-
     localStorage.setItem('historialBusqueda', JSON.stringify(historial));
   }
+
   cerrarBuscador() {
     this.mostrarBuscador = false;
     this.terminoBusqueda = '';
   }
 
   async abrirModalPerfil() {
-    // Mostrar spinner
     await this.generalService.loading('Cargando...');
     setTimeout(async () => {
-      // Ocultar spinner
       await this.generalService.loadingDismiss();
       const modal = await this.modalCtrl.create({
         component: PerfilComponent,
@@ -210,5 +242,4 @@ export class NavbarComponent implements OnInit {
       await modal.present();
     }, 500);
   }
-
 }

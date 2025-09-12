@@ -19,12 +19,13 @@ import {
   selector: "app-perfil",
   templateUrl: "./perfil.component.html",
   styleUrls: ["./perfil.component.scss"],
-  standalone: true, // Si usando componentes independientes (standalone)
+  standalone: true,
   imports: [IonicModule, CommonModule, ReactiveFormsModule],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA], //esquema personalizado
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class PerfilComponent implements OnInit {
   usuario: any;
+  fotoPerfil: string | null = null; // ← NUEVO
   formCambio: FormGroup;
   mostrarCambio: boolean = false;
 
@@ -48,8 +49,30 @@ export class PerfilComponent implements OnInit {
   ngOnInit() {
     const storage = localStorage.getItem("user");
     if (storage) {
-      this.usuario = JSON.parse(storage);
+      try {
+        this.usuario = JSON.parse(storage);
+        this.fotoPerfil = this.getFotoFromUser(this.usuario); // ← NUEVO
+      } catch {
+        this.usuario = null;
+        this.fotoPerfil = null;
+      }
     }
+  }
+
+  // ← NUEVO: detecta la URL de foto en distintas claves posibles
+  private getFotoFromUser(u: any): string | null {
+    const candidatos: any[] = [
+      u?.foto, u?.picture, u?.photoURL, u?.photoUrl, u?.image, u?.imageUrl,
+      u?.avatar, u?.avatarUrl, u?.profilePic, u?.profile_picture, u?.profilePhoto,
+      u?._json?.picture, u?._json?.image,
+      u?.providerData?.[0]?.photoURL, u?.datosGoogle?.picture
+    ].filter(Boolean);
+
+    if (!candidatos.length) return null;
+
+    const urlHttp = candidatos.find((v: any) => /^https?:\/\//i.test(String(v)));
+    const url = (urlHttp || String(candidatos[0])).toString().trim();
+    return url || null;
   }
 
   cerrarModal() {
@@ -59,7 +82,6 @@ export class PerfilComponent implements OnInit {
   async cambiarPassword() {
     if (this.formCambio.invalid) return;
 
-    // Mostrar spinner
     await this.generalService.loading("Actualizando contraseña...");
 
     const { password, newPassword, newPasswordconf } = this.formCambio.value;
@@ -73,13 +95,10 @@ export class PerfilComponent implements OnInit {
       );
     }
 
-    const data = {
-      password,
-      newPassword,
-    };
+    const data = { password, newPassword };
 
     this.registroService.cambiarPassword(data).subscribe({
-      next: async (res) => {
+      next: async () => {
         this.formCambio.reset();
         this.mostrarCambio = false;
         await this.generalService.loadingDismiss();
@@ -91,9 +110,8 @@ export class PerfilComponent implements OnInit {
       },
       error: async (err) => {
         await this.generalService.loadingDismiss();
-
         const mensaje =
-          err.error?.message ||
+          err?.error?.message ||
           "No se pudo cambiar la contraseña. Intenta más tarde.";
         await this.generalService.alert("Error", mensaje, "danger");
       },
@@ -105,7 +123,6 @@ export class PerfilComponent implements OnInit {
 
   validarPassword(control: any) {
     const valor = control.value;
-
     if (!valor) return null;
 
     const regex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()\[\]{}\-_=+¿?¡.,;:<>|/~`°¨^\\@_])[\w\WñÑáéíóúÁÉÍÓÚ]{8,}$/;

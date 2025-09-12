@@ -8,11 +8,19 @@
   <div class="carrusel-scroll-wrapper">
     <div class="carrusel-autos">
       <div class="card-auto" *ngFor="let auto of autos" (click)="onCardClick(auto, $event)">
-        <img [src]="auto.imagenes[0]" alt="{{ auto.marca }} {{ auto.modelo }}" />
+
+        <!-- Imagen con fallbacks (autos/motos/camiones) -->
+        <img
+          [src]="auto.imagenes?.length ? auto.imagenes[0]
+                : (auto.imagenPrincipal || auto.imagen || auto.foto || auto.thumbnail || auto.fotoPrincipal || '')"
+          alt="{{ auto.marca }} {{ auto.modelo }}"
+        />
+
         <div class="info">
           <h3>{{ auto.marca }} {{ auto.modelo }} {{ auto.anio }}</h3>
 
-          <p *ngIf="auto.version.length > 0">
+          <!-- AUTOS (como ya lo tenías, pero seguro) -->
+          <p *ngIf="auto?.version?.length > 0">
             <span *ngIf="auto.vehiculo === 'auto' && auto.tipoVenta === 'nuevo'">
               Desde MX ${{ auto.version | priceMin | number:'1.0-0' }}
             </span>
@@ -21,65 +29,43 @@
             </span>
           </p>
 
+          <!-- CAMIONES/MOTOS (precio directo; muchas motos traen 'precio') -->
+          <p *ngIf="!auto?.version?.length && (auto?.precio != null || auto?.precioCamion != null)">
+            MX ${{ (auto.precio ?? auto.precioCamion) | number:'1.0-0' }}
+          </p>
+
           <div class="detalles-auto">
+            <!-- Kilometraje (si aplica) -->
             <div class="item-detalle" *ngIf="auto.kilometraje">
               <ion-icon name="speedometer-outline"></ion-icon>
-              <span title="{{ auto.kilometraje }} km">{{ auto.kilometraje | number:'1.0-0' }} km</span>
+              <span title="{{ auto.kilometraje }} km">
+                {{ auto.kilometraje | number:'1.0-0' }} km
+              </span>
             </div>
+
+            <!-- Transmisión (si aplica) -->
             <div class="item-detalle" *ngIf="auto.transmision">
               <ion-icon name="swap-horizontal-outline"></ion-icon>
               <span title="{{ auto.transmision }}">{{ auto.transmision }}</span>
             </div>
+
+            <!-- MOTOS: cilindrada o tipo de motor -->
+            <div class="item-detalle" *ngIf="auto.cilindrada || auto.tipoMotor">
+              <ion-icon name="construct-outline"></ion-icon>
+              <span
+                [title]="auto.cilindrada ? (auto.cilindrada + ' cc') : auto.tipoMotor">
+                {{ auto.cilindrada ? (auto.cilindrada | number:'1.0-0') + ' cc' : auto.tipoMotor }}
+              </span>
+            </div>
           </div>
         </div>
-        <div [ngClass]="generalService.getClaseTipoBarra(auto.tipoVenta)"></div>
-        <p [ngClass]="generalService.getClaseTipo(auto.tipoVenta)">
+
+        <!-- Badges de tipo de venta (si existe el campo) -->
+        <div *ngIf="auto.tipoVenta" [ngClass]="generalService.getClaseTipoBarra(auto.tipoVenta)"></div>
+        <p *ngIf="auto.tipoVenta" [ngClass]="generalService.getClaseTipo(auto.tipoVenta)">
           {{ auto.tipoVenta }}
         </p>
       </div>
     </div>
   </div>
 </section>
-
-
-<!-- <section class="bloque-carrusel-minicartas">
-
-  <div class="contenedor_texto_minicartas">
-    <h2>Otros</h2>
-    <div class="subrayado-rojo"></div>
-  </div>
-  <div class="carrusel-autos_minicartas">
-
-    <div class="card-auto" *ngFor="let auto of autos" (click)="onCardClick(auto, $event)">
-      <img [src]="auto.imagenes[0]" alt="{{ auto.marca }} {{ auto.modelo }}" />
-      <div class="info">
-        <h3>{{ auto.marca }} {{ auto.modelo }} {{ auto.anio }}</h3>
-
-        <p *ngIf="auto.version.length > 0">
-          <span *ngIf="auto.vehiculo === 'auto' && auto.tipoVenta === 'nuevo'">
-            Desde MX ${{ auto.version | priceMin | number:'1.0-0' }}
-          </span>
-          <span *ngIf="!(auto.vehiculo === 'auto' && auto.tipoVenta === 'nuevo')">
-            MX ${{ auto.version[0]?.Precio | number:'1.0-0' }}
-          </span>
-        </p>
-
-        <div class="detalles-auto_minicartas">
-          <div class="item-detalle" *ngIf="auto.kilometraje">
-            <ion-icon name="speedometer-outline"></ion-icon>
-            <span title="{{ auto.kilometraje }} km">{{ auto.kilometraje | number:'1.0-0' }} km</span>
-          </div>
-          <div class="item-detalle" *ngIf="auto.transmision">
-            <ion-icon name="swap-horizontal-outline"></ion-icon>
-            <span title="{{ auto.transmision }}">{{ auto.transmision }}</span>
-          </div>
-        </div>
-      </div>
-      <div [ngClass]="generalService.getClaseTipoBarra(auto.tipoVenta)"></div>
-      <p [ngClass]="generalService.getClaseTipo(auto.tipoVenta)">
-        {{ auto.tipoVenta }}
-      </p>
-    </div>
-  </div>
-
-</section> -->
