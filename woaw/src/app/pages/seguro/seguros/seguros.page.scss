@@ -24,7 +24,7 @@
 
   min-height: 90svh;
   display: flex;
-  justify-content: left;
+  justify-content: center;
   align-items: flex-start;
   padding-top: 60px;
   z-index: 1;
@@ -33,10 +33,17 @@
     padding-top: 5px;
   }
 
+  .carta_fantasma {
+    position: relative;
+    z-index: 2;
+    max-width: 790px;
+    background: #ffffff;
+  }
+
   .cotiza__card {
     background: #ffffff;
     box-shadow: 0 8px 24px rgba(0, 0, 0, .08);
-    border-radius: 0px 10px 10px 0px;
+    border-radius: 10px 10px 10px 10px;
 
     position: relative;
     z-index: 2;

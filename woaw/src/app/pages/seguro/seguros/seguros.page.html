@@ -6,181 +6,185 @@
 
   <div class="cotiza" *ngIf="!cotizacion">
     <section class="cotiza__card">
-      <header class="cotiza__head" *ngIf="!cotizacion">
-        <span class="badge">Seguro de auto · Woaw</span>
-        <h1>Cotiza tu seguro de auto</h1>
-        <p>En segundos</p>
-      </header>
+      <section class="carta_fantasma">
+        
+        <header class="cotiza__head" *ngIf="!cotizacion">
+          <span class="badge">Seguro de auto · Woaw</span>
+          <h1>Cotiza tu seguro de auto</h1>
+          <p>En segundos</p>
+        </header>
 
-      <div class="progress" *ngIf="!cotizacion">
-        <div class="progress__bar" [style.width.%]="progress()"></div>
-      </div>
-
-      <form [formGroup]="form" *ngIf="!cotizacion">
-
-        <div class="field" *ngIf="currentStep === 1">
-          <label for="marca">Escribe o selecciona la marca</label>
-          <div class="control control--select">
-            <ion-select formControlName="marca" interface="popover" placeholder="Elige una marca..." aria-label="Marca">
-              <ion-select-option [value]="null" disabled>Elige una marca...</ion-select-option>
-              <ion-select-option *ngFor="let m of marcas" [value]="m.id">
-                {{ m.name | titlecase }}
-              </ion-select-option>
-            </ion-select>
-            <button type="button" class="icon-btn" aria-label="Limpiar" (click)="clearMarca()"
-              *ngIf="form.get('marca')?.value">✕</button>
-          </div>
+        <div class="progress" *ngIf="!cotizacion">
+          <div class="progress__bar" [style.width.%]="progress()"></div>
         </div>
 
-        <div class="field" *ngIf="currentStep === 2">
-          <label for="modelo">Selecciona el modelo</label>
-          <div class="control control--select">
-            <ion-select formControlName="modelo" interface="popover" placeholder="Elige un modelo..."
-              aria-label="Modelo">
-              <ion-select-option [value]="null" disabled>Elige un modelo...</ion-select-option>
-              <ion-select-option *ngFor="let mo of modelos" [value]="mo.id">
-                {{ mo.name | titlecase }}
-              </ion-select-option>
-            </ion-select>
-            <button type="button" class="icon-btn" aria-label="Regresar" (click)="clearMarca()">&#x2B05;</button>
-          </div>
-        </div>
+        <form [formGroup]="form" *ngIf="!cotizacion">
 
-        <div class="field" *ngIf="currentStep === 3">
-          <label for="año">Selecciona el año</label>
-          <div class="control control--select">
-            <ion-select formControlName="anio" interface="popover" placeholder="Elige un año..." aria-label="Año">
-              <ion-select-option [value]="null" disabled>Elige un año...</ion-select-option>
-              <ion-select-option *ngFor="let y of anios" [value]="y">
-                {{ y }}
-              </ion-select-option>
-            </ion-select>
-            <button type="button" class="icon-btn" aria-label="Regresar" (click)="clearAnio()">&#x2B05;</button>
-          </div>
-        </div>
-
-        <div class="field" *ngIf="currentStep === 4">
-          <label for="version">Selecciona la versión</label>
-          <div class="control control--select">
-            <ion-select formControlName="version" interface="popover" placeholder="Elige una versión..."
-              aria-label="Versión">
-              <ion-select-option [value]="null" disabled>Elige una versión...</ion-select-option>
-              <ion-select-option *ngFor="let v of versions" [value]="v.id">
-                {{ v.parts | titlecase }}
-              </ion-select-option>
-            </ion-select>
-            <button type="button" class="icon-btn" aria-label="Regresar" (click)="clearVersion()">&#x2B05;</button>
-          </div>
-        </div>
-
-        <div class="field" *ngIf="currentStep === 5">
-          <label>Fecha de nacimiento</label>
-
-          <div class="fecha-flex">
+          <div class="field" *ngIf="currentStep === 1">
+            <label for="marca">Escribe o selecciona la marca</label>
             <div class="control control--select">
-              <ion-select formControlName="nacDia" interface="popover" placeholder="Día" aria-label="Día">
-                <ion-select-option [value]="null" disabled>Día</ion-select-option>
-                <ion-select-option *ngFor="let d of dias" [value]="d">
-                  {{ d }}
+              <ion-select formControlName="marca" interface="popover" placeholder="Elige una marca..."
+                aria-label="Marca">
+                <ion-select-option [value]="null" disabled>Elige una marca...</ion-select-option>
+                <ion-select-option *ngFor="let m of marcas" [value]="m.id">
+                  {{ m.name | titlecase }}
                 </ion-select-option>
               </ion-select>
-              <button type="button" class="icon-btn" aria-label="Regresar" (click)="clearFecha()">&#x2B05;</button>
+              <button type="button" class="icon-btn" aria-label="Limpiar" (click)="clearMarca()"
+                *ngIf="form.get('marca')?.value">✕</button>
             </div>
+          </div>
 
+          <div class="field" *ngIf="currentStep === 2">
+            <label for="modelo">Selecciona el modelo</label>
             <div class="control control--select">
-              <ion-select formControlName="nacMes" interface="popover" placeholder="Mes" aria-label="Mes">
-                <ion-select-option [value]="null" disabled>Mes</ion-select-option>
-                <ion-select-option *ngFor="let m of meses" [value]="m.v">
-                  {{ m.l }}
+              <ion-select formControlName="modelo" interface="popover" placeholder="Elige un modelo..."
+                aria-label="Modelo">
+                <ion-select-option [value]="null" disabled>Elige un modelo...</ion-select-option>
+                <ion-select-option *ngFor="let mo of modelos" [value]="mo.id">
+                  {{ mo.name | titlecase }}
                 </ion-select-option>
               </ion-select>
+              <button type="button" class="icon-btn" aria-label="Regresar" (click)="clearMarca()">&#x2B05;</button>
             </div>
+          </div>
 
+          <div class="field" *ngIf="currentStep === 3">
+            <label for="año">Selecciona el año</label>
             <div class="control control--select">
-              <ion-select formControlName="nacAnio" interface="popover" placeholder="Año" aria-label="Año">
-                <ion-select-option [value]="null" disabled>Año</ion-select-option>
-                <ion-select-option *ngFor="let y of aniosNacimiento" [value]="y">
+              <ion-select formControlName="anio" interface="popover" placeholder="Elige un año..." aria-label="Año">
+                <ion-select-option [value]="null" disabled>Elige un año...</ion-select-option>
+                <ion-select-option *ngFor="let y of anios" [value]="y">
                   {{ y }}
                 </ion-select-option>
               </ion-select>
+              <button type="button" class="icon-btn" aria-label="Regresar" (click)="clearAnio()">&#x2B05;</button>
             </div>
           </div>
-        </div>
 
-        <div class="field" *ngIf="currentStep === 6">
-
-          <label for="cp">Código Postal</label>
-          <div class="control">
-            <input id="cp" type="text" class="form-input" maxlength="5" placeholder="Ej. 76000" formControlName="cp" />
+          <div class="field" *ngIf="currentStep === 4">
+            <label for="version">Selecciona la versión</label>
+            <div class="control control--select">
+              <ion-select formControlName="version" interface="popover" placeholder="Elige una versión..."
+                aria-label="Versión">
+                <ion-select-option [value]="null" disabled>Elige una versión...</ion-select-option>
+                <ion-select-option *ngFor="let v of versions" [value]="v.id">
+                  {{ v.parts | titlecase }}
+                </ion-select-option>
+              </ion-select>
+              <button type="button" class="icon-btn" aria-label="Regresar" (click)="clearVersion()">&#x2B05;</button>
+            </div>
           </div>
 
-          <!-- Género -->
-          <label for="genero" style="margin-top:12px;">Género</label>
-          <div class="control control--select">
-            <ion-select formControlName="genero" interface="popover" placeholder="Selecciona..." aria-label="Género">
-              <ion-select-option [value]="null" disabled>Selecciona...</ion-select-option>
-              <ion-select-option *ngFor="let g of generoOpts" [value]="g.value">
-                {{ g.label }}
-              </ion-select-option>
-            </ion-select>
+          <div class="field" *ngIf="currentStep === 5">
+            <label>Fecha de nacimiento</label>
+
+            <div class="fecha-flex">
+              <div class="control control--select">
+                <ion-select formControlName="nacDia" interface="popover" placeholder="Día" aria-label="Día">
+                  <ion-select-option [value]="null" disabled>Día</ion-select-option>
+                  <ion-select-option *ngFor="let d of dias" [value]="d">
+                    {{ d }}
+                  </ion-select-option>
+                </ion-select>
+                <button type="button" class="icon-btn" aria-label="Regresar" (click)="clearFecha()">&#x2B05;</button>
+              </div>
+
+              <div class="control control--select">
+                <ion-select formControlName="nacMes" interface="popover" placeholder="Mes" aria-label="Mes">
+                  <ion-select-option [value]="null" disabled>Mes</ion-select-option>
+                  <ion-select-option *ngFor="let m of meses" [value]="m.v">
+                    {{ m.l }}
+                  </ion-select-option>
+                </ion-select>
+              </div>
+
+              <div class="control control--select">
+                <ion-select formControlName="nacAnio" interface="popover" placeholder="Año" aria-label="Año">
+                  <ion-select-option [value]="null" disabled>Año</ion-select-option>
+                  <ion-select-option *ngFor="let y of aniosNacimiento" [value]="y">
+                    {{ y }}
+                  </ion-select-option>
+                </ion-select>
+              </div>
+            </div>
           </div>
 
-          <label for="estadoCivil" style="margin-top:12px;">Estado civil</label>
-          <div class="control control--select">
-            <ion-select formControlName="estadoCivil" interface="popover" placeholder="Selecciona..."
-              aria-label="Estado civil">
-              <ion-select-option [value]="null" disabled>Selecciona...</ion-select-option>
-              <ion-select-option *ngFor="let e of estadoCivilOpts" [value]="e.value">
-                {{ e.label }}
-              </ion-select-option>
-            </ion-select>
-            <button type="button" class="icon-btn" aria-label="Regresar" (click)="clearPaso6()">&#x2B05;</button>
+          <div class="field" *ngIf="currentStep === 6">
+
+            <label for="cp">Código Postal</label>
+            <div class="control">
+              <input id="cp" type="text" class="form-input" maxlength="5" placeholder="Ej. 76000"
+                formControlName="cp" />
+            </div>
+
+            <!-- Género -->
+            <label for="genero" style="margin-top:12px;">Género</label>
+            <div class="control control--select">
+              <ion-select formControlName="genero" interface="popover" placeholder="Selecciona..." aria-label="Género">
+                <ion-select-option [value]="null" disabled>Selecciona...</ion-select-option>
+                <ion-select-option *ngFor="let g of generoOpts" [value]="g.value">
+                  {{ g.label }}
+                </ion-select-option>
+              </ion-select>
+            </div>
+
+            <label for="estadoCivil" style="margin-top:12px;">Estado civil</label>
+            <div class="control control--select">
+              <ion-select formControlName="estadoCivil" interface="popover" placeholder="Selecciona..."
+                aria-label="Estado civil">
+                <ion-select-option [value]="null" disabled>Selecciona...</ion-select-option>
+                <ion-select-option *ngFor="let e of estadoCivilOpts" [value]="e.value">
+                  {{ e.label }}
+                </ion-select-option>
+              </ion-select>
+              <button type="button" class="icon-btn" aria-label="Regresar" (click)="clearPaso6()">&#x2B05;</button>
+            </div>
+
           </div>
 
-        </div>
+          <!-- Paso 8: Resumen -->
+          <div class="field" *ngIf="currentStep === 7">
+            <label>Verifica tu información</label>
 
-        <!-- Paso 8: Resumen -->
-        <div class="field" *ngIf="currentStep === 7">
-          <label>Verifica tu información</label>
-
-          <div class="summary">
-            <div class="summary__row">
-              <span class="k">Marca</span><span class="v">{{ getMarcaLabel() }}</span>
-            </div>
-            <div class="summary__row">
-              <span class="k">Modelo</span><span class="v">{{ getModeloLabel() }}</span>
-            </div>
-            <div class="summary__row">
-              <span class="k">Año</span><span class="v">{{ form.get('anio')?.value }}</span>
-            </div>
-            <div class="summary__row">
-              <span class="k">Versión</span><span class="v">{{ getVersionLabel() }}</span>
-            </div>
-            <div class="summary__row">
-              <span class="k">Nacimiento</span><span class="v">{{ getNacimiento() }}</span>
-            </div>
-            <div class="summary__row">
-              <span class="k">C.P.</span><span class="v">{{ form.get('cp')?.value }}</span>
-            </div>
-            <div class="summary__row">
-              <span class="k">Género</span><span class="v">{{ getGeneroLabel() }}</span>
-            </div>
-            <div class="summary__row">
-              <span class="k">Estado civil</span><span class="v">{{ getEstadoCivilLabel() }}</span>
-            </div>
-            <!-- <div class="summary__row">
+            <div class="summary">
+              <div class="summary__row">
+                <span class="k">Marca</span><span class="v">{{ getMarcaLabel() }}</span>
+              </div>
+              <div class="summary__row">
+                <span class="k">Modelo</span><span class="v">{{ getModeloLabel() }}</span>
+              </div>
+              <div class="summary__row">
+                <span class="k">Año</span><span class="v">{{ form.get('anio')?.value }}</span>
+              </div>
+              <div class="summary__row">
+                <span class="k">Versión</span><span class="v">{{ getVersionLabel() }}</span>
+              </div>
+              <div class="summary__row">
+                <span class="k">Nacimiento</span><span class="v">{{ getNacimiento() }}</span>
+              </div>
+              <div class="summary__row">
+                <span class="k">C.P.</span><span class="v">{{ form.get('cp')?.value }}</span>
+              </div>
+              <div class="summary__row">
+                <span class="k">Género</span><span class="v">{{ getGeneroLabel() }}</span>
+              </div>
+              <div class="summary__row">
+                <span class="k">Estado civil</span><span class="v">{{ getEstadoCivilLabel() }}</span>
+              </div>
+              <!-- <div class="summary__row">
               <span class="k">Duración</span><span class="v">{{ form.get('duracion')?.value }} meses</span>
             </div> -->
+            </div>
+
+            <button type="button" class="icon-btn" aria-label="Regresar" (click)="clearPaso8()">&#x2B05;</button>
+
           </div>
 
-          <button type="button" class="icon-btn" aria-label="Regresar" (click)="clearPaso8()">&#x2B05;</button>
-
-        </div>
-
-        <!-- Acciones -->
-        <div class="actions">
-          <!-- <button class="btn-back">hey</button> -->
-          <button class="btn-primary" type="button" (click)="siguiente()" [disabled]="
+          <!-- Acciones -->
+          <div class="actions">
+            <!-- <button class="btn-back">hey</button> -->
+            <button class="btn-primary" type="button" (click)="siguiente()" [disabled]="
               (currentStep===1 && form.get('marca')?.invalid) ||
               (currentStep===2 && form.get('modelo')?.invalid) ||
               (currentStep===3 && form.get('anio')?.invalid)   ||
@@ -188,10 +192,11 @@
               (currentStep===5 && form.errors)                 ||
               (currentStep===6 && (form.get('cp')?.invalid || form.get('genero')?.invalid || form.get('estadoCivil')?.invalid))
             ">
-            {{ currentStep < 7 ? 'Siguiente ' : 'Cotizar' }} </button>
-        </div>
+              {{ currentStep < 7 ? 'Siguiente ' : 'Cotizar' }} </button>
+          </div>
 
-      </form>
+        </form>
+      </section>
     </section>
   </div>
 
