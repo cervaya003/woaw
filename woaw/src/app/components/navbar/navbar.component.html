@@ -82,13 +82,27 @@
           Publicar
         </button>
 
+        <!-- USUARIO (con foto de Google si existe) -->
         <div class="usuario-info" *ngIf="isLoggedIn" (click)="abrirModalPerfil()">
           <img *ngIf="!esDispositivoMovil" src="assets/icon/mexico.png" alt="MX" class="icono-bandera" />
           <div class="contenedor-nombre">
-            <ion-icon name="person-outline" class="user"></ion-icon>
+            <ng-container *ngIf="fotoPerfil; else iconoDefault">
+              <img
+                [src]="fotoPerfil"
+                alt="Foto de perfil"
+                width="20" height="20"
+                style="border-radius:50%; object-fit:cover;"
+                referrerpolicy="no-referrer"
+                (error)="fotoPerfil = null"
+              />
+            </ng-container>
+            <ng-template #iconoDefault>
+              <ion-icon name="person-outline" class="icono-user"></ion-icon>
+            </ng-template>
             <span class="nombre-usuario">{{ usuario }}</span>
           </div>
         </div>
+        <!-- /USUARIO -->
       </ng-container>
 
       <ion-button fill="clear" class="stack" [ngClass]="{ 'activo': isActive('favoritos') }"

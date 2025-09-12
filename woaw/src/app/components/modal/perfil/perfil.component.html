@@ -19,7 +19,10 @@
   <ion-card *ngIf="!mostrarCambio">
     <ion-list class="perfil-grid" lines="none">
       <ion-item>
-        <ion-icon slot="start" name="person-circle-outline"></ion-icon>
+        <ion-avatar *ngIf="fotoPerfil" slot="start">
+          <img [src]="fotoPerfil" alt="Foto de perfil" referrerpolicy="no-referrer" (error)="fotoPerfil = null" />
+        </ion-avatar>
+
         <ion-label>
           <h2>{{ usuario?.nombre }} {{ usuario?.apellidos }}</h2>
           <p>Nombre completo</p>
