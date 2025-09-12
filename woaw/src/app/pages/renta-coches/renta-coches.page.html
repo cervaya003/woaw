@@ -1,3 +1,4 @@
+<!-- 
 <app-navbar></app-navbar>
 
 <ion-content #pageContent [fullscreen]="true">
@@ -27,7 +28,6 @@
       </ion-col>
 
       <ion-col size="12" size-md="9">
-        <!-- ============= TODOS ============= -->
         <ng-container *ngIf="vistaActiva === 'todos'">
           <ion-spinner *ngIf="loading" name="crescent" class="loading-spinner"></ion-spinner>
 
@@ -77,7 +77,6 @@
             </ion-card>
           </div>
 
-          <!-- Paginación (TODOS) -->
           <div class="contenedor-paginacion" *ngIf="totalPaginasTodos > 1">
             <div class="paginacion-scroll">
               <div class="paginacion">
@@ -99,7 +98,6 @@
           </div>
         </ng-container>
 
-        <!-- ============= MIS COCHES ============= -->
         <ng-container *ngIf="vistaActiva === 'mios'">
           <div *ngIf="(miosPaginados?.length || 0) === 0" class="no-coches">
             <ion-icon name="car-outline" class="icono-carro"></ion-icon>
@@ -147,7 +145,6 @@
             </ion-card>
           </div>
 
-          <!-- Paginación (MIOS) -->
           <div class="contenedor-paginacion" *ngIf="totalPaginasMios > 1">
             <div class="paginacion-scroll">
               <div class="paginacion">
@@ -175,7 +172,6 @@
   <app-footer></app-footer>
 </ion-content>
 
-<!-- Modal propio para coches del dueño (fuera de ion-content) -->
 <ion-modal [isOpen]="modalOpen" (didDismiss)="onModalDismiss()" class="mio-modal" [backdropDismiss]="true" mode="md">
   <ng-template>
     <div class="mio-modal__box">
@@ -192,4 +188,30 @@
       </ion-button>
     </div>
   </ng-template>
-</ion-modal>
+</ion-modal> -->
+
+
+
+<app-navbar></app-navbar>
+
+<ion-content [fullscreen]="true">
+
+  <img  [src]="imgenPrincipal" alt="Próximamente WOAW" class="img-responsiva" />
+
+
+  <div class="hero-overlay">
+    <span class="eyebrow">
+      <span class="dot"></span> Próximamente
+    </span>
+
+    <h1>Renta de autos <span class="brand">WOAW</span></h1>
+    <p class="lead">Muy pronto una nueva forma de llegar a tu destino. Muévete facil, seguro y cómodo.</p>
+    <ul class="chips" role="list" aria-label="ventajas">
+      <li class="chip" role="listitem">Reserva inmediata</li>
+      <li class="chip" role="listitem">Sin depósito</li>
+      <li class="chip" role="listitem">Cobertura básica incluida</li>
+    </ul>
+  </div>
+
+  <app-footer></app-footer>
+</ion-content>

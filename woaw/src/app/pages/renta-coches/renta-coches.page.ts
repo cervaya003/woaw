@@ -5,7 +5,7 @@ import { Router, NavigationStart } from '@angular/router';
 import { RentaService } from '../../services/renta.service';
 import { ListComponent } from '../../components/filtos/list/list.component';
 import { filter } from 'rxjs/operators';
-
+import { GeneralService } from '../../services/general.service';
 
 type NumOrDots = number | string;
 type Segmento = 'todos' | 'mios';
@@ -29,6 +29,8 @@ export class RentaCochesPage implements OnInit, OnDestroy {
   private currentUserId: string | null = null;
 
   vistaActiva: Segmento = 'todos';
+
+  imgenPrincipal: string = '';
 
   todosStorage: any[] = [];
   todosFiltrados: any[] = [];
@@ -68,7 +70,7 @@ export class RentaCochesPage implements OnInit, OnDestroy {
   constructor(
     private rentaService: RentaService,
     private popoverCtrl: PopoverController,
-
+    private generalService: GeneralService,
     private router: Router
   ) {
     // Fallback: si empieza cualquier navegación, cerramos/limpiamos el modal
@@ -85,6 +87,18 @@ export class RentaCochesPage implements OnInit, OnDestroy {
     this.refreshCurrentUserId();
     this.cargarTodos();
     this.cargarMios();
+    this.cargaimagen();
+  }
+
+  async cargaimagen() {
+    this.imgenPrincipal = '/assets/autos/publicidad/renta.png';
+    this.generalService.addPreload(this.imgenPrincipal, 'image');
+    try {
+      await Promise.all([
+        this.generalService.preloadHero(this.imgenPrincipal, 4500),
+      ]);
+    } finally {
+    }
   }
 
   ngOnDestroy(): void {

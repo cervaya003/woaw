@@ -42,7 +42,7 @@
 
     &.field-grid {
         display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
         gap: 6px 10px;
 
         >div {
@@ -52,10 +52,17 @@
         >.full {
             grid-column: 1 / -1;
         }
+
+        /* asegura mínimo 2 columnas */
+        grid-template-columns: repeat(2, 1fr);
+
+        @media (min-width: 900px) {
+            /* cuando hay más espacio, máximo 3 columnas */
+            grid-template-columns: repeat(3, 1fr);
+        }
     }
 
-
-    .fecha-flex {
+    ƒ .fecha-flex {
         display: flex;
         gap: 5px;
         align-items: center;
@@ -163,6 +170,11 @@
         }
     }
 
+    .error {
+        color: #ff2121;
+        font-size: clamp(10px, 1vw, 12px);
+        margin-top: 4px;
+    }
 }
 
 .paybox__cta {

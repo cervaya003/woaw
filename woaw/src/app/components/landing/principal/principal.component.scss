@@ -480,13 +480,13 @@
 
     .stores img {
       display: block;
-      width: clamp(50px, 10vw, 150px);
+      width: clamp(60px, 10vw, 150px);
       height: auto;
     }
 
     .play img {
       display: block;
-      width: clamp(45px, 10vw, 100px);
+      width: clamp(25px, 10vw, 80px);
       height: auto;
     }
   }

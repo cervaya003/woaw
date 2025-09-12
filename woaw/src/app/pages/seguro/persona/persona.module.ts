@@ -4,9 +4,9 @@ import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { PolizaPageRoutingModule } from './poliza-routing.module';
+import { PersonaPageRoutingModule } from './persona-routing.module';
 
-import { PolizaPage } from './poliza.page';
+import { PersonaPage } from './persona.page';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NavbarComponent } from '../../../components/navbar/navbar.component';
 import { MenuComponent } from '../../../components/filtos/menu/menu.component';
@@ -20,7 +20,7 @@ import { FooterComponent } from '../../../components/footer/footer.component';
     CommonModule,
     FormsModule,
     IonicModule,
-    PolizaPageRoutingModule,
+    PersonaPageRoutingModule,
     NavbarComponent,
     MenuComponent,
     CartasComponent,
@@ -29,6 +29,6 @@ import { FooterComponent } from '../../../components/footer/footer.component';
     AddComponent,
     ReactiveFormsModule
   ],
-  declarations: [PolizaPage]
+  declarations: [PersonaPage]
 })
-export class PolizaPageModule { }
+export class PersonaPageModule { }
