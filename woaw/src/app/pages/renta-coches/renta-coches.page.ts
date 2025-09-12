@@ -6,7 +6,7 @@ import { Router, NavigationStart } from '@angular/router';
 import { RentaService, ListarCochesResp } from '../../services/renta.service';
 import { ListComponent } from '../../components/filtos/list/list.component';
 import { filter } from 'rxjs/operators';
-
+import { GeneralService } from '../../services/general.service';
 
 type NumOrDots = number | string;
 type Segmento = 'todos' | 'mios';

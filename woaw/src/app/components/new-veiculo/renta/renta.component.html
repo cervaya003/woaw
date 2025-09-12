@@ -1,7 +1,6 @@
 <section class="renta">
   <!-- Resumen/encabezado -->
   <div class="resumen">
-
     <button type="button" class="btn-publicar" (click)="publicar()">
       <ion-icon name="save-outline"></ion-icon>
       Publicar
@@ -16,7 +15,6 @@
   <!-- Ubicación + Imágenes -->
   <div class="bloques">
     <div class="bloque">
-
       <button type="button" class="btn btn-lg btn-green" (click)="seleccionarUbicacion()">
         <ion-icon name="location-outline"></ion-icon>
         Seleccionar ubicación
@@ -30,7 +28,6 @@
 
     <div class="bloque">
       <div class="grupo-botones">
-
         <button class="btn btn-lg btn-blue" type="button" (click)="seleccionarImagenes()">
           <ion-icon name="image-outline"></ion-icon>
           Seleccionar imágenes
@@ -45,13 +42,11 @@
 
       <label class="tc">
         <span class="tc__label">Tarjeta de circulación (opcional)</span>
-
         <button type="button" class="btn btn-soft btn-full" (click)="fileTC.click()">
           <ion-icon name="document-attach-outline"></ion-icon>
           Subir archivo
         </button>
         <input #fileTC type="file" (change)="onFileTC($event)" accept="image/*,application/pdf" hidden>
-
         <small class="tc__filename" *ngIf="tarjetaCirculacion">{{ tarjetaCirculacion.name }}</small>
       </label>
     </div>
@@ -61,7 +56,6 @@
   <div class="grid">
     <!-- Tipo de vehículo -->
     <div class="campo">
-
       <label>Tipo de vehículo</label>
       <select [(ngModel)]="tipoVehiculoLocal">
         <option value="">Seleccione…</option>
@@ -76,7 +70,6 @@
 
     <!-- Transmisión -->
     <div class="campo">
-
       <label>Transmisión</label>
       <select [(ngModel)]="transmision">
         <option value="">Seleccione…</option>
@@ -88,7 +81,6 @@
 
     <!-- Combustible -->
     <div class="campo">
-
       <label>Combustible</label>
       <select [(ngModel)]="combustible">
         <option value="">Seleccione…</option>
@@ -104,52 +96,13 @@
       <label>Pasajeros</label>
       <input type="number" min="1" [(ngModel)]="pasajeros" placeholder="Ej. 5">
     </div>
-
-  </div>
-
-  <!-- Ficha técnica (como en venta) -->
-  <div class="grid" *ngIf="versionesDisponibles && especificacionesVersion">
-    <div class="campo" style="grid-column: 1 / -1;">
-      <div
-        style="background:#fff;border-left:4px solid #fa2929;border-radius:10px;padding:10px;box-shadow:0 2px 8px rgba(0,0,0,.06);max-width:600px;">
-        <h4 style="margin:0 0 8px 0;">Ficha técnica</h4>
-        <ul style="list-style:none;padding:0;margin:0;">
-          <li *ngIf="especificacionesVersion.motor"><strong>Motor:</strong> {{ especificacionesVersion.motor }}</li>
-          <li *ngIf="especificacionesVersion.potencia"><strong>Potencia:</strong> {{ especificacionesVersion.potencia }}
-          </li>
-          <li *ngIf="especificacionesVersion.cilindros"><strong>Cilindros:</strong> {{ especificacionesVersion.cilindros
-            }}</li>
-          <li *ngIf="especificacionesVersion.transmision"><strong>Transmisión:</strong> {{
-            especificacionesVersion.transmision }}</li>
-          <li *ngIf="especificacionesVersion.traccion"><strong>Tracción:</strong> {{ especificacionesVersion.traccion }}
-          </li>
-          <li *ngIf="especificacionesVersion.combustible"><strong>Combustible:</strong> {{
-            especificacionesVersion.combustible }}</li>
-          <li *ngIf="especificacionesVersion.pasajeros"><strong>Pasajeros:</strong> {{ especificacionesVersion.pasajeros
-            }}</li>
-          <li *ngIf="especificacionesVersion.puertas"><strong>Puertas:</strong> {{ especificacionesVersion.puertas }}
-          </li>
-          <li *ngIf="especificacionesVersion.rines"><strong>Rines:</strong> {{ especificacionesVersion.rines }}</li>
-          <li *ngIf="especificacionesVersion.tipoVehiculo"><strong>Tipo de vehículo:</strong> {{
-            especificacionesVersion.tipoVehiculo }}</li>
-          <li *ngIf="especificacionesVersion.extra?.length">
-            <strong>Extras:</strong>
-            <ul style="margin:6px 0 0 16px;">
-              <li *ngFor="let e of especificacionesVersion.extra">{{ e }}</li>
-            </ul>
-          </li>
-        </ul>
-      </div>
-    </div>
   </div>
 
   <!-- Precio -->
   <div class="grid">
     <div class="campo">
-
       <label>Precio por día <span class="req">*</span></label>
       <input type="number" min="500" [(ngModel)]="precioPorDia" placeholder="Ej. 900" />
-
     </div>
   </div>
 
@@ -169,7 +122,7 @@
           placeholder="Escribe el extra" (keyup.enter)="agregarExtra()" style="margin-top:6px;" />
 
         <button type="button" class="btn btn-soft" (click)="agregarExtra()">Agregar</button>
-        <button type="button" class="btn btn-danger btn-soft" (click)="limpiarExtras()" [disabled]="!extras?.length">
+        <button type="button" class="btn btn-danger btn-soft" (click)="limpiarExtras()" [disabled]="!extras.length">
           Limpiar extras
         </button>
       </div>
@@ -230,7 +183,6 @@
     <div class="campo">
       <label>Entrega gratis hasta (km)</label>
       <input type="number" min="0" [(ngModel)]="entrega.gratuitoHastaKm" (ngModelChange)="onGratisHastaChange()">
-
     </div>
   </div>
 
@@ -239,7 +191,6 @@
     <div class="tarifas__header">
       <label class="tarifas__title">Tarifas por distancia</label>
       <button type="button" class="btn btn-soft btn-sm" (click)="addTarifa()">+ Agregar tarifa</button>
-
     </div>
     <p class="hint">Agrega al menos una tarifa o especifica “Entrega gratis hasta (km)”.</p>
 
