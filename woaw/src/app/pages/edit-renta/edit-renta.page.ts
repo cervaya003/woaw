@@ -19,13 +19,13 @@ export class EditRentaPage implements OnInit {
 
   id!: string;
 
-
   renta: any = {
     marca: '',
     modelo: '',
     anio: null, // visual only
     precioPorDia: 0,
     moneda: 'MXN', // visual only (no se envía)
+
     politicaCombustible: 'lleno-lleno',
     politicaLimpieza: 'normal',
     requisitosConductor: {
@@ -81,6 +81,7 @@ export class EditRentaPage implements OnInit {
   }
 
   // ===== Helpers de fecha (sólo UI de póliza) =====
+
   private toYMD(value: any): string {
     if (!value) return '';
     const d = new Date(value);
@@ -90,6 +91,7 @@ export class EditRentaPage implements OnInit {
     const dd = String(d.getDate()).padStart(2, '0');
     return `${yyyy}-${mm}-${dd}`;
   }
+
 
   // ===== snapshot/dirty =====
   private snapshotState() {
@@ -111,11 +113,13 @@ export class EditRentaPage implements OnInit {
         const price = res?.precio ?? {};
         const req = res?.requisitosConductor ?? {};
         const ent = res?.entrega ?? {};
+
         const pol = res?.polizaPlataforma ?? {}; // sólo UI
 
         const normalizada = {
           marca: res?.marca ?? this.renta.marca,
           modelo: res?.modelo ?? this.renta.modelo,
+
           anio: res?.anio ?? this.renta.anio, // visual only
 
           // precio (normaliza por compatibilidad)
@@ -143,6 +147,7 @@ export class EditRentaPage implements OnInit {
           },
 
           // póliza solo UI
+
           polizaPlataforma: {
             numero: pol?.numero ?? this.renta.polizaPlataforma.numero,
             aseguradora: pol?.aseguradora ?? this.renta.polizaPlataforma.aseguradora,
@@ -213,7 +218,9 @@ export class EditRentaPage implements OnInit {
     }
     const anterior = this.renta.entrega.tarifasPorDistancia.at(-1);
     this.renta.entrega.tarifasPorDistancia.push({
+
       desdeKm: anterior ? (Number(anterior.hastaKm) || 0) : (Number(this.renta.entrega.gratuitoHastaKm) || 0),
+
       hastaKm: 0,
       costoFijo: 0,
       costoPorKm: 0,
@@ -309,6 +316,7 @@ export class EditRentaPage implements OnInit {
       return;
     }
 
+
     await this.general.loading('Guardando...');
 
     try {
@@ -376,4 +384,5 @@ export class EditRentaPage implements OnInit {
   }
 
   regresar() { this.router.navigate(['/mis-autos']); }
+
 }

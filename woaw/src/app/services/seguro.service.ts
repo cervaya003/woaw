@@ -45,15 +45,19 @@ export class SeguroService {
       headers: { 'Content-Type': 'application/json' }
     });
   }
-  enviarEmailContratacion(datos: any): Observable<any> {
-    return from(this.headersService.obtenerToken()).pipe(
-      switchMap((token) => {
-        const headers = this.headersService.getJsonHeaders(token);
-        return this.http.get(`${environment.api_key}/cars/tipos`, {
-          headers,
-        });
-      }),
-      catchError((error) => this.headersService.handleError(error))
-    );
+  optenerPaises(): Observable<any> {
+    return this.http.get(`${environment.api_key}/info/paises`);
+  }
+  optenerEstados(): Observable<any> {
+    return this.http.get(`${environment.api_key}/info/mexico-states`);
+  }
+  optenerActEcon(): Observable<any> {
+    return this.http.get(`${environment.api_key}/info/actividades-economicas`);
+  }
+  crearPersona(dto: CotizacionDTO): Observable<any> {
+    const url = `${environment.api_key}/crabi/users/register`;
+    return this.http.post(url, dto, {
+      headers: { 'Content-Type': 'application/json' }
+    });
   }
 }

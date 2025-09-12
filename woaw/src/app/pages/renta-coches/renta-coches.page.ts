@@ -2,6 +2,7 @@
 import { Component, OnInit, ViewChild, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { IonContent, PopoverController } from '@ionic/angular';
 import { Router, NavigationStart } from '@angular/router';
+
 import { RentaService, ListarCochesResp } from '../../services/renta.service';
 import { ListComponent } from '../../components/filtos/list/list.component';
 import { filter } from 'rxjs/operators';
@@ -68,7 +69,7 @@ export class RentaCochesPage implements OnInit, OnDestroy {
   constructor(
     private rentaService: RentaService,
     private popoverCtrl: PopoverController,
-
+    private generalService: GeneralService,
     private router: Router
   ) {
     // Fallback: si empieza cualquier navegación, cerramos/limpiamos el modal
@@ -104,7 +105,6 @@ export class RentaCochesPage implements OnInit, OnDestroy {
       this.currentUserId = null;
     }
   }
-
   /** Normaliza precio por día desde varias formas posibles del backend */
   precioPorDia(c: any): number {
     const v =
@@ -121,6 +121,7 @@ export class RentaCochesPage implements OnInit, OnDestroy {
     this.error = null;
 
     this.rentaService.listarCoches().subscribe({
+
       next: (res: ListarCochesResp) => {
         const items = res?.rentals ?? [];
         // En "todos", ocultamos inactivos

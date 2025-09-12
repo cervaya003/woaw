@@ -1,19 +1,19 @@
-import { Component, OnInit, OnDestroy, NgZone } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { IonicModule, MenuController, ModalController } from '@ionic/angular';
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Component, OnInit, OnDestroy, NgZone } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { IonicModule, MenuController, ModalController } from "@ionic/angular";
+import { CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
+import { Router } from "@angular/router";
+import { Subscription } from "rxjs";
 
-import { GeneralService } from '../../services/general.service';
-import { PerfilComponent } from '../modal/perfil/perfil.component';
+import { GeneralService } from "../../services/general.service";
+import { PerfilComponent } from "../modal/perfil/perfil.component";
 
-type SectionKey = 'configuracion' | 'servicios' | 'publicaciones';
+type SectionKey = "configuracion" | "servicios" | "publicaciones";
 
 @Component({
-  selector: 'app-menulateral',
-  templateUrl: './menulateral.component.html',
-  styleUrls: ['./menulateral.component.scss'],
+  selector: "app-menulateral",
+  templateUrl: "./menulateral.component.html",
+  styleUrls: ["./menulateral.component.scss"],
   standalone: true,
   imports: [IonicModule, CommonModule],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -24,12 +24,19 @@ export class MenulateralComponent implements OnInit, OnDestroy {
 
   private readonly MENU_CLOSE_DELAY_MS = 250;
   private subs: Subscription[] = [];
+  private readonly ALLOWED_ROLES = new Set(["admin", "vendedor", "lotero"]);
+  get isPublisher(): boolean {
+    return this.isLoggedIn && this.ALLOWED_ROLES.has(this.MyRole || "");
+  }
 
- expandedSections: Record<'configuracion' | 'servicios' | 'publicaciones', boolean> = {
-  configuracion: false,
-  servicios: false,
-  publicaciones: false,
-};
+  expandedSections: Record<
+    "configuracion" | "servicios" | "publicaciones",
+    boolean
+  > = {
+    configuracion: false,
+    servicios: false,
+    publicaciones: false,
+  };
   constructor(
     private router: Router,
     private menuCtrl: MenuController,
@@ -45,15 +52,22 @@ export class MenulateralComponent implements OnInit, OnDestroy {
         const before = this.isLoggedIn;
         this.isLoggedIn = estado;
 
-        // Si NO hay sesión -> abre Configuración y Servicios
-        if (!estado) {
-          this.setSections({ configuracion: true, servicios: true });
-        }
-
-        // Si acaba de iniciar sesión -> restablece a colapsado (como pediste “en los otros así déjalo”)
+      if (estado === false) {
+      this.setSections({
+        configuracion: false,
+        servicios: true,
+        publicaciones: false
+      });
+      return;
+    }
         if (before === false && estado === true) {
-          this.setSections({ configuracion: false, servicios: false });
-        }
+      this.setSections({
+        configuracion: false,   // no abras "Cuenta"
+        servicios: true,        // queda desplegado
+        publicaciones: false    // el rol decide si se muestra; inicia cerrada
+      });
+      return;
+    }
       })
     );
 
@@ -61,6 +75,7 @@ export class MenulateralComponent implements OnInit, OnDestroy {
     this.subs.push(
       this.generalService.tipoRol$.subscribe((rol) => {
         this.MyRole = rol;
+        if (!this.isPublisher) this.setSections({ publicaciones: false });
       })
     );
   }
@@ -77,69 +92,72 @@ export class MenulateralComponent implements OnInit, OnDestroy {
     };
   }
 
+  private closeAll() {
+    (Object.keys(this.expandedSections) as SectionKey[]).forEach((k) => {
+      this.expandedSections[k] = false;
+    });
+  }
 
-private closeAll() {
-  (Object.keys(this.expandedSections) as SectionKey[]).forEach(k => {
-    this.expandedSections[k] = false;
-  });
-}
-
- toggleSection(section: SectionKey) {
-  const willOpen = !this.expandedSections[section]; // estado deseado para la clickeada
-  this.closeAll();                                  // cierra todas
-  this.expandedSections[section] = willOpen;        // abre solo la seleccionada (o queda todo cerrado si estaba abierta)
-}
+  toggleSection(section: SectionKey) {
+    const willOpen = !this.expandedSections[section]; // estado deseado para la clickeada
+    this.closeAll(); // cierra todas
+    this.expandedSections[section] = willOpen; // abre solo la seleccionada (o queda todo cerrado si estaba abierta)
+  }
 
   async redirecion(url: string) {
     try {
-      const target = '/' + url.replace(/^\/+/, '');
+      const target = "/" + url.replace(/^\/+/, "");
       if (this.router.url === target) {
-        await this.menuCtrl.close('menuLateral');
+        await this.menuCtrl.close("menuLateral");
         return;
       }
-      await this.menuCtrl.close('menuLateral');
+      await this.menuCtrl.close("menuLateral");
       await this.sleep(this.MENU_CLOSE_DELAY_MS);
       this.zone.run(() => this.router.navigateByUrl(target));
     } catch (err) {
-      console.error('❌ Redirección fallida:', err);
+      console.error("❌ Redirección fallida:", err);
     }
   }
 
   cerrarMenu() {
-    this.menuCtrl.close('menuLateral');
+    this.menuCtrl.close("menuLateral");
   }
 
   isActive(url: string): boolean {
-    const target = '/' + url.replace(/^\/+/, '');
+    const target = "/" + url.replace(/^\/+/, "");
     return this.router.url === target;
   }
 
   async logout() {
     this.generalService.confirmarAccion(
-      '¿Deseas salir?',
-      '¿Estás seguro de que deseas salir de la aplicación?',
+      "¿Deseas salir?",
+      "¿Estás seguro de que deseas salir de la aplicación?",
       async () => {
         this.generalService.eliminarToken();
-        await this.menuCtrl.close('menuLateral');
+        await this.menuCtrl.close("menuLateral");
         await this.sleep(300);
         this.zone.run(() => {
-          this.router.navigate(['/home']);
-          this.generalService.alert('¡Saliste de tu sesión!', '¡Hasta pronto!', 'info');
+          this.router.navigate(["/home"]);
+          this.generalService.alert(
+            "¡Saliste de tu sesión!",
+            "¡Hasta pronto!",
+            "info"
+          );
         });
       }
     );
   }
 
   async abrirModalPerfil() {
-    await this.generalService.loading('Cargando...');
-    await this.menuCtrl.close('menuLateral');
+    await this.generalService.loading("Cargando...");
+    await this.menuCtrl.close("menuLateral");
     await this.sleep(200);
     await this.generalService.loadingDismiss();
 
     const modal = await this.modalCtrl.create({
       component: PerfilComponent,
-      breakpoints: [0, 0.5,0.8, 1],
-      cssClass: 'modal-perfil',
+      breakpoints: [0, 0.5, 0.8, 1],
+      cssClass: "modal-perfil",
       initialBreakpoint: 0.8,
       handle: true,
       showBackdrop: true,
@@ -149,9 +167,9 @@ private closeAll() {
 
   abrirmodal() {
     this.generalService.alert(
-      'Error de conexión',
-      'Ups, algo salió mal vuelve a intentarlo',
-      'info'
+      "Error de conexión",
+      "Ups, algo salió mal vuelve a intentarlo",
+      "info"
     );
   }
 

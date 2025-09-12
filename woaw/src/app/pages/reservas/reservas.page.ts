@@ -167,6 +167,7 @@ export class ReservasPage implements OnInit {
     }
 
     const porDia = this.coche?.precio?.porDia ?? this.coche?.precioPorDia ?? 0;
+
     const dias = this.dias || 1;
     this.total = (porDia || 0) * dias;
   }

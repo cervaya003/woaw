@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../environments/environment';
-import { Observable, from } from 'rxjs';
-import { switchMap, catchError, map, tap } from 'rxjs/operators';
+import { Observable, from, throwError } from 'rxjs';
+import { switchMap, catchError, map } from 'rxjs/operators';
+
 import { HeadersService } from './headers.service';
 
 export interface RentaFiltro {
@@ -30,6 +31,93 @@ export interface RentaFiltro {
 export interface ListarCochesResp {
   contador: number;
   rentals: any[];
+}
+
+// === Booking domain (alineado a tu backend) ===
+export type BookingStatus = 'pendiente' | 'aceptada' | 'en_curso' | 'finalizada' | 'cancelada';
+
+export interface LineItem {
+  concepto: string;
+  tipo?: string;
+  cantidad: number;        // >= 1
+  precioUnitario: number;  // >= 0
+  subtotal: number;        // cantidad * precioUnitario
+}
+
+export interface Pago {
+  estatus: 'no_pagado' | 'preautorizado' | 'pagado' | 'reembolsado';
+  metodo?: string;
+  referencia?: string;
+  monto?: number;
+  moneda?: string; // MXN por defecto
+}
+
+export interface Deposito {
+  estatus: 'no_aplicado' | 'preautorizado' | 'cobrado' | 'liberado' | 'parcial_retenido';
+  referencia?: string;
+  monto?: number;
+}
+
+export interface CheckInfo {
+  fecha?: string;        // ISO
+  combustible?: number;  // 0..100
+  fotos?: string[];      // URLs
+  notas?: string;
+}
+
+export interface RentalBooking {
+  _id: string;
+  codigo?: string;
+  rentalCar: string;              // ObjectId
+  usuario: string;                // ObjectId
+  fechaInicio: string;            // ISO
+  fechaFin: string;               // ISO
+  estatus: BookingStatus;
+  moneda: string;                 // default MXN
+  items: LineItem[];
+  total: number;
+
+  pago: Pago;
+  deposito: Deposito;
+
+  checkIn?: CheckInfo | null;
+  checkOut?: CheckInfo | null;
+
+  contratoURL?: string | null;
+  politicaCancelacion?: string | null;
+  aceptoTerminos: boolean;
+  aceptoTerminosFecha?: string | null;
+
+  fechasFlujo?: {
+    aceptadaEn?: string;
+    inicioReal?: string;
+    finReal?: string;
+    canceladaEn?: string;
+  };
+
+  motivoCancelacion?: string | null;
+  notasCliente?: string | null;
+  notasOperador?: string | null;
+
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CreateBookingInput {
+  rentalCar: string;
+  fechaInicio: string | Date;    // se normaliza a ISO
+  fechaFin: string | Date;       // se normaliza a ISO
+  items?: LineItem[] | string;   // el backend hace parseMaybeJSON
+  total?: number;                // opcional (el backend lo calcula si no va)
+  moneda?: string;               // default "MXN"
+  notasCliente?: string;
+  politicaCancelacion?: string;
+  aceptoTerminos: boolean;       // requerido por el backend
+}
+
+export interface CreateBookingResponse {
+  message: string;               // "Reserva creada"
+  booking: RentalBooking;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -164,7 +252,6 @@ export class RentaService {
 
     politicaCombustible?: 'lleno-lleno' | 'como-esta';
     politicaLimpieza?: 'normal' | 'estricta';
-
     requisitosConductor?: any;
     ubicacion?: any;
     entrega?: any;
@@ -178,7 +265,6 @@ export class RentaService {
     descripcion?: string;
     lote?: string | null;
 
-    // archivos:
     imagenPrincipal: File;
     imagenes?: File[];
     tarjetaCirculacion?: File | null;
@@ -200,6 +286,7 @@ export class RentaService {
     });
 
     // JSON parseables
+
     if (payload.requisitosConductor) fd.append('requisitosConductor', JSON.stringify(payload.requisitosConductor));
     if (payload.ubicacion) fd.append('ubicacion', JSON.stringify(payload.ubicacion));
     if (payload.entrega) fd.append('entrega', JSON.stringify(payload.entrega));
@@ -212,6 +299,7 @@ export class RentaService {
 
     // archivos
     fd.append('imagenPrincipal', payload.imagenPrincipal);
+
     (payload.imagenes || []).forEach((f) => fd.append('imagenes', f));
     if (payload.tarjetaCirculacion) fd.append('tarjetaCirculacion', payload.tarjetaCirculacion);
 
@@ -237,6 +325,7 @@ export class RentaService {
       transmision?: string; combustible?: string; precio?: number; deposito?: number; minDias?: number;
       politicaCombustible?: 'lleno-lleno' | 'como-esta';
       politicaLimpieza?: 'normal' | 'estricta';
+
       requisitosConductor?: any;
       ubicacion?: any;
       entrega?: any;
@@ -253,6 +342,7 @@ export class RentaService {
       // control de imágenes
       imagenesExistentes?: string[]; // lista final a conservar
       imagenPrincipal?: string;      // URL (si no subes file)
+
       tarjetaCirculacionURL?: string;
     },
     files?: { imagenPrincipal?: File; imagenes?: File[]; tarjetaCirculacion?: File }
@@ -274,6 +364,7 @@ export class RentaService {
           if (k === 'tarjetaCirculacionURL' && files?.tarjetaCirculacion) return;
           fd.append(k, String(v));
         }
+
       });
 
       if (files?.imagenPrincipal) fd.append('imagenPrincipal', files.imagenPrincipal);
@@ -303,6 +394,7 @@ export class RentaService {
     const params = new HttpParams().set('action', action);
     return this.authJsonHeaders$().pipe(
       switchMap((headers) => this.http.patch<{ message: string }>(`${this.api}/${id}/estado`, {}, { headers, params })),
+
       catchError((error) => this.headersService.handleError(error))
     );
   }
@@ -322,8 +414,11 @@ export class RentaService {
     const body: any = { excepcionesNoDisponibles: normExcepciones };
     if (entrega !== undefined) body.entrega = entrega; // sólo si quieres actualizar entrega
 
+
     return this.authJsonHeaders$().pipe(
+
       switchMap((headers) => this.http.patch<{ message: string; rental: any }>(`${this.api}/${id}/disponibilidad`, body, { headers })),
+
       catchError((error) => this.headersService.handleError(error))
     );
   }

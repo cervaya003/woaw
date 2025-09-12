@@ -74,8 +74,6 @@ export class FooterComponent implements OnInit {
       this.dispositivo = tipo;
     });
 
-    await this.getBlog();
-
     const url = window.location.pathname;
     this.mostrarMapa = url.includes('/home');
   }
@@ -121,19 +119,6 @@ export class FooterComponent implements OnInit {
 
     // Web/desktop
     window.open(webUrl, '_blank');
-  }
-
-  async getBlog() {
-    this.carsService.getBlog().subscribe({
-      next: (res: any) => {
-        this.generalService.loadingDismiss();
-        this.blog = res;
-        this.mostrarVerMas = res.length > 3;
-      },
-      error: () => {
-        this.generalService.loadingDismiss();
-      },
-    });
   }
 
   async mostrarTerminos() {

@@ -16,6 +16,7 @@ import { Router } from '@angular/router';
 
 import { GeneralService } from '../../../services/general.service';
 import { RentaService } from '../../../services/renta.service';
+import { CarsService } from '../../../services/cars.service';
 
 import { MapaComponent } from '../../modal/mapa/mapa.component';
 import { FotosVeiculoComponent } from '../../modal/fotos-veiculo/fotos-veiculo.component';
@@ -62,6 +63,7 @@ export class RentaComponent implements OnInit, OnChanges {
   tipoVehiculoLocal: string = '';
   transmision: string = '';
   combustible: string = '';
+
   pasajeros: number | null = null;
 
   // === Extras ===
@@ -284,6 +286,7 @@ export class RentaComponent implements OnInit, OnChanges {
     if (this.pasajeros !== null && Number(this.pasajeros) < 1) {
       this.generalService.alert('Pasajeros', 'El número de pasajeros debe ser 1 o mayor.', 'warning');
       return false;
+
     }
     if (Number(this.requisitosConductor.edadMinima) < 18) {
       this.generalService.alert('Edad mínima', 'La edad mínima permitida es 18 años.', 'warning');
@@ -304,6 +307,7 @@ export class RentaComponent implements OnInit, OnChanges {
       const costoKm = t.costoPorKm != null ? Number(t.costoPorKm) : null;
 
       if (!Number.isFinite(desde) || desde < 0 || !Number.isFinite(hasta) || hasta <= 0) {
+
         this.generalService.alert('Tarifas por distancia', `Tarifa #${i + 1}: “Desde” ≥ 0 y “Hasta” > 0.`, 'warning');
         return false;
       }
@@ -314,6 +318,7 @@ export class RentaComponent implements OnInit, OnChanges {
       if ((costoFijo == null || costoFijo < 0) && (costoKm == null || costoKm < 0)) {
         this.generalService.alert('Tarifas por distancia', `Tarifa #${i + 1}: define “Costo fijo” o “Costo por km”.`, 'warning');
         return false;
+
       }
       if (i > 0) {
         const prevHasta = Number(this.entrega.tarifasPorDistancia[i - 1].hastaKm) || 0;
@@ -332,11 +337,13 @@ export class RentaComponent implements OnInit, OnChanges {
   }
 
   get canPublicar(): boolean {
+
     const okBasicos = this.hasText(this.marca) && this.hasText(this.modelo);
     const okUbi = this.ubicacionSeleccionada != null;
     const okPrecio = this.precioPorDia !== null && Number(this.precioPorDia) >= 500;
     const okPasajeros = this.pasajeros == null || Number(this.pasajeros) >= 1;
     const okEdad = Number(this.requisitosConductor.edadMinima) >= 18;
+
     const okImagen = !!this.imagenPrincipal && this.imagenesValidas;
     const hayTarifas = (this.entrega.tarifasPorDistancia || []).length > 0;
     const hayGratisHasta = Number(this.entrega.gratuitoHastaKm) > 0;
@@ -348,35 +355,43 @@ export class RentaComponent implements OnInit, OnChanges {
 
   // ---------- payload SOLO con campos soportados ----------
   private construirPayloadParaBackend() {
+
     const ubicacion = this.ubicacionSeleccionada
       ? {
-          ciudad: this.ubicacionSeleccionada[0],
-          estado: this.ubicacionSeleccionada[1],
-          lat: Number(this.ubicacionSeleccionada[2]),
-          lng: Number(this.ubicacionSeleccionada[3]),
-        }
+        ciudad: this.ubicacionSeleccionada[0],
+        estado: this.ubicacionSeleccionada[1],
+        lat: Number(this.ubicacionSeleccionada[2]),
+        lng: Number(this.ubicacionSeleccionada[3]),
+      }
       : undefined;
 
     const reqCond = {
       edadMinima: Number(this.requisitosConductor.edadMinima) || 21,
       antiguedadLicenciaMeses: Number(this.requisitosConductor.antiguedadLicenciaMeses) || 12,
+
       permiteConductorAdicional: !!this.requisitosConductor.permiteConductorAdicional,
-      costoConductorAdicional:
-        this.requisitosConductor.costoConductorAdicional != null
-          ? Number(this.requisitosConductor.costoConductorAdicional)
-          : undefined,
+      costoConductorAdicional: this.numOrUndef(this.requisitosConductor.costoConductorAdicional),
     };
 
     const entrega = {
       gratuitoHastaKm: Number(this.entrega.gratuitoHastaKm) || 0,
+
       tarifasPorDistancia: (this.entrega.tarifasPorDistancia || []).map((t) => ({
-        desdeKm: Number(t.desdeKm),
-        hastaKm: Number(t.hastaKm),
-        costoFijo: t.costoFijo != null ? Number(t.costoFijo) : undefined,
-        costoPorKm: t.costoPorKm != null ? Number(t.costoPorKm) : undefined,
+        desdeKm: this.numOrUndef(t.desdeKm)!,
+        hastaKm: this.numOrUndef(t.hastaKm)!,
+        costoFijo: this.numOrUndef(t.costoFijo),
+        costoPorKm: this.numOrUndef(t.costoPorKm),
         nota: t.nota || undefined,
       })),
     };
+
+    const colorFinal =
+      this.color === 'Otro' && this.trim(this.colorOtra) ? this.trim(this.colorOtra) : this.color || undefined;
+
+    const aseguradoraFinal =
+      this.polizaPlataforma.aseguradora === 'Otro' && this.trim(this.polizaPlataforma.aseguradoraOtra)
+        ? this.trim(this.polizaPlataforma.aseguradoraOtra)
+        : this.polizaPlataforma.aseguradora;
 
     return {
       marca: (this.marca || '').trim(),
@@ -390,6 +405,7 @@ export class RentaComponent implements OnInit, OnChanges {
 
       precio: Number(this.precioPorDia ?? 0),
 
+
       politicaCombustible: this.politicaCombustible,
       politicaLimpieza: this.politicaLimpieza,
 
@@ -400,6 +416,7 @@ export class RentaComponent implements OnInit, OnChanges {
 
       // 👇 NUEVO: extras opcionales (si hay)
       extras: this.extras?.length ? [...this.extras] : undefined,
+
     };
   }
 
@@ -419,6 +436,7 @@ export class RentaComponent implements OnInit, OnChanges {
     await this.generalService.loading('Publicando vehículo de renta…');
 
     this.rentaService.addRentalCar({ ...payload, ...files } as any).subscribe({
+
       next: async (res) => {
         await this.generalService.loadingDismiss();
         this.enviando = false;
@@ -432,6 +450,7 @@ export class RentaComponent implements OnInit, OnChanges {
 
         const idCreado = res?.rental?._id || res?.rental?.id;
         if (!idCreado) {
+
           await this.generalService.alert(
             'No encontré el ID',
             'No recibí el identificador del vehículo creado. No puedo abrir la disponibilidad.',
@@ -448,6 +467,7 @@ export class RentaComponent implements OnInit, OnChanges {
         );
 
         await this.goToDisponibilidad(idCreado);
+
         this.cdr.markForCheck();
       },
       error: async (err) => {
@@ -473,6 +493,7 @@ export class RentaComponent implements OnInit, OnChanges {
     this.extras = [];
     this.extraSeleccionado = '';
     this.extraOtroTexto = '';
+
 
     this.politicaCombustible = 'lleno-lleno';
     this.politicaLimpieza = 'normal';

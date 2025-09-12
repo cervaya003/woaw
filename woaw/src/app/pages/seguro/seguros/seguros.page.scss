@@ -6,15 +6,27 @@
   --primary: #ff2121;
   --primary-ink: #fff;
   --card: #ffffff;
+  --negro: #0b0b0e;
+}
+
+.fondo-diagonal {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(35deg, #ff2121 0 50%, #0b0b0e 50% 100%);
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.9;
 }
 
 .cotiza {
+  position: relative;
+  z-index: 1;
+
   min-height: 90svh;
-  background: #ffffff;
   display: flex;
-  justify-content: center;
+  justify-content: left;
   align-items: flex-start;
-  padding-top: 20px;
+  padding-top: 60px;
   z-index: 1;
 
   @media (max-width: 820px) {
@@ -22,9 +34,13 @@
   }
 
   .cotiza__card {
-    background: var(--card);
-    border-radius: 16px;
+    background: #ffffff;
     box-shadow: 0 8px 24px rgba(0, 0, 0, .08);
+    border-radius: 0px 10px 10px 0px;
+
+    position: relative;
+    z-index: 2;
+
     padding: 20px;
     width: 100%;
     max-width: 790px;
@@ -157,7 +173,6 @@
   }
 }
 
-
 .field {
   margin-top: 18px;
 
@@ -182,7 +197,7 @@
     letter-spacing: .2px;
   }
 
-
+  // ----- SELECT -----
   .control {
     position: relative;
     display: flex;
@@ -239,6 +254,106 @@
     }
   }
 
+  .control.control--select {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border: 1.5px solid var(--line);
+    border-radius: 14px;
+    padding: 0 5px;
+    transition: box-shadow .2s ease, border-color .2s ease;
+
+    &:focus-within {
+      border-color: #ff1b1b;
+      box-shadow: 0 0 0 3px rgba(27, 92, 255, .15);
+    }
+
+    ion-select {
+      flex: 1;
+      width: 100%;
+      height: 56px;
+      --min-height: 56px;
+      --padding-start: 4px;
+      --padding-end: 38px;
+      font-size: clamp(10px, 2vw, 13px);
+      font-weight: 600;
+    }
+
+    ion-select::part(text),
+    ion-select::part(placeholder) {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      // -webkit-line-clamp: 2;
+      overflow: hidden;
+      white-space: normal;
+      line-height: 1.25;
+      padding-top: 2px;
+    }
+
+    ion-select::part(icon) {
+      display: none;
+    }
+
+    &::after {
+      content: "▾";
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 14px;
+      color: var(--muted);
+      pointer-events: none;
+    }
+  }
+
+  ion-popover.select-popover {
+    --width: min(560px, 92vw);
+    --backdrop-opacity: .28;
+
+    &::part(content) {
+      border-radius: 14px;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, .14);
+    }
+
+    ion-list {
+      background: #f6f7fb;
+      padding: 8px;
+
+      &::part(container) {
+        border: 1px solid rgba(0, 0, 0, .06);
+        border-radius: 12px;
+      }
+    }
+
+    .select-interface-option {
+      --background: #fff;
+      --background-hover: #f0f2f7;
+      --background-activated: #e9edf7;
+      --min-height: 54px;
+      --padding-start: 16px;
+      --inner-padding-end: 16px;
+      margin: 6px 6px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 500;
+      color: #2a2e37;
+      transition: transform .08s ease;
+
+      &:hover {
+        background: var(--background-hover);
+        transform: translateY(-1px);
+      }
+
+      &[aria-checked="true"] {
+        background: #e9ecf3;
+        font-weight: 700;
+      }
+    }
+  }
+
+  // ----- ----- 
+
   .summary {
     display: grid;
     gap: 10px;
@@ -265,10 +380,12 @@
 
 }
 
-
 .cotizacion_carta {
+  position: relative;
+  z-index: 1;
+  background: transparent;
+
   min-height: 100svh;
-  background: #ffffff;
   display: flex;
   justify-content: center;
   align-items: flex-start;
@@ -281,6 +398,11 @@
 
 
   .cotizacion_carta__card {
+    position: relative;
+    z-index: 2;
+
+    position: relative;
+    z-index: 1;
     background: var(--card);
     border-radius: 16px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, .08);
@@ -406,7 +528,7 @@
             }
 
             .paybox__pricecard {
-              width: min(520px, 100%);
+              width: min(920px, 100%);
               border: 1px solid var(--line);
               border-radius: 14px;
               background: var(--card);
@@ -497,7 +619,6 @@
     }
   }
 }
-
 
 .paybox-info {
   margin: 16px auto;

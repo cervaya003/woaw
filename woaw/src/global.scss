@@ -297,3 +297,71 @@ app-tabs {
 //     background: #f1f1f1;
 //   }
 // }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ion-popover.select-popover {
+  margin-top: 18px;
+  --width: clamp(320px, 92vw, 720px);
+  --max-width: clamp(320px, 92vw, 820px);
+  --backdrop-opacity: .12;
+
+  &::part(content) {
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    border-radius: 4px;
+    box-shadow: 0 10px 32px rgba(0, 0, 0, .18);
+  }
+
+  ion-select-popover {
+    padding: 0;
+
+    ion-list {
+      >ion-item:nth-child(1) {
+        --background: #e9efff;
+        --min-height: 54px;
+        font-weight: 600;
+      }
+    }
+
+    ion-item {
+      --min-height: 56px;
+      font-size: 16px;
+      white-space: normal;
+      line-height: 1.35;
+
+      &:hover {
+        --background: #f6f8ff;
+      }
+    }
+
+    ion-radio[aria-checked="true"] {
+      --color-checked: #ff1b1b;
+    }
+  }
+}

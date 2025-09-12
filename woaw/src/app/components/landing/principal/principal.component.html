@@ -6,7 +6,7 @@
 <section class="grid-categorias">
   <div class="grid-categorias__wrap">
 
-    
+
     <a class="cat-card" href="/menu-vehiculos/autos">
       <img class="cat-card__bg animacion__1" [src]="img1" alt="Autos" />
       <span class="cat-card__overlay">
@@ -80,22 +80,38 @@
         </span>
       </a>
     </ng-container>
-
-
   </div>
 </section>
 
+<!-- Sección: YA DISPONIBLE EN PLAY STORE -->
 <section class="anuncio-app" *ngIf="!isNative">
   <div class="contenido">
-    <h2 class="titulo"> ¡Próximamente! <br> <span>App Móvil</span></h2>
+    <h2 class="titulo">¡Ya disponible! <br> <span>App Móvil</span></h2>
     <p class="descripcion">
-      Estará disponible muy pronto en la
-      <span class="resaltado">Play Store</span> y la
-      <span class="resaltado">App Store</span>.
+      Ya puedes instalarla desde la
+      <span class="resaltado">Play Store</span>.
     </p>
-    <div class="stores">
-      <img src="/assets/autos/store.png" alt="Play Store" />
+
+    <!-- Fila flexible: Play badge + QR -->
+    <div class="row-cta">
+
+      <div class="stores">
+        <a href="https://play.google.com/store/apps/details?id=com.helscode.woaw" target="_blank" rel="noopener">
+          <img src="/assets/autos/google play.png" alt="Play Store" />
+        </a>
+      </div>
+
+      <div class="play">
+        <img src="/assets/autos/QR.png" alt="QR Play Store" />
+      </div>
     </div>
+
+    <!-- <p class="msj_2" style="margin-top:8px;">
+      <a href="https://play.google.com/store/apps/details?id=com.helscode.woaw" target="_blank" rel="noopener">
+        Instalar desde Play Store
+      </a>
+    </p> -->
+
     <p class="msj_2">Prepárate para una experiencia única en compra, venta y gestión de vehículos.</p>
   </div>
 </section>

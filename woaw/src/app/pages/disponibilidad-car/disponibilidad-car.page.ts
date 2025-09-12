@@ -4,6 +4,7 @@ import { AlertController, LoadingController, ToastController } from '@ionic/angu
 import { RentaService } from '../../services/renta.service';
 import { ReservaService, RentalBooking } from '../../services/reserva.service';
 
+
 type EstadoRenta = 'disponible' | 'inactivo';
 type Preset = 'none' | 'week' | 'month' | 'weekdays';
 
@@ -41,6 +42,7 @@ export class DisponibilidadCarPage implements OnInit {
   private ignoreNextCalendarChange = false;
 
   // Límites del calendario
+
   minDate = this.toYmdLocal(new Date());                       // hoy (local)
   maxDate = this.toYmdLocal(this.addMonths(new Date(), 12));   // +12 meses
 
@@ -70,11 +72,14 @@ export class DisponibilidadCarPage implements OnInit {
   actingIds = new Set<string>();
   actingAction: 'accept' | 'cancel' | null = null;
 
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private rentaService: RentaService,
+
     private reservaService: ReservaService,
+
     private loadingCtrl: LoadingController,
     private toastCtrl: ToastController,
     private alertCtrl: AlertController,
@@ -361,6 +366,7 @@ export class DisponibilidadCarPage implements OnInit {
     if (!this.esPropietario) return;
     if (this.blockedWeekdays.has(val)) this.blockedWeekdays.delete(val);
     else this.blockedWeekdays.add(val);
+
     this.applyPreset('weekdays');
   }
 
@@ -498,7 +504,9 @@ export class DisponibilidadCarPage implements OnInit {
   }
 
   // Fechas por días fijos en horizonte
+
   private isWeekend(d: Date) { const w = d.getUTCDay(); return w === 0 || w === 6; }
+
   private getWeekendHorizon(months = 6) {
     const start = new Date(); start.setUTCHours(0, 0, 0, 0);
     const end = new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth() + months, 0, 0, 0, 0));
@@ -573,7 +581,6 @@ export class DisponibilidadCarPage implements OnInit {
     const json = atob(padded); return JSON.parse(json);
   }
 
-  // Proteger salida con cambios sin guardar
   @HostListener('window:beforeunload', ['$event'])
   beforeUnload($event: BeforeUnloadEvent) {
     if (this.snapshotKey() !== this.lastSnapshot) {
@@ -629,7 +636,6 @@ export class DisponibilidadCarPage implements OnInit {
     });
   }
 
-  // utilidades min/max y validador de fecha
   private addMonths(d: Date, n: number) {
     const x = new Date(d);
     x.setMonth(x.getMonth() + n);

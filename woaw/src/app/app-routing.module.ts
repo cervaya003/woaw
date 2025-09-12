@@ -172,8 +172,8 @@ const routes: Routes = [
         data: { title: "seguros | woaw" },
       },
       {
-        path: 'seguros/poliza',
-        loadChildren: () => import('./pages/seguro/poliza/poliza.module').then(m => m.PolizaPageModule)
+        path: 'seguros/persona',
+        loadChildren: () => import('./pages/seguro/persona/persona.module').then(m => m.PersonaPageModule)
       },
       {
         path: "lote-edit/:id",

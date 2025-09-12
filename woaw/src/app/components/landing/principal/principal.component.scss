@@ -415,9 +415,6 @@
 
 
 
-
-
-
 .anuncio-app {
   background-color: transparent;
   text-align: center;
@@ -447,6 +444,7 @@
     font-size: clamp(15px, 3vw, 42px);
     font-weight: 800;
     margin-bottom: 15px;
+
     span {
       font-size: clamp(10px, 2vw, 42px);
       color: var(--ion-color-joli);
@@ -467,38 +465,29 @@
     }
   }
 
-  .stores {
-    display: flex;
-    justify-content: center;
-    gap: 25px;
+  /* === Alinear Play + QR según TU HTML === */
+  .row-cta {
+    text-align: center;
+    margin: 8px 0;
 
-    img {
-      width: clamp(100px, 20vw, 500px);
+    > .stores,
+    > .play {
+      display: inline-block;     /* lado a lado */
+      vertical-align: middle;    /* misma línea base */
+      margin: 0 12px;            /* separación */
+      text-align: center;
+    }
+
+    .stores img {
+      display: block;
+      width: clamp(60px, 10vw, 150px);
       height: auto;
     }
-  }
-}
 
-@keyframes fadeInUp {
-  0% {
-    opacity: 0;
-    transform: translateY(60px);
-  }
-
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes glow {
-  from {
-    text-shadow: 0 0 10px rgba(255, 50, 50, 0.6),
-      0 0 20px rgba(255, 50, 50, 0.4);
-  }
-
-  to {
-    text-shadow: 0 0 20px rgba(255, 80, 80, 0.9),
-      0 0 30px rgba(255, 50, 50, 0.6);
+    .play img {
+      display: block;
+      width: clamp(25px, 10vw, 80px);
+      height: auto;
+    }
   }
 }

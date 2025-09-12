@@ -22,35 +22,28 @@
 
 <ion-content [fullscreen]="true">
 
-  <div class="encabezado-subida">
-    <h1>¡Sube tu vehículo fácilmente!</h1>
-    <p>Selecciona el tipo y cuéntanos todo sobre él. ¡Es tu momento de venderlo como un profesional!</p>
-  </div>
+  <section class="contenedor_espacio">
+    <div class="encabezado-subida">
+      <h1>¡Sube tu vehículo fácilmente!</h1>
+      <p>Selecciona el tipo y cuéntanos todo sobre él. ¡Es tu momento de venderlo como un profesional!</p>
+    </div>
 
-  <div class="contenedor-categorias" *ngIf="!mostrarCarComponent">
-    <div *ngFor="let opcion of opciones" class="categoria-card" [class.activa]="opcion.tipo === seleccion"
-      [class.desactivada]="opcion.proximamente"
-      (click)="!opcion.proximamente && seleccionar(opcion.tipo, opcion.label, opcion.icono)">
+    <div class="contenedor-categorias" *ngIf="!mostrarCarComponent">
+      <div *ngFor="let opcion of opciones" class="categoria-card" [class.activa]="opcion.tipo === seleccion"
+        [class.desactivada]="opcion.proximamente"
+        (click)="!opcion.proximamente && seleccionar(opcion.tipo, opcion.label, opcion.icono)">
 
-      <div class="etiqueta-proximamente" *ngIf="opcion.proximamente">Próximamente</div>
+        <div class="etiqueta-proximamente" *ngIf="opcion.proximamente">Próximamente</div>
 
-      <div class="icono">
-        <img [src]="opcion.icono" [alt]="opcion.label" />
-        <div *ngIf="opcion.tipo === seleccion" class="check-icono">✔</div>
+        <div class="icono">
+          <img [src]="opcion.icono" [alt]="opcion.label" />
+          <div *ngIf="opcion.tipo === seleccion" class="check-icono">✔</div>
+        </div>
+        <div class="label">{{ opcion.label }}</div>
       </div>
-      <div class="label">{{ opcion.label }}</div>
     </div>
-  </div>
 
-  <!------- # -------->
-
-  <!-- agregamos 'renta' a la condición -->
-  <div class="contenedor_form"
-    *ngIf="seleccion === 'lote' || seleccion === 'auto' || seleccion === 'moto' || seleccion === 'camion' || seleccion === 'renta' ">
-    <div *ngIf="!isLoggedIn && seleccion != 'lote'" class="mensaje-autenticacion">
-      Para publicar y vender un vehículo, primero debes iniciar sesión o crear una cuenta.
-      <button class="btn-acceso" (click)="irAInicio()">Acceder</button>
-    </div>
+    <!------- # -------->
 
     <!-- agregamos renta al formulario inicial -->
     <div
@@ -142,16 +135,17 @@
         <ion-icon name="arrow-back-outline" class="icono-regresar"></ion-icon>
         Regresar
       </button>
-      <div class="seleccion-info">
-        <img [src]="mostrarIcono" alt="icono seleccionado" />
-        <p>{{ mostrarSelecion }}</p>
-      </div>
-    </div>
 
-    <!-- Componentes  -->
-    <app-car *ngIf="mostrarCarComponent && seleccion === 'auto'" [anio]="obtenerAnioActual()"
-      [marca]="marcaSeleccionada" [modelo]="modeloSeleccionado" [tipo]="seleccion">
-    </app-car>
+      <div *ngIf="mostrarCarComponent" class="fila_select">
+        <button type="button" class="btn-regresar" (click)="volverAtras()">
+          <ion-icon name="arrow-back-outline" class="icono-regresar"></ion-icon>
+          Regresar
+        </button>
+        <div class="seleccion-info">
+          <img [src]="mostrarIcono" alt="icono seleccionado" />
+          <p>{{ mostrarSelecion }}</p>
+        </div>
+      </div>
 
     <app-motos *ngIf="mostrarCarComponent && seleccion === 'moto'" [anio]="obtenerAnioActual()"
       [marca]="getMarcaNombreSeleccionada()" [modelo]="modeloSeleccionado" [tipo]="seleccion">
@@ -166,10 +160,12 @@
       [marca]="getMarcaNombreSeleccionada()" [modelo]="modeloSeleccionado" [tipo]="seleccion">
     </app-camion>
 
-    <!-- add loter  -->
-    <app-add *ngIf="mostrarCarComponent && seleccion === 'lote'"></app-add>
 
-  </div>
+      <!-- add loter  -->
+      <app-add *ngIf="mostrarCarComponent && seleccion === 'lote'"></app-add>
+
+    </div>
+  </section>
 
   <app-footer></app-footer>
 
