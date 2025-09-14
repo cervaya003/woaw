@@ -46,94 +46,94 @@
     <!------- # -------->
 
     <!-- agregamos renta al formulario inicial -->
-    <div
-      *ngIf="!mostrarCarComponent && isLoggedIn && (seleccion === 'auto' || seleccion === 'moto' || seleccion === 'camion' || seleccion === 'renta')"
-      class="fila-inputs">
+    <div class="contenedor_form"
+      *ngIf="seleccion === 'lote' || seleccion === 'auto' || seleccion === 'moto' || seleccion === 'camion' || seleccion === 'renta' ">
+      <div *ngIf="!isLoggedIn && seleccion != 'lote'" class="mensaje-autenticacion">
+        Para publicar y vender un vehículo, primero debes iniciar sesión o crear una cuenta.
+        <button class="btn-acceso" (click)="irAInicio()">Acceder</button>
+      </div>
 
       <!-- Año: oculto en renta -->
-      <div class="campo" *ngIf="seleccion !== 'renta'">
-        <label for="anio">Año <span class="requerido">*</span></label>
+      <div
+        *ngIf="!mostrarCarComponent && isLoggedIn && (seleccion === 'auto' || seleccion === 'moto' || seleccion === 'camion' || seleccion === 'renta')"
+        class="fila-inputs">
 
-        <select id="anio" [(ngModel)]="anioSeleccionado" (change)="verificarAnio('select')">
-          <option disabled selected value="">Selecciona un año</option>
-          <option *ngFor="let anio of listaAnios" [value]="anio">{{ anio }}</option>
-          <option value="otro">Otro...</option>
-        </select>
+        <div class="campo" *ngIf="seleccion !== 'renta'">
+          <label for="anio">Año <span class="requerido">*</span></label>
 
-        <input *ngIf="mostrarInputOtroAnio" type="number" min="1800" max="2007" [(ngModel)]="anioManual"
-          placeholder="Escribe el año" class="input-otro-anio" (input)="verificarAnio('escrito')" />
-        <p *ngIf="mostrarInputOtroAnio && mansaje_error !== ''" class="error_msj">
-          {{ mansaje_error }}
-        </p>
+          <select id="anio" [(ngModel)]="anioSeleccionado" (change)="verificarAnio('select')">
+            <option disabled selected value="">Selecciona un año</option>
+            <option *ngFor="let anio of listaAnios" [value]="anio">{{ anio }}</option>
+            <option value="otro">Otro...</option>
+          </select>
+
+          <input *ngIf="mostrarInputOtroAnio" type="number" min="1800" max="2007" [(ngModel)]="anioManual"
+            placeholder="Escribe el año" class="input-otro-anio" (input)="verificarAnio('escrito')" />
+          <p *ngIf="mostrarInputOtroAnio && mansaje_error !== ''" class="error_msj">
+            {{ mansaje_error }}
+          </p>
+        </div>
+
+        <div class="campo">
+          <label for="marca">Marca <span class="requerido">*</span></label>
+          <select id="marca" *ngIf="!marcaEsPersonalizada" [(ngModel)]="marcaSeleccionada"
+            (change)="obtenerModelosSiCorresponde()" [disabled]="seleccion !== 'renta' && !anioValido">
+            <option disabled selected value="">Selecciona una marca</option>
+            <!-- renta se comporta como auto: usa marca.key -->
+            <option *ngFor="let marca of marcas"
+              [value]="(seleccion === 'auto' || seleccion === 'renta') ? marca.key : marca._id">
+              {{ marca.nombre }}
+            </option>
+            <option value="otro">Otra marca...</option>
+          </select>
+
+          <input *ngIf="marcaEsPersonalizada" type="text" [(ngModel)]="marcaSeleccionada"
+            (change)="obtenerModelosSiCorresponde()" placeholder="Escribe el modelo manualmente"
+            class="input-personalizado" maxlength="25" />
+        </div>
+
+        <div class="campo">
+          <label for="modelo">Modelo <span class="requerido">*</span></label>
+
+          <!-- RENTA: select con modelos; si elige "otro", se muestra input -->
+          <select *ngIf="seleccion === 'renta' && !modeloEsPersonalizado" id="modelo" [(ngModel)]="modeloSeleccionado"
+            (change)="selecionarModelo()" [disabled]="!marcaSeleccionada">
+            <option disabled selected value="">Selecciona un modelo</option>
+            <option *ngFor="let modelo of modelos" [value]="modelo?.modelo || modelo?.nombre">
+              {{ modelo?.modelo || modelo?.nombre }}
+            </option>
+            <option value="otro">Otro modelo...</option>
+          </select>
+
+          <input *ngIf="seleccion === 'renta' && modeloEsPersonalizado" type="text" [(ngModel)]="modeloSeleccionado"
+            (blur)="validarInputModelo()" placeholder="Escribe el modelo manualmente" class="input-personalizado"
+            maxlength="25" />
+
+          <!-- NO RENTA: lógica existente por año -->
+          <input *ngIf="seleccion !== 'renta' && esAnioAnteriorA2008()" type="text" id="modelo"
+            [(ngModel)]="modeloSeleccionado" (change)="selecionarModelo()" placeholder="Escribe el modelo"
+            maxlength="25" />
+
+          <select *ngIf="seleccion !== 'renta' && !esAnioAnteriorA2008() && !modeloEsPersonalizado" id="modelo"
+            [(ngModel)]="modeloSeleccionado" (change)="selecionarModelo()" [disabled]="!marcaSeleccionada">
+            <option disabled selected value="">Selecciona un modelo</option>
+            <option *ngFor="let modelo of modelos" [value]="(seleccion === 'auto') ? modelo.modelo : modelo.nombre">
+              {{ (seleccion === 'auto') ? modelo.modelo : modelo.nombre }}
+            </option>
+            <option value="otro">Otro modelo...</option>
+          </select>
+
+          <input *ngIf="seleccion !== 'renta' && modeloEsPersonalizado" type="text" [(ngModel)]="modeloSeleccionado"
+            (blur)="validarInputModelo()" placeholder="Escribe el modelo manualmente" class="input-personalizado"
+            maxlength="25" />
+        </div>
       </div>
-
-      <div class="campo">
-        <label for="marca">Marca <span class="requerido">*</span></label>
-        <select id="marca" *ngIf="!marcaEsPersonalizada" [(ngModel)]="marcaSeleccionada"
-          (change)="obtenerModelosSiCorresponde()" [disabled]="seleccion !== 'renta' && !anioValido">
-          <option disabled selected value="">Selecciona una marca</option>
-          <!-- renta se comporta como auto: usa marca.key -->
-          <option *ngFor="let marca of marcas"
-            [value]="(seleccion === 'auto' || seleccion === 'renta') ? marca.key : marca._id">
-            {{ marca.nombre }}
-          </option>
-          <option value="otro">Otra marca...</option>
-        </select>
-
-        <input *ngIf="marcaEsPersonalizada" type="text" [(ngModel)]="marcaSeleccionada"
-          (change)="obtenerModelosSiCorresponde()" placeholder="Escribe el modelo manualmente"
-          class="input-personalizado" maxlength="25" />
-      </div>
-
-      <div class="campo">
-        <label for="modelo">Modelo <span class="requerido">*</span></label>
-
-        <!-- RENTA: select con modelos; si elige "otro", se muestra input -->
-        <select *ngIf="seleccion === 'renta' && !modeloEsPersonalizado" id="modelo" [(ngModel)]="modeloSeleccionado"
-          (change)="selecionarModelo()" [disabled]="!marcaSeleccionada">
-          <option disabled selected value="">Selecciona un modelo</option>
-          <option *ngFor="let modelo of modelos" [value]="modelo?.modelo || modelo?.nombre">
-            {{ modelo?.modelo || modelo?.nombre }}
-          </option>
-          <option value="otro">Otro modelo...</option>
-        </select>
-
-        <input *ngIf="seleccion === 'renta' && modeloEsPersonalizado" type="text" [(ngModel)]="modeloSeleccionado"
-          (blur)="validarInputModelo()" placeholder="Escribe el modelo manualmente" class="input-personalizado"
-          maxlength="25" />
-
-        <!-- NO RENTA: lógica existente por año -->
-        <input *ngIf="seleccion !== 'renta' && esAnioAnteriorA2008()" type="text" id="modelo"
-          [(ngModel)]="modeloSeleccionado" (change)="selecionarModelo()" placeholder="Escribe el modelo"
-          maxlength="25" />
-
-        <select *ngIf="seleccion !== 'renta' && !esAnioAnteriorA2008() && !modeloEsPersonalizado" id="modelo"
-          [(ngModel)]="modeloSeleccionado" (change)="selecionarModelo()" [disabled]="!marcaSeleccionada">
-          <option disabled selected value="">Selecciona un modelo</option>
-          <option *ngFor="let modelo of modelos" [value]="(seleccion === 'auto') ? modelo.modelo : modelo.nombre">
-            {{ (seleccion === 'auto') ? modelo.modelo : modelo.nombre }}
-          </option>
-          <option value="otro">Otro modelo...</option>
-        </select>
-
-        <input *ngIf="seleccion !== 'renta' && modeloEsPersonalizado" type="text" [(ngModel)]="modeloSeleccionado"
-          (blur)="validarInputModelo()" placeholder="Escribe el modelo manualmente" class="input-personalizado"
-          maxlength="25" />
-      </div>
-    </div>
-
-    <!-- botón continuar incluye renta -->
-    <button [disabled]="!formularioValido()"
-      *ngIf="!mostrarCarComponent && isLoggedIn  && (seleccion === 'auto' || seleccion === 'moto' || seleccion === 'renta' || seleccion === 'camion')"
-      class="btn-guardar" (click)="mostrarComponente()">
-      Continuar
-      <ion-icon name="arrow-forward-outline"></ion-icon>
-    </button>
-
-    <div *ngIf="mostrarCarComponent" class="fila_select">
-      <button type="button" class="btn-regresar" (click)="volverAtras()">
-        <ion-icon name="arrow-back-outline" class="icono-regresar"></ion-icon>
-        Regresar
+      <!-- botón continuar incluye renta -->
+      <button [disabled]="!formularioValido()"
+        *ngIf="!mostrarCarComponent && isLoggedIn  && (seleccion === 'auto' || seleccion === 'moto' || seleccion === 'renta' || seleccion === 'camion')"
+        class="btn-guardar" (click)="mostrarComponente()">
+        Continuar
+        <ion-icon name="arrow-forward-outline"></ion-icon>
       </button>
 
       <div *ngIf="mostrarCarComponent" class="fila_select">
@@ -146,19 +146,22 @@
           <p>{{ mostrarSelecion }}</p>
         </div>
       </div>
+    <app-car *ngIf="mostrarCarComponent && seleccion === 'auto'" [anio]="obtenerAnioActual()"
+        [marca]="marcaSeleccionada" [modelo]="modeloSeleccionado" [tipo]="seleccion">
+      </app-car>
 
-    <app-motos *ngIf="mostrarCarComponent && seleccion === 'moto'" [anio]="obtenerAnioActual()"
-      [marca]="getMarcaNombreSeleccionada()" [modelo]="modeloSeleccionado" [tipo]="seleccion">
-    </app-motos>
+      <app-motos *ngIf="mostrarCarComponent && seleccion === 'moto'" [anio]="obtenerAnioActual()"
+        [marca]="getMarcaNombreSeleccionada()" [modelo]="modeloSeleccionado" [tipo]="seleccion">
+      </app-motos>
 
-    <!-- RENTA (marca pasa la seleccionada directa para no depender de _id) -->
-    <app-renta *ngIf="mostrarCarComponent && seleccion === 'renta'" [anio]="0" [marca]="marcaSeleccionada"
-      [modelo]="modeloSeleccionado" [tipo]="seleccion" (rentaSubmit)="registrarRenta($event)">
-    </app-renta>
+      <!-- RENTA (marca pasa la seleccionada directa para no depender de _id) -->
+      <app-renta *ngIf="mostrarCarComponent && seleccion === 'renta'" [anio]="0" [marca]="marcaSeleccionada"
+        [modelo]="modeloSeleccionado" [tipo]="seleccion" (rentaSubmit)="registrarRenta($event)">
+      </app-renta>
 
-    <app-camion *ngIf="mostrarCarComponent && seleccion === 'camion'" [anio]="obtenerAnioActual()"
-      [marca]="getMarcaNombreSeleccionada()" [modelo]="modeloSeleccionado" [tipo]="seleccion">
-    </app-camion>
+      <app-camion *ngIf="mostrarCarComponent && seleccion === 'camion'" [anio]="obtenerAnioActual()"
+        [marca]="getMarcaNombreSeleccionada()" [modelo]="modeloSeleccionado" [tipo]="seleccion">
+      </app-camion>
 
 
       <!-- add loter  -->

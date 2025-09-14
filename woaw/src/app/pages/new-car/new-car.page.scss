@@ -1,5 +1,5 @@
 .contenedor_espacio{
-  min-height: 55svh;
+  min-height: 85svh;
 }
 .contenedor-categorias {
   display: flex;
@@ -11,8 +11,8 @@
   margin: 0 auto;
 
   .categoria-card {
-    width: 100px;
-    height: 100px;
+    width: 80px;
+    height: 80px;
     background: #f5f5f5;
     border-radius: 10px;
     border: 2px solid transparent;

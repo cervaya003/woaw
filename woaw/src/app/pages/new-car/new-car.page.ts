@@ -71,9 +71,9 @@ export class NewCarPage implements OnInit {
   modeloSeleccionado: string = "";
   modeloEsPersonalizado: boolean = false;
   marcaEsPersonalizada: boolean = false;
-tipoSeleccionado: 'particular' | 'lote' | null = null;
-seccionFormulario: number = 2;
-Pregunta: 'si' | 'no' = 'no';
+  tipoSeleccionado: 'particular' | 'lote' | null = null;
+  seccionFormulario: number = 2;
+  Pregunta: 'si' | 'no' = 'no';
   public isLoggedIn: boolean = false;
 
   // ----- data de selects
@@ -112,66 +112,66 @@ Pregunta: 'si' | 'no' = 'no';
     this.generarListaAnios();
     this.cargarOpcionesPorRol();
   }
-seleccionar(
-  tipo: "auto" | "moto" | "renta" | "lote" | "camion" | null,
-  label: string,
-  icono: string
-) {
-  if (label === "Lote") {
-    this.mostrarCarComponent = true;
-  } else {
-    this.limpiarDependencias("all");
-  }
-  this.seleccion = tipo;
-  this.mostrarSelecion = label;
-  this.mostrarIcono = icono;
-
-  this.anioSeleccionado = "";
-  this.anioManual = "";
-  this.mostrarInputOtroAnio = false;
-  this.anioValido = false;
-  this.mansaje_error = "";
-
-  // ✅ LÓGICA SOLO PARA MOSTRAR LA PREGUNTA EN LOTERO
-  if (tipo === "auto" || tipo === "moto" || tipo === "camion") {
-    if (this.MyRole === "lotero") {
-      // Mostrar la pregunta "Particular o Lote" en el hijo
-      this.Pregunta = 'si';
-      this.tipoSeleccionado = null;   // que elija
-      this.seccionFormulario = 1;     // paso de pregunta
+  seleccionar(
+    tipo: "auto" | "moto" | "renta" | "lote" | "camion" | null,
+    label: string,
+    icono: string
+  ) {
+    if (label === "Lote") {
+      this.mostrarCarComponent = true;
     } else {
-      // Otros roles: no mostrar esa pregunta (tu flujo actual)
-      this.Pregunta = 'no';
-      // Mantén tu lógica de secciones tal como ya la tienes
-      if (this.MyRole === "admin") {
-        this.seccionFormulario = 2;
-        this.tipoSeleccionado = null;
+      this.limpiarDependencias("all");
+    }
+    this.seleccion = tipo;
+    this.mostrarSelecion = label;
+    this.mostrarIcono = icono;
+
+    this.anioSeleccionado = "";
+    this.anioManual = "";
+    this.mostrarInputOtroAnio = false;
+    this.anioValido = false;
+    this.mansaje_error = "";
+
+    // ✅ LÓGICA SOLO PARA MOSTRAR LA PREGUNTA EN LOTERO
+    if (tipo === "auto" || tipo === "moto" || tipo === "camion") {
+      if (this.MyRole === "lotero") {
+        // Mostrar la pregunta "Particular o Lote" en el hijo
+        this.Pregunta = 'si';
+        this.tipoSeleccionado = null;   // que elija
+        this.seccionFormulario = 1;     // paso de pregunta
       } else {
-        // vendedor/cliente u otros: tu lógica actual de pregunta "quién lo sube"
-        this.tipoSeleccionado = "particular";
-        this.seccionFormulario = 1;
+        // Otros roles: no mostrar esa pregunta (tu flujo actual)
+        this.Pregunta = 'no';
+        // Mantén tu lógica de secciones tal como ya la tienes
+        if (this.MyRole === "admin") {
+          this.seccionFormulario = 2;
+          this.tipoSeleccionado = null;
+        } else {
+          // vendedor/cliente u otros: tu lógica actual de pregunta "quién lo sube"
+          this.tipoSeleccionado = "particular";
+          this.seccionFormulario = 1;
+        }
+      }
+    } else {
+      // Renta y otros no se tocan
+      this.Pregunta = 'no';
+      this.seccionFormulario = 2;
+      this.tipoSeleccionado = null;
+
+      this.anioSeleccionado = '';
+      this.anioManual = '';
+
+      // --- RENTA: sin año, carga marcas globales y deja modelo por <select> (se llenará con todos los años)
+      if (tipo === 'renta') {
+        this.anioValido = true;                 // para habilitar el select de marca
+        this.obtenerMarcasSiCorresponde(0);     // carga marcas sin depender de año
+        this.modeloEsPersonalizado = false;     // usaremos lista de modelos
+        this.modelos = [];
       }
     }
-  } else {
-    // Renta y otros no se tocan
-    this.Pregunta = 'no';
-    this.seccionFormulario = 2;
-    this.tipoSeleccionado = null;
 
-    this.anioSeleccionado = '';
-    this.anioManual = '';
-
-    // --- RENTA: sin año, carga marcas globales y deja modelo por <select> (se llenará con todos los años)
-    if (tipo === 'renta') {
-      this.anioValido = true;                 // para habilitar el select de marca
-      this.obtenerMarcasSiCorresponde(0);     // carga marcas sin depender de año
-      this.modeloEsPersonalizado = false;     // usaremos lista de modelos
-      this.modelos = [];
-    }
+    this.generarListaAnios();
   }
-
-  this.generarListaAnios();
-}
 
   cargarOpcionesPorRol() {
     if (this.MyRole === "admin") {
@@ -181,19 +181,24 @@ seleccionar(
     }
   }
   generarListaAnios() {
-  const anioActual = new Date().getFullYear();
-  const anioSiguiente = anioActual + 1; // 2026
-  const anioLimite = 2008;
+    const anioActual = new Date().getFullYear();
+    const anioSiguiente = anioActual + 1; // 2026
+    const anioLimite = 2008;
 
-  this.listaAnios = [];
+    this.listaAnios = [];
 
-  // 👉 Solo ADMIN ve 2026 en auto/moto/camion
-  if (
-    this.MyRole === "admin" &&
-    (this.seleccion === "auto" || this.seleccion === "moto" || this.seleccion === "camion")
-  ) {
-    this.listaAnios.push(anioSiguiente);
-  }
+    // 👉 Solo ADMIN ve 2026 en auto/moto/camion
+    if (
+      this.MyRole === "admin" &&
+      (this.seleccion === "auto" || this.seleccion === "moto" || this.seleccion === "camion")
+    ) {
+      this.listaAnios.push(anioSiguiente);
+    }
+
+    // Para todos: del año actual hacia 2008
+    for (let i = anioActual; i >= anioLimite; i--) {
+      this.listaAnios.push(i);
+    }
   }
   // verifica el año al escribir o seleccionar
   verificarAnio(tipo: 'select' | 'escrito') {
@@ -221,22 +226,22 @@ seleccionar(
   }
 
   validarAnio(anio: number): boolean {
-  const anioActual = new Date().getFullYear();
+    const anioActual = new Date().getFullYear();
 
-  // Reglas SOLO para auto/moto/camion
-  if (this.seleccion === "auto" || this.seleccion === "moto" || this.seleccion === "camion") {
-    if (this.MyRole === "admin") {
-      // Admin: 2008 .. 2026 (año actual + 1)
-      return !isNaN(anio) && anio >= 2008 && anio <= (anioActual + 1);
-    } else {
-      // Lotero / Vendedor / Cliente: 2008 .. 2025 (año actual)
-      return !isNaN(anio) && anio >= 2008 && anio <= anioActual;
+    // Reglas SOLO para auto/moto/camion
+    if (this.seleccion === "auto" || this.seleccion === "moto" || this.seleccion === "camion") {
+      if (this.MyRole === "admin") {
+        // Admin: 2008 .. 2026 (año actual + 1)
+        return !isNaN(anio) && anio >= 2008 && anio <= (anioActual + 1);
+      } else {
+        // Lotero / Vendedor / Cliente: 2008 .. 2025 (año actual)
+        return !isNaN(anio) && anio >= 2008 && anio <= anioActual;
+      }
     }
-  }
 
-  // Renta y otros: sin cambios (hasta año actual)
-  return !isNaN(anio) && anio >= 1800 && anio <= anioActual;
-}
+    // Renta y otros: sin cambios (hasta año actual)
+    return !isNaN(anio) && anio >= 1800 && anio <= anioActual;
+  }
 
 
   esAnioAnteriorA2008(): boolean {
@@ -300,27 +305,27 @@ seleccionar(
 
 
 
-  if (this.seleccion === "auto" || this.seleccion === "moto" || this.seleccion === "camion") {
-    if (this.MyRole === "admin") {
-      // Admin: 2008 .. 2026
-      anioEsValido = this.anioValido && anio >= 2008 && anio <= (anioActual + 1);
+    if (this.seleccion === "auto" || this.seleccion === "moto" || this.seleccion === "camion") {
+      if (this.MyRole === "admin") {
+        // Admin: 2008 .. 2026
+        anioEsValido = this.anioValido && anio >= 2008 && anio <= (anioActual + 1);
+      } else {
+        // Lotero/Vendedor/Cliente: 2008 .. 2025
+        anioEsValido = this.anioValido && anio >= 2008 && anio <= anioActual;
+      }
     } else {
-      // Lotero/Vendedor/Cliente: 2008 .. 2025
-      anioEsValido = this.anioValido && anio >= 2008 && anio <= anioActual;
+      // Renta: como lo tenías (hasta año actual)
+      anioEsValido = this.anioValido && anio >= 1800 && anio <= anioActual;
     }
-  } else {
-    // Renta: como lo tenías (hasta año actual)
-    anioEsValido = this.anioValido && anio >= 1800 && anio <= anioActual;
+
+    const marcaValida = !!this.marcaSeleccionada && this.marcaSeleccionada !== "";
+    const modeloValido =
+      !!this.modeloSeleccionado &&
+      this.modeloSeleccionado.trim().length > 0 &&
+      this.modeloSeleccionado.length <= 25;
+
+    return !!anioEsValido && marcaValida && modeloValido;
   }
-
-  const marcaValida = !!this.marcaSeleccionada && this.marcaSeleccionada !== "";
-  const modeloValido =
-    !!this.modeloSeleccionado &&
-    this.modeloSeleccionado.trim().length > 0 &&
-    this.modeloSeleccionado.length <= 25;
-
-  return !!anioEsValido && marcaValida && modeloValido;
-}
 
   mostrarComponente() {
     const anio = this.obtenerAnioActual();
