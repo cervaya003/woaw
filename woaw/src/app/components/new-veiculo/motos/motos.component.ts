@@ -101,32 +101,35 @@ export class MotosComponent implements OnInit {
     public ContactosService: ContactosService,
   ) { }
 
-  ngOnInit() {
-    this.generalService.tipoRol$.subscribe((rol) => {
-      if (rol === 'admin' || rol === 'lotero' || rol === 'vendedor' || rol === 'cliente') {
-        this.MyRole = rol;
-      } else {
-        this.generalService.eliminarToken();
-        this.generalService.alert('¡Saliste de tu sesión Error - 707!', '¡Hasta pronto!', 'info');
-      }
-    });
+ ngOnInit() {
+  this.generalService.tipoRol$.subscribe((rol) => {
+    if (rol === 'admin' || rol === 'lotero' || rol === 'vendedor' || rol === 'cliente') {
+      this.MyRole = rol;
 
-    if (this.MyRole === 'admin') {
+      // ✅ Siempre mostrar la pregunta "¿quién lo sube?"
       this.Pregunta = 'si';
       this.seccionFormulario = 2;
-    } else if (this.MyRole === 'lotero') {
-      this.Pregunta = 'no';
-      this.seccionFormulario = 2;
-      this.tipoSeleccionado = 'lote';
-      this.getLotes('mios');
-    } else {
-      this.Pregunta = 'no';
-      this.seccionFormulario = 1;
-      this.tipoSeleccionado = 'particular';
-    }
 
-    this.definirEstadoVehiculo();
-  }
+      if (this.MyRole === 'lotero') {
+        // Preselecciona "lote" y PRE-CARGA mi(s) lote(s) del usuario
+        this.tipoSeleccionado = 'lote';
+        this.getLotes('mios'); // mantiene la precarga de lote y ubicación si hay uno solo
+      } else if (this.MyRole === 'admin') {
+        // Admin elige en la UI; si elige "lote" el hijo hará getLotes('all')
+        this.tipoSeleccionado = null as any;
+      } else {
+        // Vendedor / Cliente: sugerido "particular"
+        this.tipoSeleccionado = 'particular';
+      }
+
+      this.definirEstadoVehiculo();
+    } else {
+      this.generalService.eliminarToken();
+      this.generalService.alert('¡Saliste de tu sesión Error - 707!', '¡Hasta pronto!', 'info');
+    }
+  });
+}
+
 
   // ====== Estado por año/rol ======
   definirEstadoVehiculo() {
@@ -161,7 +164,7 @@ export class MotosComponent implements OnInit {
 
   continuar() {
     if (!this.tipoSeleccionado) return;
-    if (this.tipoSeleccionado == 'lote') this.getLotes('all');
+    if (this.tipoSeleccionado == 'lote') this.getLotes('mios');
     this.Pregunta = 'no';
   }
 

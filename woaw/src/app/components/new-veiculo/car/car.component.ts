@@ -194,7 +194,7 @@ export class CarComponent implements OnInit {
       this.Pregunta = 'si';
       this.seccionFormulario = 2;
     } else if (this.MyRole === 'lotero') {
-      this.Pregunta = 'no';
+      this.Pregunta = 'si';
       this.seccionFormulario = 2;
       this.tipoSeleccionado = 'lote';
       this.getLotes('mios');
@@ -217,7 +217,7 @@ export class CarComponent implements OnInit {
   continuar() {
     if (!this.tipoSeleccionado) return;
     if (this.tipoSeleccionado == 'lote') {
-      this.getLotes('all');
+      this.getLotes('mios');
     }
     this.Pregunta = 'no';
   }
@@ -288,26 +288,18 @@ export class CarComponent implements OnInit {
         });
     }
   }
-  async seleccionarUbicacion() {
-    const modal = await this.modalController.create({
-      component: MapaComponent,
-    });
-
+   async seleccionarUbicacion() {
+    const modal = await this.modalController.create({ component: MapaComponent });
     await modal.present();
-
     const { data } = await modal.onDidDismiss();
 
     if (data) {
       this.ubicacionSeleccionada = data;
       if (this.ubicacionSeleccionada) {
-        this.generalService.obtenerDireccionDesdeCoordenadas(this.ubicacionSeleccionada[2], this.ubicacionSeleccionada[3])
-          .then((direccion) => {
-            this.direccionCompleta = direccion;
-          })
-          .catch((error) => {
-            this.direccionCompleta = 'No se pudo obtener la dirección.';
-            console.warn(error);
-          });
+        this.generalService
+          .obtenerDireccionDesdeCoordenadas(this.ubicacionSeleccionada[2], this.ubicacionSeleccionada[3])
+          .then((direccion) => (this.direccionCompleta = direccion))
+          .catch(() => (this.direccionCompleta = 'No se pudo obtener la dirección.'));
       }
     }
   }
