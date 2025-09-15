@@ -255,7 +255,7 @@ export class CamionComponent implements OnInit {
 
   continuar() {
     if (!this.tipoSeleccionado) return;
-    if (this.tipoSeleccionado === "lote") this.getLotes("all");
+    if (this.tipoSeleccionado === "lote") this.getLotes("mios");
     this.Pregunta = "no";
   }
 
@@ -270,63 +270,18 @@ export class CamionComponent implements OnInit {
 
   // ===== Ubicación =====
   async seleccionarUbicacion() {
-    const modal = await this.modalController.create({
-      component: MapaComponent,
-      backdropDismiss: false, // ⛔️ no se puede cerrar tocando fuera
-    });
+    const modal = await this.modalController.create({ component: MapaComponent });
     await modal.present();
+    const { data } = await modal.onDidDismiss();
 
-    const { data, role } = await modal.onDidDismiss();
-
-    // Si cancelan o no llega payload, no marcamos ubicación
-    if (!data || role === "cancel") {
-      this.ubicacionSeleccionada = null;
-      this.direccionCompleta = "Selecciona la ubicación en el mapa.";
-      this.generalService.alert(
-        "Ubicación requerida",
-        "Debes seleccionar la ubicación para continuar.",
-        "warning"
-      );
-      return;
-    }
-
-    // Normaliza: puede venir como arreglo [ciudad, estado, lat, lng] o como objeto
-    let ciudad: string | undefined;
-    let estado: string | undefined;
-    let lat: number | undefined;
-    let lng: number | undefined;
-
-    if (Array.isArray(data)) {
-      [ciudad, estado, lat, lng] = data as any[];
-    } else {
-      ciudad = (data as any).ciudad ?? (data as any).city;
-      estado = (data as any).estado ?? (data as any).state;
-      lat = (data as any).lat ?? (data as any).latitude;
-      lng = (data as any).lng ?? (data as any).longitude;
-    }
-
-    // Valida que al menos tengamos coordenadas numéricas
-    if (typeof lat !== "number" || typeof lng !== "number") {
-      this.ubicacionSeleccionada = null;
-      this.direccionCompleta = "Selecciona la ubicación en el mapa.";
-      this.generalService.alert(
-        "Ubicación inválida",
-        "Vuelve a seleccionar la ubicación.",
-        "warning"
-      );
-      return;
-    }
-
-    // Guarda y resuelve dirección legible
-    this.ubicacionSeleccionada = [ciudad || "", estado || "", lat, lng];
-
-    try {
-      this.direccionCompleta = await this.generalService.obtenerDireccionDesdeCoordenadas(
-        lat,
-        lng
-      );
-    } catch {
-      this.direccionCompleta = "No se pudo obtener la dirección.";
+    if (data) {
+      this.ubicacionSeleccionada = data;
+      if (this.ubicacionSeleccionada) {
+        this.generalService
+          .obtenerDireccionDesdeCoordenadas(this.ubicacionSeleccionada[2], this.ubicacionSeleccionada[3])
+          .then((direccion) => (this.direccionCompleta = direccion))
+          .catch(() => (this.direccionCompleta = 'No se pudo obtener la dirección.'));
+      }
     }
   }
 
