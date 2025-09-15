@@ -327,13 +327,13 @@ app-tabs {
 
 ion-popover.select-popover {
   margin-top: 18px;
-  --width: clamp(320px, 92vw, 720px);
-  --max-width: clamp(320px, 92vw, 820px);
+  --width: 100%;
+  --max-width: clamp(310px, 92vw, 520px);
   --backdrop-opacity: .12;
 
   &::part(content) {
-    left: 50% !important;
-    transform: translateX(-50%) !important;
+    left: 3% !important;
+    // transform: translateX(-50%) !important;
     border-radius: 4px;
     box-shadow: 0 10px 32px rgba(0, 0, 0, .18);
   }
@@ -350,8 +350,8 @@ ion-popover.select-popover {
     }
 
     ion-item {
-      --min-height: 56px;
-      font-size: 16px;
+      --min-height: 33px;
+      font-size: clamp(10px, 1vw, 13px);
       white-space: normal;
       line-height: 1.35;
 
