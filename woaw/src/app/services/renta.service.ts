@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { environment } from '../../environments/environment';
-import { Observable, from } from 'rxjs';
-import { switchMap, catchError, map, tap } from 'rxjs/operators';
+import { Observable, from, EMPTY, concat } from 'rxjs';
+import { switchMap, catchError, map, tap, take, throwIfEmpty } from 'rxjs/operators';
 import { HeadersService } from './headers.service';
 
 export interface RentaFiltro {
@@ -78,6 +78,70 @@ export class RentaService {
     );
   }
 
+  // ───────── helpers de rutas tolerantes ─────────
+
+  // Genera variantes: con/sin /api y rentalcars vs rental-cars
+  private buildPathCandidates(path: string): string[] {
+    const base = this._baseUrl.replace(/\/+$/, '');
+    const hasApi = /\/api$/.test(base);
+
+    const basePrimary = base;
+    const baseAlt = hasApi ? base.replace(/\/api$/, '') : `${base}/api`;
+
+    const pathNorm = path.startsWith('/') ? path : `/${path}`;
+    const pathHyphen = pathNorm.replace(/\/rentalcars(?=\/|$)/, '/rental-cars');
+
+    const set = new Set<string>([
+      `${basePrimary}${pathNorm}`,
+      `${basePrimary}${pathHyphen}`,
+      `${baseAlt}${pathNorm}`,
+      `${baseAlt}${pathHyphen}`,
+    ]);
+    return Array.from(set.values());
+  }
+
+  // Intenta múltiples métodos sobre múltiples URLs; se queda con el primer success
+  // Intenta múltiples métodos sobre múltiples URLs; se queda con el primer success
+  private requestOverCandidates<T>(
+    methods: Array<'PATCH' | 'PUT' | 'POST' | 'GET' | 'DELETE'>,
+    urls: string[],
+    optionsFactory: (method: string, url: string) => { url: string; options: { headers?: HttpHeaders; params?: HttpParams }; body?: any }
+  ): Observable<T> {
+    const attempts: Array<Observable<T>> = [];
+
+    for (const u of urls) {
+      for (const m of methods) {
+        const { url, options, body } = optionsFactory(m, u);
+
+        // Fuerza a Angular a usar la sobrecarga "observe: 'body'" => Observable<T>
+        const httpOptions = {
+          ...options,
+          observe: 'body' as const,
+          responseType: 'json' as const,
+        };
+
+        let req: Observable<T>;
+        switch (m) {
+          case 'PATCH': req = this.http.patch<T>(url, body ?? {}, httpOptions); break;
+          case 'PUT': req = this.http.put<T>(url, body ?? {}, httpOptions); break;
+          case 'POST': req = this.http.post<T>(url, body ?? {}, httpOptions); break;
+          case 'GET': req = this.http.get<T>(url, httpOptions); break;
+          case 'DELETE': req = this.http.request<T>('DELETE', url, httpOptions); break;
+          default: req = this.http.get<T>(url, httpOptions); break;
+        }
+
+        // si falla, seguimos con el siguiente intento
+        attempts.push(req.pipe(catchError(() => (EMPTY as unknown as Observable<T>))));
+      }
+    }
+
+    return concat(...attempts).pipe(
+      take(1), // primer success
+      throwIfEmpty(() => new Error('No route/method matched for this endpoint'))
+    );
+  }
+
+
   // ───────── utilidades de precio (útiles en UI) ─────────
   private toISO(d: string | Date): string {
     return new Date(d).toISOString();
@@ -132,7 +196,6 @@ export class RentaService {
   }
 
   /** MIS COCHES del usuario autenticado*/
-
   misCoches(): Observable<any[]> {
     const url = `${this._baseUrl}/rentalcars/vehiculos/user`;
     return this.authJsonHeaders$().pipe(
@@ -140,7 +203,6 @@ export class RentaService {
       catchError((error) => this.headersService.handleError(error))
     );
   }
-
 
   /** DETALLE por ID */
   cochePorId(id: string): Observable<any> {
@@ -228,7 +290,7 @@ export class RentaService {
     );
   }
 
-  /** ACTUALIZAR (PATCH /rental-cars/:id) — soporta imágenes y JSON */
+  /** ACTUALIZAR — soporta imágenes y JSON; tolerante a rutas y método */
   updateRentalCar(
     id: string,
     data: {
@@ -257,7 +319,9 @@ export class RentaService {
     },
     files?: { imagenPrincipal?: File; imagenes?: File[]; tarjetaCirculacion?: File }
   ): Observable<{ message: string; rental: any; }> {
+    const urls = this.buildPathCandidates(`/rentalcars/${id}`);
     const hasFiles = !!(files?.imagenPrincipal || files?.imagenes?.length || files?.tarjetaCirculacion);
+
     if (hasFiles) {
       const fd = new FormData();
 
@@ -281,33 +345,54 @@ export class RentaService {
       if (files?.tarjetaCirculacion) fd.append('tarjetaCirculacion', files.tarjetaCirculacion);
 
       return this.authMultipartHeaders$().pipe(
-        switchMap(headers => this.http.patch<{ message: string; rental: any }>(`${this.api}/${id}`, fd, { headers })),
+        switchMap(headers =>
+          this.requestOverCandidates<{ message: string; rental: any }>(
+            ['PATCH', 'PUT'],
+            urls,
+            (_method, u) => ({ url: u, body: fd, options: { headers } })
+          )
+        ),
         catchError(err => this.headersService.handleError(err))
       );
     } else {
       // JSON puro
       const body: any = { ...(data || {}) };
       if (body.lote === null) body.lote = ''; // backend usa '' para limpiar el lote
+
       return this.authJsonHeaders$().pipe(
-        switchMap(headers => this.http.patch<{ message: string; rental: any }>(`${this.api}/${id}`, body, { headers })),
+        switchMap(headers =>
+          this.requestOverCandidates<{ message: string; rental: any }>(
+            ['PATCH', 'PUT'],
+            urls,
+            (_method, u) => ({ url: u, body, options: { headers } })
+          )
+        ),
         catchError(err => this.headersService.handleError(err))
       );
     }
   }
 
-  /** TOGGLE/SET estado de renta (PATCH /:id/estado?action=disponible|rentado|inactivo) */
+  /** TOGGLE/SET estado de renta — tolerante: PATCH→PUT + rutas /api y guion */
   toggleEstadoRenta(
     id: string,
     action: 'disponible' | 'rentado' | 'inactivo'
   ): Observable<{ message: string; }> {
     const params = new HttpParams().set('action', action);
+    const urls = this.buildPathCandidates(`/rentalcars/${id}/estado`);
+
     return this.authJsonHeaders$().pipe(
-      switchMap((headers) => this.http.patch<{ message: string }>(`${this.api}/${id}/estado`, {}, { headers, params })),
+      switchMap(headers =>
+        this.requestOverCandidates<{ message: string }>(
+          ['PATCH', 'PUT'],
+          urls,
+          (_method, u) => ({ url: u, options: { headers, params } })
+        )
+      ),
       catchError((error) => this.headersService.handleError(error))
     );
   }
 
-  /** DISPONIBILIDAD (PATCH /:id/disponibilidad) — manda JSON plano */
+  /** DISPONIBILIDAD — tolerante: PATCH→PUT + /api on/off + rentalcars/rental-cars */
   setDisponibilidadCar(
     id: string,
     excepciones: Array<{ inicio: string | Date; fin: string | Date; motivo?: string }> = [],
@@ -322,8 +407,16 @@ export class RentaService {
     const body: any = { excepcionesNoDisponibles: normExcepciones };
     if (entrega !== undefined) body.entrega = entrega; // sólo si quieres actualizar entrega
 
+    const urls = this.buildPathCandidates(`/rentalcars/${id}/disponibilidad`);
+
     return this.authJsonHeaders$().pipe(
-      switchMap((headers) => this.http.patch<{ message: string; rental: any }>(`${this.api}/${id}/disponibilidad`, body, { headers })),
+      switchMap(headers =>
+        this.requestOverCandidates<{ message: string; rental: any }>(
+          ['PUT'],
+          urls,
+          (_method, u) => ({ url: u, body, options: { headers } })
+        )
+      ),
       catchError((error) => this.headersService.handleError(error))
     );
   }

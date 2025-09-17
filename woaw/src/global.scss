@@ -325,15 +325,15 @@ app-tabs {
 
 
 
+
+
 ion-popover.select-popover {
   margin-top: 18px;
-  --width: 100%;
-  --max-width: clamp(310px, 92vw, 520px);
+  --width: auto;
+  --max-width: none;
   --backdrop-opacity: .12;
 
   &::part(content) {
-    left: 3% !important;
-    // transform: translateX(-50%) !important;
     border-radius: 4px;
     box-shadow: 0 10px 32px rgba(0, 0, 0, .18);
   }
@@ -342,7 +342,7 @@ ion-popover.select-popover {
     padding: 0;
 
     ion-list {
-      >ion-item:nth-child(1) {
+      > ion-item:nth-child(1) {
         --background: #e9efff;
         --min-height: 54px;
         font-weight: 600;
@@ -364,4 +364,17 @@ ion-popover.select-popover {
       --color-checked: #ff1b1b;
     }
   }
+}
+
+ion-popover.select-popover {
+  --width: auto;
+  --max-width: none;
+  --offset-y: 6px;
+  transform-origin: top left;
+}
+
+/* regla genérica: si existe la var, úsala */
+ion-popover.select-popover[class*="pop-"] {
+  --width: var(--pop-width, auto);
+  --max-width: var(--pop-width, none);
 }

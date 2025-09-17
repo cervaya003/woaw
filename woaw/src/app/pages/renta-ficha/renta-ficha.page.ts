@@ -1,37 +1,95 @@
-import { Component, OnInit } from '@angular/core';
+
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RentaService } from '../../services/renta.service';
 import { GeneralService } from '../../services/general.service';
+import { take } from 'rxjs/operators';
+import { FooterComponent } from '../../components/footer/footer.component'; // 👈 ajusta la ruta si es distinta
+
+
+/* ===== Tipos (alineados al servicio nuevo) ===== */
+interface Ventana { inicio: string; fin: string; nota?: string; }
+interface Excepcion { inicio: string; fin: string; motivo?: string; }
+interface Ubicacion { ciudad: string; estado: string; }
+type EstadoRenta = 'disponible' | 'rentado' | 'inactivo' | 'mantenimiento';
+
+interface Rental {
+  _id: string;
+  marca: string;
+  modelo: string;
+  anio?: number;
+
+  imagenPrincipal?: string;
+  imagenes?: string[];
+
+  precio?: number;       // por día
+  deposito?: number | null;
+  minDias?: number | null;
+
+  ratingPromedio?: number;
+  totalRentas?: number;
+  estadoRenta?: EstadoRenta;
+
+  transmision?: string;
+  combustible?: string;
+  pasajeros?: number;
+  kilometrajeActual?: number;
+
+  ubicacion?: Ubicacion;
+  gps?: boolean;
+  inmovilizador?: boolean;
+
+  ventanasDisponibles?: Ventana[];
+  excepcionesNoDisponibles?: Excepcion[];
+
+  entrega?: any;
+  requisitosConductor?: {
+    edadMinima: number;
+    antiguedadLicenciaMeses: number;
+    permiteConductorAdicional: boolean;
+    costoConductorAdicional?: number;
+  };
+  polizaPlataforma?: {
+    aseguradora: string;
+    cobertura: string;
+    vigenciaDesde: string;
+    vigenciaHasta: string;
+    urlPoliza?: string;
+  };
+  politicaCombustible?: string;
+  politicaLimpieza?: string;
+}
 
 @Component({
   selector: 'app-renta-ficha',
   templateUrl: './renta-ficha.page.html',
   styleUrls: ['./renta-ficha.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: false,
 })
 export class RentaFichaPage implements OnInit {
   loading = true;
-  rental: any = null;
+  rental: Rental | null = null;
 
-  // Galería unificada (imagenPrincipal + imagenes[])
+  isLoggedIn = false;
+
+  /** Fechas resaltadas para pintar TODO el rango en el ion-datetime */
+  highlightedRange: Array<{ date: string; textColor?: string; backgroundColor?: string }> = [];
+
+  // Galería
   galeria: string[] = [];
   imagenSeleccionada: string | null = null;
+  get tieneVarias(): boolean { return (this.galeria?.length || 0) > 1; }
 
-  get tieneVarias(): boolean {
-    return (this.galeria?.length || 0) > 1;
-  }
-
-  // ⭐ Getter para rating
   get ratingEntero(): number {
     const r = Number(this.rental?.ratingPromedio ?? 0);
     return Math.max(0, Math.min(5, Math.round(r)));
   }
 
-  // ===== Selección de fechas con UN solo calendario =====
-  minFecha = new Date().toISOString().slice(0, 10); // yyyy-mm-dd (hoy)
-  fechasSeleccionadas: string[] = []; // ISO strings (YYYY-MM-DD) de ion-datetime
+  // ===== Selección de fechas =====
+  minFecha = this.toLocalISODate(); // yyyy-mm-dd
+  fechasSeleccionadas: string[] = []; // 'YYYY-MM-DD' o ISO de ion-datetime
 
-  // Derivados (inicio/fin) desde el array seleccionado
   get fechaInicio(): string | null {
     if (!this.fechasSeleccionadas?.length) return null;
     return [...this.fechasSeleccionadas].sort()[0] || null;
@@ -44,28 +102,69 @@ export class RentaFichaPage implements OnInit {
   resumen: {
     valido: boolean;
     dias: number;
-    meses: number;
-    semanas: number;
     diasSueltos: number;
     subtotalDia: number;
-    subtotalSemana: number;
-    subtotalMes: number;
     total: number;
   } | null = null;
+
+  // 👇 referencia al footer para abrir sus modales
+  @ViewChild(FooterComponent) footer!: FooterComponent;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private rentaService: RentaService,
-    private general: GeneralService
+    private general: GeneralService,
+    private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
+    this.general.tokenExistente$.subscribe((estado) => {
+      this.isLoggedIn = estado;
+      this.cdr.markForCheck();
+    });
+
     const id = this.route.snapshot.paramMap.get('id')!;
     this.cargar(id);
   }
 
-  private buildGaleria(res: any): string[] {
+  /* ================== Utilidades de fecha (sin TZ) ================== */
+  private toLocalISODate(d = new Date()): string {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  }
+
+  /** Toma 'YYYY-MM-DD' o ISO y devuelve Date local yyyy-mm-dd (ignora zona). */
+  private asLocalDateOnly(isoLike: string): Date {
+    // usa sólo los 10 primeros caracteres si viene con 'T...' o 'Z'
+    const s = (isoLike || '').slice(0, 10);
+    const [y, m, d] = s.split('-').map(n => parseInt(n, 10));
+    return new Date(y, (m - 1), d);
+  }
+
+  private startOfDay(d: Date) {
+    return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  }
+
+  /** Diferencia INCLUSIVA en días (inicio y fin cuentan) */
+  private diffDaysInclusive(inicio: Date, fin: Date): number {
+    const ms = this.startOfDay(fin).getTime() - this.startOfDay(inicio).getTime();
+    const excl = Math.ceil(ms / 86400000); // excluyente
+    return Math.max(1, excl + 1);          // inclusivo
+  }
+
+  /** yyyy-mm-dd desde Date */
+  private toISOyyyyMMdd(d: Date): string {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  }
+
+  /* ================== Galería ================== */
+  private buildGaleria(res: Rental): string[] {
     const principal = res?.imagenPrincipal ? [res.imagenPrincipal] : [];
     const extras = Array.isArray(res?.imagenes) ? res.imagenes : [];
     const limpio = [...principal, ...extras].filter((u: any) => !!u && typeof u === 'string');
@@ -74,17 +173,25 @@ export class RentaFichaPage implements OnInit {
 
   cargar(id: string) {
     this.loading = true;
-    this.rentaService.cochePorId(id).subscribe({
-      next: (res) => {
-        this.rental = res;
-        this.galeria = this.buildGaleria(res);
+    this.cdr.markForCheck();
+
+    this.rentaService.cochePorId(id).pipe(take(1)).subscribe({
+      next: (res: any) => {
+        const cast: Rental = { ...res };
+        this.rental = cast;
+        this.galeria = this.buildGaleria(cast);
         this.imagenSeleccionada = this.galeria[0] || null;
         this.loading = false;
-        // Recalcular si ya había selección previa (1 o 2 fechas)
+
         if (this.fechasSeleccionadas.length >= 1) this.calcularTotal();
+        this.buildHighlightedRange();
+
+        this.cdr.markForCheck();
       },
       error: (err) => {
         this.loading = false;
+        this.cdr.markForCheck();
+
         const msg = err?.error?.message || 'No se pudo cargar el vehículo';
         this.general.alert('Error', msg, 'danger');
         this.router.navigate(['/renta-coches']);
@@ -94,9 +201,7 @@ export class RentaFichaPage implements OnInit {
 
   // Navegación
   volver() {
-    try {
-      if (window.history.length > 2) return history.back();
-    } catch { }
+    try { if (window.history.length > 2) return history.back(); } catch { }
     this.router.navigate(['/renta-coches']);
   }
   cerrar() { this.volver(); }
@@ -109,6 +214,7 @@ export class RentaFichaPage implements OnInit {
     const idx = Math.max(0, imgs.indexOf(actual));
     if (dir === 'siguiente' && idx < imgs.length - 1) this.imagenSeleccionada = imgs[idx + 1];
     if (dir === 'anterior' && idx > 0) this.imagenSeleccionada = imgs[idx - 1];
+    this.cdr.markForCheck();
   }
 
   onImgError(ev: Event, url?: string) {
@@ -120,140 +226,101 @@ export class RentaFichaPage implements OnInit {
         this.imagenSeleccionada = this.galeria[0] || null;
       }
     }
+    this.cdr.markForCheck();
   }
 
   trackByUrl(_i: number, url: string) { return url; }
 
-  // ====== Fechas / Cálculo ======
+  /* ================== Fechas / Disponibilidad ================== */
   onRangoChange() {
-    // Mantener máximo 2 selecciones. Si hay más, conservamos las 2 más recientes.
     if (this.fechasSeleccionadas.length > 2) {
       this.fechasSeleccionadas = this.fechasSeleccionadas.slice(-2);
     }
-    // Calcular con 1 o 2 fechas
     if (this.fechasSeleccionadas.length >= 1) {
       this.calcularTotal();
     } else {
       this.resumen = null;
     }
+    this.buildHighlightedRange();
+    this.cdr.markForCheck();
   }
 
-  private startOfDay(d: Date) {
-    const x = new Date(d);
-    x.setHours(0, 0, 0, 0);
-    return x;
-  }
+  /** Construye highlightedRange con todas las fechas del rango (inclusivo) */
+  private buildHighlightedRange(): void {
+    this.highlightedRange = [];
+    if (!this.fechasSeleccionadas?.length) return;
 
-  // Diferencia en días (fin excluyente: si inicio=1 y fin=2 => 1 día)
-  private diffDays(inicio: Date, fin: Date): number {
-    const ms = this.startOfDay(fin).getTime() - this.startOfDay(inicio).getTime();
-    return Math.ceil(ms / 86400000);
-  }
+    const fechas = [...this.fechasSeleccionadas].sort();
+    let inicio = this.asLocalDateOnly(fechas[0]);
+    let fin = this.asLocalDateOnly(fechas[fechas.length - 1]);
+    if (fin < inicio) [inicio, fin] = [fin, inicio];
 
-  // Deshabilitar fechas fuera de ventanas disponibles o dentro de excepciones
-  esFechaHabil = (isoDateString: string) => {
-    if (!this.rental) return true;
+    const bg = '#4463efff';
+    const fg = '#ffffff';
 
-    const d = this.startOfDay(new Date(isoDateString)).getTime();
-
-    const ventanas = this.rental?.ventanasDisponibles || [];
-    let permitidoPorVentana = true;
-    if (ventanas.length > 0) {
-      permitidoPorVentana = ventanas.some((v: any) => {
-        const i = this.startOfDay(new Date(v.inicio)).getTime();
-        const f = this.startOfDay(new Date(v.fin)).getTime();
-        return d >= i && d <= f;
+    const cursor = new Date(inicio);
+    while (cursor <= fin) {
+      this.highlightedRange.push({
+        date: this.toISOyyyyMMdd(cursor),
+        backgroundColor: bg,
+        textColor: fg,
       });
+      cursor.setDate(cursor.getDate() + 1);
     }
+  }
 
-    const excepciones = this.rental?.excepcionesNoDisponibles || [];
-    const enExcepcion = excepciones.some((x: any) => {
-      const i = this.startOfDay(new Date(x.inicio)).getTime();
-      const f = this.startOfDay(new Date(x.fin)).getTime();
-      return d >= i && d <= f;
-    });
+  // (Si decides usar disponibilidad real, mantenlo; para estilizado no es necesario)
+  esFechaHabil = (_isoDateString: string) => true;
 
-    return permitidoPorVentana && !enExcepcion;
-  };
-
-  // Estrategia: priorizar meses (30 días), luego semanas (7), luego días
+  /* ================== Cálculo de total ================== */
   private calcularTotal() {
     this.resumen = null;
-    if (!this.rental) return;
+    const r = this.rental;
+    if (!r) { this.cdr.markForCheck(); return; }
 
-    const inicioISO = this.fechaInicio;
-    const finISO = this.fechaFin || this.fechaInicio; // si solo hay 1 fecha, usamos la misma
-    if (!inicioISO || !finISO) return;
+    let inicioISO = this.fechaInicio;
+    let finISO = this.fechaFin || this.fechaInicio;
+    if (!inicioISO || !finISO) { this.cdr.markForCheck(); return; }
 
-    const inicio = new Date(inicioISO);
-    const fin = new Date(finISO);
-    if (isNaN(inicio.getTime()) || isNaN(fin.getTime())) return;
+    let inicio = this.asLocalDateOnly(inicioISO);
+    let fin = this.asLocalDateOnly(finISO);
+    if (fin < inicio) [inicio, fin] = [fin, inicio];
+    
+    // **INCLUSIVO**
+    let dias = this.fechasSeleccionadas.length === 1 ? 1 : this.diffDaysInclusive(inicio, fin);
 
-    // Días: si hay 1 fecha => 1 día. Si hay 2 => diferencia excluyente.
-    let dias = this.diffDays(inicio, fin);
-    if (this.fechasSeleccionadas.length === 1) {
-      dias = 1;
-    }
-    if (dias <= 0) return;
-
-    const precio = this.rental?.precio || {};
-    const porDia = Number(precio.porDia || 0);
-    const porSemana = Number(precio.porSemana || 0);
-    const porMes = Number(precio.porMes || 0);
-
-    let resta = dias;
-    let meses = 0, semanas = 0, diasSueltos = 0;
-
-    if (porMes > 0) {
-      meses = Math.floor(resta / 30);
-      resta = resta % 30;
-    }
-    if (porSemana > 0) {
-      semanas = Math.floor(resta / 7);
-      resta = resta % 7;
-    }
-    diasSueltos = resta;
-
-    const subtotalMes = meses * porMes;
-    const subtotalSemana = semanas * porSemana;
-    const subtotalDia = diasSueltos * porDia;
-
-    let total = 0;
-    if (!porMes && !porSemana) {
-      total = dias * porDia;
-    } else {
-      total = subtotalMes + subtotalSemana + subtotalDia;
-      if (porSemana && !porDia && diasSueltos > 0) {
-        total += Math.ceil((porSemana / 7) * diasSueltos);
-      }
-    }
+    const porDia = Number(r.precio || 0);
+    const total = porDia * dias; // coherente con inclusivo
 
     this.resumen = {
-      valido: true,
+      valido: dias > 0 && porDia > 0,
       dias,
-      meses,
-      semanas,
-      diasSueltos,
-      subtotalDia,
-      subtotalSemana,
-      subtotalMes,
+      diasSueltos: dias,
+      subtotalDia: porDia * dias,
       total,
     };
+
+    this.cdr.markForCheck();
   }
 
   // CTAs
-  contactarWhatsApp() {
-    const txt = encodeURIComponent(
-      `Hola, me interesa rentar el ${this.rental?.marca} ${this.rental?.modelo} ${this.rental?.anio}.`
-    );
-    window.open(`https://wa.me/?text=${txt}`, '_blank');
+  contactarWhatsApp(): void {
+    if (!this.rental) return;
+
+    const numero = "524427706776";
+    const urlActual = window.location.href;
+
+    const mensaje = `Hola, estoy interesado en rentar: \n\n🚗 *${this.rental.marca} ${this.rental.modelo}*. \n\n🔗 ${urlActual}`;
+    const texto = encodeURIComponent(mensaje);
+
+    window.open(`https://api.whatsapp.com/send?phone=${numero}&text=${texto}`, "_blank");
   }
 
   compartir() {
     const url = location.href;
     if (navigator.share) {
       navigator.share({
-        title: `${this.rental?.marca} ${this.rental?.modelo} ${this.rental?.anio} en renta`,
+        title: `${this.rental?.marca} ${this.rental?.modelo}${this.rental?.anio ? ' ' + this.rental?.anio : ''} en renta`,
         text: 'Checa este vehículo en renta',
         url
       }).catch(() => { });
@@ -266,19 +333,64 @@ export class RentaFichaPage implements OnInit {
   reservar() {
     if (!this.rental?._id) return;
 
-    const inicio = this.fechaInicio || null;
-    const fin = this.fechaFin || this.fechaInicio || null;
+    if (!this.resumen?.valido) {
+      this.general.toast('Selecciona fecha(s) válidas para continuar.', 'warning');
+      return;
+    }
 
+    // Si el usuario seleccionó fechas, validamos y mandamos los params
     if (inicio && fin) {
+      // Calcula días (inclusivo si ya tienes diffDaysInclusive)
+      const dias = this.fechasSeleccionadas.length === 1
+        ? 1
+        : this.diffDaysInclusive(
+          this.asLocalDateOnly(inicio),
+          this.asLocalDateOnly(fin)
+        );
+
+      const min = Number(this.rental?.minDias ?? 0);
+      if (min > 0 && dias < min) {
+        this.general.toast(`La renta mínima es de ${min} día(s).`, 'warning');
+        return;
+      }
+
       this.router.navigate(
         ['/reservas', this.rental._id],
         { queryParams: { inicio, fin } }
       );
-    } else {
-      this.router.navigate(['/reservas', this.rental._id]);
+      return;
     }
+
+    // Sin fechas seleccionadas: navegar sin query params
+    this.router.navigate(['/reservas', this.rental._id]);
   }
 
-  abrirAviso() { this.general.alert('Aviso de Privacidad', 'Contenido…', 'info'); }
-  abrirTerminos() { this.general.alert('Términos y condiciones', 'Contenido…', 'info'); }
+  // ===== Aviso y Términos desde el Footer (opción 2) =====
+  abrirAviso() {
+    if (this.footer?.mostrarAviso) {
+      this.footer.mostrarAviso();
+    } else {
+      // Fallback por si no existe el método
+      this.general.alert('Aviso de Privacidad', 'Contenido…', 'info');
+
+    }
+
+    const inicio = this.fechaInicio!;
+    const fin = this.fechaFin || this.fechaInicio!;
+
+    this.router.navigate(
+      ['/reservas', this.rental._id],
+      { queryParams: { inicio, fin } }
+    );
+  }
+
+  abrirTerminos() {
+    const anyFooter = this.footer as any;
+    if (anyFooter?.mostrarTerminos) {
+      anyFooter.mostrarTerminos();
+    } else {
+      // Fallback
+      this.general.alert('Términos y condiciones', 'Contenido…', 'info');
+    }
+  }
 }

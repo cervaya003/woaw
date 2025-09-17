@@ -4,7 +4,6 @@ import { AlertController, LoadingController, ToastController } from '@ionic/angu
 import { RentaService } from '../../services/renta.service';
 import { ReservaService, RentalBooking } from '../../services/reserva.service';
 
-
 type EstadoRenta = 'disponible' | 'inactivo';
 type Preset = 'none' | 'week' | 'month' | 'weekdays';
 
@@ -16,7 +15,6 @@ interface ExcepcionNoDisponible {
 
 type DayHighlight = { date: string; textColor?: string; backgroundColor?: string };
 type ExcepcionDTO = { inicio: any; fin: any; motivo?: string };
-
 
 @Component({
   selector: 'app-disponibilidad-car',
@@ -42,7 +40,6 @@ export class DisponibilidadCarPage implements OnInit {
   private ignoreNextCalendarChange = false;
 
   // Límites del calendario
-
   minDate = this.toYmdLocal(new Date());                       // hoy (local)
   maxDate = this.toYmdLocal(this.addMonths(new Date(), 12));   // +12 meses
 
@@ -72,14 +69,11 @@ export class DisponibilidadCarPage implements OnInit {
   actingIds = new Set<string>();
   actingAction: 'accept' | 'cancel' | null = null;
 
-
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private rentaService: RentaService,
-
     private reservaService: ReservaService,
-
     private loadingCtrl: LoadingController,
     private toastCtrl: ToastController,
     private alertCtrl: AlertController,
@@ -378,19 +372,34 @@ export class DisponibilidadCarPage implements OnInit {
     this.recalcularErrores();
     if (this.errores.length > 0) { this.toast('Corrige los problemas antes de guardar', 'warning'); return; }
 
-    const now = this.snapshotKey(excepcionesClean);
-    if (now === this.lastSnapshot) { this.toast('No hay cambios por guardar', 'medium'); return; }
+    const nowSnapshot = this.snapshotKey(excepcionesClean);
+    if (nowSnapshot === this.lastSnapshot) { this.toast('No hay cambios por guardar', 'medium'); return; }
+
+    // Detecta si realmente cambió el estado vs. snapshot anterior
+    const prevEstado = this.getPrevEstadoFromSnapshot();
+    const debeCambiarEstado = prevEstado !== this.estadoActual;
 
     this.guardando = true; this.cdr.markForCheck();
     const loading = await this.loading('Guardando…');
 
-    this.rentaService.setDisponibilidadCar(this.carId, [], excepcionesClean).subscribe({
+    // FIX: mandar excepciones en el primer argumento, no como "entrega"
+    this.rentaService.setDisponibilidadCar(this.carId, excepcionesClean).subscribe({
       next: async () => {
+        if (!debeCambiarEstado) {
+          await loading.dismiss();
+          this.guardando = false;
+          this.lastSnapshot = nowSnapshot;
+          this.toast('Cambios guardados', 'success');
+          this.loadCar();
+          this.router.navigate(['/renta-coches']);
+          return;
+        }
+
         this.rentaService.toggleEstadoRenta(this.carId, this.estadoActual).subscribe({
           next: async () => {
             await loading.dismiss();
             this.guardando = false;
-            this.lastSnapshot = now;
+            this.lastSnapshot = nowSnapshot;
             this.toast('Cambios guardados', 'success');
             this.loadCar();
             this.router.navigate(['/renta-coches']);
@@ -417,6 +426,13 @@ export class DisponibilidadCarPage implements OnInit {
 
   private snapshotKey(ex?: ExcepcionNoDisponible[]) {
     return JSON.stringify({ e: this.mergeRanges(ex ?? this.excepciones), estado: this.estadoActual });
+  }
+
+  private getPrevEstadoFromSnapshot(): EstadoRenta | null {
+    try {
+      const parsed = JSON.parse(this.lastSnapshot);
+      return parsed?.estado ?? null;
+    } catch { return null; }
   }
 
   private recalcularErrores() {
@@ -504,7 +520,6 @@ export class DisponibilidadCarPage implements OnInit {
   }
 
   // Fechas por días fijos en horizonte
-
   private isWeekend(d: Date) { const w = d.getUTCDay(); return w === 0 || w === 6; }
 
   private getWeekendHorizon(months = 6) {
@@ -585,7 +600,7 @@ export class DisponibilidadCarPage implements OnInit {
   beforeUnload($event: BeforeUnloadEvent) {
     if (this.snapshotKey() !== this.lastSnapshot) {
       $event.preventDefault();
-      $event.returnValue = true;
+      ($event as any).returnValue = true;
     }
   }
 
@@ -662,7 +677,6 @@ export class DisponibilidadCarPage implements OnInit {
   // Detecta cambios en disponibilidad/estado
   get hasChanges(): boolean {
     return this.snapshotKey() !== this.lastSnapshot;
-
   }
 
   // ===== Utils reservas =====
@@ -678,5 +692,4 @@ export class DisponibilidadCarPage implements OnInit {
     if (typeof u === 'string') return u;
     return u.nombre || u.email || 'Usuario';
   }
-
 }

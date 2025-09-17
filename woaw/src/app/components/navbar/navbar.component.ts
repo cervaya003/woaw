@@ -11,17 +11,19 @@ import { HistorealSearchComponent } from '../../components/historeal-search/hist
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { PerfilComponent } from '../modal/perfil/perfil.component';
 import { MotosService } from '../../services/motos.service';
+import { SpinnerComponent } from '../../components/spinner/spinner.component';
 
 @Component({
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss'],
   standalone: true,
-  imports: [IonicModule, CommonModule],
+  imports: [IonicModule, CommonModule, SpinnerComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class NavbarComponent implements OnInit {
   esDispositivoMovil: boolean = false;
+  mostrar_spinnet: boolean = false;
   estaEnHome: boolean = false;
   public isLoggedIn: boolean = false;
   menuCochesAbierto = false;
@@ -45,7 +47,7 @@ export class NavbarComponent implements OnInit {
     private popoverCtrl: PopoverController,
     private route: ActivatedRoute,
     public motoservice: MotosService
-  ) {}
+  ) { }
 
   ngOnInit() {
     // Detectar tipo de dispositivo
@@ -228,18 +230,18 @@ export class NavbarComponent implements OnInit {
   }
 
   async abrirModalPerfil() {
-    await this.generalService.loading('Cargando...');
+    this.mostrar_spinnet = true;
     setTimeout(async () => {
-      await this.generalService.loadingDismiss();
+      this.mostrar_spinnet = false;
       const modal = await this.modalCtrl.create({
         component: PerfilComponent,
-        breakpoints: [0, 0.5, 1],
+      breakpoints: [0, 0.5, 0.8, 1],
         cssClass: 'modal-perfil',
-        initialBreakpoint: 1,
+        initialBreakpoint: 0.8,
         handle: true,
         showBackdrop: true,
       });
       await modal.present();
-    }, 500);
+    }, 1000);
   }
 }

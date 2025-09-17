@@ -116,14 +116,9 @@ ion-buttons[slot="end"] {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-left: 15px;
-    padding-left: 15px;
+    margin-left: 5px;
+    padding-left: 5px;
     cursor: pointer;
-    border-left: 1px solid #444;
-
-    &:hover {
-      border-left: 1px solid #ff0000;
-    }
 
     .icono-bandera {
       width: 20px;
@@ -297,12 +292,17 @@ ion-buttons[slot="end"] {
     }
   }
 
- .logo {
-  width: clamp(20px, 6.25vw, 100px);
-  flex: none;
-  margin-left: clamp(2px, 0.625vw, 7px);
-  cursor: pointer;
-}
+  .logo {
+    width: 60px;
+    flex: none;
+    margin-left: 7px;
+    cursor: pointer;
+
+    @media (max-width: 968px) {
+      width: 35px;
+      margin-left: 2px;
+    }
+  }
 }
 
 

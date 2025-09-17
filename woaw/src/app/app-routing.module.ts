@@ -235,13 +235,6 @@ const routes: Routes = [
       ),
   },
   {
-    path: "disponibilidad-car/:id",
-    loadChildren: () =>
-      import("./pages/disponibilidad-car/disponibilidad-car.module").then(
-        (m) => m.DisponibilidadCarPageModule
-      ),
-  },
-  {
     path: 'conocenos',
     loadChildren: () => import('./pages/nosotros/nosotros.module').then(m => m.NosotrosPageModule)
   },
@@ -267,7 +260,6 @@ const routes: Routes = [
       import("./pages/error/error.module").then((m) => m.ErrorPageModule),
     data: { title: "Página no encontrada | woaw" },
   },
-
 ];
 
 @NgModule({
