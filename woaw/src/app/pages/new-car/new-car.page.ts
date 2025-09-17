@@ -266,7 +266,7 @@ export class NewCarPage implements OnInit {
     } else if (tipo === "modelo") {
       this.mostrarCarComponent = false;
       this.mansaje_error = "";
-    } else if (tipo === "all") {
+    } else if (tipo === "mios") {
       this.marcaSeleccionada = "";
       this.modeloSeleccionado = "";
       this.modeloEsPersonalizado = false;

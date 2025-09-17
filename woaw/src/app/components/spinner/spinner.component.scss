@@ -1,0 +1,103 @@
+.spinner-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.76);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+    cursor: progress;
+    overscroll-behavior: contain;
+
+    .page {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        width: 100%;
+        height: 100%;
+    }
+
+    .container {
+        --block-size: 18vmin;
+        display: grid;
+        place-items: center;
+    }
+
+    .taxto {
+        margin: 0;
+        padding: 6px 10px;
+        background: transparent;
+        color: #ffffff;
+        font-size: clamp(14px, 2vw, 16px);
+        font-weight: 700;
+        border-radius: 8px;
+        user-select: none;
+    }
+
+    .loader {
+        --loader-size: calc(var(--block-size) / 2);
+        --light-color: rgb(255, 0, 0);
+        --dot-size: 10px;
+        display: grid;
+        place-items: center;
+        position: relative;
+        width: var(--loader-size);
+        color: rgb(174, 5, 5);
+    }
+
+    .loader::before,
+    .loader::after {
+        content: '';
+        position: absolute;
+    }
+
+    .loader--8 {
+        --loader-size: calc(var(--block-size) / 3);
+        --anim-duration: .8s;
+        aspect-ratio: 1 / 1;
+        border: 4px solid var(--light-color);
+        border-radius: 50%;
+        background: #0808085d;
+        perspective: 50vmin;
+        transform-style: preserve-3d;
+        transform: rotateX(45deg) rotateY(15deg);
+    }
+
+    .loader--8::before,
+    .loader--8::after {
+        animation: loader-8 var(--anim-duration) cubic-bezier(.39, .24, 0, .99) infinite;
+    }
+
+    .loader--8::before {
+        --z-dist: 8vmin;
+        width: var(--dot-size);
+        aspect-ratio: 1 / 1;
+        background: #ff0000;
+        border-radius: 50%;
+        top: calc(50% - var(--dot-size) / 2);
+        left: calc(50% - var(--dot-size) / 2);
+        animation-delay: calc(var(--anim-duration) / 4 * -1);
+    }
+
+    .loader--8::after {
+        --z-dist: 4vmin;
+        width: 65%;
+        aspect-ratio: 1 / 1;
+        border-radius: 50%;
+        border: 2px solid currentColor;
+    }
+
+    @keyframes loader-8 {
+
+        0%,
+        100% {
+            transform: translateZ(calc(var(--z-dist) * -1)) scale(.6);
+        }
+
+        55% {
+            transform: translateZ(var(--z-dist));
+        }
+    }
+}
