@@ -1,8 +1,11 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RentaService } from '../../services/renta.service';
 import { GeneralService } from '../../services/general.service';
 import { take } from 'rxjs/operators';
+import { FooterComponent } from '../../components/footer/footer.component'; // 👈 ajusta la ruta si es distinta
+
 
 /* ===== Tipos (alineados al servicio nuevo) ===== */
 interface Ventana { inicio: string; fin: string; nota?: string; }
@@ -68,6 +71,8 @@ export class RentaFichaPage implements OnInit {
   loading = true;
   rental: Rental | null = null;
 
+  isLoggedIn = false;
+
   /** Fechas resaltadas para pintar TODO el rango en el ion-datetime */
   highlightedRange: Array<{ date: string; textColor?: string; backgroundColor?: string }> = [];
 
@@ -102,6 +107,9 @@ export class RentaFichaPage implements OnInit {
     total: number;
   } | null = null;
 
+  // 👇 referencia al footer para abrir sus modales
+  @ViewChild(FooterComponent) footer!: FooterComponent;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -111,6 +119,11 @@ export class RentaFichaPage implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.general.tokenExistente$.subscribe((estado) => {
+      this.isLoggedIn = estado;
+      this.cdr.markForCheck();
+    });
+
     const id = this.route.snapshot.paramMap.get('id')!;
     this.cargar(id);
   }
@@ -272,7 +285,7 @@ export class RentaFichaPage implements OnInit {
     let inicio = this.asLocalDateOnly(inicioISO);
     let fin = this.asLocalDateOnly(finISO);
     if (fin < inicio) [inicio, fin] = [fin, inicio];
-
+    
     // **INCLUSIVO**
     let dias = this.fechasSeleccionadas.length === 1 ? 1 : this.diffDaysInclusive(inicio, fin);
 
@@ -325,10 +338,41 @@ export class RentaFichaPage implements OnInit {
       return;
     }
 
-    const min = Number(this.rental?.minDias ?? 0);
-    if (min > 0 && this.resumen.dias < min) {
-      this.general.toast(`La renta mínima es de ${min} día(s).`, 'warning');
+    // Si el usuario seleccionó fechas, validamos y mandamos los params
+    if (inicio && fin) {
+      // Calcula días (inclusivo si ya tienes diffDaysInclusive)
+      const dias = this.fechasSeleccionadas.length === 1
+        ? 1
+        : this.diffDaysInclusive(
+          this.asLocalDateOnly(inicio),
+          this.asLocalDateOnly(fin)
+        );
+
+      const min = Number(this.rental?.minDias ?? 0);
+      if (min > 0 && dias < min) {
+        this.general.toast(`La renta mínima es de ${min} día(s).`, 'warning');
+        return;
+      }
+
+      this.router.navigate(
+        ['/reservas', this.rental._id],
+        { queryParams: { inicio, fin } }
+      );
       return;
+    }
+
+    // Sin fechas seleccionadas: navegar sin query params
+    this.router.navigate(['/reservas', this.rental._id]);
+  }
+
+  // ===== Aviso y Términos desde el Footer (opción 2) =====
+  abrirAviso() {
+    if (this.footer?.mostrarAviso) {
+      this.footer.mostrarAviso();
+    } else {
+      // Fallback por si no existe el método
+      this.general.alert('Aviso de Privacidad', 'Contenido…', 'info');
+
     }
 
     const inicio = this.fechaInicio!;
@@ -340,6 +384,13 @@ export class RentaFichaPage implements OnInit {
     );
   }
 
-  abrirAviso() { this.general.alert('Aviso de Privacidad', 'Contenido…', 'info'); }
-  abrirTerminos() { this.general.alert('Términos y condiciones', 'Contenido…', 'info'); }
+  abrirTerminos() {
+    const anyFooter = this.footer as any;
+    if (anyFooter?.mostrarTerminos) {
+      anyFooter.mostrarTerminos();
+    } else {
+      // Fallback
+      this.general.alert('Términos y condiciones', 'Contenido…', 'info');
+    }
+  }
 }

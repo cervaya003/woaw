@@ -238,6 +238,7 @@ const routes: Routes = [
     path: 'conocenos',
     loadChildren: () => import('./pages/nosotros/nosotros.module').then(m => m.NosotrosPageModule)
   },
+    
   {
     path: 'disponibilidad-car/:id',
     loadChildren: () => import('./pages/disponibilidad-car/disponibilidad-car.module').then( m => m.DisponibilidadCarPageModule)
