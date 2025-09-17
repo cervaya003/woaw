@@ -1,11 +1,6 @@
+<app-navbar></app-navbar>
 
-
-
-
-
-<app-navbar *ngIf="!esDispositivoMovil"></app-navbar>
-
-<ion-header *ngIf="esDispositivoMovil">
+<!-- <ion-header *ngIf="esDispositivoMovil">
   <ion-toolbar color="dark">
     <ion-buttons slot="start">
       <ion-back-button text="" routerDirection="back" defaultHref="/"></ion-back-button>
@@ -15,7 +10,7 @@
       <ion-title>Motos</ion-title>
     </ion-buttons>
   </ion-toolbar>
-</ion-header>
+</ion-header> -->
 
 <ion-content #pageContent [fullscreen]="true">
   <app-acomodo [totalAutos]="totalMotos" [titulo]="'Motos'" (ordenCambio)="ordenarAutos($event)">

@@ -6,6 +6,9 @@ import { CarsService } from '../../../services/cars.service';
 import { GeneralService } from '../../../services/general.service';
 import { SeguroService } from '../../../services/seguro.service';
 
+
+import { AfterViewInit, ElementRef, QueryList, ViewChildren } from '@angular/core';
+
 @Component({
   selector: 'app-seguros',
   templateUrl: './seguros.page.html',
@@ -41,7 +44,7 @@ export class SegurosPage implements OnInit {
     'Modelo',
     'Año',
     'Versión',
-    'Nacimiento',
+    'Edad',
     'Datos',
     'Cotizar'
   ];
@@ -93,6 +96,8 @@ export class SegurosPage implements OnInit {
     };
     return m[code] ?? code;
   }
+
+
 
   constructor(
     private popoverCtrl: PopoverController,
@@ -518,7 +523,7 @@ export class SegurosPage implements OnInit {
       }
     );
   }
-  
+
   // ---------- COTIZACION ----------
   private HacerCotizacion(data: any) {
     this.mostrar_spinnet = true;
@@ -537,7 +542,7 @@ export class SegurosPage implements OnInit {
           } else {
             this.activePlan = null;
           }
-        }, 1500);
+        }, 2500);
       },
       error: (err) => {
         this.mostrar_spinnet = false;
@@ -686,4 +691,31 @@ export class SegurosPage implements OnInit {
     return Object.values(out);
   }
   trackByCov = (_: number, c: any) => c?.code || _;
+
+
+
+
+
+  @ViewChildren('lista', { read: ElementRef })
+  allSelects!: QueryList<ElementRef<HTMLElement>>;
+
+  private setVar(name: string, value: string) {
+    document.documentElement.style.setProperty(name, value);
+  }
+
+  ngAfterViewInit() {
+    const syncAll = () => this.syncPopoverWidths();
+    syncAll();
+    window.addEventListener('resize', syncAll);
+  }
+
+  syncPopoverWidths() {
+    this.allSelects.forEach(ref => {
+      const el = ref.nativeElement;
+      const w = el.getBoundingClientRect().width;
+
+      document.documentElement.style.setProperty('--pop-width', `${w}px`);
+    });
+  }
+
 }

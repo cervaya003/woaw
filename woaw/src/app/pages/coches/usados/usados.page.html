@@ -1,6 +1,6 @@
-<app-navbar *ngIf="!esDispositivoMovil"></app-navbar>
+<app-navbar></app-navbar>
 
-<ion-header *ngIf="esDispositivoMovil">
+<!-- <ion-header *ngIf="esDispositivoMovil">
   <ion-toolbar color="dark">
     <ion-buttons slot="start">
       <ion-back-button text="" routerDirection="back" defaultHref="/"></ion-back-button>
@@ -10,7 +10,7 @@
       <ion-title>Usados</ion-title>
     </ion-buttons>
   </ion-toolbar>
-</ion-header>
+</ion-header> -->
 
 <ion-content #pageContent [fullscreen]="true">
   <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">

@@ -4,7 +4,7 @@ import { IonicModule, MenuController, ModalController } from "@ionic/angular";
 import { CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
 import { Router } from "@angular/router";
 import { Subscription } from "rxjs";
-
+import { SpinnerComponent } from '../../components/spinner/spinner.component';
 import { GeneralService } from "../../services/general.service";
 import { PerfilComponent } from "../modal/perfil/perfil.component";
 
@@ -15,13 +15,13 @@ type SectionKey = "configuracion" | "servicios" | "publicaciones";
   templateUrl: "./menulateral.component.html",
   styleUrls: ["./menulateral.component.scss"],
   standalone: true,
-  imports: [IonicModule, CommonModule],
+  imports: [IonicModule, CommonModule, SpinnerComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class MenulateralComponent implements OnInit, OnDestroy {
   public isLoggedIn = false;
   public MyRole: string | null = null;
-
+  mostrar_spinnet: boolean = false;
   private readonly MENU_CLOSE_DELAY_MS = 250;
   private subs: Subscription[] = [];
   private readonly ALLOWED_ROLES = new Set(["admin", "vendedor", "lotero"]);
@@ -33,17 +33,17 @@ export class MenulateralComponent implements OnInit, OnDestroy {
     "configuracion" | "servicios" | "publicaciones",
     boolean
   > = {
-    configuracion: false,
-    servicios: false,
-    publicaciones: false,
-  };
+      configuracion: false,
+      servicios: false,
+      publicaciones: false,
+    };
   constructor(
     private router: Router,
     private menuCtrl: MenuController,
     public generalService: GeneralService,
     private modalCtrl: ModalController,
     private zone: NgZone
-  ) {}
+  ) { }
 
   ngOnInit() {
     // Suscripción al estado de sesión
@@ -52,22 +52,22 @@ export class MenulateralComponent implements OnInit, OnDestroy {
         const before = this.isLoggedIn;
         this.isLoggedIn = estado;
 
-      if (estado === false) {
-      this.setSections({
-        configuracion: false,
-        servicios: true,
-        publicaciones: false
-      });
-      return;
-    }
+        if (estado === false) {
+          this.setSections({
+            configuracion: false,
+            servicios: true,
+            publicaciones: false
+          });
+          return;
+        }
         if (before === false && estado === true) {
-      this.setSections({
-        configuracion: false,   // no abras "Cuenta"
-        servicios: true,        // queda desplegado
-        publicaciones: false    // el rol decide si se muestra; inicia cerrada
-      });
-      return;
-    }
+          this.setSections({
+            configuracion: false,   // no abras "Cuenta"
+            servicios: true,        // queda desplegado
+            publicaciones: false    // el rol decide si se muestra; inicia cerrada
+          });
+          return;
+        }
       })
     );
 
@@ -149,20 +149,23 @@ export class MenulateralComponent implements OnInit, OnDestroy {
   }
 
   async abrirModalPerfil() {
-    await this.generalService.loading("Cargando...");
-    await this.menuCtrl.close("menuLateral");
-    await this.sleep(200);
-    await this.generalService.loadingDismiss();
+    this.mostrar_spinnet = true;
+    setTimeout(async () => {
+    this.mostrar_spinnet = false;
+      await this.menuCtrl.close("menuLateral");
+      await this.sleep(200);
+      await this.generalService.loadingDismiss();
 
-    const modal = await this.modalCtrl.create({
-      component: PerfilComponent,
-      breakpoints: [0, 0.5, 0.8, 1],
-      cssClass: "modal-perfil",
-      initialBreakpoint: 0.8,
-      handle: true,
-      showBackdrop: true,
-    });
-    await modal.present();
+      const modal = await this.modalCtrl.create({
+        component: PerfilComponent,
+        breakpoints: [0, 0.5, 0.8, 1],
+        cssClass: "modal-perfil",
+        initialBreakpoint: 0.8,
+        handle: true,
+        showBackdrop: true,
+      });
+      await modal.present();
+    }, 1000);
   }
 
   abrirmodal() {
