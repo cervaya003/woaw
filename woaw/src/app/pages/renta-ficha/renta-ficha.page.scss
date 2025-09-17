@@ -297,3 +297,65 @@ ion-card {
         transform: rotate(360deg);
     }
 }
+
+/* =========================================================
+   =====  SOLO ESTILOS DEL CALENDARIO (renta-ficha)   ======
+   ========================================================= */
+
+/* Centrado y padding del contenedor que envuelve al ion-datetime */
+.ficha-auto ion-item.center-item {
+    width: 100%;
+    --padding-start: 0;
+    --padding-end: 0;
+    --inner-padding-start: 0;
+    --inner-padding-end: 0;
+}
+
+.ficha-auto ion-item.center-item::part(native) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.ficha-auto ion-item.center-item .input-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+/* Aro/sombra roja suave opcional cuando añadas la clase 'danger-datetime' al ion-item */
+.ficha-auto ion-item.danger-datetime ion-datetime {
+    box-shadow: 0 0 0 2px rgba(239, 68, 68, .15);
+    border-radius: 14px;
+}
+
+/* Apariencia del calendario */
+/* Día normal */
+.ficha-auto ion-datetime ::part(calendar-day) {
+    border-radius: 6px;
+    /* cuadradito */
+    font-weight: 500;
+}
+
+/* Día seleccionado (si además lo seleccionas como valor) */
+.ficha-auto ion-datetime ::part(calendar-day-active) {
+    background: var(--ion-color-danger);
+    color: #fff;
+    border-radius: 6px;
+    /* que coincida con el highlight */
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, .06);
+}
+
+
+/* (opcional) helper de accesibilidad si ocultas el label visual */
+.sr-only {
+    position: absolute !important;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}

@@ -2,18 +2,18 @@
   <ion-toolbar color="dark">
     <ion-buttons slot="start">
       <div class="perfil-header">
-        <button class="btn-regresar" (click)="volver()">
+        <button class="btn-regresar" (click)="volver()" aria-label="Regresar">
           <ion-icon name="arrow-back-outline"></ion-icon>
         </button>
         <img src="/assets/icon/logo4.png" alt="WOAW" class="logo" />
         <span *ngIf="rental" class="titulo-perfil">
-          {{ rental.marca }} {{ rental.modelo }} {{ rental.anio }}
+          {{ rental.marca }} {{ rental.modelo }}
         </span>
       </div>
     </ion-buttons>
 
     <ion-buttons slot="end">
-      <ion-button (click)="cerrar()">
+      <ion-button (click)="cerrar()" aria-label="Cerrar">
         <ion-icon name="close-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
@@ -21,14 +21,14 @@
 </ion-header>
 
 <ion-content class="ficha-auto" [fullscreen]="true">
-  <!-- Loader -->
+  <!-- Loader (puedes dejar skeleton o tu spinner previo) -->
   <div class="spinner-ficha-wrapper" *ngIf="loading">
     <div class="spinner-ficha"></div>
     <div class="spinner-texto">Cargando vehículo...</div>
   </div>
 
   <!-- CONTENIDO -->
-  <div class="contenedor_ficha" *ngIf="!loading && rental">
+  <div class="contenedor_ficha" *ngIf="!loading && rental as r">
     <div class="layout-ficha">
 
       <!-- 1) GALERÍA -->
@@ -36,37 +36,48 @@
         <div class="contenedor-imagenes">
           <div class="contenedor_imagen_principal">
             <div class="imagen-principal">
-              <img [src]="imagenSeleccionada || galeria[0]" alt="Imagen principal"
+              <img [src]="imagenSeleccionada || galeria[0]" alt="Imagen principal del vehículo"
                 (error)="onImgError($event, imagenSeleccionada || galeria[0])" />
-              <button class="flecha izquierda" *ngIf="tieneVarias" (click)="cambiarImagen('anterior')">‹</button>
-              <button class="flecha derecha" *ngIf="tieneVarias" (click)="cambiarImagen('siguiente')">›</button>
+              <button class="flecha izquierda" *ngIf="tieneVarias" (click)="cambiarImagen('anterior')"
+                (keyup.enter)="cambiarImagen('anterior')" aria-label="Imagen anterior" tabindex="0">‹</button>
+              <button class="flecha derecha" *ngIf="tieneVarias" (click)="cambiarImagen('siguiente')"
+                (keyup.enter)="cambiarImagen('siguiente')" aria-label="Imagen siguiente" tabindex="0">›</button>
             </div>
           </div>
 
           <div class="miniaturas-vertical" *ngIf="galeria.length > 1">
             <img *ngFor="let img of galeria; trackBy: trackByUrl" [src]="img"
               [class.activa]="img === imagenSeleccionada" (click)="imagenSeleccionada = img"
-              (error)="onImgError($event, img)" alt="Miniatura" />
+              (keyup.enter)="imagenSeleccionada = img" (error)="onImgError($event, img)" alt="Miniatura del vehículo"
+              tabindex="0" />
           </div>
         </div>
       </section>
 
-      <!-- 2) CARDS PRINCIPALES (precio, acciones, detalles rápidos) -->
+      <!-- 2) CARDS PRINCIPALES -->
       <aside class="bloque-principal">
         <div class="card-detalle">
-          <h2>{{ rental.marca }} {{ rental.modelo }} {{ rental.anio }}</h2>
+          <h2>{{ r.marca }} {{ r.modelo }} {{ r.anio }}</h2>
 
           <div class="precios">
-            <div class="precio-renglon" *ngIf="rental.precio?.porDia !== undefined">
+            <div class="precio-renglon" *ngIf="r.precio != null">
               <span>Por día</span>
-              <strong>{{ rental.precio.porDia | currency:'MXN':'symbol-narrow' }}</strong>
+              <strong>{{ r.precio | currency:'MXN':'symbol-narrow' }}</strong>
+            </div>
+            <div class="precio-renglon" *ngIf="r.minDias">
+              <span>Mínimo</span>
+              <ion-note>{{ r.minDias }} día(s)</ion-note>
+            </div>
+            <div class="precio-renglon" *ngIf="r.deposito != null">
+              <span>Depósito</span>
+              <ion-note>{{ r.deposito | currency:'MXN':'symbol-narrow' }}</ion-note>
             </div>
           </div>
 
-          <div class="rating" *ngIf="rental?.ratingPromedio || rental?.totalRentas">
+          <div class="rating" *ngIf="r.ratingPromedio || r.totalRentas">
             <ion-icon name="star" *ngFor="let i of [1,2,3,4,5]" [class.activa]="i <= ratingEntero"></ion-icon>
-            <span *ngIf="rental?.ratingPromedio">{{ rental?.ratingPromedio | number:'1.1-1' }}</span>
-            <span *ngIf="rental?.totalRentas"> • {{ rental.totalRentas }} rentas</span>
+            <span *ngIf="r.ratingPromedio">{{ r.ratingPromedio | number:'1.1-1' }}</span>
+            <span *ngIf="r.totalRentas"> • {{ r.totalRentas }} rentas</span>
           </div>
 
           <div class="botones-contacto-responsive">
@@ -77,7 +88,7 @@
               <ion-icon name="share-social-outline"></ion-icon> Compartir
             </button>
             <button class="btn-personalizado primary" type="button"
-              [disabled]="rental.estadoRenta !== 'disponible' " (click)="reservar()">
+              [disabled]="r.estadoRenta !== 'disponible' || !resumen?.valido" (click)="reservar()">
               <ion-icon name="calendar-outline"></ion-icon> Reservar
             </button>
           </div>
@@ -91,43 +102,43 @@
         <ion-card class="card-info">
           <ion-card-header>
             <ion-card-title>Detalles del vehículo</ion-card-title>
-            <ion-chip *ngIf="rental.estadoRenta" [color]="rental.estadoRenta === 'disponible' ? 'success' : 'medium'">
-              {{ rental.estadoRenta | titlecase }}
+            <ion-chip *ngIf="r.estadoRenta" [color]="r.estadoRenta === 'disponible' ? 'success' : 'medium'">
+              {{ r.estadoRenta | titlecase }}
             </ion-chip>
           </ion-card-header>
           <ion-card-content>
             <ion-list lines="none" class="meta-list">
-              <ion-item *ngIf="rental.transmision">
+              <ion-item *ngIf="r.transmision">
                 <ion-icon name="settings-outline" slot="start"></ion-icon>
                 <ion-label>Transmisión</ion-label>
-                <ion-note slot="end">{{ rental.transmision }}</ion-note>
+                <ion-note slot="end">{{ r.transmision }}</ion-note>
               </ion-item>
-              <ion-item *ngIf="rental.combustible">
+              <ion-item *ngIf="r.combustible">
                 <ion-icon name="flash-outline" slot="start"></ion-icon>
                 <ion-label>Combustible</ion-label>
-                <ion-note slot="end">{{ rental.combustible }}</ion-note>
+                <ion-note slot="end">{{ r.combustible }}</ion-note>
               </ion-item>
-              <ion-item *ngIf="rental.pasajeros">
+              <ion-item *ngIf="r.pasajeros">
                 <ion-icon name="people-outline" slot="start"></ion-icon>
                 <ion-label>Pasajeros</ion-label>
-                <ion-note slot="end">{{ rental.pasajeros }}</ion-note>
+                <ion-note slot="end">{{ r.pasajeros }}</ion-note>
               </ion-item>
-              <ion-item *ngIf="rental.kilometrajeActual != null">
+              <ion-item *ngIf="r.kilometrajeActual != null">
                 <ion-icon name="speedometer-outline" slot="start"></ion-icon>
                 <ion-label>Kilometraje</ion-label>
-                <ion-note slot="end">{{ rental.kilometrajeActual | number }} km</ion-note>
+                <ion-note slot="end">{{ r.kilometrajeActual | number }} km</ion-note>
               </ion-item>
-              <ion-item *ngIf="rental.ubicacion">
+              <ion-item *ngIf="r.ubicacion">
                 <ion-icon name="location-outline" slot="start"></ion-icon>
                 <ion-label>Ubicación</ion-label>
-                <ion-note slot="end">{{ rental.ubicacion.ciudad }}, {{ rental.ubicacion.estado }}</ion-note>
+                <ion-note slot="end">{{ r.ubicacion.ciudad }}, {{ r.ubicacion.estado }}</ion-note>
               </ion-item>
-              <ion-item *ngIf="rental.gps || rental.inmovilizador">
+              <ion-item *ngIf="r.gps || r.inmovilizador">
                 <ion-icon name="shield-checkmark-outline" slot="start"></ion-icon>
                 <ion-label>Seguridad</ion-label>
                 <ion-note slot="end">
-                  <span *ngIf="rental.gps">GPS</span><span *ngIf="rental.gps && rental.inmovilizador"> • </span>
-                  <span *ngIf="rental.inmovilizador">Inmovilizador</span>
+                  <span *ngIf="r.gps">GPS</span><span *ngIf="r.gps && r.inmovilizador"> • </span>
+                  <span *ngIf="r.inmovilizador">Inmovilizador</span>
                 </ion-note>
               </ion-item>
             </ion-list>
@@ -141,41 +152,36 @@
           </ion-card-header>
 
           <ion-card-content>
-            <ion-item>
-              <ion-label>Fecha(s)</ion-label>
+            <ion-item class="center-item danger-datetime" lines="none">
+              <ion-label class="sr-only">Fecha(s)</ion-label>
               <ion-datetime [(ngModel)]="fechasSeleccionadas" multiple="true" presentation="date" [min]="minFecha"
-                [isDateEnabled]="esFechaHabil" (ionChange)="onRangoChange()" locale="es-ES">
+                (ionChange)="onRangoChange()" [highlightedDates]="highlightedRange"
+                locale="es-ES">
               </ion-datetime>
             </ion-item>
 
-            <!-- Alias r para evitar 'Object is possibly null' -->
-            <ng-container *ngIf="resumen as r; else bloqueInvalido">
-              <div class="resumen-precio" *ngIf="r.valido">
-                <div class="linea" *ngIf="r.meses">
-                  <span>{{ r.meses }} mes(es) × {{ rental?.precio?.porMes | currency:'MXN':'symbol-narrow' }}</span>
-                  <strong>{{ r.subtotalMes | currency:'MXN':'symbol-narrow' }}</strong>
-                </div>
-
-                <div class="linea" *ngIf="r.semanas">
-                  <span>{{ r.semanas }} semana(s) × {{ rental?.precio?.porSemana | currency:'MXN':'symbol-narrow'
-                    }}</span>
-                  <strong>{{ r.subtotalSemana | currency:'MXN':'symbol-narrow' }}</strong>
-                </div>
-
-                <div class="linea" *ngIf="r.diasSueltos">
-                  <span>{{ r.diasSueltos }} día(s) × {{ rental?.precio?.porDia | currency:'MXN':'symbol-narrow'
-                    }}/día</span>
-                  <strong>{{ r.subtotalDia | currency:'MXN':'symbol-narrow' }}</strong>
+            <!-- Alias rsum para evitar 'Object is possibly null' -->
+            <ng-container *ngIf="resumen as rsum; else bloqueInvalido">
+              <div class="resumen-precio" *ngIf="rsum.valido">
+                <div class="linea" *ngIf="r.precio != null && rsum.diasSueltos">
+                  <span>
+                    {{ rsum.diasSueltos }} día(s) × {{ r.precio | currency:'MXN':'symbol-narrow' }}/día
+                  </span>
+                  <strong>{{ rsum.subtotalDia | currency:'MXN':'symbol-narrow' }}</strong>
                 </div>
 
                 <ion-item lines="none" class="total">
                   <ion-label>
                     Total estimado
-                    <ng-container *ngIf="r.dias === 1; else varios">(1 día)</ng-container>
-                    <ng-template #varios>({{ r.dias }} días)</ng-template>
+                    <ng-container *ngIf="rsum.dias === 1; else varios">(1 día)</ng-container>
+                    <ng-template #varios>({{ rsum.dias }} días)</ng-template>
                   </ion-label>
-                  <ion-note slot="end"><strong>{{ r.total | currency:'MXN':'symbol-narrow' }}</strong></ion-note>
+                  <ion-note slot="end"><strong>{{ rsum.total | currency:'MXN':'symbol-narrow' }}</strong></ion-note>
                 </ion-item>
+
+                <ion-note *ngIf="r.minDias && rsum.dias < r.minDias" color="warning">
+                  Mínimo de renta: {{ r.minDias }} día(s).
+                </ion-note>
               </div>
             </ng-container>
 
@@ -190,22 +196,22 @@
 
       <!-- 3) CARDS SECUNDARIAS -->
       <section class="bloque-secundario">
-        <ion-card *ngIf="rental.ventanasDisponibles?.length || rental.excepcionesNoDisponibles?.length">
+        <ion-card *ngIf="r.ventanasDisponibles?.length || r.excepcionesNoDisponibles?.length">
           <ion-card-header><ion-card-title>Disponibilidad</ion-card-title></ion-card-header>
           <ion-card-content>
-            <div *ngIf="rental.ventanasDisponibles?.length">
+            <div *ngIf="r.ventanasDisponibles?.length">
               <h5>Ventanas disponibles</h5>
               <ul>
-                <li *ngFor="let v of rental.ventanasDisponibles">
+                <li *ngFor="let v of r.ventanasDisponibles">
                   {{ v.inicio | date:'dd/MM/yyyy' }} – {{ v.fin | date:'dd/MM/yyyy' }}
                   <span *ngIf="v.nota"> • {{ v.nota }}</span>
                 </li>
               </ul>
             </div>
-            <div *ngIf="rental.excepcionesNoDisponibles?.length">
+            <div *ngIf="r.excepcionesNoDisponibles?.length">
               <h5>No disponible</h5>
               <ul>
-                <li *ngFor="let x of rental.excepcionesNoDisponibles">
+                <li *ngFor="let x of r.excepcionesNoDisponibles">
                   {{ x.inicio | date:'dd/MM/yyyy' }} – {{ x.fin | date:'dd/MM/yyyy' }}
                   <span *ngIf="x.motivo"> • {{ x.motivo }}</span>
                 </li>
@@ -214,23 +220,23 @@
           </ion-card-content>
         </ion-card>
 
-        <ion-card *ngIf="rental.entrega">
+        <ion-card *ngIf="r.entrega">
           <ion-card-header><ion-card-title>Entrega a domicilio</ion-card-title></ion-card-header>
           <ion-card-content>
-            <p *ngIf="rental.entrega.gratuitoHastaKm !== null">
-              Gratis hasta {{ rental.entrega.gratuitoHastaKm }} km
-            </p>
-            <ion-list *ngIf="rental.entrega.tarifasPorDistancia?.length">
-              <ion-item *ngFor="let t of rental.entrega.tarifasPorDistancia">
+            <ng-container *ngIf="r.entrega?.gratuitoHastaKm !== null">
+              <p>Gratis hasta {{ r.entrega.gratuitoHastaKm }} km</p>
+            </ng-container>
+            <ion-list *ngIf="r.entrega?.tarifasPorDistancia?.length">
+              <ion-item *ngFor="let t of r.entrega.tarifasPorDistancia">
                 <ion-label>
                   {{ t.desdeKm }}–{{ t.hastaKm }} km
                   <div *ngIf="t.nota" class="nota">{{ t.nota }}</div>
                 </ion-label>
                 <ion-note slot="end">
-                  <ng-container *ngIf="t.costoFijo; else porKm">
+                  <ng-container *ngIf="t.costoFijo; else porKmTpl">
                     {{ t.costoFijo | currency:'MXN':'symbol-narrow' }}
                   </ng-container>
-                  <ng-template #porKm>
+                  <ng-template #porKmTpl>
                     {{ t.costoPorKm | currency:'MXN':'symbol-narrow' }}/km
                   </ng-template>
                 </ion-note>
@@ -239,27 +245,27 @@
           </ion-card-content>
         </ion-card>
 
-        <ion-card *ngIf="rental.requisitosConductor">
+        <ion-card *ngIf="r.requisitosConductor">
           <ion-card-header><ion-card-title>Requisitos del conductor</ion-card-title></ion-card-header>
           <ion-card-content>
             <ion-list lines="none">
               <ion-item>
                 <ion-icon name="id-card-outline" slot="start"></ion-icon>
                 <ion-label>Edad mínima</ion-label>
-                <ion-note slot="end">{{ rental.requisitosConductor.edadMinima }} años</ion-note>
+                <ion-note slot="end">{{ r.requisitosConductor.edadMinima }} años</ion-note>
               </ion-item>
               <ion-item>
                 <ion-icon name="card-outline" slot="start"></ion-icon>
                 <ion-label>Antigüedad de licencia</ion-label>
-                <ion-note slot="end">{{ rental.requisitosConductor.antiguedadLicenciaMeses }} meses</ion-note>
+                <ion-note slot="end">{{ r.requisitosConductor.antiguedadLicenciaMeses }} meses</ion-note>
               </ion-item>
               <ion-item>
                 <ion-icon name="person-add-outline" slot="start"></ion-icon>
                 <ion-label>Conductor adicional</ion-label>
                 <ion-note slot="end">
-                  {{ rental.requisitosConductor.permiteConductorAdicional ? 'Sí' : 'No' }}
-                  <ng-container *ngIf="rental.requisitosConductor.costoConductorAdicional">
-                    • {{ rental.requisitosConductor.costoConductorAdicional | currency:'MXN':'symbol-narrow' }}
+                  {{ r.requisitosConductor.permiteConductorAdicional ? 'Sí' : 'No' }}
+                  <ng-container *ngIf="r.requisitosConductor.costoConductorAdicional">
+                    • {{ r.requisitosConductor.costoConductorAdicional | currency:'MXN':'symbol-narrow' }}
                   </ng-container>
                 </ion-note>
               </ion-item>
@@ -267,34 +273,34 @@
           </ion-card-content>
         </ion-card>
 
-        <ion-card *ngIf="rental.polizaPlataforma">
+        <ion-card *ngIf="r.polizaPlataforma">
           <ion-card-header><ion-card-title>Seguro de plataforma</ion-card-title></ion-card-header>
           <ion-card-content>
             <ion-list lines="none">
               <ion-item>
                 <ion-icon name="car-outline" slot="start"></ion-icon>
                 <ion-label>Plataforma</ion-label>
-                <ion-note slot="end">{{ rental.polizaPlataforma.aseguradora }}</ion-note>
+                <ion-note slot="end">{{ r.polizaPlataforma.aseguradora }}</ion-note>
               </ion-item>
               <ion-item>
                 <ion-icon name="shield-half-outline" slot="start"></ion-icon>
                 <ion-label>Cobertura</ion-label>
-                  <ion-note slot="end">{{ rental.polizaPlataforma.cobertura }}</ion-note>
+                <ion-note slot="end">{{ r.polizaPlataforma.cobertura }}</ion-note>
               </ion-item>
               <ion-item>
                 <ion-icon name="calendar-outline" slot="start"></ion-icon>
                 <ion-label>Vigencia</ion-label>
                 <ion-note slot="end">
-                  {{ rental.polizaPlataforma.vigenciaDesde | date:'dd/MM/yyyy' }} -
-                  {{ rental.polizaPlataforma.vigenciaHasta | date:'dd/MM/yyyy' }}
+                  {{ r.polizaPlataforma.vigenciaDesde | date:'dd/MM/yyyy' }} -
+                  {{ r.polizaPlataforma.vigenciaHasta | date:'dd/MM/yyyy' }}
                 </ion-note>
               </ion-item>
-              <ion-item *ngIf="rental.polizaPlataforma.urlPoliza">
+              <ion-item *ngIf="r.polizaPlataforma.urlPoliza">
                 <ion-icon name="document-attach-outline" slot="start"></ion-icon>
                 <ion-label>Archivo</ion-label>
-                  <ion-note slot="end">
-                    <a [href]="rental.polizaPlataforma.urlPoliza" target="_blank" rel="noopener">Ver póliza</a>
-                  </ion-note>
+                <ion-note slot="end">
+                  <a [href]="r.polizaPlataforma.urlPoliza" target="_blank" rel="noopener">Ver póliza</a>
+                </ion-note>
               </ion-item>
             </ion-list>
           </ion-card-content>
@@ -307,12 +313,12 @@
               <ion-item>
                 <ion-icon name="trail-sign-outline" slot="start"></ion-icon>
                 <ion-label>Combustible</ion-label>
-                <ion-note slot="end">{{ rental.politicaCombustible | titlecase }}</ion-note>
+                <ion-note slot="end">{{ r.politicaCombustible | titlecase }}</ion-note>
               </ion-item>
               <ion-item>
                 <ion-icon name="sparkles-outline" slot="start"></ion-icon>
                 <ion-label>Limpieza</ion-label>
-                <ion-note slot="end">{{ rental.politicaLimpieza | titlecase }}</ion-note>
+                <ion-note slot="end">{{ r.politicaLimpieza | titlecase }}</ion-note>
               </ion-item>
             </ion-list>
           </ion-card-content>
