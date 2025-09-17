@@ -87,13 +87,13 @@
             <button class="btn-personalizado medium" type="button" (click)="compartir()">
               <ion-icon name="share-social-outline"></ion-icon> Compartir
             </button>
-            <button class="btn-personalizado primary" type="button"
-              [disabled]="r.estadoRenta !== 'disponible' || !resumen?.valido" (click)="reservar()">
+            <button class="btn-personalizado primary" type="button" [disabled]="r.estadoRenta !== 'disponible' "
+              (click)="reservar()">
               <ion-icon name="calendar-outline"></ion-icon> Reservar
             </button>
           </div>
 
-          <p class="nota-legal">
+          <p class="nota-legal" *ngIf="!isLoggedIn">
             Al reservar aceptas el <a (click)="abrirAviso()">Aviso de Privacidad</a> y los
             <a (click)="abrirTerminos()">Términos y condiciones</a>.
           </p>
@@ -155,8 +155,7 @@
             <ion-item class="center-item danger-datetime" lines="none">
               <ion-label class="sr-only">Fecha(s)</ion-label>
               <ion-datetime [(ngModel)]="fechasSeleccionadas" multiple="true" presentation="date" [min]="minFecha"
-                (ionChange)="onRangoChange()" [highlightedDates]="highlightedRange"
-                locale="es-ES">
+                (ionChange)="onRangoChange()" [highlightedDates]="highlightedRange" locale="es-ES">
               </ion-datetime>
             </ion-item>
 

@@ -1,8 +1,9 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RentaService } from '../../services/renta.service';
 import { GeneralService } from '../../services/general.service';
 import { take } from 'rxjs/operators';
+import { FooterComponent } from '../../components/footer/footer.component'; // 👈 ajusta la ruta si es distinta
 
 /* ===== Tipos (alineados al servicio nuevo) ===== */
 interface Ventana { inicio: string; fin: string; nota?: string; }
@@ -53,6 +54,7 @@ interface Rental {
     vigenciaHasta: string;
     urlPoliza?: string;
   };
+
   politicaCombustible?: string;
   politicaLimpieza?: string;
 }
@@ -67,6 +69,7 @@ interface Rental {
 export class RentaFichaPage implements OnInit {
   loading = true;
   rental: Rental | null = null;
+  isLoggedIn = false;
 
   /** Fechas resaltadas para pintar TODO el rango en el ion-datetime */
   highlightedRange: Array<{ date: string; textColor?: string; backgroundColor?: string }> = [];
@@ -102,6 +105,9 @@ export class RentaFichaPage implements OnInit {
     total: number;
   } | null = null;
 
+  // 👇 referencia al footer para abrir sus modales
+  @ViewChild(FooterComponent) footer!: FooterComponent;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -111,9 +117,15 @@ export class RentaFichaPage implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.general.tokenExistente$.subscribe((estado) => {
+      this.isLoggedIn = estado;
+      this.cdr.markForCheck();
+    });
+
     const id = this.route.snapshot.paramMap.get('id')!;
     this.cargar(id);
   }
+
 
   /* ================== Utilidades de fecha (sin TZ) ================== */
   private toLocalISODate(d = new Date()): string {
@@ -320,26 +332,53 @@ export class RentaFichaPage implements OnInit {
   reservar() {
     if (!this.rental?._id) return;
 
-    if (!this.resumen?.valido) {
-      this.general.toast('Selecciona fecha(s) válidas para continuar.', 'warning');
+    const inicio = this.fechaInicio || null;
+    const fin = this.fechaFin || this.fechaInicio || null;
+
+    // Si el usuario seleccionó fechas, validamos y mandamos los params
+    if (inicio && fin) {
+      // Calcula días (inclusivo si ya tienes diffDaysInclusive)
+      const dias = this.fechasSeleccionadas.length === 1
+        ? 1
+        : this.diffDaysInclusive(
+          this.asLocalDateOnly(inicio),
+          this.asLocalDateOnly(fin)
+        );
+
+      const min = Number(this.rental?.minDias ?? 0);
+      if (min > 0 && dias < min) {
+        this.general.toast(`La renta mínima es de ${min} día(s).`, 'warning');
+        return;
+      }
+
+      this.router.navigate(
+        ['/reservas', this.rental._id],
+        { queryParams: { inicio, fin } }
+      );
       return;
     }
 
-    const min = Number(this.rental?.minDias ?? 0);
-    if (min > 0 && this.resumen.dias < min) {
-      this.general.toast(`La renta mínima es de ${min} día(s).`, 'warning');
-      return;
-    }
-
-    const inicio = this.fechaInicio!;
-    const fin = this.fechaFin || this.fechaInicio!;
-
-    this.router.navigate(
-      ['/reservas', this.rental._id],
-      { queryParams: { inicio, fin } }
-    );
+    // Sin fechas seleccionadas: navegar sin query params
+    this.router.navigate(['/reservas', this.rental._id]);
   }
 
-  abrirAviso() { this.general.alert('Aviso de Privacidad', 'Contenido…', 'info'); }
-  abrirTerminos() { this.general.alert('Términos y condiciones', 'Contenido…', 'info'); }
+  // ===== Aviso y Términos desde el Footer (opción 2) =====
+  abrirAviso() {
+    if (this.footer?.mostrarAviso) {
+      this.footer.mostrarAviso();
+    } else {
+      // Fallback por si no existe el método
+      this.general.alert('Aviso de Privacidad', 'Contenido…', 'info');
+    }
+  }
+
+  abrirTerminos() {
+    const anyFooter = this.footer as any;
+    if (anyFooter?.mostrarTerminos) {
+      anyFooter.mostrarTerminos();
+    } else {
+      // Fallback
+      this.general.alert('Términos y condiciones', 'Contenido…', 'info');
+    }
+  }
 }

@@ -245,12 +245,7 @@ const routes: Routes = [
     path: 'conocenos',
     loadChildren: () => import('./pages/nosotros/nosotros.module').then(m => m.NosotrosPageModule)
   },
-  {
-    path: "**",
-    loadChildren: () =>
-      import("./pages/error/error.module").then((m) => m.ErrorPageModule),
-    data: { title: "Página no encontrada | woaw" },
-  },
+
   {
     path: 'disponibilidad-car/:id',
     loadChildren: () => import('./pages/disponibilidad-car/disponibilidad-car.module').then( m => m.DisponibilidadCarPageModule)
@@ -262,6 +257,12 @@ const routes: Routes = [
   {
     path: 'reservas/:id',
     loadChildren: () => import('./pages/reservas/reservas.module').then( m => m.ReservasPageModule)
+  },
+    {
+    path: "**",
+    loadChildren: () =>
+      import("./pages/error/error.module").then((m) => m.ErrorPageModule),
+    data: { title: "Página no encontrada | woaw" },
   },
 ];
 
