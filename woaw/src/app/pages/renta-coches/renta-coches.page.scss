@@ -8,6 +8,9 @@
   padding: 0;
   margin-top: 8px;
 
+  /* Nuevo: limitar ancho y centrar */
+  max-width: 1280px;
+  margin-inline: auto;
 }
 
 /* Evita padding extra */
@@ -47,26 +50,72 @@
   font-size: 14px;
 }
 
-  .eyebrow {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 8px 12px;
-    background: rgba(255, 255, 255, .08);
-    border: 1px solid rgba(255, 255, 255, .12);
-    border-radius: 999px;
-    width: max-content;
-    color: #ffffff;
-    font-weight: bolder;
-    font-size: 15px;
+/* Eyebrow */
+.eyebrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, .08);
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 999px;
+  width: max-content;
+  color: #ffffff;
+  font-weight: bolder;
+  font-size: 15px;
 
-    .dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 999px;
-      background: #ff0000;
-    }
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    background: #ff0000;
+  }
+}
+
+/* Fix responsive de eyebrow (antes crecía en móviles) */
+@media (max-width: 1025px) {
+  .eyebrow {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 768px) {
+  .eyebrow {
+    font-size: 12px;
+  }
+}
+
+/* <-- AQUÍ cerramos .eyebrow */
+
+/* ===== Grid de cards ===== */
+.cards-grid {
+  display: grid;
+  gap: 14px;
+  /* Tamaño consistente y adaptable en desktop */
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+
+/* Laptops / pantallas grandes: permitir más columnas si hay espacio */
+@media (min-width: 1400px) {
+  .cards-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+}
+
+@media (max-width: 360px) {
+  .cards-grid {
+    grid-template-columns: 1fr;
+  }
+}
 
 /* CARD */
 .veh-card {
@@ -76,6 +125,11 @@
   box-shadow: 0 6px 18px rgba(0, 0, 0, .06);
   transition: transform .15s ease, box-shadow .15s ease;
   cursor: pointer;
+
+  /* Nuevo: evitar que una card se haga enorme */
+  max-width: 420px;
+  margin-inline: auto;
+  /* centra cada card en su celda */
 }
 
 .veh-card:hover {
@@ -116,14 +170,26 @@
   display: block;
 }
 
+/* En pantallas muy grandes, baja un poco la altura percibida */
+@media (min-width: 1200px) {
+  .img-wrap {
+    aspect-ratio: 16 / 10;
+  }
+}
 
-    @media (max-width: 1025px) {
-      font-size: 45px;
-    }
+/* Tipografías más contenidas y fluidas */
+.title {
+  font-size: clamp(14px, 1.6vw, 16px);
+  font-weight: 700;
+}
 
-    @media (max-width: 768px) {
-      font-size: 30px;
-    }
+.price {
+  font-size: clamp(14px, 1.4vw, 15px);
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+/* Meta info */
 .meta {
   display: grid;
   grid-auto-flow: column;
@@ -137,7 +203,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 12px;
+  font-size: clamp(11px, 1.2vw, 12px);
   color: var(--ion-color-medium);
 }
 
@@ -161,13 +227,8 @@
   margin-top: 10px;
 }
 
-/* Responsive */
+/* Ajustes responsive extra (contenido) */
 @media (max-width: 768px) {
-  .cards-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-  }
-
   .veh-card ion-card-content {
     padding: 10px 12px;
   }
@@ -180,16 +241,32 @@
     font-size: 14px;
     margin-bottom: 8px;
   }
+}
 
-  .meta .meta-item {
-    font-size: 11px;
+/* ===== Menú de filtros sticky en desktop ===== */
+@media (min-width: 768px) {
+  app-menu {
+    position: sticky;
+    top: 12px;
+    /* debajo del header */
+    display: block;
   }
 }
 
-@media (max-width: 360px) {
-  .cards-grid {
-    grid-template-columns: 1fr;
-  }
+/* ===== Barra superior opcional (controles) ===== */
+.top-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  margin: 4px 0 10px;
+}
+
+.top-controls .right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 /* =======================================================
@@ -283,6 +360,4 @@ ion-modal.mio-modal::part(content) {
 :host-context(.dark) .mio-modal__box {
   background: #1e1f22;
   box-shadow: 0 12px 28px rgba(0, 0, 0, .5);
-
 }
-  }
