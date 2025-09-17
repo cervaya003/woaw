@@ -1,0 +1,131 @@
+:host {
+  --card-radius: 14px;
+  --ink: var(--ion-text-color, #111827);
+  --muted: var(--ion-color-medium, #6b7280);
+  --accent: #e01414;
+
+  --gap-xs: 6px;   /* móvil */
+  --gap-md: 16px;  /* desktop */
+}
+
+/* ===== Intro (igual) ===== */
+.intro {
+  padding: 12px clamp(10px, 3vw, 18px) 4px;
+  text-align: center;
+
+  h2 { margin: 0 0 2px; font-size: clamp(18px, 2.5vw, 22px); font-weight: 800; letter-spacing: .2px; color: var(--accent); }
+  p  { margin: 0; color: var(--muted); font-size: clamp(12px, 2vw, 14px); }
+  .intro__accent { display: inline-block; margin-top: 6px; width: clamp(56px, 6vw, 90px); height: 3px; border-radius: 999px; background: linear-gradient(90deg, var(--accent), #ff6b6b); }
+}
+
+/* ===================================
+   MÓVIL: 2×2 compacto y estable
+   =================================== */
+.city-grid {
+  padding: 8px;
+
+  .city-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--gap-xs);
+    align-items: stretch;               /* 🔧 estira alto de items */
+  }
+
+  .city-row > ion-col {
+    display: block !important;          /* 🔧 asegura block */
+    width: 100% !important;             /* 🔧 llena el track */
+    min-width: 0 !important;            /* 🔧 evita colapsos */
+    padding: 0 !important;
+    margin: 0 !important;
+    flex: initial !important;
+    max-width: initial !important;
+  }
+}
+
+/* ===== Tarjeta base ===== */
+.city-card {
+  border-radius: var(--card-radius);
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(16, 24, 40, 0.06);
+  transition: transform .18s ease, box-shadow .18s ease;
+  cursor: pointer;
+  width: 100%;                  /* 🔧 llena el contenedor */
+  height: 100%;                 /* 🔧 estira verticalmente */
+}
+
+.city-img-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;          /* móvil: cuadrada */
+  min-height: 120px;            /* 🔧 nunca mini */
+  background: #f3f4f6;
+  overflow: hidden;
+  display: block;
+}
+
+.city-img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .3s ease; }
+
+/* Overlay oculto en móvil */
+.city-overlay {
+  position: absolute; inset: 0; display: grid; align-content: end; gap: 6px; padding: 10px;
+  color: #fff; background: linear-gradient(to top, rgba(0,0,0,.55) 0%, rgba(0,0,0,.25) 38%, rgba(0,0,0,0) 65%);
+  opacity: 0; pointer-events: none; transition: opacity .25s ease;
+}
+
+.city-header { padding: 6px 8px 2px; }
+.city-title  { font-size: clamp(12px, 3.2vw, 14px); font-weight: 700; color: var(--ink); }
+.city-content { padding: 0 8px 8px; }
+.city-desc   { margin: 0; font-size: clamp(11px, 2.8vw, 13px); color: var(--muted); line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; }
+
+/* ===================================
+   DESKTOP: 4 grandes tipo “hero”
+   =================================== */
+@media (min-width: 1024px) {
+  .city-grid {
+    padding: 20px clamp(12px, 3vw, 28px);
+
+    .city-row {
+      display: grid;                           /* asegúrate que sea grid */
+      grid-template-columns: repeat(4, minmax(260px, 1fr)); /* 🔧 ancho mínimo decente */
+      gap: var(--gap-md);
+      align-items: stretch;
+    }
+
+    .city-row > ion-col {
+      width: 100% !important;
+      height: 100% !important;
+    }
+  }
+
+  .city-card {
+    border-radius: 18px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+  }
+
+  .city-img-wrap {
+    aspect-ratio: 16 / 10;       /* panorámicas como en tu captura */
+    min-height: 180px;           /* 🔧 evita “píldoras” */
+  }
+
+  /* En desktop usamos overlay, no títulos abajo */
+  .city-header, .city-content { display: none; }
+  .city-overlay { opacity: 1; pointer-events: auto; }
+
+  @media (hover: hover) and (pointer: fine) {
+    .city-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.14); }
+    .city-card:hover .city-img { transform: scale(1.05); }
+  }
+}
+
+/* Tablet 3 columnas opcional (se ve mejor entre 768–1023) */
+@media (min-width: 768px) and (max-width: 1023.98px) {
+  .city-row { grid-template-columns: repeat(3, minmax(200px, 1fr)); gap: 12px; }
+  .city-img-wrap { aspect-ratio: 4 / 3; min-height: 150px; }
+}
+
+/* Fallback de aspect-ratio */
+@supports not (aspect-ratio: 1 / 1) {
+  .city-img-wrap { height: 0; padding-top: 100%; }
+  .city-img { position: absolute; inset: 0; }
+}

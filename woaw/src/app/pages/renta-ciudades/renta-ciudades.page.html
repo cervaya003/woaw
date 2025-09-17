@@ -1,0 +1,50 @@
+<app-navbar></app-navbar>
+
+<ion-content [fullscreen]="true">
+  <!-- <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">renta-ciudades</ion-title>
+    </ion-toolbar>
+  </ion-header> -->
+
+  <div class="intro">
+    <h2>Ciudades disponibles</h2>
+    <p>Elige una ciudad para ver opciones de renta.</p>
+    <span class="intro__accent"></span>
+  </div>
+
+<section class="city-section">
+  <ion-grid class="city-grid">
+    <ion-row class="city-row">
+      <ion-col
+        *ngFor="let c of ciudades; trackBy: trackByNombre"
+        size="12" sizeSm="6" sizeMd="4" sizeLg="3"
+      >
+        <ion-card class="city-card" (click)="seleccionarCiudad(c)" button>
+          <div class="city-img-wrap">
+            <img class="city-img" [src]="c.imagen" [alt]="c.nombre" loading="lazy" />
+            <!-- Overlay (visible solo en desktop) -->
+            <div class="city-overlay">
+              <h3>{{ c.nombre }}</h3>
+              <p>{{ c.descripcion }}</p>
+            </div>
+          </div>
+
+          <!-- Texto (visible en móvil) -->
+          <ion-card-header class="city-header">
+            <ion-card-title class="city-title">{{ c.nombre }}</ion-card-title>
+          </ion-card-header>
+          <ion-card-content class="city-content">
+            <p class="city-desc">{{ c.descripcion }}</p>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</section>
+
+
+  <div class="spacer"></div>
+
+  <app-footer></app-footer>
+</ion-content>
