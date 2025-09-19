@@ -7,14 +7,14 @@
   --primary-ink: #fff;
   --card: #ffffff;
   --negro: #0b0b0e;
-  --fondo2: rgba(65, 65, 65, 0.735);
+  --fondo2: rgba(176, 176, 176, 0.144);
 }
 
 .fondo-diagonal {
   position: fixed;
   inset: 0;
   background:
-    linear-gradient(120deg, rgba(0, 0, 0, 0.541) 0 70%, var(--fondo2) 30% 100%),
+    linear-gradient(120deg, rgba(0, 0, 0, 0.67) 0 70%, var(--fondo2) 30% 100%),
     url("/assets/img/seguro.png");
   background-size: cover;
   background-position: left;

@@ -43,3 +43,6 @@ ionic generate service services/motos
         },
       });
       await modal.present();
+
+
+firebase hosting:channel:deploy mi-feature

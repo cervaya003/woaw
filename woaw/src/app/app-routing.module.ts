@@ -28,7 +28,7 @@ const routes: Routes = [
         path: "home",
         loadChildren: () =>
           import("./pages/home/home.module").then((m) => m.HomePageModule),
-        data: { title: "Compra y venta de autos | woaw" },
+        data: { title: "Compra, vende, renta y arrenda tu auto en WOAW" },
       },
       {
         path: "nuevos",
@@ -36,7 +36,7 @@ const routes: Routes = [
           import("./pages/coches/nuevos/nuevos.module").then(
             (m) => m.NuevosPageModule
           ),
-        data: { title: "Autos nuevos en Querétaro| woaw" },
+        data: { title: "Autos nuevos arrenda y compra | woaw" },
       },
       {
         path: "seminuevos",
@@ -44,7 +44,7 @@ const routes: Routes = [
           import("./pages/coches/seminuevos/seminuevos.module").then(
             (m) => m.SeminuevosPageModule
           ),
-        data: { title: "Autos seminuevos en Querétaro | woaw" },
+        data: { title: "Autos seminuevos compra y venta | woaw" },
       },
       {
         path: "favoritos",
@@ -76,7 +76,7 @@ const routes: Routes = [
           import("./pages/coches/usados/usados.module").then(
             (m) => m.UsadosPageModule
           ),
-        data: { title: "Autos usados en venta | woaw" },
+        data: { title: "Autos usados compra y venta | woaw" },
       },
       {
         path: "mis-autos",

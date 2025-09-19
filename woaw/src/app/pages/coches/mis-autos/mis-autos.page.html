@@ -69,29 +69,30 @@
               [esMio]="idsMisAutos.includes(auto._id)">
             </app-cartas>
           </ng-container>
+        </div>
 
-          <!-- Paginación venta -->
-          <div class="contenedor-paginacion" *ngIf="totalPaginasVenta > 1">
-            <p class="titulo-paginacion">más</p>
-            <div class="paginacion-scroll">
-              <div class="paginacion">
-                <button class="pagina" (click)="cambiarPagina('venta', paginaVentaActual - 1)"
-                  [disabled]="paginaVentaActual === 1">‹</button>
+        <!-- Paginación venta -->
+        <div class="contenedor-paginacion" *ngIf="totalPaginasVenta > 1 && vistaActiva === 'venta'">
+          <p class="titulo-paginacion">más</p>
+          <div class="paginacion-scroll"> 
+            <div class="paginacion">
+              <button class="pagina" (click)="cambiarPagina('venta', paginaVentaActual - 1)"
+                [disabled]="paginaVentaActual === 1">‹</button>
 
-                <ng-container *ngFor="let i of paginasReducidasVenta">
-                  <button *ngIf="esNumero(i)" class="pagina" [class.activa]="paginaVentaActual === i"
-                    (click)="cambiarPagina('venta', i)">
-                    {{ i }}
-                  </button>
-                  <span *ngIf="!esNumero(i)" class="ellipsis">...</span>
-                </ng-container>
+              <ng-container *ngFor="let i of paginasReducidasVenta">
+                <button *ngIf="esNumero(i)" class="pagina" [class.activa]="paginaVentaActual === i"
+                  (click)="cambiarPagina('venta', i)">
+                  {{ i }}
+                </button>
+                <span *ngIf="!esNumero(i)" class="ellipsis">...</span>
+              </ng-container>
 
-                <button class="pagina" (click)="cambiarPagina('venta', paginaVentaActual + 1)"
-                  [disabled]="paginaVentaActual === totalPaginasVenta">›</button>
-              </div>
+              <button class="pagina" (click)="cambiarPagina('venta', paginaVentaActual + 1)"
+                [disabled]="paginaVentaActual === totalPaginasVenta">›</button>
             </div>
           </div>
         </div>
+
 
 
         <!-- ======== RENTA ======== -->
@@ -106,28 +107,29 @@
               [esMio]="idsMisAutos.includes(auto._id)">
             </app-cartas>
           </ng-container>
+        </div>
 
-          <!-- Paginación renta -->
-          <div class="contenedor-paginacion" *ngIf="totalPaginasRenta > 1">
-            <p class="titulo-paginacion">más</p>
-            <div class="paginacion-scroll">
-              <div class="paginacion">
-                <button class="pagina" (click)="cambiarPagina('renta', paginaRentaActual - 1)"
-                  [disabled]="paginaRentaActual === 1">‹</button>
 
-                <ng-container *ngFor="let i of paginasReducidasRenta">
-                  <button *ngIf="esNumero(i)" class="pagina" [class.activa]="paginaRentaActual === i"
-                    (click)="cambiarPagina('renta', i)">
-                    {{ i }}
-                  </button>
-                  <span *ngIf="!esNumero(i)" class="ellipsis">...</span>
-                </ng-container>
+        <!-- Paginación renta -->
+        <div class="contenedor-paginacion" *ngIf="totalPaginasRenta > 1 && vistaActiva === 'renta'">
+          <p class="titulo-paginacion">más</p>
+          <div class="paginacion-scroll">
+            <div class="paginacion">
+              <button class="pagina" (click)="cambiarPagina('renta', paginaRentaActual - 1)"
+                [disabled]="paginaRentaActual === 1">‹</button>
 
-                <button class="pagina" (click)="cambiarPagina('renta', paginaRentaActual + 1)"
-                  [disabled]="paginaRentaActual === totalPaginasRenta">›</button>
-              </div>
-              
+              <ng-container *ngFor="let i of paginasReducidasRenta">
+                <button *ngIf="esNumero(i)" class="pagina" [class.activa]="paginaRentaActual === i"
+                  (click)="cambiarPagina('renta', i)">
+                  {{ i }}
+                </button>
+                <span *ngIf="!esNumero(i)" class="ellipsis">...</span>
+              </ng-container>
+
+              <button class="pagina" (click)="cambiarPagina('renta', paginaRentaActual + 1)"
+                [disabled]="paginaRentaActual === totalPaginasRenta">›</button>
             </div>
+
           </div>
         </div>
 
