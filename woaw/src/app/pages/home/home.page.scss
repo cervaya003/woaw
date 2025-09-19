@@ -617,6 +617,26 @@ ion-content {
 
 
 
+.btn_conocenos{
+  border: 2px solid #e01414;
+  padding: 10px 20px;
+  color: #e01414;
+  background-color: transparent;
+  border-radius: 15px;
+  display: block;           
+  width: max-content;        
+  margin: 12px auto 0;    
+  align-self: center;      
+  justify-self: center;     
+
+  transition: background .2s ease, color .2s ease, border-color .2s ease;
+
+  &:hover{
+    border-color: transparent;   
+    color: #fff;
+    background-color: #e01414;
+  }
+}
 
 
 
