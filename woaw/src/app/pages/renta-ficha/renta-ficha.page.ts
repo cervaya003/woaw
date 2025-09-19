@@ -1,11 +1,9 @@
-
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RentaService } from '../../services/renta.service';
 import { GeneralService } from '../../services/general.service';
 import { take } from 'rxjs/operators';
 import { FooterComponent } from '../../components/footer/footer.component'; // 👈 ajusta la ruta si es distinta
-
 
 /* ===== Tipos (alineados al servicio nuevo) ===== */
 interface Ventana { inicio: string; fin: string; nota?: string; }
@@ -56,6 +54,7 @@ interface Rental {
     vigenciaHasta: string;
     urlPoliza?: string;
   };
+
   politicaCombustible?: string;
   politicaLimpieza?: string;
 }
@@ -70,7 +69,6 @@ interface Rental {
 export class RentaFichaPage implements OnInit {
   loading = true;
   rental: Rental | null = null;
-
   isLoggedIn = false;
 
   /** Fechas resaltadas para pintar TODO el rango en el ion-datetime */
@@ -127,6 +125,7 @@ export class RentaFichaPage implements OnInit {
     const id = this.route.snapshot.paramMap.get('id')!;
     this.cargar(id);
   }
+
 
   /* ================== Utilidades de fecha (sin TZ) ================== */
   private toLocalISODate(d = new Date()): string {
@@ -285,7 +284,7 @@ export class RentaFichaPage implements OnInit {
     let inicio = this.asLocalDateOnly(inicioISO);
     let fin = this.asLocalDateOnly(finISO);
     if (fin < inicio) [inicio, fin] = [fin, inicio];
-    
+
     // **INCLUSIVO**
     let dias = this.fechasSeleccionadas.length === 1 ? 1 : this.diffDaysInclusive(inicio, fin);
 
@@ -333,10 +332,8 @@ export class RentaFichaPage implements OnInit {
   reservar() {
     if (!this.rental?._id) return;
 
-    if (!this.resumen?.valido) {
-      this.general.toast('Selecciona fecha(s) válidas para continuar.', 'warning');
-      return;
-    }
+    const inicio = this.fechaInicio || null;
+    const fin = this.fechaFin || this.fechaInicio || null;
 
     // Si el usuario seleccionó fechas, validamos y mandamos los params
     if (inicio && fin) {
@@ -372,16 +369,7 @@ export class RentaFichaPage implements OnInit {
     } else {
       // Fallback por si no existe el método
       this.general.alert('Aviso de Privacidad', 'Contenido…', 'info');
-
     }
-
-    const inicio = this.fechaInicio!;
-    const fin = this.fechaFin || this.fechaInicio!;
-
-    this.router.navigate(
-      ['/reservas', this.rental._id],
-      { queryParams: { inicio, fin } }
-    );
   }
 
   abrirTerminos() {
@@ -389,7 +377,6 @@ export class RentaFichaPage implements OnInit {
     if (anyFooter?.mostrarTerminos) {
       anyFooter.mostrarTerminos();
     } else {
-      // Fallback
       this.general.alert('Términos y condiciones', 'Contenido…', 'info');
     }
   }
