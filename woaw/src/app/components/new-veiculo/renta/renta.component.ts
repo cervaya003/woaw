@@ -95,7 +95,6 @@ export class RentaComponent implements OnInit, OnChanges {
       desdeKm: number;
       hastaKm: number;
       costoFijo?: number | null;
-      costoPorKm?: number | null;
       nota?: string | null;
     }>,
   };
@@ -108,10 +107,10 @@ export class RentaComponent implements OnInit, OnChanges {
     private rentaService: RentaService,
     private cdr: ChangeDetectorRef,
     private router: Router,
-  ) {}
+  ) { }
 
-  ngOnInit() {}
-  ngOnChanges(_changes: SimpleChanges): void {}
+  ngOnInit() { }
+  ngOnChanges(_changes: SimpleChanges): void { }
 
   // ---------- helpers ----------
   private hasText(v: any): boolean { return ('' + (v ?? '')).trim().length > 0; }
@@ -185,23 +184,36 @@ export class RentaComponent implements OnInit, OnChanges {
   private reencadenarDesde() {
     const arr = this.entrega.tarifasPorDistancia;
     if (!arr?.length) return;
-    arr[0].desdeKm = Number(this.entrega.gratuitoHastaKm) || 0;
-    for (let i = 1; i < arr.length; i++) arr[i].desdeKm = Number(arr[i - 1].hastaKm) || 0;
+    const gratis = Number(this.entrega.gratuitoHastaKm) || 0;
+    arr[0].desdeKm = gratis >= 0 ? gratis : 0;
+    for (let i = 1; i < arr.length; i++) {
+      const prevHasta = Number(arr[i - 1].hastaKm);
+      arr[i].desdeKm = Number.isFinite(prevHasta) && prevHasta >= 0 ? prevHasta : 0;
+    }
     this.cdr.markForCheck();
   }
+
   addTarifa() {
     const arr = this.entrega.tarifasPorDistancia;
     const desde = arr.length === 0
       ? (Number(this.entrega.gratuitoHastaKm) || 0)
       : (Number(arr[arr.length - 1].hastaKm) || 0);
-    arr.push({ desdeKm: desde, hastaKm: desde + 10, costoFijo: null, costoPorKm: null, nota: null });
+    arr.push({ desdeKm: Math.max(0, desde), hastaKm: Math.max(0, desde + 10), costoFijo: null, nota: null });
     this.cdr.markForCheck();
   }
-  removeTarifa(i: number) { this.entrega.tarifasPorDistancia.splice(i, 1); this.reencadenarDesde(); }
+
+  removeTarifa(i: number) {
+    this.entrega.tarifasPorDistancia.splice(i, 1);
+    this.reencadenarDesde();
+  }
+
   onGratisHastaChange() { this.reencadenarDesde(); }
+
   onTarifaHastaChange(i: number) {
     const arr = this.entrega.tarifasPorDistancia;
-    if (i < arr.length - 1) arr[i + 1].desdeKm = Number(arr[i].hastaKm) || 0;
+    const val = Number(arr[i].hastaKm);
+    arr[i].hastaKm = Number.isFinite(val) && val >= 0 ? val : 0;
+    if (i < arr.length - 1) arr[i + 1].desdeKm = arr[i].hastaKm || 0;
     this.cdr.markForCheck();
   }
 
@@ -301,7 +313,6 @@ export class RentaComponent implements OnInit, OnChanges {
       const t = this.entrega.tarifasPorDistancia[i];
       const desde = Number(t.desdeKm), hasta = Number(t.hastaKm);
       const costoFijo = t.costoFijo != null ? Number(t.costoFijo) : null;
-      const costoKm = t.costoPorKm != null ? Number(t.costoPorKm) : null;
 
       if (!Number.isFinite(desde) || desde < 0 || !Number.isFinite(hasta) || hasta <= 0) {
         this.generalService.alert('Tarifas por distancia', `Tarifa #${i + 1}: “Desde” ≥ 0 y “Hasta” > 0.`, 'warning');
@@ -311,8 +322,8 @@ export class RentaComponent implements OnInit, OnChanges {
         this.generalService.alert('Tarifas por distancia', `Tarifa #${i + 1}: “Desde” debe ser menor que “Hasta”.`, 'warning');
         return false;
       }
-      if ((costoFijo == null || costoFijo < 0) && (costoKm == null || costoKm < 0)) {
-        this.generalService.alert('Tarifas por distancia', `Tarifa #${i + 1}: define “Costo fijo” o “Costo por km”.`, 'warning');
+      if (costoFijo == null || !Number.isFinite(costoFijo) || costoFijo < 0) {
+        this.generalService.alert('Tarifas por distancia', `Tarifa #${i + 1}: define “Costo fijo”.`, 'warning'); // ← actualizado
         return false;
       }
       if (i > 0) {
@@ -350,11 +361,11 @@ export class RentaComponent implements OnInit, OnChanges {
   private construirPayloadParaBackend() {
     const ubicacion = this.ubicacionSeleccionada
       ? {
-          ciudad: this.ubicacionSeleccionada[0],
-          estado: this.ubicacionSeleccionada[1],
-          lat: Number(this.ubicacionSeleccionada[2]),
-          lng: Number(this.ubicacionSeleccionada[3]),
-        }
+        ciudad: this.ubicacionSeleccionada[0],
+        estado: this.ubicacionSeleccionada[1],
+        lat: Number(this.ubicacionSeleccionada[2]),
+        lng: Number(this.ubicacionSeleccionada[3]),
+      }
       : undefined;
 
     const reqCond = {
@@ -373,7 +384,6 @@ export class RentaComponent implements OnInit, OnChanges {
         desdeKm: Number(t.desdeKm),
         hastaKm: Number(t.hastaKm),
         costoFijo: t.costoFijo != null ? Number(t.costoFijo) : undefined,
-        costoPorKm: t.costoPorKm != null ? Number(t.costoPorKm) : undefined,
         nota: t.nota || undefined,
       })),
     };
@@ -394,11 +404,11 @@ export class RentaComponent implements OnInit, OnChanges {
       politicaLimpieza: this.politicaLimpieza,
 
       requisitosConductor: reqCond,
-      
+
       ubicacion,
       entrega,
 
-      // 👇 NUEVO: extras opcionales (si hay)
+      // 👇 NUEVO: extras opcionales (si hay). Si tu backend aún no los soporta, los ignorará sin romper.
       extras: this.extras?.length ? [...this.extras] : undefined,
     };
   }
