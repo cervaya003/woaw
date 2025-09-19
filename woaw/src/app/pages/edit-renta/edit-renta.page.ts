@@ -23,6 +23,13 @@ export class EditRentaPage implements OnInit {
     marca: '',
     modelo: '',
     anio: null, // visual only
+
+    // Alineados al registrar
+    tipoVehiculo: '',     // sedan | suv | pickup | van | hatchback | otro
+    transmision: '',      // manual | automática | CVT
+    combustible: '',      // gasolina | diesel | híbrido | eléctrico
+    pasajeros: null as number | null,
+
     precioPorDia: 0,
     moneda: 'MXN', // visual only (no se envía)
 
@@ -117,6 +124,12 @@ export class EditRentaPage implements OnInit {
           marca: res?.marca ?? this.renta.marca,
           modelo: res?.modelo ?? this.renta.modelo,
           anio: res?.anio ?? this.renta.anio, // visual only
+
+          // Alineados a registrar
+          tipoVehiculo: res?.tipoVehiculo ?? this.renta.tipoVehiculo,
+          transmision: res?.transmision ?? this.renta.transmision,
+          combustible: res?.combustible ?? this.renta.combustible,
+          pasajeros: res?.pasajeros ?? this.renta.pasajeros,
 
           // precio (normaliza por compatibilidad)
           precioPorDia: Number(price?.porDia ?? res?.precioPorDia ?? res?.precio ?? this.renta.precioPorDia),
@@ -318,9 +331,9 @@ export class EditRentaPage implements OnInit {
       this.general.alert('Sin cambios', 'No hay cambios por guardar.', 'info');
       return;
     }
-    // Validaciones mínimas
-    if (!this.renta.precioPorDia || this.renta.precioPorDia < 100) {
-      this.general.alert('Precio inválido', 'Ingresa un precio por día válido (>= 100).', 'warning');
+    // Validaciones mínimas (igual que registrar)
+    if (!this.renta.precioPorDia || this.renta.precioPorDia < 500) {
+      this.general.alert('Precio inválido', 'El precio por día debe ser de al menos $500.', 'warning');
       return;
     }
     if (!this.ubicacionSeleccionada) {
@@ -333,11 +346,22 @@ export class EditRentaPage implements OnInit {
     try {
       const [ciudad, estado, lat, lng] = this.ubicacionSeleccionada!;
 
-      // Backend nuevo: precio como number y sin moneda/póliza/campos visuales.
+      // Payload alineado al registrar (solo campos soportados)
       const data: any = {
-        precio: Number(this.renta.precioPorDia),
-        politicaCombustible: this.renta.politicaCombustible || 'lleno-lleno',
-        politicaLimpieza: this.renta.politicaLimpieza || 'normal',
+        // básicos
+        tipoVehiculo: this.renta.tipoVehiculo || undefined,
+        transmision: this.renta.transmision || undefined,
+        combustible: this.renta.combustible || undefined,
+        pasajeros: this.renta.pasajeros != null ? Number(this.renta.pasajeros) : undefined,
+
+        // precio (number)
+        precio: Number(this.renta.precioPorDia ?? 0),
+
+        // políticas
+        politicaCombustible: this.renta.politicaCombustible,
+        politicaLimpieza: this.renta.politicaLimpieza,
+
+        // requisitos
         requisitosConductor: {
           edadMinima: Number(this.renta.requisitosConductor.edadMinima ?? 21),
           antiguedadLicenciaMeses: Number(this.renta.requisitosConductor.antiguedadLicenciaMeses ?? 12),
@@ -347,26 +371,31 @@ export class EditRentaPage implements OnInit {
               ? Number(this.renta.requisitosConductor.costoConductorAdicional)
               : undefined,
         },
+
+        // entrega
         entrega: {
           gratuitoHastaKm: Number(this.renta.entrega.gratuitoHastaKm) || 0,
           tarifasPorDistancia: (this.renta.entrega.tarifasPorDistancia || []).map((t: any) => ({
-            desdeKm: Number(t.desdeKm) || 0,
-            hastaKm: Number(t.hastaKm) || 0,
+            desdeKm: Number(t.desdeKm),
+            hastaKm: Number(t.hastaKm),
             costoFijo: t.costoFijo != null ? Number(t.costoFijo) : undefined,
-            // 👇 eliminado costoPorKm: backend no lo usa
             nota: t.nota || undefined,
           })),
         },
+
+        // ubicación
         ubicacion: { ciudad, estado, lat, lng },
-        imagenesExistentes: this.urlsImagenesExistentes, // conserva las existentes
+
+        // imágenes existentes a conservar
+        imagenesExistentes: this.urlsImagenesExistentes,
       };
 
-      // Si NO subes archivo para principal, manda URL
+      // Imagen principal (si es URL existente)
       if (typeof this.imagenPrincipalFile === 'string' && this.imagenPrincipalFile.trim()) {
         data.imagenPrincipal = this.imagenPrincipalFile;
       }
 
-      // Archivos
+      // Archivos a subir
       const files: any = {};
       if (this.imagenPrincipalFile instanceof File) files.imagenPrincipal = this.imagenPrincipalFile;
       if (this.imagenesNuevas.length) files.imagenes = this.imagenesNuevas;

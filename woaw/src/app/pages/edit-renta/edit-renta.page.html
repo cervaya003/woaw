@@ -23,13 +23,66 @@
 <ion-content [fullscreen]="true">
   <div class="contenedor">
 
+    <!-- Datos del vehículo (alineados a registrar) -->
+    <ion-grid>
+      <ion-row>
+        <ion-col size="12" size-md="3">
+          <ion-item>
+            <ion-label position="stacked">Tipo de vehículo</ion-label>
+            <ion-select [(ngModel)]="renta.tipoVehiculo" (ionChange)="markDirty()">
+              <ion-select-option value="">Seleccione…</ion-select-option>
+              <ion-select-option value="sedan">sedan</ion-select-option>
+              <ion-select-option value="suv">suv</ion-select-option>
+              <ion-select-option value="pickup">pickup</ion-select-option>
+              <ion-select-option value="van">van</ion-select-option>
+              <ion-select-option value="hatchback">hatchback</ion-select-option>
+              <ion-select-option value="otro">otro</ion-select-option>
+            </ion-select>
+          </ion-item>
+        </ion-col>
+
+        <ion-col size="12" size-md="3">
+          <ion-item>
+            <ion-label position="stacked">Transmisión</ion-label>
+            <ion-select [(ngModel)]="renta.transmision" (ionChange)="markDirty()">
+              <ion-select-option value="">Seleccione…</ion-select-option>
+              <ion-select-option value="manual">manual</ion-select-option>
+              <ion-select-option value="automática">automática</ion-select-option>
+              <ion-select-option value="CVT">CVT</ion-select-option>
+            </ion-select>
+          </ion-item>
+        </ion-col>
+
+        <ion-col size="12" size-md="3">
+          <ion-item>
+            <ion-label position="stacked">Combustible</ion-label>
+            <ion-select [(ngModel)]="renta.combustible" (ionChange)="markDirty()">
+              <ion-select-option value="">Seleccione…</ion-select-option>
+              <ion-select-option value="gasolina">gasolina</ion-select-option>
+              <ion-select-option value="diesel">diesel</ion-select-option>
+              <ion-select-option value="híbrido">híbrido</ion-select-option>
+              <ion-select-option value="eléctrico">eléctrico</ion-select-option>
+            </ion-select>
+          </ion-item>
+        </ion-col>
+
+        <ion-col size="12" size-md="3">
+          <ion-item>
+            <ion-label position="stacked">Pasajeros</ion-label>
+            <ion-input type="number" min="1" [(ngModel)]="renta.pasajeros" (ionInput)="markDirty()" placeholder="Ej. 5">
+            </ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
     <!-- Precio y moneda (moneda es UI, no se envía) -->
     <ion-grid>
       <ion-row>
         <ion-col size="12" size-md="6">
           <ion-item>
             <ion-label position="stacked">Precio por día <span class="req">*</span></ion-label>
-            <ion-input type="number" min="100" [(ngModel)]="renta.precioPorDia" (ionInput)="markDirty()"></ion-input>
+            <ion-input type="number" min="500" [(ngModel)]="renta.precioPorDia" (ionInput)="markDirty()"></ion-input>
           </ion-item>
         </ion-col>
 
@@ -62,10 +115,10 @@
         <ion-col size="12" size-md="6">
           <ion-item>
             <ion-label position="stacked">Política limpieza</ion-label>
-              <ion-select [(ngModel)]="renta.politicaLimpieza" (ionChange)="markDirty()">
-                <ion-select-option value="normal">normal</ion-select-option>
-                <ion-select-option value="estricta">estricta</ion-select-option>
-              </ion-select>
+            <ion-select [(ngModel)]="renta.politicaLimpieza" (ionChange)="markDirty()">
+              <ion-select-option value="normal">normal</ion-select-option>
+              <ion-select-option value="estricta">estricta</ion-select-option>
+            </ion-select>
           </ion-item>
         </ion-col>
 
