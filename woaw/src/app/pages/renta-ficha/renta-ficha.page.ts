@@ -377,7 +377,6 @@ export class RentaFichaPage implements OnInit {
     if (anyFooter?.mostrarTerminos) {
       anyFooter.mostrarTerminos();
     } else {
-      // Fallback
       this.general.alert('Términos y condiciones', 'Contenido…', 'info');
     }
   }
