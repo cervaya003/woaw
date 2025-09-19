@@ -1,0 +1,56 @@
+<app-navbar>
+  <!-- Botón proyectado en el navbar -->
+  <ion-button
+    navbar-actions
+    fill="clear"
+    [ngClass]="{ 'activo': isActive('renta-coches') }"
+    (click)="redirecion('renta-coches')"
+  >
+    Renta de coches
+  </ion-button>
+</app-navbar>
+
+<ion-content [fullscreen]="true">
+  <section class="city-section">
+    <div class="intro">
+      <h2>Ciudades disponibles</h2>
+      <p>Elige una ciudad para ver opciones de renta.</p>
+      <span class="intro__accent"></span>
+    </div>
+    <ion-grid class="city-grid">
+      <ion-row class="city-row">
+        <ion-col
+          size="12"
+          sizeSm="6"
+          sizeMd="4"
+          sizeLg="3"
+          *ngFor="let c of ciudades; trackBy: trackByNombre"
+        >
+          <ion-card
+            class="city-card"
+            (click)="c.disponible && seleccionarCiudad(c)"
+            button
+          >
+            <div class="city-img-wrap">
+              <img
+                class="city-img"
+                [src]="c.imagen"
+                [alt]="c.nombre"
+                loading="lazy"
+              />
+              <div class="city-overlay">
+                <h3>{{ c.nombre }}</h3>
+              </div>
+              <div class="city-disabled-overlay" *ngIf="!c.disponible">
+                <span class="disabled-text">Próximamente</span>
+              </div>
+            </div>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </section>
+
+  <div class="spacer"></div>
+  <app-footer></app-footer>
+</ion-content>

@@ -250,7 +250,11 @@ const routes: Routes = [
     path: 'reservas/:id',
     loadChildren: () => import('./pages/reservas/reservas.module').then( m => m.ReservasPageModule)
   },
-    {
+  {
+    path: 'renta-ciudades',
+    loadChildren: () => import('./pages/renta-ciudades/renta-ciudades.module').then( m => m.RentaCiudadesPageModule)
+  },
+  {
     path: "**",
     loadChildren: () =>
       import("./pages/error/error.module").then((m) => m.ErrorPageModule),
