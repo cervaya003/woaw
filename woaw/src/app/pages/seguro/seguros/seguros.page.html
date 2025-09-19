@@ -1,78 +1,91 @@
 <app-navbar></app-navbar>
 
 <ion-content [fullscreen]="true">
-
+  <app-spinner *ngIf="mostrar_spinnet"></app-spinner>
   <div class="fondo-diagonal"></div>
 
-  <div class="cotiza" *ngIf="!cotizacion">
-    <section class="cotiza__card">
-      <section class="carta_fantasma">
-        
-        <header class="cotiza__head" *ngIf="!cotizacion">
+  <div class="progress">
+    <div class="progress__bar" [style.width.%]="progress()"></div>
+    <div class="progress__markers">
+      <span *ngFor="let step of steps; let i = index" [style.left.%]="(100 / (steps.length - 1)) * i"
+        [class.done]="i + 1 < currentStep" [class.active]="i + 1 === currentStep">
+        {{ step }}
+      </span>
+    </div>
+  </div>
+
+  <div class="layout-seguros" *ngIf="!cotizacion">
+
+    <div class="cotiza">
+      <section class="cotiza__card">
+        <header class="cotiza__head">
           <span class="badge">Seguro de auto · Woaw</span>
           <h1>Cotiza tu seguro de auto</h1>
           <p>En segundos</p>
         </header>
 
-        <div class="progress" *ngIf="!cotizacion">
-          <div class="progress__bar" [style.width.%]="progress()"></div>
-        </div>
-
-        <form [formGroup]="form" *ngIf="!cotizacion">
+        <form [formGroup]="form">
 
           <div class="field" *ngIf="currentStep === 1">
-            <label for="marca">Escribe o selecciona la marca</label>
+            <label for="marca">Selecciona una marca</label>
+
             <div class="control control--select">
-              <ion-select formControlName="marca" interface="popover" placeholder="Elige una marca..."
-                aria-label="Marca">
-                <ion-select-option [value]="null" disabled>Elige una marca...</ion-select-option>
+              <ion-select #lista class="sync-pop" formControlName="marca" interface="popover"
+                [interfaceOptions]="{ cssClass: 'select-popover pop-marca', side: 'bottom', alignment: 'start' }"
+                placeholder="Elige una marca…" aria-label="Marca" data-key="marca" (ionFocus)="syncPopoverWidths()">
+                <ion-select-option [value]="null" disabled>Elige una marca…</ion-select-option>
                 <ion-select-option *ngFor="let m of marcas" [value]="m.id">
                   {{ m.name | titlecase }}
                 </ion-select-option>
               </ion-select>
-              <button type="button" class="icon-btn" aria-label="Limpiar" (click)="clearMarca()"
-                *ngIf="form.get('marca')?.value">✕</button>
             </div>
           </div>
 
           <div class="field" *ngIf="currentStep === 2">
             <label for="modelo">Selecciona el modelo</label>
             <div class="control control--select">
-              <ion-select formControlName="modelo" interface="popover" placeholder="Elige un modelo..."
-                aria-label="Modelo">
+              <ion-select #lista class="sync-pop" formControlName="modelo" interface="popover" aria-label="Modelo"
+                [interfaceOptions]="{ cssClass: 'select-popover pop-modelo', side: 'bottom', alignment: 'start' }"
+                placeholder="Elige un modelo..." data-key="modelo" (ionFocus)="syncPopoverWidths()">
                 <ion-select-option [value]="null" disabled>Elige un modelo...</ion-select-option>
                 <ion-select-option *ngFor="let mo of modelos" [value]="mo.id">
                   {{ mo.name | titlecase }}
                 </ion-select-option>
               </ion-select>
-              <button type="button" class="icon-btn" aria-label="Regresar" (click)="clearMarca()">&#x2B05;</button>
             </div>
           </div>
 
           <div class="field" *ngIf="currentStep === 3">
-            <label for="año">Selecciona el año</label>
+            <label for="anio">Selecciona el año</label>
             <div class="control control--select">
-              <ion-select formControlName="anio" interface="popover" placeholder="Elige un año..." aria-label="Año">
+
+              <ion-select #lista class="sync-pop" formControlName="anio" interface="popover"
+                placeholder="Elige un año..." aria-label="anio"
+                [interfaceOptions]="{ cssClass: 'select-popover pop-anio', side: 'bottom', alignment: 'start' }"
+                data-key="anio" (ionFocus)="syncPopoverWidths()">
+
                 <ion-select-option [value]="null" disabled>Elige un año...</ion-select-option>
                 <ion-select-option *ngFor="let y of anios" [value]="y">
                   {{ y }}
                 </ion-select-option>
               </ion-select>
-              <button type="button" class="icon-btn" aria-label="Regresar" (click)="clearAnio()">&#x2B05;</button>
             </div>
           </div>
 
           <div class="field" *ngIf="currentStep === 4">
             <label for="version">Selecciona la versión</label>
             <div class="control control--select">
-              <ion-select formControlName="version" interface="popover" placeholder="Elige una versión..."
-                aria-label="Versión">
+
+              <ion-select #lista class="sync-pop" formControlName="version" interface="popover"
+                placeholder="Elige una versión..." aria-label="Versión"
+                [interfaceOptions]="{ cssClass: 'select-popover pop-version', side: 'bottom', alignment: 'start' }"
+                data-key="version" (ionFocus)="syncPopoverWidths()">
+
                 <ion-select-option [value]="null" disabled>Elige una versión...</ion-select-option>
                 <ion-select-option *ngFor="let v of versions" [value]="v.id">
                   {{ v.parts | titlecase }}
                 </ion-select-option>
               </ion-select>
-              <button type="button" class="icon-btn" aria-label="Regresar" (click)="clearVersion()">&#x2B05;</button>
             </div>
           </div>
 
@@ -81,17 +94,25 @@
 
             <div class="fecha-flex">
               <div class="control control--select">
-                <ion-select formControlName="nacDia" interface="popover" placeholder="Día" aria-label="Día">
+
+                <ion-select #lista class="sync-pop" formControlName="nacDia" interface="popover" placeholder="Día"
+                  aria-label="Día"
+                  [interfaceOptions]="{ cssClass: 'select-popover pop-nacDia', side: 'bottom', alignment: 'start' }"
+                  data-key="nacDia" (ionFocus)="syncPopoverWidths()">
+
                   <ion-select-option [value]="null" disabled>Día</ion-select-option>
                   <ion-select-option *ngFor="let d of dias" [value]="d">
                     {{ d }}
                   </ion-select-option>
                 </ion-select>
-                <button type="button" class="icon-btn" aria-label="Regresar" (click)="clearFecha()">&#x2B05;</button>
               </div>
 
               <div class="control control--select">
-                <ion-select formControlName="nacMes" interface="popover" placeholder="Mes" aria-label="Mes">
+
+                <ion-select #lista class="sync-pop" formControlName="nacMes" interface="popover" placeholder="Mes"
+                  aria-label="Mes"
+                  [interfaceOptions]="{ cssClass: 'select-popover pop-nacMes', side: 'bottom', alignment: 'start' }"
+                  data-key="nacMes" (ionFocus)="syncPopoverWidths()">
                   <ion-select-option [value]="null" disabled>Mes</ion-select-option>
                   <ion-select-option *ngFor="let m of meses" [value]="m.v">
                     {{ m.l }}
@@ -100,7 +121,12 @@
               </div>
 
               <div class="control control--select">
-                <ion-select formControlName="nacAnio" interface="popover" placeholder="Año" aria-label="Año">
+
+                <ion-select #lista class="sync-pop" formControlName="nacAnio" interface="popover" placeholder="Año"
+                  aria-label="Año"
+                  [interfaceOptions]="{ cssClass: 'select-popover pop-nacAnio', side: 'bottom', alignment: 'start' }"
+                  data-key="nacAnio" (ionFocus)="syncPopoverWidths()">
+
                   <ion-select-option [value]="null" disabled>Año</ion-select-option>
                   <ion-select-option *ngFor="let y of aniosNacimiento" [value]="y">
                     {{ y }}
@@ -121,7 +147,12 @@
             <!-- Género -->
             <label for="genero" style="margin-top:12px;">Género</label>
             <div class="control control--select">
-              <ion-select formControlName="genero" interface="popover" placeholder="Selecciona..." aria-label="Género">
+
+              <ion-select #lista class="sync-pop" formControlName="genero" interface="popover"
+                placeholder="Selecciona..." aria-label="Género"
+                [interfaceOptions]="{ cssClass: 'select-popover pop-genero', side: 'bottom', alignment: 'start' }"
+                data-key="genero" (ionFocus)="syncPopoverWidths()">
+
                 <ion-select-option [value]="null" disabled>Selecciona...</ion-select-option>
                 <ion-select-option *ngFor="let g of generoOpts" [value]="g.value">
                   {{ g.label }}
@@ -132,13 +163,15 @@
             <label for="estadoCivil" style="margin-top:12px;">Estado civil</label>
             <div class="control control--select">
               <ion-select formControlName="estadoCivil" interface="popover" placeholder="Selecciona..."
-                aria-label="Estado civil">
+                aria-label="Estado civil"
+                [interfaceOptions]="{ cssClass: 'select-popover pop-estadoCivil', side: 'bottom', alignment: 'start' }"
+                data-key="estadoCivil" (ionFocus)="syncPopoverWidths()">
                 <ion-select-option [value]="null" disabled>Selecciona...</ion-select-option>
                 <ion-select-option *ngFor="let e of estadoCivilOpts" [value]="e.value">
                   {{ e.label }}
                 </ion-select-option>
               </ion-select>
-              <button type="button" class="icon-btn" aria-label="Regresar" (click)="clearPaso6()">&#x2B05;</button>
+              <!-- <button type="button" class="icon-btn" aria-label="Regresar" (click)="clearPaso6()">&#x2B05;</button> -->
             </div>
 
           </div>
@@ -177,19 +210,19 @@
             </div> -->
             </div>
 
-            <button type="button" class="icon-btn" aria-label="Regresar" (click)="clearPaso8()">&#x2B05;</button>
+            <!-- <button type="button" class="icon-btn" aria-label="Regresar" (click)="clearPaso8()">&#x2B05;</button> -->
 
           </div>
 
-          <!-- Acciones -->
-          <div class="actions">
-            <!-- <button class="btn-back">hey</button> -->
+          <div class="paybox__cta">
+            <button type="button" *ngIf="currentStep !== 1" class="btn-secondary"
+              (click)="ClearRegrasar()">&#x2B05;</button>
             <button class="btn-primary" type="button" (click)="siguiente()" [disabled]="
               (currentStep===1 && form.get('marca')?.invalid) ||
               (currentStep===2 && form.get('modelo')?.invalid) ||
               (currentStep===3 && form.get('anio')?.invalid)   ||
               (currentStep===4 && form.get('version')?.invalid)||
-              (currentStep===5 && form.errors)                 ||
+              (currentStep===5 && form.get('nacDia')?.invalid || form.get('nacMes')?.invalid || form.get('nacAnio')?.invalid)                 ||
               (currentStep===6 && (form.get('cp')?.invalid || form.get('genero')?.invalid || form.get('estadoCivil')?.invalid))
             ">
               {{ currentStep < 7 ? 'Siguiente ' : 'Cotizar' }} </button>
@@ -197,13 +230,46 @@
 
         </form>
       </section>
-    </section>
+
+    </div>
+
+    <!-- <div class="carta_pre_cotizacion">
+      <div class="contenido_pre_cotizacion">
+        <div class=container_animacion>
+          ¡CUIDA
+          <div id=flip>
+            <div>
+              <div>TU AUTO</div>
+            </div>
+            <div>
+              <div>TU VIAJE</div>
+            </div>
+            <div>
+              <div>TU FUTURO</div>
+            </div>
+          </div>
+          😊 ...!
+        </div>
+      </div>
+    </div> -->
+
   </div>
 
-  <div class="cotizacion_carta" *ngIf="cotizacion">
-    <div class="cotizacion_carta__card">
-      <div class="contenedor_cotizacion" *ngIf="quote as q">
+  <!-- resultado de la cotización  -->
+
+
+  <div class="cotizacion_carta">
+
+    <section class="cotizacion_carta__card">
+      <ng-container *ngIf="quote as q">
         <h2>Resultado de tu cotización</h2>
+
+        <div class="msj_success">
+          <div class="circle">
+            <span class="ring"></span>
+            <img src="/assets/img/check.png" alt="check" class="check" />
+          </div>
+        </div>
 
         <div class="quote-head">
 
@@ -238,13 +304,15 @@
         <div class="planes" *ngIf="q.plans?.length">
           <section class="plan" *ngFor="let p of q.plans">
             <div class="paybox">
-              <div class="paybox__select">
-                <select [ngModel]="selectedPaymentByPlan[p.id]" (ngModelChange)="onSelectPayment(p.id, $event)">
-                  <option *ngFor="let opt of p.payment_plans; trackBy: trackByPayment" [ngValue]="opt.id">
+
+              <div class="">
+                <ion-select [(ngModel)]="selectedPaymentByPlan[p.id]" (ngModelChange)="onSelectPayment(p.id, $event)"
+                  interface="popover" placeholder="Elige un plan de pago..." aria-label="Plan de pago"
+                  class="pay-select">
+                  <ion-select-option *ngFor="let opt of p.payment_plans; trackBy: trackByPayment" [value]="opt.id">
                     {{ paymentPlanLabel(opt) }} — {{ fmtMoney(opt.total) }}
-                  </option>
-                </select>
-                <ion-icon name="chevron-down-outline" aria-hidden="true"></ion-icon>
+                  </ion-select-option>
+                </ion-select>
               </div>
 
               <div class="paybox__pricecard" *ngIf="getSelectedPayment(p) as sel">
@@ -278,101 +346,31 @@
 
               <!-- CTA -->
               <div class="paybox__cta">
-                <button type="button" class="btn-secondary" (click)="nuevoSeguro()">Cotiza nuevo seguro</button>
-                <button type="button" class="btn-primary" (click)="confirmarPoliza()">Contratar próximamente
-                  ...</button>
+                <button type="button" class="btn-secondary" (click)="nuevoSeguro()">Cotizar nuevamente</button>
+                <button type="button" class="btn-primary" (click)="confirmarPoliza()">Continuar</button>
               </div>
-
-              <div class="paybox-info" *ngIf="getSelectedPayment(p) as sel">
-                <ng-container *ngIf="planInfo(sel) as i">
-                  <header class="paybox-info__head">
-                    <span class="paybox-info__badge">Detalle del pago</span>
-                  </header>
-
-                  <div class="paybox-info__grid">
-                    <div class="paybox-info__row">
-                      <span class="k">Plan</span>
-                      <span class="v">{{ i.planLabel }}</span>
-                    </div>
-
-                    <div class="paybox-info__row">
-                      <span class="k">Pagos</span>
-                      <span class="v">{{ i.count === 1 ? '1 pago' : (i.count + ' pagos') }}</span>
-                    </div>
-
-                    <div class="paybox-info__row">
-                      <span class="k">Derechos de expedición</span>
-                      <span class="v">{{ fmtMoney(i.expedition_rights) }}</span>
-                    </div>
-
-                    <div class="paybox-info__row" *ngIf="i.fee">
-                      <span class="k">Cargo/fee</span>
-                      <span class="v">{{ fmtMoney(i.fee) }}</span>
-                    </div>
-
-                    <div class="paybox-info__row">
-                      <span class="k">Subtotal</span>
-                      <span class="v">{{ fmtMoney(i.subtotal) }}</span>
-                    </div>
-
-                    <div class="paybox-info__row">
-                      <span class="k">Impuestos</span>
-                      <span class="v">{{ fmtMoney(i.taxes) }}</span>
-                    </div>
-
-                    <div class="paybox-info__divider"></div>
-
-                    <div class="paybox-info__row is-total">
-                      <span class="k">Total</span>
-                      <span class="v">{{ fmtMoney(i.total) }}</span>
-                    </div>
-                  </div>
-
-                  <div class="paybox-info__hint" *ngIf="i.count > 1">
-                    <ng-container *ngIf="i.variable; else uniform">
-                      <strong>Calendario:</strong> 1er pago {{ fmtMoney(i.firstTotal) }} ·
-                      siguientes {{ i.count - 1 }} de {{ fmtMoney(i.restTotal) }}
-                    </ng-container>
-                    <ng-template #uniform>
-                      <strong>Calendario:</strong> {{ i.count }} pagos de {{ fmtMoney(i.firstTotal) }}
-                    </ng-template>
-                  </div>
-
-                  <!-- <details class="paybox-info__breakdown" *ngIf="sel.payments?.length">
-                    <summary>Ver desglose por mes &#x2193; </summary>
-                    <ul>
-                      <li *ngFor="let pay of sel.payments">
-                        <span class="n">#{{ pay.number }}</span>
-                        <span class="dot"></span>
-                        <span class="money">{{ fmtMoney(pay.total) }}</span>
-                      </li>
-                    </ul>
-                  </details> -->
-
-                </ng-container>
-              </div>
-
             </div>
           </section>
         </div>
-      </div>
-    </div>
-  </div>
 
-  <div *ngIf="pedir_datos">
-    <div class="field" *ngIf="currentStep === 7">
-      <label for="nombre">Nombre completo</label>
-      <div class="control">
-        <input id="nombre" type="text" class="form-input" placeholder="Ej. JUAN PÉREZ LÓPEZ" formControlName="nombre"
-          (input)="toUpper('nombre')" />
-      </div>
+      </ng-container>
+    </section>
 
-      <label for="email" style="margin-top:12px;">Correo electrónico</label>
-      <div class="control">
-        <input id="email" type="email" class="form-input" placeholder="tucorreo@dominio.com" formControlName="email" />
-        <button type="button" class="icon-btn" aria-label="Regresar" (click)="clearPaso7()">&#x2B05;</button>
-      </div>
-    </div>
+    <section class="paybox-info" *ngIf="activePlan && getPlanCoverages(activePlan) as covs">
+      <h4 class="paybox-info__title">Coberturas incluidas</h4>
+      <ul class="benefits">
+        <li class="benefit" *ngFor="let c of covs; trackBy: trackByCov">
+          <span class="k">{{ c.label }}</span>
+          <span class="v">
+            <ng-container *ngIf="c.amountText; else included">{{ c.amountText }}</ng-container>
+            <ng-template #included>Incluida</ng-template>
+            <ng-container *ngIf="c.deductible != null"> · Deducible {{ (c.deductible * 100) | number:'1.0-0'
+              }}%</ng-container>
+          </span>
+        </li>
+      </ul>
+    </section>
+
   </div>
 
   <app-footer></app-footer>

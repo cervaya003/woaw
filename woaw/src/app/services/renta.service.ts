@@ -362,7 +362,11 @@ export class RentaService {
       return this.authJsonHeaders$().pipe(
         switchMap(headers =>
           this.requestOverCandidates<{ message: string; rental: any }>(
+<<<<<<< HEAD
             ['PUT'],
+=======
+            ['PATCH', 'PUT'],
+>>>>>>> e09cac2b688350b43fd09a1f9f1fc58dc8b4650b
             urls,
             (_method, u) => ({ url: u, body, options: { headers } })
           )

@@ -72,7 +72,15 @@
               <span>Depósito</span>
               <ion-note>{{ r.deposito | currency:'MXN':'symbol-narrow' }}</ion-note>
             </div>
-          </div>
+            <div class="precio-renglon" *ngIf="r.minDias">
+              <span>Mínimo</span>
+              <ion-note>{{ r.minDias }} día(s)</ion-note>
+            </div>
+            <div class="precio-renglon" *ngIf="r.deposito != null">
+              <span>Depósito</span>
+              <ion-note>{{ r.deposito | currency:'MXN':'symbol-narrow' }}</ion-note>
+            </div>
+          </div> 
 
           <div class="rating" *ngIf="r.ratingPromedio || r.totalRentas">
             <ion-icon name="star" *ngFor="let i of [1,2,3,4,5]" [class.activa]="i <= ratingEntero"></ion-icon>

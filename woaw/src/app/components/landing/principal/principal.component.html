@@ -1,87 +1,88 @@
 <div class="contenedor_titulo">
-  <h2 class="titulo_principal">Nuestros Servicios</h2>
-  <!-- <img src="/assets/icon/logo2.png" alt="Logo woaw" class="logo-goautos2" loading="lazy" /> -->
+  <div class="animate three">
+    <span>N</span><span>u</span><span>e</span><span>s</span><span>t</span><span>r</span><span>o</span><span>s</span> &nbsp;
+    <span>S</span><span>e</span><span>r</span><span>v</span><span>i</span><span>c</span><span>i</span><span>o</span><span>s</span>
+  </div>
 </div>
 
+
 <section class="grid-categorias">
-  <div class="grid-categorias__wrap">
+  <div class="gc__grid">
 
-
-    <a class="cat-card" href="/menu-vehiculos/autos">
-      <img class="cat-card__bg animacion__1" [src]="img1" alt="Autos" />
-      <span class="cat-card__overlay">
-        <h3 class="cat-card__title">Autos</h3>
-        <p class="cat-card__subtitle">Nuevos, seminuevos y usados</p>
-        <!-- <button class="cat-card__btn" type="button">Explorar</button> -->
-      </span>
-    </a>
-    <a class="cat-card" href="/m-nuevos">
-      <img class="cat-card__bg animacion__2" [src]="img2" alt="Motos" />
-      <span class="cat-card__overlay">
-        <h3 class="cat-card__title">Motos</h3>
-        <p class="cat-card__subtitle">De calle, touring y más</p>
-        <!-- <button class="cat-card__btn" type="button">Explorar</button> -->
-      </span>
-    </a>
-    <a class="cat-card" href="/camiones/todos">
-      <img class="cat-card__bg animacion__3" [src]="img3" alt="Camiones" />
-      <span class="cat-card__overlay">
-        <h3 class="cat-card__title">Camiones</h3>
-        <p class="cat-card__subtitle">Carga y flotillas</p>
-        <!-- <button class="cat-card__btn" type="button">Explorar</button> -->
-      </span>
+    <a class="gc__card gc--nuevo" href="/nuevos" style="--bg:url('/assets/autos/home1.png'); --i:2">
+      <div class="gc__info">
+        <h3>Nuevos</h3>
+        <p>0 km</p>
+        <button class="btn_info"> ver más </button>
+      </div>
     </a>
 
+    <a class="gc__card gc--arrenda" href="/arrendamiento" style="--bg:url('/assets/autos/home8.png'); --i:2">
+      <div class="gc__info">
+        <h3>Arrendamiento</h3>
+        <p>Estrena pagando menos</p>
+        <button class="btn_info"> ver más </button>
+      </div>
+    </a>
 
+    <a class="gc__card gc--motos" href="/m-nuevos" style="--bg:url('/assets/autos/home5.png'); --i:3">
+      <div class="gc__info">
+        <h3>Motos</h3>
+        <p>De ciudad y pista</p>
+        <button class="btn_info"> ver más </button>
+      </div>
+    </a>
 
+    <a class="gc__card gc--seminuevo" href="/seminuevos" style="--bg:url('/assets/autos/home2.png'); --i:4">
+      <div class="gc__info">
+        <h3>Seminuevos</h3>
+        <p>Garantía y historial</p>
+        <button class="btn_info"> ver más </button>
+      </div>
+    </a>
 
+    <a class="gc__card gc--seguro" href="/seguros" style="--bg:url('/assets/autos/home7.png'); --i:5">
+      <div class="gc__info">
+        <h3>Seguros</h3>
+        <p>Cotiza en segundos</p>
+        <button class="btn_info"> ver más </button>
+      </div>
+    </a>
 
-    <ng-container>
-      <a class="cat-card2" href="/arrendamiento">
-        <span class="cat-card__overlay">
-          <img src="/assets/img/ic1.png" alt="icono arrendamiento" class="cat-card__icon" />
+    <a class="gc__card gc--usados" href="/usados" style="--bg:url('/assets/autos/home3.png'); --i:6">
+      <div class="gc__info">
+        <h3>Usados</h3>
+        <p>Opciones para todos</p>
+        <button class="btn_info"> ver más </button>
+      </div>
+    </a>
 
-          <h5 class="cat-card__title">Arrendamiento</h5>
-          <p *ngIf="!esDispositivoMovil" class="cat-card__subtitle">
-            Nuevos, seminuevos y usados
-          </p>
-          <button class="cat-card__btn">
-            Ver más <ion-icon name="chevron-forward-outline"></ion-icon>
-          </button>
-          <small class="cat-card__note">Para empresas y personas físicas</small>
-        </span>
-      </a>
+    <a class="gc__card gc--camiones" href="/camiones/todos" style="--bg:url('/assets/autos/home4.png'); --i:7">
+      <div class="gc__info">
+        <h3>Camiones</h3>
+        <p>Carga y flotillas</p>
+        <button class="btn_info"> ver más </button>
+      </div>
+    </a>
 
-      <a class="cat-card2" href="/renta-coches">
-        <span class="cat-card__overlay">
-          <img src="/assets/img/ic4.png" alt="icono renta" class="cat-card__icon" />
-          <h5 class="cat-card__title">Renta de autos</h5>
-          <p *ngIf="!esDispositivoMovil" class="cat-card__subtitle">
-            De calle, touring y más
-          </p>
-          <button class="cat-card__btn">
-            Ver más <ion-icon name="chevron-forward-outline"></ion-icon>
-          </button>
-          <small class="cat-card__note">Reserva 100% en línea</small>
-        </span>
-      </a>
-
-      <a class="cat-card2" href="/seguros">
-        <span class="cat-card__overlay">
-          <img src="/assets/img/ic5.png" alt="icono seguros" class="cat-card__icon" />
-          <h5 class="cat-card__title">Seguros autos</h5>
-          <p *ngIf="!esDispositivoMovil" class="cat-card__subtitle">
-            Carga y flotillas
-          </p>
-          <button class="cat-card__btn">
-            Cotizar <ion-icon name="chevron-forward-outline"></ion-icon>
-          </button>
-          <small class="cat-card__note">Emisión rápida y soporte</small>
-        </span>
-      </a>
-    </ng-container>
+    <a class="gc__card gc--renta" href="/renta-coches" style="--bg:url('/assets/autos/home6.png'); --i:8">
+      <div class="gc__info">
+        <h3>Renta</h3>
+        <p>Por día o mes</p>
+        <button class="btn_info"> ver más </button>
+      </div>
+    </a>
   </div>
+
+  <!-- <div class="gc__hub">
+    <button class="gc__qr" aria-label="Abrir QR">
+      <span>QR</span>
+    </button>
+    <span class="gc__label">Disponible</span>
+  </div> -->
 </section>
+
+
 
 <!-- Sección: YA DISPONIBLE EN PLAY STORE -->
 <section class="anuncio-app" *ngIf="!isNative">
