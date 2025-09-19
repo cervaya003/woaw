@@ -72,14 +72,6 @@
               <span>Depósito</span>
               <ion-note>{{ r.deposito | currency:'MXN':'symbol-narrow' }}</ion-note>
             </div>
-            <div class="precio-renglon" *ngIf="r.minDias">
-              <span>Mínimo</span>
-              <ion-note>{{ r.minDias }} día(s)</ion-note>
-            </div>
-            <div class="precio-renglon" *ngIf="r.deposito != null">
-              <span>Depósito</span>
-              <ion-note>{{ r.deposito | currency:'MXN':'symbol-narrow' }}</ion-note>
-            </div>
           </div> 
 
           <div class="rating" *ngIf="r.ratingPromedio || r.totalRentas">
