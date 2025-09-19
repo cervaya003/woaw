@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 
 interface Ciudad {
   nombre: string;
   imagen: string;
-  descripcion: string;
+  disponible: boolean;
 }
 
 @Component({
@@ -14,39 +15,36 @@ interface Ciudad {
 })
 export class RentaCiudadesPage implements OnInit {
   ciudades: Ciudad[] = [
-    {
-      nombre: 'Cancún',
-      imagen: '/assets/autos/publicidad/cancun.png',
-      descripcion: 'Playas turquesa, zona hotelera y vida nocturna.',
-    },
-    {
-      nombre: 'Guadalajara',
-      imagen: '/assets/autos/publicidad/guadalajara.png',
-      descripcion: 'Tradición, mariachi y crecimiento tecnológico.',
-    },
-    {
-      nombre: 'Ciudad de México',
-      imagen: '/assets/autos/publicidad/cdmx.png',
-      descripcion: 'Negocios, montaña y gastronomía norteña.',
-    },
-    {
-      nombre: 'Querétaro',
-      imagen: '/assets/autos/publicidad/quere.png',
-      descripcion: 'Centro histórico y polo industrial en crecimiento.',
-    },
-    
+    { nombre: 'Cancún',           imagen: '/assets/autos/publicidad/cancun.png', disponible: true },
+    { nombre: 'Guadalajara',      imagen: '/assets/autos/publicidad/guadalajara.png', disponible: false},
+    { nombre: 'Ciudad de México', imagen: '/assets/autos/publicidad/cmx.png', disponible: false},
+    { nombre: 'Querétaro',        imagen: '/assets/autos/publicidad/q.png',disponible: false },
   ];
 
-  // Opcional: útil si usas <ion-img> con srcset/sizes
+
   readonly sizes = '(min-width:1200px) 23vw, (min-width:820px) 30vw, 48vw';
 
-  constructor() {}
+  constructor(private router: Router) {}
 
   ngOnInit() {}
 
   trackByNombre = (_: number, item: Ciudad) => item.nombre;
 
-  seleccionarCiudad(ciudad: Ciudad) {
-    console.log('Ciudad seleccionada:', ciudad);
+  seleccionarCiudad(ciudad: Ciudad) { 
+    this.router.navigate(['/renta-coches'], {
+      queryParams: { ciudad: ciudad.nombre }
+    });
+  }
+
+  redirecion(url: string) {
+    this.router.navigate([url]);
+  }
+
+  isActive(ruta: string): boolean {
+    const url = this.router.url;
+    if (ruta === 'home') {
+      return url === '/home' || url === '/';
+    }
+    return url === `/${ruta}` || url.startsWith(`/${ruta}/`);
   }
 }

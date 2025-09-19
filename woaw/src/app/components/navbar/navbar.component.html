@@ -106,22 +106,14 @@
           (click)="redirecion('arrendamiento')"
         >
           Arrendamiento
-        </ion-button>
-
-        <ion-button
-          fill="clear"
-          [ngClass]="{ 'activo': isActive('renta-coches') }"
-          (click)="redirecion('renta-coches')"
-        >
-          Renta de coches
-        </ion-button>
+      </ion-button>
 
         <ion-button
           fill="clear"
           [ngClass]="{ 'activo': isActive('renta-ciudades') }"
           (click)="redirecion('renta-ciudades')"
         >
-          Ciudades
+         Renta de coches
         </ion-button>
 
         <ion-button
@@ -229,8 +221,8 @@
       <ion-button
         fill="clear"
         class="stack"
-        [ngClass]="{ 'activo': isActive('renta-coches') }"
-        (click)="redirecion('renta-coches')"
+    [ngClass]="{ 'activo': isActive('renta-ciudades') }"
+          (click)="redirecion('renta-ciudades')"
         *ngIf="!mostrarBuscador && esDispositivoMovil"
       >
         <span class="vcol">
