@@ -10,22 +10,41 @@ import { RentaService } from '../../services/renta.service';
 import { ReservaService, CreateBookingResponse } from '../../services/reserva.service';
 
 /* ============================
-   Validadores personalizados
+   Helpers de fecha (LOCAL, sin TZ)
+   ============================ */
+function toYMDLocal(d = new Date()): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`; // yyyy-mm-dd (local)
+}
+
+function parseYMDLocal(s: string): Date {
+  const [y, m, d] = (s || '').slice(0, 10).split('-').map(Number);
+  return new Date(y, (m - 1), d); // fecha local 00:00
+}
+
+function startOfDayLocal(d: Date): Date {
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+}
+
+/* ============================
+   Validadores personalizados (LOCAL)
    ============================ */
 function minHoy(c: AbstractControl): ValidationErrors | null {
-  const v = c.value;
+  const v = c.value as string | null;
   if (!v) return null;
-  const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
-  const d = new Date(v); d.setHours(0, 0, 0, 0);
+  const hoy = parseYMDLocal(toYMDLocal(new Date()));
+  const d = parseYMDLocal(v);
   return d < hoy ? { minHoy: true } : null;
 }
 
 function rangoFechas(group: AbstractControl): ValidationErrors | null {
-  const ini = group.get('fechaInicio')?.value;
-  const fin = group.get('fechaFin')?.value;
+  const ini = group.get('fechaInicio')?.value as string | null;
+  const fin = group.get('fechaFin')?.value as string | null;
   if (!ini || !fin) return null; // permite 1 solo día
-  const i = new Date(ini);
-  const f = new Date(fin);
+  const i = parseYMDLocal(ini);
+  const f = parseYMDLocal(fin);
   return f < i ? { rangoInvalido: true } : null;
 }
 
@@ -45,18 +64,19 @@ export class ReservasPage implements OnInit {
 
   enviando = false;
 
-  // Fechas ocupadas (YYYY-MM-DD) para deshabilitar en ion-datetime
+  // Fechas ocupadas (YYYY-MM-DD)
   ocupadasISO = new Set<string>();
-
-  // Valor que refleja la selección del ion-datetime (rango)
+  // Valor del ion-datetime (arreglo de YYYY-MM-DD)
   rangeValue: string[] = [];
+  // Rango resaltado (como renta-ficha)
+  highlightedRange: Array<{ date: string; textColor?: string; backgroundColor?: string }> = [];
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private fb: FormBuilder,
-    private rentaService: RentaService,        // coches
-    private reservaService: ReservaService,    // bookings
+    private rentaService: RentaService,
+    private reservaService: ReservaService,
     private loadingCtrl: LoadingController,
     private toastCtrl: ToastController,
     private alertCtrl: AlertController
@@ -64,22 +84,22 @@ export class ReservasPage implements OnInit {
 
   ngOnInit(): void {
     this.carId = this.route.snapshot.paramMap.get('id') || '';
-
     this.initForm();
 
-    // Prefill por query params
+    // Prefill query params
     const qp = this.route.snapshot.queryParamMap;
-    const inicioQP = qp.get('inicio');
-    const finQP = qp.get('fin');
-    if (inicioQP) this.form.patchValue({ fechaInicio: inicioQP });
-    if (finQP) this.form.patchValue({ fechaFin: finQP });
+    if (qp.get('inicio')) this.form.patchValue({ fechaInicio: qp.get('inicio') });
+    if (qp.get('fin')) this.form.patchValue({ fechaFin: qp.get('fin') });
 
     this.syncRangeFromForm();
+    this.buildHighlightedRange();
     this.loadCar();
 
     this.form.valueChanges.subscribe(() => {
       this.recalc();
       this.syncRangeFromForm();
+      this.validarMinDiasYDisponibilidad();
+      this.buildHighlightedRange();
     });
   }
 
@@ -87,10 +107,8 @@ export class ReservasPage implements OnInit {
     this.form = this.fb.group(
       {
         fechaInicio: [null, [Validators.required, minHoy]],
-        // fechaFin SIN required para permitir 1 solo día
-        fechaFin: [null],
+        fechaFin: [null], // no required (permite 1 solo día)
         notasCliente: [''],
-        aceptoTerminos: [false, Validators.requiredTrue],
       },
       { validators: [rangoFechas] }
     );
@@ -104,12 +122,14 @@ export class ReservasPage implements OnInit {
       next: async (coche) => {
         this.coche = coche;
 
-        // (Opcional) Fechas ocupadas
         try {
           const maybe$ = (this.rentaService as any)?.fechasOcupadas?.(this.carId);
           if (maybe$?.subscribe) {
             maybe$.subscribe((arrYMD: string[]) => {
-              if (Array.isArray(arrYMD)) this.ocupadasISO = new Set(arrYMD);
+              if (Array.isArray(arrYMD)) {
+                this.ocupadasISO = new Set(arrYMD);
+                this.validarMinDiasYDisponibilidad();
+              }
             });
           }
         } catch { /* noop */ }
@@ -126,89 +146,133 @@ export class ReservasPage implements OnInit {
   }
 
   // ====== Cálculos ======
-  private toYMD(d: string | Date): string {
-    return new Date(d).toISOString().slice(0, 10);
-  }
-
   get minStart(): string {
-    return this.toYMD(new Date());
-  }
-
-  get minEnd(): string {
-    const inicio = this.form?.get('fechaInicio')?.value;
-    return this.toYMD(inicio || new Date());
+    return toYMDLocal(new Date()); // hoy (local) como min
   }
 
   isDateEnabled = (isoDateString: string): boolean => {
     try {
-      const ymd = new Date(isoDateString).toISOString().slice(0, 10);
+      const ymd = (isoDateString || '').slice(0, 10); // tratar como YYYY-MM-DD
       return !this.ocupadasISO.has(ymd);
     } catch {
       return true;
     }
   };
 
+  /** Diferencia INCLUSIVA en días (inicio y fin cuentan) */
+  private diffDaysInclusiveLocal(i: Date, f: Date): number {
+    const si = startOfDayLocal(i).getTime();
+    const sf = startOfDayLocal(f).getTime();
+    const excl = Math.ceil((sf - si) / 86_400_000);
+    return Math.max(1, excl + 1);
+  }
+
   private recalc() {
     if (!this.coche) return;
 
-    const inicio = this.form.get('fechaInicio')?.value;
-    const fin = this.form.get('fechaFin')?.value;
-    const finUsado = fin || inicio; // single-day: fin = inicio
+    const inicio = this.form.get('fechaInicio')?.value as string | null;
+    const fin = this.form.get('fechaFin')?.value as string | null;
+    const finUsado = fin || inicio; // 1 día si no hay fin
 
-    // días (mínimo 1 si hay inicio)
     if (inicio) {
-      const i = new Date(inicio);
-      const f = new Date(finUsado || inicio);
-      const ms = f.getTime() - i.getTime();
-      const d = Math.ceil(ms / 86_400_000);
-      this.dias = Math.max(1, d || 1);
+      const i = parseYMDLocal(inicio);
+      const f = parseYMDLocal(finUsado || inicio);
+      this.dias = this.diffDaysInclusiveLocal(i, f); // inclusivo
     } else {
       this.dias = 1;
     }
 
-    const porDia = this.coche?.precio?.porDia ?? this.coche?.precioPorDia ?? 0;
-
-    const dias = this.dias || 1;
-    this.total = (porDia || 0) * dias;
+    const porDia = Number(this.coche?.precio) || 0;
+    this.total = porDia * (this.dias || 1);
   }
 
-  // ====== Calendario único (rango) ======
+  // ====== Validaciones extra ======
+  private rangoTieneOcupadas(iniStr?: string | null, finStr?: string | null): boolean {
+    if (!iniStr) return false;
+    let start = parseYMDLocal(iniStr);
+    let end = parseYMDLocal(finStr || iniStr);
+    if (end < start) [start, end] = [end, start];
+
+    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+      if (this.ocupadasISO.has(toYMDLocal(d))) return true;
+    }
+    return false;
+  }
+
+  private validarMinDiasYDisponibilidad() {
+    const ini = this.form.get('fechaInicio')?.value as string | null;
+    const fin = (this.form.get('fechaFin')?.value as string | null) ?? ini;
+    const minDias = Number(this.coche?.minDias || 1);
+
+    const errors = { ...(this.form.errors || {}) } as any;
+    delete errors.minDias;
+    delete errors.rangoOcupado;
+
+    if (ini && this.dias < minDias) errors['minDias'] = true;
+    if (ini && this.rangoTieneOcupadas(ini, fin)) errors['rangoOcupado'] = true;
+
+    this.form.setErrors(Object.keys(errors).length ? errors : null);
+  }
+
+  // ====== Calendario ======
   private syncRangeFromForm() {
     const ini = this.form.get('fechaInicio')?.value;
     const fin = this.form.get('fechaFin')?.value;
-    const arr = [ini, fin].filter(Boolean) as string[];
-    this.rangeValue = arr.length ? arr : (ini ? [ini] : []);
+    this.rangeValue = [ini, fin].filter(Boolean) as string[];
   }
 
-  /** Handler por ionChange (algunas versiones lo disparan) */
   onRangeChange(ev: CustomEvent) {
     this.applyPicked(ev?.detail?.value as any);
   }
-
-  /** Handler por ionValueChange (más confiable en varias versiones) */
   onRangeValueChange(ev: any) {
     const value = Array.isArray(ev) ? ev : (ev?.detail?.value ?? ev);
     this.applyPicked(value);
   }
 
-  /** Normaliza el valor del datetime y lo aplica al form */
   private applyPicked(val: string[] | string | null | undefined) {
     const arr = Array.isArray(val) ? val : (val ? [val] : []);
     const picked = [...new Set(arr)]
       .slice(0, 2)
-      .sort((a, b) => +new Date(a) - +new Date(b));
+      .sort((a, b) => +parseYMDLocal(a) - +parseYMDLocal(b));
 
     if (picked.length === 0) {
-      this.form.patchValue({ fechaInicio: null, fechaFin: null }, { emitEvent: true });
+      this.form.patchValue({ fechaInicio: null, fechaFin: null });
     } else if (picked.length === 1) {
-      this.form.patchValue({ fechaInicio: picked[0], fechaFin: null }, { emitEvent: true });
+      this.form.patchValue({ fechaInicio: picked[0], fechaFin: null });
     } else {
-      this.form.patchValue({ fechaInicio: picked[0], fechaFin: picked[1] }, { emitEvent: true });
+      this.form.patchValue({ fechaInicio: picked[0], fechaFin: picked[1] });
     }
 
-    // Revalida el grupo (rangoFechas)
-    this.form.updateValueAndValidity({ onlySelf: false, emitEvent: true });
+    this.form.updateValueAndValidity();
     this.syncRangeFromForm();
+    this.validarMinDiasYDisponibilidad();
+    this.buildHighlightedRange();
+  }
+
+  /** ==== Highlight igual a renta-ficha (rango inclusivo, LOCAL) ==== */
+  private buildHighlightedRange(): void {
+    this.highlightedRange = [];
+
+    const ini = this.form.get('fechaInicio')?.value as string | null;
+    const fin0 = (this.form.get('fechaFin')?.value as string | null) ?? ini;
+
+    if (!ini) return;
+    let i = parseYMDLocal(ini);
+    let f = parseYMDLocal(fin0!);
+    if (f < i) [i, f] = [f, i];
+
+    const bg = '#4744efff';  // azul
+    const fg = '#ffffff';
+
+    const cur = new Date(i);
+    while (cur <= f) {
+      this.highlightedRange.push({
+        date: toYMDLocal(cur),
+        backgroundColor: bg,
+        textColor: fg,
+      });
+      cur.setDate(cur.getDate() + 1);
+    }
   }
 
   // ====== Submit ======
@@ -219,23 +283,33 @@ export class ReservasPage implements OnInit {
     }
 
     this.enviando = true;
-
-    // Single-day: si fin está vacío, usamos inicio
-    let { fechaInicio, fechaFin, notasCliente, aceptoTerminos } = this.form.value;
+    let { fechaInicio, fechaFin, notasCliente } = this.form.value as { fechaInicio: string; fechaFin: string | null; notasCliente: string; };
     if (fechaInicio && !fechaFin) fechaFin = fechaInicio;
+
+    const minDias = Number(this.coche?.minDias || 1);
+    if (this.dias < minDias) {
+      this.enviando = false;
+      this.toast(`Debes reservar al menos ${minDias} día(s).`);
+      return;
+    }
+    if (this.rangoTieneOcupadas(fechaInicio, fechaFin)) {
+      this.enviando = false;
+      this.toast('Tu rango incluye días no disponibles.');
+      return;
+    }
 
     const loading = await this.loadingCtrl.create({ message: 'Creando reserva...' });
     await loading.present();
 
     this.reservaService.createBookingV2({
-      rentalCar: this.coche._id,
+      rentalCar: this.coche._id,         // tal cual me pediste
       fechaInicio,
-      fechaFin,
+      fechaFin: fechaFin!,               // ya garantizado
       items: [],
       moneda: this.coche?.precio?.moneda ?? 'MXN',
       notasCliente,
       politicaCancelacion: 'flex',
-      aceptoTerminos,
+      aceptoTerminos: true,              // lo enviamos fijo para el backend
     }).subscribe({
       next: async (res: CreateBookingResponse) => {
         await loading.dismiss();
@@ -264,21 +338,18 @@ export class ReservasPage implements OnInit {
 
   get canSubmit(): boolean {
     const ini = this.form.value.fechaInicio as string | null;
-    const fin = (this.form.value.fechaFin as string | null) ?? ini; // 1 día permitido
-    const tycOk = this.form.value.aceptoTerminos === true;
+    const fin = (this.form.value.fechaFin as string | null) ?? ini;
+    if (!ini) return false;
 
-    if (!ini || !tycOk) return false;
+    const i = parseYMDLocal(ini);
+    const f = parseYMDLocal(fin!);
+    const hoy = parseYMDLocal(toYMDLocal(new Date()));
 
-    const i = new Date(ini);
-    const f = new Date(fin!);
-
-    const hoy = new Date();
-    hoy.setHours(0, 0, 0, 0);
-
-    const inicioOk = i.getTime() >= hoy.getTime();
+    const inicioOk = i.getTime() >= hoy.getTime();   // hoy permitido
     const rangoOk = f.getTime() >= i.getTime();
+    const extraOk = !this.form.hasError('minDias') && !this.form.hasError('rangoOcupado');
 
-    return inicioOk && rangoOk;
+    return inicioOk && rangoOk && extraOk;
   }
 
   volver() { history.back(); }

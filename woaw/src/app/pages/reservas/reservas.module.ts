@@ -5,15 +5,17 @@ import { IonicModule } from '@ionic/angular';
 
 import { ReservasPageRoutingModule } from './reservas-routing.module';
 import { ReservasPage } from './reservas.page';
+import { FooterComponent } from "src/app/components/footer/footer.component";
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
-    ReactiveFormsModule,   // 👈 IMPORTANTE
+    ReactiveFormsModule, // 👈 IMPORTANTE
     IonicModule,
     ReservasPageRoutingModule,
-  ],
+    FooterComponent
+],
   declarations: [ReservasPage],
 })
 export class ReservasPageModule { }

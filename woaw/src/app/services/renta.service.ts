@@ -347,7 +347,7 @@ export class RentaService {
       return this.authMultipartHeaders$().pipe(
         switchMap(headers =>
           this.requestOverCandidates<{ message: string; rental: any }>(
-            ['PATCH', 'PUT'],
+            ['PUT'],
             urls,
             (_method, u) => ({ url: u, body: fd, options: { headers } })
           )
@@ -362,7 +362,7 @@ export class RentaService {
       return this.authJsonHeaders$().pipe(
         switchMap(headers =>
           this.requestOverCandidates<{ message: string; rental: any }>(
-            ['PATCH', 'PUT'],
+            ['PUT'],
             urls,
             (_method, u) => ({ url: u, body, options: { headers } })
           )

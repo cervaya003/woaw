@@ -85,7 +85,7 @@ export interface CreateBookingInput {
   rentalCar: string;
   fechaInicio: string | Date;
   fechaFin: string | Date;
-  items?: LineItem[] | string;
+  items?: LineItem[] | string; // permitimos string JSON en UI, lo parseamos
   total?: number;
   moneda?: string;
   notasCliente?: string;
@@ -136,6 +136,7 @@ export class ReservaService {
     return from(this.headersService.obtenerToken()).pipe(
       map((token) => {
         const h = this.headersService.getJsonHeaders(token) as HttpHeaders;
+        // remover Content-Type para que el browser ponga el boundary
         return h.delete('Content-Type');
       })
     );
@@ -144,13 +145,16 @@ export class ReservaService {
   // ───────── fallback /api (baseUrl con/sin /api) ─────────
   private buildApiCandidates(path: string): string[] {
     const base = this.baseUrl.replace(/\/+$/, '');
-    const primary = `${base}${path.startsWith('/') ? '' : '/'}${path}`;
+    const p = path.startsWith('/') ? path : `/${path}`;
+    const primary = `${base}${p}`;
 
     const hasApi = /\/api$/.test(base);
     const altBase = hasApi ? base.replace(/\/api$/, '') : `${base}/api`;
-    const alt = `${altBase}${path.startsWith('/') ? '' : '/'}${path}`;
+    const alt = `${altBase}${p}`;
 
-    return primary === alt ? [primary] : [primary, alt];
+    // Dedupe + sanea trailing slashes
+    const set = new Set([primary.replace(/\/+$/, ''), alt.replace(/\/+$/, '')]);
+    return Array.from(set);
   }
 
   private getWithApiFallback<T>(path: string, headers: any, params?: any) {
@@ -158,7 +162,7 @@ export class ReservaService {
     return this.http.get<T>(primary, { headers, params }).pipe(
       catchError((err) => {
         if (err?.status === 404 && alt) return this.http.get<T>(alt, { headers, params });
-        return throwError(() => err);
+        return this.headersService.handleError(err);
       })
     );
   }
@@ -168,7 +172,7 @@ export class ReservaService {
     return this.http.post<T>(primary, body, { headers, params }).pipe(
       catchError((err) => {
         if (err?.status === 404 && alt) return this.http.post<T>(alt, body, { headers, params });
-        return throwError(() => err);
+        return this.headersService.handleError(err);
       })
     );
   }
@@ -178,7 +182,7 @@ export class ReservaService {
     return this.http.put<T>(primary, body, { headers, params }).pipe(
       catchError((err) => {
         if (err?.status === 404 && alt) return this.http.put<T>(alt, body, { headers, params });
-        return throwError(() => err);
+        return this.headersService.handleError(err);
       })
     );
   }
@@ -187,8 +191,10 @@ export class ReservaService {
     const [primary, alt] = this.buildApiCandidates(path);
     return this.http.request<T>('DELETE', primary, { headers, params, body }).pipe(
       catchError((err) => {
-        if (err?.status === 404 && alt) return this.http.request<T>('DELETE', alt, { headers, params, body });
-        return throwError(() => err);
+        if (err?.status === 404 && alt) {
+          return this.http.request<T>('DELETE', alt, { headers, params, body });
+        }
+        return this.headersService.handleError(err);
       })
     );
   }
@@ -197,15 +203,14 @@ export class ReservaService {
 
   listarBookings(
     filtro: BookingFiltro = {}
-  ): Observable<{ total: number; page: number; pages: number; bookings: any[]; }> {
+  ): Observable<{ total: number; page: number; pages: number; bookings: RentalBooking[]; }> {
     const params = this.toParams(filtro);
     return this.authJsonHeaders$().pipe(
       switchMap((headers) =>
-        this.getWithApiFallback<{ total: number; page: number; pages: number; bookings: any[] }>(
+        this.getWithApiFallback<{ total: number; page: number; pages: number; bookings: RentalBooking[] }>(
           `${this.BOOKING_BASE}`, headers, params
         )
-      ),
-      catchError((error) => this.headersService.handleError(error))
+      )
     );
   }
 
@@ -213,8 +218,7 @@ export class ReservaService {
     return this.authJsonHeaders$().pipe(
       switchMap((headers) =>
         this.getWithApiFallback<RentalBooking>(`${this.BOOKING_BASE}/${id}`, headers)
-      ),
-      catchError((error) => this.headersService.handleError(error))
+      )
     );
   }
 
@@ -222,8 +226,7 @@ export class ReservaService {
     return this.authJsonHeaders$().pipe(
       switchMap((headers) =>
         this.getWithApiFallback<RentalBooking[]>(`${this.BOOKING_BASE}/mine`, headers)
-      ),
-      catchError((error) => this.headersService.handleError(error))
+      )
     );
   }
 
@@ -232,15 +235,22 @@ export class ReservaService {
     return this.authJsonHeaders$().pipe(
       switchMap((headers) =>
         this.getWithApiFallback<RentalBooking[]>(`${this.BOOKING_BASE}/car/${carId}`, headers, params)
-      ),
-      catchError((error) => this.headersService.handleError(error))
+      )
     );
   }
 
   createBookingV2(data: CreateBookingInput): Observable<CreateBookingResponse> {
     const payload: any = { ...data };
+
+    // Convertimos fechas a ISO (servidor espera ISO). Si tu backend maneja solo día, ajusta aquí.
     payload.fechaInicio = new Date(data.fechaInicio).toISOString();
     payload.fechaFin = new Date(data.fechaFin).toISOString();
+
+    // Parse seguro de items si llegan como string JSON desde UI
+    if (typeof payload.items === 'string') {
+      try { payload.items = JSON.parse(payload.items); }
+      catch { return throwError(() => new Error('Formato inválido de items (JSON)')); }
+    }
 
     if (!payload.rentalCar || !payload.fechaInicio || !payload.fechaFin) {
       return throwError(() => new Error('Faltan campos: rentalCar, fechaInicio, fechaFin'));
@@ -255,8 +265,7 @@ export class ReservaService {
     return this.authJsonHeaders$().pipe(
       switchMap(headers =>
         this.postWithApiFallback<CreateBookingResponse>(`${this.BOOKING_BASE}`, payload, headers)
-      ),
-      catchError(err => this.headersService.handleError(err))
+      )
     );
   }
 
@@ -277,8 +286,7 @@ export class ReservaService {
         this.postWithApiFallback<{ message: string; booking: RentalBooking }>(
           `${this.BOOKING_BASE}/${id}/accept`, body, headers
         )
-      ),
-      catchError((error) => this.headersService.handleError(error))
+      )
     );
   }
 
@@ -288,8 +296,7 @@ export class ReservaService {
         this.postWithApiFallback<{ message: string; booking: RentalBooking }>(
           `${this.BOOKING_BASE}/${id}/start`, {}, headers
         )
-      ),
-      catchError((error) => this.headersService.handleError(error))
+      )
     );
   }
 
@@ -299,8 +306,7 @@ export class ReservaService {
         this.postWithApiFallback<{ message: string; booking: RentalBooking }>(
           `${this.BOOKING_BASE}/${id}/finish`, {}, headers
         )
-      ),
-      catchError((error) => this.headersService.handleError(error))
+      )
     );
   }
 
@@ -311,8 +317,7 @@ export class ReservaService {
         this.postWithApiFallback<{ message: string; booking: RentalBooking }>(
           `${this.BOOKING_BASE}/${id}/cancel`, body, headers
         )
-      ),
-      catchError((error) => this.headersService.handleError(error))
+      )
     );
   }
 
@@ -326,8 +331,7 @@ export class ReservaService {
         this.putWithApiFallback<{ message: string; booking: RentalBooking }>(
           `${this.BOOKING_BASE}/${id}/checkin`, fd, headers
         )
-      ),
-      catchError((error) => this.headersService.handleError(error))
+      )
     );
   }
 
@@ -339,8 +343,7 @@ export class ReservaService {
         this.putWithApiFallback<{ message: string; booking: RentalBooking }>(
           `${this.BOOKING_BASE}/${id}/checkout`, fd, headers
         )
-      ),
-      catchError((error) => this.headersService.handleError(error))
+      )
     );
   }
 
@@ -358,15 +361,15 @@ export class ReservaService {
         this.putWithApiFallback<{ message: string; booking: RentalBooking }>(
           `${this.BOOKING_BASE}/${id}/payment`, data, headers
         )
-      ),
-      catchError((error) => this.headersService.handleError(error))
+      )
     );
   }
 
+  // ⚠️ Alineado con el tipo Deposito.estatus del modelo
   updateDeposit(id: string, data: {
     monto?: number;
     moneda?: string;
-    estatus?: 'retenido' | 'devuelto' | 'parcial';
+    estatus?: 'no_aplicado' | 'preautorizado' | 'cobrado' | 'liberado' | 'parcial_retenido';
     referencia?: string;
   }): Observable<{ message: string; booking: RentalBooking; }> {
     return this.authJsonHeaders$().pipe(
@@ -374,8 +377,7 @@ export class ReservaService {
         this.putWithApiFallback<{ message: string; booking: RentalBooking }>(
           `${this.BOOKING_BASE}/${id}/deposit`, data, headers
         )
-      ),
-      catchError((error) => this.headersService.handleError(error))
+      )
     );
   }
 
@@ -385,8 +387,7 @@ export class ReservaService {
         this.putWithApiFallback<{ message: string; booking: RentalBooking }>(
           `${this.BOOKING_BASE}/${id}/contract`, { url }, headers
         )
-      ),
-      catchError((error) => this.headersService.handleError(error))
+      )
     );
   }
 
@@ -396,8 +397,7 @@ export class ReservaService {
         this.putWithApiFallback<{ message: string; booking: RentalBooking }>(
           `${this.BOOKING_BASE}/${id}/items`, { items }, headers
         )
-      ),
-      catchError((error) => this.headersService.handleError(error))
+      )
     );
   }
 
@@ -407,19 +407,18 @@ export class ReservaService {
         this.postWithApiFallback<{ message: string; booking: RentalBooking }>(
           `${this.BOOKING_BASE}/${id}/items`, item, headers
         )
-      ),
-      catchError((error) => this.headersService.handleError(error))
+      )
     );
   }
 
   removeLineItem(id: string, index: number): Observable<{ message: string; booking: RentalBooking; }> {
+    // Nota: DELETE con body puede fallar en algunos proxies. Si da problemas, mover a POST /items/remove
     return this.authJsonHeaders$().pipe(
       switchMap((headers) =>
         this.deleteWithApiFallback<{ message: string; booking: RentalBooking }>(
           `${this.BOOKING_BASE}/${id}/items`, headers, undefined, { index }
         )
-      ),
-      catchError((error) => this.headersService.handleError(error))
+      )
     );
   }
 
@@ -429,8 +428,7 @@ export class ReservaService {
         this.deleteWithApiFallback<{ message: string }>(
           `${this.BOOKING_BASE}/${id}`, headers
         )
-      ),
-      catchError((error) => this.headersService.handleError(error))
+      )
     );
   }
 }
