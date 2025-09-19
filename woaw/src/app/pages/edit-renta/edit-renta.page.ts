@@ -81,7 +81,6 @@ export class EditRentaPage implements OnInit {
   }
 
   // ===== Helpers de fecha (sólo UI de póliza) =====
-
   private toYMD(value: any): string {
     if (!value) return '';
     const d = new Date(value);
@@ -91,7 +90,6 @@ export class EditRentaPage implements OnInit {
     const dd = String(d.getDate()).padStart(2, '0');
     return `${yyyy}-${mm}-${dd}`;
   }
-
 
   // ===== snapshot/dirty =====
   private snapshotState() {
@@ -113,13 +111,11 @@ export class EditRentaPage implements OnInit {
         const price = res?.precio ?? {};
         const req = res?.requisitosConductor ?? {};
         const ent = res?.entrega ?? {};
-
         const pol = res?.polizaPlataforma ?? {}; // sólo UI
 
         const normalizada = {
           marca: res?.marca ?? this.renta.marca,
           modelo: res?.modelo ?? this.renta.modelo,
-
           anio: res?.anio ?? this.renta.anio, // visual only
 
           // precio (normaliza por compatibilidad)
@@ -147,7 +143,6 @@ export class EditRentaPage implements OnInit {
           },
 
           // póliza solo UI
-
           polizaPlataforma: {
             numero: pol?.numero ?? this.renta.polizaPlataforma.numero,
             aseguradora: pol?.aseguradora ?? this.renta.polizaPlataforma.aseguradora,
@@ -212,33 +207,50 @@ export class EditRentaPage implements OnInit {
   }
 
   // ===== Tarifas
+  private reencadenarTarifas() {
+    const arr = this.renta.entrega?.tarifasPorDistancia || [];
+    if (!arr.length) return;
+    arr[0].desdeKm = Number(this.renta.entrega.gratuitoHastaKm) || 0;
+    for (let i = 1; i < arr.length; i++) {
+      const prevHasta = Number(arr[i - 1].hastaKm) || 0;
+      arr[i].desdeKm = prevHasta;
+    }
+  }
+
   addTarifa() {
     if (!Array.isArray(this.renta.entrega.tarifasPorDistancia)) {
       this.renta.entrega.tarifasPorDistancia = [];
     }
     const anterior = this.renta.entrega.tarifasPorDistancia.at(-1);
+    const desde = anterior ? (Number(anterior.hastaKm) || 0) : (Number(this.renta.entrega.gratuitoHastaKm) || 0);
     this.renta.entrega.tarifasPorDistancia.push({
-
-      desdeKm: anterior ? (Number(anterior.hastaKm) || 0) : (Number(this.renta.entrega.gratuitoHastaKm) || 0),
-
-      hastaKm: 0,
+      desdeKm: Math.max(0, desde),
+      hastaKm: Math.max(0, desde + 10),
       costoFijo: 0,
-      costoPorKm: 0,
       nota: ''
     });
     this.markDirty();
   }
+
   removeTarifa(i: number) {
     this.renta.entrega.tarifasPorDistancia.splice(i, 1);
+    this.reencadenarTarifas();
     this.markDirty();
   }
+
   onGratisHastaChange() {
-    if (Array.isArray(this.renta.entrega.tarifasPorDistancia) && this.renta.entrega.tarifasPorDistancia.length) {
-      this.renta.entrega.tarifasPorDistancia[0].desdeKm = Number(this.renta.entrega.gratuitoHastaKm) || 0;
-    }
+    this.reencadenarTarifas();
     this.markDirty();
   }
-  onTarifaHastaChange(_: number) { this.markDirty(); }
+
+  onTarifaHastaChange(i: number) {
+    // Normaliza y encadena
+    const arr = this.renta.entrega.tarifasPorDistancia;
+    const val = Number(arr[i].hastaKm);
+    arr[i].hastaKm = Number.isFinite(val) && val >= 0 ? val : 0;
+    if (i < arr.length - 1) arr[i + 1].desdeKm = arr[i].hastaKm || 0;
+    this.markDirty();
+  }
 
   // ===== Imágenes
   seleccionarImagen() { this.inputArchivo.nativeElement.click(); }
@@ -316,14 +328,12 @@ export class EditRentaPage implements OnInit {
       return;
     }
 
-
     await this.general.loading('Guardando...');
 
     try {
       const [ciudad, estado, lat, lng] = this.ubicacionSeleccionada!;
 
-      // ⚠️ Backend nuevo: NO enviar anio, version, color, kilometraje, NI póliza.
-      // También 'precio' como number (no objeto) y sin 'moneda'.
+      // Backend nuevo: precio como number y sin moneda/póliza/campos visuales.
       const data: any = {
         precio: Number(this.renta.precioPorDia),
         politicaCombustible: this.renta.politicaCombustible || 'lleno-lleno',
@@ -343,12 +353,12 @@ export class EditRentaPage implements OnInit {
             desdeKm: Number(t.desdeKm) || 0,
             hastaKm: Number(t.hastaKm) || 0,
             costoFijo: t.costoFijo != null ? Number(t.costoFijo) : undefined,
-            costoPorKm: t.costoPorKm != null ? Number(t.costoPorKm) : undefined,
+            // 👇 eliminado costoPorKm: backend no lo usa
             nota: t.nota || undefined,
           })),
         },
         ubicacion: { ciudad, estado, lat, lng },
-        imagenesExistentes: this.urlsImagenesExistentes, // para que backend conserve las que queden
+        imagenesExistentes: this.urlsImagenesExistentes, // conserva las existentes
       };
 
       // Si NO subes archivo para principal, manda URL
@@ -384,5 +394,4 @@ export class EditRentaPage implements OnInit {
   }
 
   regresar() { this.router.navigate(['/mis-autos']); }
-
 }
