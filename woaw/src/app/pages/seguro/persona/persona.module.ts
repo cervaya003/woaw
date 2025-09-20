@@ -14,6 +14,7 @@ import { CartasComponent } from '../../../components/cartas/cartas.component';
 import { AddComponent } from '../../../components/lote/add/add.component';
 import { AcomodoComponent } from '../../../components/filtos/acomodo/acomodo.component';
 import { FooterComponent } from '../../../components/footer/footer.component';
+import { SpinnerComponent } from '../../../components/spinner/spinner.component';
 
 @NgModule({
   imports: [
@@ -27,7 +28,8 @@ import { FooterComponent } from '../../../components/footer/footer.component';
     AcomodoComponent,
     FooterComponent,
     AddComponent,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    SpinnerComponent
   ],
   declarations: [PersonaPage]
 })
