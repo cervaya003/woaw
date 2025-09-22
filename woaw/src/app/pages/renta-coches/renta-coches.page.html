@@ -9,24 +9,49 @@
     (ordenCambio)="ordenarAutos($event)">
   </app-acomodo>
 
-  <ion-segment [(ngModel)]="vistaActiva" (ionChange)="onSegmentChange()" class="mb-3">
-    <ion-segment-button value="todos">
-      <ion-label>Todos ({{ totalTodos }})</ion-label>
-    </ion-segment-button>
-    <ion-segment-button value="mios" *ngIf="isLoggedIn">
-      <ion-label>Mis coches ({{ totalMios }})</ion-label>
-    </ion-segment-button>
-  </ion-segment>
-
-  <ion-grid class="contenedor-catalogo">
+  <ion-grid>
     <ion-row>
+      <!-- ================== COLUMNA IZQUIERDA ================== -->
       <ion-col size="12" size-md="3">
         <app-menu [filtros]="filtros" [filtrosAplicados]="filtrosAplicados"
           (mostrarOpciones)="mostrarOpciones($event.event, $event.tipo)" (limpiarFiltros)="resetearFiltros()">
         </app-menu>
+
+        <!-- ===== Filtro de Disponibilidad (EN ESTA PAGE) ===== -->
+        <ion-card class="filtro-card">
+
+          <ion-card-content>
+            <div class="resumen-rango" *ngIf="rangoTexto; else sinRango">
+              <ion-chip color="danger">
+                <ion-icon name="calendar-outline"></ion-icon>
+                <ion-label>{{ rangoTexto }}</ion-label>
+              </ion-chip>
+              <div class="acciones">
+                <ion-button size="small" (click)="openModalFechas()">Cambiar</ion-button>
+                <ion-button size="small" fill="outline" (click)="limpiarFechas()">Quitar</ion-button>
+              </div>
+            </div>
+
+            <ng-template #sinRango>
+              <ion-button expand="block" color="danger" (click)="openModalFechas()">
+                Elegir fechas
+              </ion-button>
+            </ng-template>
+          </ion-card-content>
+        </ion-card>
       </ion-col>
 
+      <!-- ================== COLUMNA DERECHA ================== -->
       <ion-col size="12" size-md="9">
+        <ion-segment [(ngModel)]="vistaActiva" (ionChange)="onSegmentChange()" class="mb-3">
+          <ion-segment-button value="todos">
+            <ion-label>Todos ({{ totalTodos }})</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="mios" *ngIf="isLoggedIn">
+            <ion-label>Mis coches ({{ totalMios }})</ion-label>
+          </ion-segment-button>
+        </ion-segment>
+
         <!-- ============= TODOS ============= -->
         <ng-container *ngIf="vistaActiva === 'todos'">
           <ion-spinner *ngIf="loading" name="crescent" class="loading-spinner"></ion-spinner>
@@ -177,7 +202,7 @@
   <app-footer></app-footer>
 </ion-content>
 
-<!-- Modal propio para coches del dueño (fuera de ion-content) -->
+<!-- Modal propio para coches del dueño -->
 <ion-modal [isOpen]="modalOpen" (didDismiss)="onModalDismiss()" class="mio-modal" [backdropDismiss]="true" mode="md">
   <ng-template>
     <div class="mio-modal__box">
@@ -193,5 +218,45 @@
         CANCELAR
       </ion-button>
     </div>
+  </ng-template>
+</ion-modal>
+
+<!-- ===== Modal del calendario (vive en ESTA PAGE) ===== -->
+<ion-modal [isOpen]="modalFechasOpen" (didDismiss)="closeModalFechas()" class="modal-calendario" mode="md">
+  <ng-template>
+    <ion-header translucent="true">
+      <ion-toolbar>
+        <ion-title>Disponibilidad</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="closeModalFechas()" aria-label="Cerrar">
+            <ion-icon name="close-outline"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content>
+      <div class="contenedor-datetime">
+        <ion-item class="center-item danger-datetime" lines="none">
+          <ion-label class="sr-only">Selecciona fecha(s)</ion-label>
+          <ion-datetime [(ngModel)]="tempFechasSeleccionadas" multiple="true" presentation="date" [min]="minFecha"
+            (ionChange)="onTempRangoChange()" [highlightedDates]="tempHighlightedRange" locale="es-ES"
+            show-default-buttons="false">
+          </ion-datetime>
+        </ion-item>
+      </div>
+    </ion-content>
+
+    <ion-footer>
+      <ion-toolbar>
+        <ion-buttons slot="start">
+          <ion-button fill="outline" (click)="limpiarTemp()">Limpiar</ion-button>
+        </ion-buttons>
+        <ion-buttons slot="end">
+          <ion-button (click)="closeModalFechas()">Cancelar</ion-button>
+          <ion-button color="primary" (click)="aplicarRango()">Aplicar</ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-footer>
   </ng-template>
 </ion-modal>
