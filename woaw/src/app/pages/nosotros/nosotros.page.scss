@@ -288,7 +288,7 @@ ion-content {
     padding-left: calc(var(--padX) + 14px);
     display: grid;
     grid-auto-rows: min-content;
-    gap: 14px;
+    gap: 20px;
 
     /* 🔒 más larga (alto mínimo) en pantallas grandes */
     min-height: clamp(220px, 28vh, 320px);
@@ -309,16 +309,17 @@ ion-content {
         0  10px 28px rgba(0,0,0,.26);
     }
 
+    /* 👇 Ícono más pegado al título */
     ion-icon{
       position: absolute;
-      top: 18px; left: 20px;
+      top: 18px; left: 14px;              /* antes left: 20px */
       font-size: 22px;
       color: #fff; opacity: .95;
     }
 
     h3{
       margin: 0 0 6px;
-      padding-left: 36px;
+      padding-left: 28px;                 /* antes 36px */
       font-weight: 800;
       font-size: clamp(18px, 1.7vw, 22px);
       line-height: 1.25;
@@ -368,8 +369,8 @@ ion-content {
       min-height: unset;                               /* vuelve a altura natural */
       box-shadow: 0 4px 16px rgba(0,0,0,.18);
 
-      ion-icon{ top: 10px; left: 12px; font-size: 18px; }
-      h3{ font-size: 16px; padding-left: 32px; margin-bottom: 4px; }
+      ion-icon{ top: 10px; left: 10px; font-size: 18px; }  /* antes left: 12px */
+      h3{ font-size: 16px; padding-left: 24px; margin-bottom: 4px; } /* antes 32px */
       & :where(p, ul){ max-width: none; }
       p{ font-size: 12.8px; line-height: 1.65; padding-right: 0; }
       ul{ font-size: 12.8px; gap: 6px; }
@@ -387,9 +388,7 @@ ion-content {
 
 
 
- 
-/* ===================== TIMELINE (contorno visible en fondo negro) ===================== */
-/* ===================== TIMELINE (mejor mobile carrusel) ===================== */
+
 /* ====== Timeline (título centrado y carrusel móvil) ====== */
 .timeline{
   --accent: #ff4747;
