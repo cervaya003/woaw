@@ -100,75 +100,116 @@ ion-content {
     }
 }
 
-/* ===================== KPIs ===================== */
-.kpis {
-  /* contenedor */
+
+/* ===================== KPIs (alto uniforme + carrusel móvil correcto) ===================== */
+.kpis{
+  --kpi-min-h: 112px;                    /* alto mínimo igual para todas */
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
   padding: 24px 18px;
   max-width: 1080px;
   margin: 0 auto;
-  align-items: stretch; /* estira los ítems a la misma altura */
+  align-items: stretch;
 
-  @media (max-width: 1024px) {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  @media (max-width: 640px) {
-    grid-template-columns: 1fr;
+  @media (max-width: 1024px){
+    grid-template-columns: repeat(2, minmax(0,1fr));
   }
 
-  .kpi {
-    /* tarjeta */
+  /* 📱 móvil: carrusel horizontal con snap y ancho consistente */
+  @media (max-width: 640px){
+    grid-template-columns: unset;
+    grid-auto-flow: column;
+    grid-auto-columns: min(88vw, 360px); /* mismo ancho en TODAS */
+    gap: 12px;
+    padding: 18px 12px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    scroll-padding-inline: 12px;        /* que la primera/última encajen */
+    mask-image: linear-gradient(to right, transparent 0, #000 10%, #000 90%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 10%, #000 90%, transparent 100%);
+  }
+
+  /* separador para que la última nunca quede cortada bajo el desvanecido */
+  @media (max-width: 640px){
+    &::after{
+      content: "";
+      width: 12px;                       /* igual a los gutters */
+      height: 1px;
+    }
+  }
+
+  .kpi{
     position: relative;
-    background: var(--card);
-    border: 1px solid var(--ring);
-    border-radius: 14px;
-    padding: 18px 16px 16px 16px;
-    display: flex;               /* todas con la misma altura visible */
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.02), rgba(0,0,0,0)),
+      var(--card);
+    border: 1px solid color-mix(in srgb, #ffffff 16%, transparent);
+    border-radius: 16px;
+    box-shadow:
+      inset 0 0 0 1px rgba(255,255,255,.06),
+      0 8px 18px rgba(0,0,0,.20);
+    padding: 18px 16px 16px;
+    display: flex;
     flex-direction: column;
     gap: 8px;
     height: 100%;
+    min-height: var(--kpi-min-h);        /* 🔒 alto uniforme en desktop */
     isolation: isolate;
+    transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
 
-    /* puntito rojo arriba-izq */
-    &::before {
-      content: "";
+    /* 📱 en móvil puedes bajar un poco el alto mínimo si gustas */
+    @media (max-width: 640px){
+      min-height: 100px;
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+    }
+
+    &::before{
+      content:"";
       position: absolute;
-      top: 8px; left: 8px;
-      width: 9px; height: 9px;
+      top: 10px; left: 10px;
+      width: 10px; height: 10px;
       border-radius: 50%;
       background: var(--accent, #e01414);
-      box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent, #e01414) 25%, transparent);
+      box-shadow: 0 0 0 3px rgba(224,20,20,.15);
       z-index: 1;
     }
 
-    /* hover sutil */
-    transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
-    &:hover {
-      transform: translateY(-1px);
-      border-color: color-mix(in srgb, var(--accent, #e01414) 50%, var(--ring));
-      box-shadow: 0 6px 18px rgba(0,0,0,.25);
+    &:hover{
+      transform: translateY(-2px);
+      border-color: color-mix(in srgb, var(--accent, #e01414) 40%, #ffffff 16%);
+      box-shadow:
+        inset 0 0 0 1px rgba(224,20,20,.28),
+        0 12px 24px rgba(0,0,0,.28);
     }
 
-    /* títulos y texto (funciona con h3/p o con tus clases actuales) */
-    h3, .kpi__num {
+    h3, .kpi__num{
       margin: 2px 0 4px;
-      font-weight: 800;
-      font-size: clamp(14px, 1.6vw, 18px);
+      font-weight: 900;
+      font-size: clamp(16px, 1.8vw, 20px);
       line-height: 1.2;
-      color: rgba(255,255,255,.9); /* legible en dark */
-      padding-left: 14px;          /* separa del puntito */
+      color: #fff;
+      padding-left: 14px;
     }
-    p, .kpi__label {
+    p, .kpi__label{
       margin: 0;
       color: var(--muted);
-      font-size: clamp(12px, 1.4vw, 14px);
-      line-height: 1.45;
+      font-size: clamp(12.5px, 1.3vw, 14px);
+      line-height: 1.55;
     }
 
-    /* por si el contenido crece: empuja el final hacia abajo */
-    .kpi__spacer { margin-top: auto; }
+    .kpi__spacer{ margin-top: auto; }
+
+    &.is-accent{
+      border-color: rgba(224,20,20,.55);
+      box-shadow:
+        inset 0 0 0 1px rgba(224,20,20,.38),
+        0 8px 18px rgba(0,0,0,.20);
+    }
   }
 }
 
@@ -211,141 +252,164 @@ ion-content {
     }
 }
 
-/* ===================== MVV ===================== */
-.mvv {
+ 
+/* ===================== MVV (más aire a los bordes, mismo look en móvil) ===================== */
+.mvv{
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 16px;
-  padding: 12px 18px 28px;
-  max-width: 1100px;
+  gap: 20px;                                              /* un pelín más de separación */
+  padding: 16px 20px 34px;
+  max-width: min(92vw, 1200px);                           /* 🔁 más ancha en desktop */
   margin: 0 auto;
   align-items: stretch;
 
-  @media (max-width: 1024px) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  @media (max-width: 640px)  { grid-template-columns: 1fr; padding: 8px 12px 16px; gap: 12px; }
+  @media (max-width: 1024px){ grid-template-columns: repeat(2, minmax(0,1fr)); }
+  @media (max-width: 640px){ grid-template-columns: 1fr; padding: 8px 12px 16px; gap: 12px; }
 
-  .card {
+  .card{
+    /* 🔼 mantener el “salto” hacia la imagen */
+    --lift: clamp(36px, 7vw, 96px);
+    margin-top: calc(-1 * var(--lift));
+    z-index: 5;
+
+    /* más aire y línea de lectura un poco mayor */
+    --padY: clamp(24px, 2.8vw, 34px);
+    --padX: clamp(24px, 3vw, 36px);
+    --measure: 62ch;                                      /* líneas un poco más largas */
+    --leading: 1.75;
+    --para-gap: 10px;
+    --list-gap: 8px;
+
     position: relative;
-    margin-top: clamp(-24px, -5vw, -48px);
     background: var(--card);
     border: 1px solid var(--ring);
     border-radius: 18px;
-    padding: 20px 20px 18px;
+    padding: var(--padY) var(--padX) calc(var(--padY) - 2px);
+    padding-left: calc(var(--padX) + 14px);
     display: grid;
     grid-auto-rows: min-content;
-    gap: 12px;
-    height: 100%;
-    box-shadow: 0 6px 24px rgba(0,0,0,.18);
+    gap: 14px;
+
+    /* 🔒 más larga (alto mínimo) en pantallas grandes */
+    min-height: clamp(220px, 28vh, 320px);
+
+    /* sombra arriba y abajo para separarla del hero y del fondo */
+    box-shadow:
+      0 -10px 24px rgba(0,0,0,.22),
+      0  6px 24px rgba(0,0,0,.18);
     transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease;
 
-    /* ancho de lectura desktop/tablet */
-    --measure: 60ch;
-    & :where(p, ul) { max-width: var(--measure); }
+    & :where(p, ul){ max-width: var(--measure); hyphens: auto; overflow-wrap: anywhere; }
 
-    &:hover {
+    &:hover{
       transform: translateY(-2px);
       border-color: color-mix(in srgb, var(--accent, #e01414) 38%, var(--ring));
-      box-shadow: 0 10px 28px rgba(0,0,0,.26);
+      box-shadow:
+        0 -12px 28px rgba(0,0,0,.26),
+        0  10px 28px rgba(0,0,0,.26);
     }
 
-    /* icono */
     ion-icon{
       position: absolute;
-      top: 12px; left: 14px;
+      top: 18px; left: 20px;
       font-size: 22px;
       color: #fff; opacity: .95;
     }
 
-    /* título */
     h3{
       margin: 0 0 6px;
-      padding-left: 40px;
+      padding-left: 36px;
       font-weight: 800;
-      font-size: clamp(17px, 1.6vw, 20px);
+      font-size: clamp(18px, 1.7vw, 22px);
       line-height: 1.25;
       color: #fff;
-      letter-spacing: .15px;
+      letter-spacing: .1px;
       text-wrap: balance;
     }
 
-    /* cuerpo */
     p{
       margin: 0;
       color: rgba(255,255,255,.92);
-      font-size: clamp(12px, 1.35vw, 14px);
-      line-height: 1.7;
+      font-size: clamp(13px, 1.25vw, 15px);
+      line-height: var(--leading);
       text-wrap: pretty;
+      padding-right: 4px;
     }
-    p + p { margin-top: 8px; }
+    p + p{ margin-top: var(--para-gap); }
+    p strong{ font-weight: 800; color: #fff; letter-spacing: .1px; }
 
-    p strong{ font-weight: 800; color: #fff; }
-
-    /* lista (blanca) + bullets rojos */
     ul{
-      margin: 8px 0 0;
+      margin: 6px 0 0;
       padding-left: 0;
       list-style: none;
       display: grid;
-      gap: 6px;
-      color: #fff;                         /* texto blanco */
-      font-size: clamp(12px, 1.35vw, 14px);
-      line-height: 1.6;
+      gap: var(--list-gap);
+      color: #fff;
+      font-size: clamp(13px, 1.25vw, 15px);
+      line-height: calc(var(--leading) - .08);
     }
-    ul li{
-      position: relative;
-      padding-left: 16px;
-    }
+    ul li{ position: relative; padding-left: 22px; }
     ul li::before{
       content: "";
       position: absolute;
-      left: 0; top: .62em;
-      width: 6px; height: 6px;
+      left: 0; top: .72em;
+      width: 7px; height: 7px;
       border-radius: 50%;
       background: var(--accent, #e01414);
       box-shadow: 0 0 0 3px rgba(224,20,20,.15);
     }
 
-    /* 📱 ajustes móviles: más compactas, sin overlap y tipografías más chicas */
+    /* 📱 móvil: no forzar alto/anchos extra */
     @media (max-width: 640px){
-      margin-top: 0;               /* quita el “salto” sobre el hero */
+      margin-top: 0;
       border-radius: 14px;
-      padding: 14px 14px;
-      gap: 8px;
+      padding: 14px;
+      gap: 10px;
+      min-height: unset;                               /* vuelve a altura natural */
       box-shadow: 0 4px 16px rgba(0,0,0,.18);
 
       ion-icon{ top: 10px; left: 12px; font-size: 18px; }
-      h3{ font-size: 15px; padding-left: 32px; margin-bottom: 4px; }
-      /* en mobile no limitamos el ancho de párrafo */
+      h3{ font-size: 16px; padding-left: 32px; margin-bottom: 4px; }
       & :where(p, ul){ max-width: none; }
-      p{ font-size: 12.5px; line-height: 1.6; }
-      ul{ font-size: 12.5px; }
-      ul li::before{ width: 5px; height: 5px; top: .58em; }
+      p{ font-size: 12.8px; line-height: 1.65; padding-right: 0; }
+      ul{ font-size: 12.8px; gap: 6px; }
+      ul li{ padding-left: 16px; }
+      ul li::before{ width: 6px; height: 6px; top: .66em; }
     }
 
-    /* móviles muy pequeños */
     @media (max-width: 380px){
       padding: 12px;
-      h3{ font-size: 14px; }
-      p, ul{ font-size: 12px; }
+      h3{ font-size: 15px; }
+      p, ul{ font-size: 12.2px; }
     }
   }
 }
 
 
 
-/* ===================== TIMELINE ===================== */
-.timeline {
+ 
+/* ===================== TIMELINE (contorno visible en fondo negro) ===================== */
+/* ===================== TIMELINE (mejor mobile carrusel) ===================== */
+/* ====== Timeline (título centrado y carrusel móvil) ====== */
+.timeline{
+  --accent: #ff4747;
   padding: 24px 18px;
   max-width: 1080px;
   margin: 0 auto;
 
-  h2 {
-    margin: 0 0 12px;
+  /* Título rojo centrado */
+  h2{
+    margin: 0 auto 12px;
+    text-align: center;
+    width: 100%;
     font-size: clamp(20px, 3vw, 28px);
+    color: var(--accent);
+    font-weight: 900;
+    letter-spacing: .2px;
+    text-wrap: balance;
   }
 
-  .track {
-    /* móvil/tablet: carrusel horizontal */
+  .track{
     display: grid;
     grid-auto-flow: column;
     grid-auto-columns: clamp(260px, 32vw, 340px);
@@ -354,77 +418,104 @@ ion-content {
     padding: 8px 6px 12px;
     align-items: stretch;
     scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    touch-action: pan-x;
     scrollbar-width: thin;
-
-    /* línea guía detrás de los puntos */
     position: relative;
-  
+
+    /* desvanecido lateral */
+    mask-image: linear-gradient(to right, transparent, #000 20%, #000 80%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 20%, #000 80%, transparent);
+  }
+
+  .hit{
+    position: relative;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.02), rgba(0,0,0,0)),
+      var(--card);
+    border: 1px solid color-mix(in srgb, #ffffff 16%, transparent);
+    border-radius: 16px;
+    box-shadow:
+      inset 0 0 0 1px rgba(255,255,255,.06),
+      0 8px 18px rgba(0,0,0,.20);
+    padding: 18px 16px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    height: 100%;
+    color: var(--ink);
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    isolation: isolate;
+    transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+
+    &:hover{
+      transform: translateY(-1px);
+      border-color: color-mix(in srgb, var(--accent) 40%, #ffffff 16%);
+      box-shadow:
+        inset 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent),
+        0 12px 24px rgba(0,0,0,.28);
     }
 
-    /* desvanecido a los lados del scroll (webkit) */
-    mask-image: linear-gradient(to right, transparent, #000 20%, #000 80%, transparent);
+    .dot{
+      position: absolute;
+      top: 12px; left: 12px;
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow:
+        0 0 0 3px color-mix(in srgb, var(--accent) 30%, transparent),
+        0 0 12px color-mix(in srgb, var(--accent) 45%, transparent);
+      z-index: 1;
+    }
 
-    .hit {
-      position: relative;
-      background: var(--card);
-      border: 1px solid var(--ring);
-      border-radius: 16px;
-      padding: 18px 16px 16px 16px;  /* espacio para el punto */
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      height: 100%;
-      scroll-snap-align: start;
-      isolation: isolate;
-      transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease;
-
-      &:hover {
-        transform: translateY(-1px);
-        border-color: color-mix(in srgb, var(--accent, #e01414) 50%, var(--ring));
-        box-shadow: 0 6px 18px rgba(0,0,0,.25);
-      }
-
-      .dot {
-        position: absolute;
-        top: 12px;
-        left: 12px;
-        width: 9px;
-        height: 9px;
-        border-radius: 50%;
-        background: var(--accent, #e01414);
-        box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent, #e01414) 22%, transparent);
-        z-index: 1;
-      }
-
-      h4 {
-        margin: 0 0 4px;
-        padding-left: 14px;                   /* separa del punto */
-        font-weight: 800;
-        font-size: clamp(14px, 1.7vw, 16px);
-        color: rgba(255,255,255,.88);
-      }
-
-      p {
-        margin: 0;
-        color: var(--muted);
-        line-height: 1.45;
-      }
+    h4{
+      margin: 0 0 4px;
+      padding-left: 22px;               /* espacio para el punto */
+      font-weight: 800;
+      font-size: clamp(14px, 1.7vw, 16px);
+      color: #fff;
+    }
+    p{
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.45;
     }
   }
 
-  /* desktop: 3 columnas fijas, sin scroll horizontal */
-  @media (min-width: 1024px) {
-    .track {
+  /* desktop: 3 columnas, sin scroll */
+  @media (min-width: 1024px){
+    .track{
       grid-auto-flow: row;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(3, minmax(0,1fr));
       overflow: visible;
       mask-image: none;
-
-      .hit { scroll-snap-align: unset; }
+      -webkit-mask-image: none;
     }
   }
- 
+
+  /* 📱 mejoras móviles */
+  @media (max-width: 640px){
+    padding: 18px 0 16px;
+
+    h2{ padding-inline: 12px; }
+
+    .track{
+      grid-auto-columns: min(88vw, 360px); /* tarjeta ancha y legible */
+      gap: 12px;
+      padding-inline: 12px;                /* gutters */
+      scroll-padding-inline: 12px;         /* evita “cortes” al snap */
+      mask-image: linear-gradient(to right, transparent 0, #000 10%, #000 90%, transparent 100%);
+      -webkit-mask-image: linear-gradient(to right, transparent 0, #000 10%, #000 90%, transparent 100%);
+    }
+
+    .hit{ border-radius: 14px; padding: 14px; min-height: 96px; }
+    .hit .dot{ top: 10px; left: 10px; width: 9px; height: 9px; }
+    .hit h4{ font-size: 16px; }
+  }
+}
 
 
 /* ===================== CTA ===================== */
@@ -433,9 +524,11 @@ ion-content {
     padding: 34px 18px 40px;
     max-width: 880px;
     margin: 0 auto;
+     color: #fff;          
 
     h2 {
         margin: .2rem 0 .4rem;
+         color: #fff;          
         font-size: clamp(22px, 3.2vw, 34px);
     }
 
