@@ -16,11 +16,13 @@
         <div class="carta__step" [class.is-active]="currentStepform >= 4" aria-hidden="true"></div>
       </div>
 
+      <h1>Mis datos</h1>
+
       <form [formGroup]="form_poliza" (ngSubmit)="siguiente()">
 
         <!-- SECCION FORMULARIO 1  -->
         <div class="field_persona" *ngIf="currentStepform === 1">
-          <p class="header">Crear persona</p>
+          <!-- <p class="header">Crear persona</p> -->
           <h1 class="pregunta">¿Qué tipo de persona eres?</h1>
           <div class="persona-radio">
             <label class="radio-card">
@@ -35,28 +37,31 @@
           </div>
         </div>
 
-        <h1 *ngIf="currentStepform !== 1" class="header">Ingresa tus datos</h1>
+        <!-- <h1 *ngIf="currentStepform !== 1" class="header">Ingresa tus datos</h1> -->
 
         <!-- ESTO VA A ESTAR SIEMPRE  -->
-        <ng-container *ngIf="datosPoliza && currentStepform !== 1">
+        <ng-container *ngIf="datosCoche && currentStepform !== 1">
           <div class="grid-resumen">
-            <p><strong>Marca:</strong> {{ datosPoliza.marca }}</p>
-            <p><strong>Modelo:</strong> {{ datosPoliza.modelo }}</p>
-            <p><strong>Año:</strong> {{ datosPoliza.anio }}</p>
-            <p><strong>Nacimiento:</strong> {{ datosPoliza.nacimiento }}</p>
-            <p><strong>C.P.:</strong> {{ datosPoliza.cp }}</p>
-            <p *ngIf="tipoPersonaSeleccionada === 'fisica'"><strong>Género:</strong> {{ datosPoliza.genero }}</p>
-            <p *ngIf="tipoPersonaSeleccionada === 'fisica'"><strong>Estado civil:</strong> {{ datosPoliza.estadoCivil
+            <p><strong>Marca:</strong> {{ datosCoche.marca }}</p>
+            <p><strong>Modelo:</strong> {{ datosCoche.modelo }}</p>
+            <p><strong>Año:</strong> {{ datosCoche.anio }}</p>
+            <p>
+              <strong>Nacimiento:</strong>
+              {{ datosCoche.nacimiento.dia }}/{{ datosCoche.nacimiento.mes }}/{{ datosCoche.nacimiento.anio }}
+            </p>
+            <p><strong>C.P.:</strong> {{ datosCoche.cp }}</p>
+            <p *ngIf="tipoPersonaSeleccionada === 'fisica'"><strong>Género:</strong> {{ datosCoche.genero }}</p>
+            <p *ngIf="tipoPersonaSeleccionada === 'fisica'"><strong>Estado civil:</strong> {{ datosCoche.estadoCivil
               }}</p>
-            <p><strong>Versión:</strong> {{ datosPoliza.version }}</p>
+            <p><strong>Versión:</strong> {{ datosCoche.version }}</p>
           </div>
         </ng-container>
 
         <!-- SECCION FORMULARIO 2  -->
         <div class="field field-grid" *ngIf="currentStepform === 2">
           <div>
-            <label *ngIf="tipoPersonaSeleccionada === 'fisica'" for="nombre">Nombre completo</label>
-            <label *ngIf="tipoPersonaSeleccionada === 'moral'" for="nombre">Nombre de la empresa</label>
+            <label *ngIf="tipoPersonaSeleccionada === 'fisica'" for="nombre">Nombre completo <span>*</span></label>
+            <label *ngIf="tipoPersonaSeleccionada === 'moral'" for="nombre">Nombre de la empresa<span>*</span></label>
             <div class="control">
               <input id="nombre" type="text" class="form-input" placeholder="NOMBRE" formControlName="nombre"
                 (input)="toUpper('nombre')" />
@@ -64,7 +69,7 @@
             <p *ngIf="analizaForm('nombre')" class="error">El nombre es obligatorio</p>
           </div>
           <div *ngIf="tipoPersonaSeleccionada === 'fisica'">
-            <label for="apellidoP">Apellido paterno</label>
+            <label for="apellidoP">Apellido paterno<span>*</span></label>
             <div class="control">
               <input id="apellidoP" type="text" class="form-input" placeholder="Ej. PÉREZ" formControlName="apellidoP"
                 (input)="toUpper('apellidoP')" />
@@ -72,7 +77,7 @@
             <p *ngIf="analizaForm('apellidoP')" class="error">Ingresa tu primer apellido.</p>
           </div>
           <div *ngIf="tipoPersonaSeleccionada === 'fisica'">
-            <label for="apellidoM">Apellido materno</label>
+            <label for="apellidoM">Apellido materno<span>*</span></label>
             <div class="control">
               <input id="apellidoM" type="text" class="form-input" placeholder="Ej. LÓPEZ" formControlName="apellidoM"
                 (input)="toUpper('apellidoM')" />
@@ -80,7 +85,7 @@
             <p *ngIf="analizaForm('apellidoM')" class="error">Ingresa tu segundo apellido.</p>
           </div>
           <div>
-            <label for="email">Correo electrónico</label>
+            <label for="email">Correo electrónico<span>*</span></label>
             <div class="control">
               <input id="email" type="email" class="form-input" placeholder="tucorreo@dominio.com"
                 formControlName="email" />
@@ -88,7 +93,7 @@
             <p *ngIf="analizaForm('email')" class="error">Ingresa tu correo</p>
           </div>
           <div *ngIf="tipoPersonaSeleccionada === 'fisica'">
-            <label for="curp">CURP</label>
+            <label for="curp">CURP<span>*</span></label>
             <div class="control">
               <input id="curp" type="text" class="form-input" placeholder="Ej. ABCD001122HDFRRN09"
                 formControlName="curp" (input)="toUpper('curp')" />
@@ -96,7 +101,7 @@
             <p *ngIf="analizaForm('curp')" class="error">Ingresa tu CURP</p>
           </div>
           <div>
-            <label for="rfc">RFC</label>
+            <label for="rfc">RFC<span>*</span></label>
             <div class="control">
               <input id="rfc" type="text" class="form-input" placeholder="Ej. ABCD001122XXX" formControlName="rfc"
                 (input)="toUpper('rfc')" />
@@ -104,7 +109,7 @@
             <p *ngIf="analizaForm('rfc')" class="error">Ingresa tu RFC</p>
           </div>
           <div *ngIf="tipoPersonaSeleccionada === 'moral'">
-            <label for="folio">Folio mercantil</label>
+            <label for="folio">Folio mercantil<span>*</span></label>
             <div class="control">
               <input id="folio" type="text" class="form-input" placeholder="Folio" formControlName="folio"
                 (input)="toUpper('folio')" />
@@ -113,7 +118,7 @@
           </div>
 
           <div *ngIf="tipoPersonaSeleccionada === 'moral'">
-            <label for="nmRepLegal">Nombre representante legal</label>
+            <label for="nmRepLegal">Nombre representante legal<span>*</span></label>
             <div class="control">
               <input id="nmRepLegal" type="text" class="form-input" placeholder="Reprecentante Legal"
                 formControlName="nmRepLegal" (input)="toUpper('nmRepLegal')" />
@@ -127,7 +132,7 @@
         <div class="field field-grid" *ngIf="currentStepform === 3">
 
           <div>
-            <label for="telefono">Teléfono</label>
+            <label for="telefono">Teléfono<span>*</span></label>
             <div class="control">
               <input id="telefono" type="number" class="form-input" placeholder="Ej. 4412654387"
                 formControlName="telefono" />
@@ -135,28 +140,28 @@
             <p *ngIf="analizaForm('telefono')" class="error">Ingresa tu número</p>
           </div>
           <div>
-            <label for="calle">calle</label>
+            <label for="calle">calle<span>*</span></label>
             <div class="control">
-              <input id="calle" type="text" class="form-input" placeholder="Ej. 4412654387" formControlName="calle" />
+              <input id="calle" type="text" class="form-input" placeholder="Av. bulevares" formControlName="calle" />
             </div>
             <p *ngIf="analizaForm('calle')" class="error">Ingresa tu calle</p>
           </div>
           <div>
-            <label for="int">Num. Interior</label>
+            <label for="int">Num. Interior<span>*</span></label>
             <div class="control">
               <input id="int" type="text" class="form-input" placeholder="Int" formControlName="int" />
             </div>
             <p *ngIf="analizaForm('int')" class="error">Ingresa tu número interior</p>
           </div>
           <div>
-            <label for="ext">Num. Exterior</label>
+            <label for="ext">Num. Exterior<span>*</span></label>
             <div class="control">
               <input id="ext" type="text" class="form-input" placeholder="Ext" formControlName="ext" />
             </div>
             <p *ngIf="analizaForm('int')" class="error">Ingresa tu número exterior</p>
           </div>
           <div>
-            <label for="col">Colonia</label>
+            <label for="col">Colonia<span>*</span></label>
             <div class="control">
               <input id="col" type="text" class="form-input" placeholder="Colonia" formControlName="col" />
             </div>
@@ -169,7 +174,7 @@
         <div class="field field-grid" *ngIf="currentStepform === 4">
 
           <div>
-            <label for="pais">País</label>
+            <label for="pais">País<span>*</span></label>
             <div class="control">
               <select id="pais" class="form-input" formControlName="pais">
                 <option value="" disabled>Selecciona un país...</option>
@@ -179,7 +184,7 @@
             <p *ngIf="analizaForm('pais')" class="error">Selecciona un país válido</p>
           </div>
           <div>
-            <label for="estado">Estado</label>
+            <label for="estado">Estado<span>*</span></label>
             <div class="control">
               <select id="estado" class="form-input" formControlName="estado">
                 <option value="" disabled>Selecciona un estado...</option>
@@ -189,7 +194,7 @@
             <p *ngIf="analizaForm('estado')" class="error">Selecciona un estado</p>
           </div>
           <div>
-            <label for="actE">Actividad Económica</label>
+            <label for="actE">Actividad Económica<span>*</span></label>
             <div class="control">
               <select id="actE" class="form-input" formControlName="actE" (change)="onActividadChange($event)">
                 <option value="" disabled>Selecciona una actividad...</option>
@@ -201,7 +206,7 @@
             <p *ngIf="analizaForm('actE')" class="error">Selecciona una actividad</p>
           </div>
           <div *ngIf="mostrarMasOpciones">
-            <label for="actEextra">Selecciona otra actividad</label>
+            <label for="actEextra">Selecciona otra actividad<span>*</span></label>
             <div class="control">
               <select id="actEextra" class="form-input" formControlName="actEextra">
                 <option value="" disabled>Selecciona una actividad...</option>
@@ -216,10 +221,11 @@
         </div>
 
         <div class="paybox__cta">
-          <button type="button" class="btn-secondary" (click)="regresar()">&#x2B05;
+          <button type="button" *ngIf="datosCoche" class="btn-secondary" (click)="regresar()">&#x2B05;
             Regresar
           </button>
-          <button type="submit" class="btn-primary">Siguiente &#x27A1;</button>
+          <button type="submit" class="btn-primary" *ngIf="datosCoche">Siguiente &#x27A1;</button>
+          <button type="button" class="btn-primary" *ngIf="!datosCoche">&#x2B05; Selecionar coche</button>
         </div>
 
         <div class="carta_msj">

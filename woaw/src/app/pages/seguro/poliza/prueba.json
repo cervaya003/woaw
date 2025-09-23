@@ -1,25 +1,23 @@
-
-
 {
     "ok": true,
     "source": "crabi",
     "code": 200,
     "response": {
-        "id": "40e8978a-cf60-4607-a909-4b5549dd0858",
-        "first_name": "LOENARDO",
-        "first_last_name": "LOPEZ",
-        "second_last_name": "OSORNIO",
-        "email": "yhector928@gmail.com",
-        "phone": "4412652301",
+        "id": "55eab316-7f77-4474-b7e3-04ef98e9dd70",
+        "first_name": "SEBASTIAN GILDARDO",
+        "first_last_name": "CARRILLO",
+        "second_last_name": "ANDONEY",
+        "email": "andoneysebastian8@gmail.com",
+        "phone": "4427220959",
         "gender_code": 1,
         "civil_status_code": 1,
-        "birthdate": "2006-03-02",
-        "rfc": "LOOL031119HA3",
+        "birthdate": "2002-01-23",
+        "rfc": "CAAS020123EB8",
         "address": {
-            "street": "Calle Santiago de Querétaro",
-            "external_number": "197",
-            "internal_number": "0",
-            "neighborhood": "Villas de santiago",
+            "street": "Cocineras",
+            "external_number": "019",
+            "internal_number": "sn",
+            "neighborhood": "San pedrito ecologico",
             "municipality_code": "22014",
             "state_code": "22",
             "country_code": "1",
@@ -31,28 +29,13 @@
             "state_of_origin_code": 22,
             "economic_activity_code": 8944098
         },
-        "referral_to": "UALOOB",
+        "referral_to": "UVP9MO",
         "referral_points": 0,
         "partner_id": "313e741c-8742-42a4-bba7-2e9f1292060d",
         "addresses": null,
         "creation_date": "",
-        "curp": "CEYH031203HHGRXCA8",
+        "curp": "CAAS020123HQTRNBA5",
         "classification": 0
     },
     "status": "success"
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

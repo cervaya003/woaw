@@ -97,8 +97,6 @@ export class SegurosPage implements OnInit {
     return m[code] ?? code;
   }
 
-
-
   constructor(
     private popoverCtrl: PopoverController,
     private alertCtrl: AlertController,
@@ -113,12 +111,34 @@ export class SegurosPage implements OnInit {
     });
   }
   ngOnInit() {
+    this.verificaStorage();
     this.generalService.tokenExistente$.subscribe((estado) => {
       this.isLoggedIn = estado;
     });
     this.buildAniosNacimiento();
     this.obtenerMarcas();
     this.cargaimagen();
+  }
+  verificaStorage() {
+    const raw = localStorage.getItem('cotizacion');
+
+    if (!raw) {
+      this.router.navigate(['/seguros']);
+      return;
+    }
+    this.currentStep = 7;
+    this.quote = JSON.parse(raw);
+    this.cotizacion = !!this.quote;
+
+    if (this.quote?.plans?.length) {
+      this.quote.plans.forEach((pl: any) => {
+        const first = pl?.payment_plans?.[0]?.id;
+        if (first) this.selectedPaymentByPlan[pl.id] = first;
+      });
+      this.activePlan = this.quote.plans[0];
+    } else {
+      this.activePlan = null;
+    }
   }
   async cargaimagen() {
     this.imgenPrincipal = '/assets/autos/seguro.webp';
@@ -457,16 +477,8 @@ export class SegurosPage implements OnInit {
   }) {
     const pad2 = (n: number) => String(n).padStart(2, '0');
 
-    const genderMap: Record<string, number> = {
-      hombre: 1,
-      mujer: 2
-    };
-
-    const civilMap: Record<string, number> = {
-      soltero: 1,
-      casado: 2,
-      divorciado: 4
-    };
+    const genderMap: Record<string, number> = { hombre: 1, mujer: 2 };
+    const civilMap: Record<string, number> = { soltero: 1, casado: 2, divorciado: 4 };
 
     const gender_code = genderMap[(payload.genero || '').toLowerCase()] ?? null;
     const civil_status_code = civilMap[(payload.estadoCivil || '').toLowerCase()] ?? null;
@@ -475,9 +487,7 @@ export class SegurosPage implements OnInit {
 
     const dto = {
       vehicle: {
-        version: {
-          code: Number(payload.versionId)
-        }
+        version: { code: Number(payload.versionId) }
       },
       region: {
         postal_code: String(payload.cp)
@@ -487,8 +497,26 @@ export class SegurosPage implements OnInit {
         birthdate,
         civil_status_code
       },
-      duration: 12,
+      duration: 12
     };
+
+    const datosCoche = {
+      marca: this.getMarcaLabel(),
+      marcaId: payload.marcaId,
+      modelo: this.getModeloLabel(),
+      modeloId: payload.modeloId,
+      version: this.getVersionLabel(),
+      versionId: payload.versionId,
+      anio: payload.anio,
+      cp: payload.cp,
+      genero: payload.genero,
+      estadoCivil: payload.estadoCivil,
+      nacimiento: payload.nacimiento,
+      gender_code,
+      civil_status_code,
+      birthdate
+    };
+    localStorage.setItem('datosCoche', JSON.stringify(datosCoche));
 
     return dto;
   }
@@ -497,6 +525,7 @@ export class SegurosPage implements OnInit {
       '¿Estás seguro en cotizar un nuevo coche?',
       'Cotizar nuevo coche',
       async () => {
+        localStorage.removeItem('cotizacion');
         this.cotizacion = false;
         this.quote = null;
         this.selectedPaymentByPlan = {};
@@ -523,7 +552,6 @@ export class SegurosPage implements OnInit {
       }
     );
   }
-
   // ---------- COTIZACION ----------
   private HacerCotizacion(data: any) {
     this.mostrar_spinnet = true;
@@ -533,6 +561,13 @@ export class SegurosPage implements OnInit {
           this.mostrar_spinnet = false;
           this.quote = resp?.response ?? null;
           this.cotizacion = !!this.quote;
+
+          if (this.quote) {
+            localStorage.setItem('cotizacion', JSON.stringify(this.quote));
+          } else {
+            localStorage.removeItem('cotizacion');
+          }
+
           if (this.quote?.plans?.length) {
             this.quote.plans.forEach((pl: any) => {
               const first = pl?.payment_plans?.[0]?.id;
@@ -637,7 +672,7 @@ export class SegurosPage implements OnInit {
       restTotal
     };
   }
-  async confirmarPoliza() {
+  async confirmarCrearPersona() {
     this.generalService.confirmarAccion(
       '¿Estás seguro de que crear tu póliza?',
       'Crear tu póliza',
@@ -647,17 +682,42 @@ export class SegurosPage implements OnInit {
     );
   }
   async CrearPersona() {
+    const stored = localStorage.getItem('datosCoche');
+    if (!stored) {
+      this.generalService.alert(
+        'No se encontraron datos en el sistema. Vuelve a cotizar antes de crear tu póliza.',
+        'Datos faltantes',
+        'warning'
+      );
+      return;
+    }
+
+    const datos = JSON.parse(stored);
     const payload = {
-      marca: this.getMarcaLabel(),
-      modelo: this.getModeloLabel(),
-      anio: this.form.get('anio')?.value,
-      version: this.getVersionLabel(),
-      nacimiento: this.getNacimiento(),
-      cp: this.form.get('cp')?.value,
-      genero: this.getGeneroLabel(),
-      estadoCivil: this.getEstadoCivilLabel()
+      marca: datos.marca,
+      modelo: datos.modelo,
+      anio: datos.anio,
+      version: datos.version,
+      nacimiento: datos.nacimiento,
+      cp: datos.cp,
+      genero: datos.genero,
+      estadoCivil: datos.estadoCivil
     };
-    this.router.navigate(['/seguros/persona'], { state: { datos: payload } });
+
+    const camposFaltantes = Object.entries(payload)
+      .filter(([_, v]) => !v)
+      .map(([k]) => k);
+
+    if (camposFaltantes.length > 0) {
+      this.generalService.alert(
+        `Faltan datos por completar: ${camposFaltantes.join(', ')}`,
+        'Datos incompletos',
+        'warning'
+      );
+      return;
+    }
+
+    this.router.navigate(['/seguros/persona']);
   }
   private normalizeCoverage(cov: any) {
     const code = String(cov?.coverage_type?.name ?? '').toUpperCase();
@@ -690,10 +750,6 @@ export class SegurosPage implements OnInit {
     return Object.values(out);
   }
   trackByCov = (_: number, c: any) => c?.code || _;
-
-
-
-
 
   @ViewChildren('lista', { read: ElementRef })
   allSelects!: QueryList<ElementRef<HTMLElement>>;

@@ -374,62 +374,6 @@ export class RentaCochesPage implements OnInit, OnDestroy {
 
     }
 
-    // ---- disponibilidad (asincrono con backend)
-    const d = disponibilidad;
-    if (d?.desde || d?.hasta) {
-      const desde = d.desde || d.hasta; // si solo una fecha, usar esa
-      const hasta = d.hasta || d.desde;
-
-      if (desde) {
-        const reqId = ++this.dispoReqId;
-        this.dispoLoading = true;
-
-        this.fetchUnavailableCarIdsForRange(desde, hasta)
-          .subscribe({
-            next: (noDispSet) => {
-              if (reqId !== this.dispoReqId) return; // request viejo
-              const filtrada = lista.filter(c => {
-                const id = String(c?._id ?? c?.id ?? '');
-                return id && !noDispSet.has(id);
-              });
-
-              if (this.vistaActiva === 'todos') {
-                this.todosFiltrados = filtrada;
-                this.totalTodos = this.todosFiltrados.length;
-                this.paginaTodosActual = 1;   // reset paginación
-                this.calcularPaginacion('todos');
-              } else {
-                this.miosFiltrados = filtrada;
-                this.totalMios = this.miosFiltrados.length;
-                this.paginaMiosActual = 1;    // reset paginación
-                this.calcularPaginacion('mios');
-              }
-              this.dispoLoading = false;
-            },
-            error: (err) => {
-              console.warn('[RentaCoches] disponibilidad API falló, usando fallback local:', err?.message || err);
-              const from = this.dayStart(desde);
-              const to = this.dayEnd(hasta || desde);
-              const filtrada = lista.filter(c => this.isCarAvailableLocal(c, from, to));
-
-              if (this.vistaActiva === 'todos') {
-                this.todosFiltrados = filtrada;
-                this.totalTodos = this.todosFiltrados.length;
-                this.paginaTodosActual = 1;
-                this.calcularPaginacion('todos');
-              } else {
-                this.miosFiltrados = filtrada;
-                this.totalMios = this.miosFiltrados.length;
-                this.paginaMiosActual = 1;
-                this.calcularPaginacion('mios');
-              }
-              this.dispoLoading = false;
-            }
-          });
-
-        return;
-      }
-    }
 
     if (this.vistaActiva === 'todos') {
       this.todosFiltrados = lista;

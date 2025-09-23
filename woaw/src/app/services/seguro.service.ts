@@ -60,4 +60,10 @@ export class SeguroService {
       headers: { 'Content-Type': 'application/json' }
     });
   }
+  crearPoliza(dto: any): Observable<any> {
+    const url = `${environment.api_key}/crabi/policy`;
+    return this.http.post(url, dto, {
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
 }
