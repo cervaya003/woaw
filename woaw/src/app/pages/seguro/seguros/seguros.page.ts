@@ -657,7 +657,6 @@ export class SegurosPage implements OnInit {
       genero: this.getGeneroLabel(),
       estadoCivil: this.getEstadoCivilLabel()
     };
-
     this.router.navigate(['/seguros/persona'], { state: { datos: payload } });
   }
   private normalizeCoverage(cov: any) {

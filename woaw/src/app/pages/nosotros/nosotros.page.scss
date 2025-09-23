@@ -100,7 +100,6 @@ ion-content {
     }
 }
 
-
 /* ===================== KPIs (alto uniforme + carrusel móvil correcto) ===================== */
 .kpis{
   --kpi-min-h: 112px;                    /* alto mínimo igual para todas */
@@ -210,6 +209,7 @@ ion-content {
         inset 0 0 0 1px rgba(224,20,20,.38),
         0 8px 18px rgba(0,0,0,.20);
     }
+
   }
 }
 
@@ -251,7 +251,6 @@ ion-content {
         }
     }
 }
-
  
 /* ===================== MVV (más aire a los bordes, mismo look en móvil) ===================== */
 .mvv{
@@ -515,6 +514,7 @@ ion-content {
     .hit h4{ font-size: 16px; }
   }
 }
+
 
 
 /* ===================== CTA ===================== */

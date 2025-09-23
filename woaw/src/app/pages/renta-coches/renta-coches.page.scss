@@ -1,24 +1,3 @@
-/* ====== VERSION LIGERA / SEGURA ====== */
-/* Sin ::ng-deep, sin tocar app-acomodo ni alerts globales */
-
-/* Ajuste básico del grid */
-.contenedor-catalogo {
-  --ion-grid-padding: 0;
-  --ion-grid-column-padding: 12px;
-  padding: 0;
-  margin-top: 8px;
-
-  /* Nuevo: limitar ancho y centrar */
-  max-width: 1280px;
-  margin-inline: auto;
-}
-
-/* Evita padding extra */
-.contenedor-catalogo ion-row,
-.contenedor-catalogo ion-col {
-  padding: 0;
-}
-
 /* Loading */
 .loading-spinner {
   display: block;
@@ -269,6 +248,11 @@
   gap: 10px;
 }
 
+/* Utilidad pequeña */
+.mb-3 {
+  margin-bottom: 12px;
+}
+
 /* =======================================================
    MODAL (solo en esta page): centrado + caja custom
    ======================================================= */
@@ -342,7 +326,6 @@ ion-modal.mio-modal::part(content) {
   width: 100%;
   font-weight: 800;
   border-radius: 10px;
-  justify-content: center;
 }
 
 /* Cancelar: rojo, ancho completo */
@@ -360,4 +343,87 @@ ion-modal.mio-modal::part(content) {
 :host-context(.dark) .mio-modal__box {
   background: #1e1f22;
   box-shadow: 0 12px 28px rgba(0, 0, 0, .5);
+}
+
+/* =======================================================
+   ======  FILTRO DE DISPONIBILIDAD (MISMA PAGE)  ========
+   ======================================================= */
+
+.filtro-card {
+  border-radius: 12px;
+}
+
+/* Resumen del rango con chip + acciones */
+.resumen-rango {
+  display: grid;
+  gap: 10px;
+
+  .acciones {
+    display: flex;
+    gap: 8px;
+  }
+}
+
+/* Modal del calendario de disponibilidad */
+.modal-calendario::part(content) {
+  border-radius: 14px;
+  max-width: 720px;
+  margin: auto;
+}
+
+.contenedor-datetime {
+  padding: 12px;
+}
+
+/* Centrado y padding del contenedor que envuelve al ion-datetime */
+.center-item {
+  width: 100%;
+  --padding-start: 0;
+  --padding-end: 0;
+  --inner-padding-start: 0;
+  --inner-padding-end: 0;
+}
+
+.center-item::part(native) {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.center-item .input-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* Aro/sombra roja suave (coincide con renta-ficha) */
+.danger-datetime ion-datetime {
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, .15);
+  border-radius: 14px;
+}
+
+/* Apariencia del calendario */
+ion-datetime ::part(calendar-day) {
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+ion-datetime ::part(calendar-day-active) {
+  background: var(--ion-color-danger);
+  color: #fff;
+  border-radius: 6px;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, .06);
+}
+
+/* Helper de accesibilidad si ocultas el label visual */
+.sr-only {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }

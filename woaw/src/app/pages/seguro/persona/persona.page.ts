@@ -8,7 +8,7 @@ import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors }
 import { ModalController } from '@ionic/angular';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SeguroService } from '../../../services/seguro.service';
-
+import { Location } from '@angular/common';
 import { IonContent } from '@ionic/angular';
 import { ViewChild } from '@angular/core';
 
@@ -31,6 +31,8 @@ export class PersonaPage implements OnInit {
   estados: any[] = [];
   ActEconomicas: any[] = [];
 
+  mostrar_spinnet: boolean = false;
+
   constructor(
     private menu: MenuController,
     public generalService: GeneralService,
@@ -41,7 +43,8 @@ export class PersonaPage implements OnInit {
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private motosService: MotosService,
-    private seguros: SeguroService
+    private seguros: SeguroService,
+    private location: Location
   ) {
     this.form_poliza = this.fb.group({
       tipoPersona: [null, Validators.required]
@@ -54,7 +57,6 @@ export class PersonaPage implements OnInit {
     });
     const nav = this.router.getCurrentNavigation();
     if (nav?.extras?.state?.['datos']) {
-      console.log('Datos recibidos:', nav.extras.state['datos']);
       this.datosPoliza = nav.extras.state['datos'];
     }
   }
@@ -107,7 +109,9 @@ export class PersonaPage implements OnInit {
   }
   regresar() {
     let controlesAEliminar: string[] = [];
-    if (this.currentStepform === 2) {
+    if (this.currentStepform === 1) {
+      this.location.back();
+    } else if (this.currentStepform === 2) {
       this.tipoPersonaSeleccionada = null;
       this.currentStepform = 1;
       controlesAEliminar = [
@@ -268,12 +272,12 @@ export class PersonaPage implements OnInit {
   enviarDatosCrearPersona(payload: any) {
     this.seguros.crearPersona(payload).subscribe({
       next: (data) => {
-        this.router.navigate(['/seguros/poliza'], { 
-        state: { 
-          datos: payload,
-          respuesta: data 
-        } 
-      });
+        this.router.navigate(['/seguros/poliza'], {
+          state: {
+            datos: payload,
+            respuesta: data
+          }
+        });
       },
       error: (error) => console.error('Error al obtener actividades economicas:', error),
     });

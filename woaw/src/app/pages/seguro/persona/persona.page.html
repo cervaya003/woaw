@@ -1,26 +1,27 @@
-<app-navbar *ngIf="!esDispositivoMovil"></app-navbar>
+<app-navbar></app-navbar>
 
-<ion-header *ngIf="esDispositivoMovil">
-  <ion-toolbar color="dark">
-    <ion-buttons slot="start">
-      <ion-back-button text="" routerDirection="back" defaultHref="/"></ion-back-button>
-      <div class="perfil-header">
-        <img src="/assets/icon/logo4.png" alt="Go Autos" class="logo" />
-      </div>
-      <ion-title>Motos</ion-title>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
 
 <ion-content [fullscreen]="true">
+  <app-spinner *ngIf="mostrar_spinnet"></app-spinner>
+  <div class="fondo-diagonal"></div>
+
   <div class="poliza">
     <section class="poliza__card">
+
+      <!-- Bloques de progreso -->
+      <div class="carta__steps" role="group" aria-label="Progreso de cotización">
+        <div class="carta__step" [class.is-active]="currentStepform >= 1" aria-hidden="true"></div>
+        <div class="carta__step" [class.is-active]="currentStepform >= 2" aria-hidden="true"></div>
+        <div class="carta__step" [class.is-active]="currentStepform >= 3" aria-hidden="true"></div>
+        <div class="carta__step" [class.is-active]="currentStepform >= 4" aria-hidden="true"></div>
+      </div>
 
       <form [formGroup]="form_poliza" (ngSubmit)="siguiente()">
 
         <!-- SECCION FORMULARIO 1  -->
         <div class="field_persona" *ngIf="currentStepform === 1">
-          <p class="pregunta">¿Qué tipo de persona eres?</p>
+          <p class="header">Crear persona</p>
+          <h1 class="pregunta">¿Qué tipo de persona eres?</h1>
           <div class="persona-radio">
             <label class="radio-card">
               <input type="radio" formControlName="tipoPersona" value="fisica" />
@@ -34,8 +35,10 @@
           </div>
         </div>
 
+        <h1 *ngIf="currentStepform !== 1" class="header">Ingresa tus datos</h1>
+
         <!-- ESTO VA A ESTAR SIEMPRE  -->
-        <div class="resumen" *ngIf="datosPoliza && currentStepform !== 1">
+        <ng-container *ngIf="datosPoliza && currentStepform !== 1">
           <div class="grid-resumen">
             <p><strong>Marca:</strong> {{ datosPoliza.marca }}</p>
             <p><strong>Modelo:</strong> {{ datosPoliza.modelo }}</p>
@@ -47,11 +50,10 @@
               }}</p>
             <p><strong>Versión:</strong> {{ datosPoliza.version }}</p>
           </div>
-        </div>
+        </ng-container>
 
         <!-- SECCION FORMULARIO 2  -->
         <div class="field field-grid" *ngIf="currentStepform === 2">
-
           <div>
             <label *ngIf="tipoPersonaSeleccionada === 'fisica'" for="nombre">Nombre completo</label>
             <label *ngIf="tipoPersonaSeleccionada === 'moral'" for="nombre">Nombre de la empresa</label>
@@ -214,13 +216,25 @@
         </div>
 
         <div class="paybox__cta">
-          <button type="button" class="btn-secondary" *ngIf="currentStepform !== 1" (click)="regresar()">&#x2B05;
-            Regresar</button>
-          <button type="submit" class="btn-primary">Siguiente</button>
+          <button type="button" class="btn-secondary" (click)="regresar()">&#x2B05;
+            Regresar
+          </button>
+          <button type="submit" class="btn-primary">Siguiente &#x27A1;</button>
+        </div>
+
+        <div class="carta_msj">
+          <div class="carta__body">
+            <p>
+              Bienvenido 👋, estás a un paso de cotizar el coche que te interesa en Woaw.
+              Para crear tu cuenta y continuar con la cotización de forma segura y personalizada, es necesario que te
+              registres con tus datos básicos.
+            </p>
+          </div>
         </div>
 
       </form>
 
     </section>
   </div>
+
 </ion-content>
