@@ -328,12 +328,6 @@ ion-content {
   }
 }
 
-
-
-
-
-
-
 .banner-img {
   position: relative;
   width: 100%;
@@ -617,25 +611,39 @@ ion-content {
 
 
 
+/* Botón Conócenos centrado y más grande */
 .btn_conocenos{
-  border: 2px solid #e01414;
-  padding: 10px 20px;
-  color: #e01414;
-  background-color: transparent;
-  border-radius: 15px;
-  display: block;           
-  width: max-content;        
-  margin: 12px auto 0;    
-  align-self: center;      
-  justify-self: center;     
+  border: 2px solid #ca1515ea;
+  color: #ca1515ea;
+  background: transparent;
+  border-radius: 999px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  /* tamaño */
+  font-weight: 800;
+  font-size: clamp(15px, 1.6vw, 18px);
+  padding: 20px 36px;
+  width: min(90vw, 520px);      /* ⬅️ controla el “estirado” horizontal */
+  min-width: 420px;
+
+  /* centrado robusto */
+  margin: 24px auto 28px;       /* centra en flujo normal */
+  justify-self: center;         /* si el padre es grid */
+  align-self: center;           /* si el padre es flex/grid */
+  position: relative;           /* centra incluso en contenedores flex con wrap */
+  left: 50%;
+  transform: translateX(-50%);
 
   transition: background .2s ease, color .2s ease, border-color .2s ease;
+}
+.btn_conocenos:hover{
+  border-color: transparent;
+  color: #fff;
+  background-color: #d83737;
 
-  &:hover{
-    border-color: transparent;   
-    color: #fff;
-    background-color: #e01414;
-  }
 }
 
 
