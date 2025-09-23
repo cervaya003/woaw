@@ -69,16 +69,16 @@ ion-content {
             line-height: 1.05;
             margin: 0 0 8px;
             font-weight: 900;
-            color: #ff4747;
+            color: #ffffff;
 
             span {
-                color: #ff4747;
+                color: #ff0000;
             }
         }
 
         p {
-            color: var(--muted);
-            max-width: 720px;
+            color: #ffffff;
+            font-size: 12px;
             margin: 0 auto 14px;
         }
 
@@ -140,6 +140,7 @@ ion-content {
       height: 1px;
     }
   }
+
 
   .kpi{
     position: relative;
@@ -390,8 +391,8 @@ ion-content {
 
 /* ====== Timeline (título centrado y carrusel móvil) ====== */
 .timeline{
-  --accent: #ff4747;
-  padding: 24px 18px;
+  --accent: #f00101;
+ font-size: large;
   max-width: 1080px;
   margin: 0 auto;
 
@@ -497,9 +498,7 @@ ion-content {
   /* 📱 mejoras móviles */
   @media (max-width: 640px){
     padding: 18px 0 16px;
-
     h2{ padding-inline: 12px; }
-
     .track{
       grid-auto-columns: min(88vw, 360px); /* tarjeta ancha y legible */
       gap: 12px;
@@ -567,6 +566,7 @@ ion-content {
     }
 
     .mvv {
+      margin-top: -8rem;
         grid-template-columns: 1fr;
     }
 }
