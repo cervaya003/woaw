@@ -616,7 +616,7 @@ ion-content {
   border: 2px solid #ca1515ea;
   color: #ca1515ea;
   background: transparent;
-  border-radius: 999px;
+  border-radius: 25px;
 
   display: inline-flex;
   align-items: center;
@@ -627,7 +627,7 @@ ion-content {
   font-size: clamp(15px, 1.6vw, 18px);
   padding: 20px 36px;
   width: min(90vw, 520px);      /* ⬅️ controla el “estirado” horizontal */
-  min-width: 420px;
+  min-width: 50px;
 
   /* centrado robusto */
   margin: 24px auto 28px;       /* centra en flujo normal */

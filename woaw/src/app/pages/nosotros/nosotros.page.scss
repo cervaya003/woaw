@@ -69,16 +69,16 @@ ion-content {
             line-height: 1.05;
             margin: 0 0 8px;
             font-weight: 900;
-            color: #ff4747;
+            color: #ffffff;
 
             span {
-                color: #ff4747;
+                color: #ff0000;
             }
         }
 
         p {
-            color: var(--muted);
-            max-width: 720px;
+            color: #ffffff;
+            font-size: 12px;
             margin: 0 auto 14px;
         }
 
@@ -567,6 +567,7 @@ ion-content {
     }
 
     .mvv {
+      margin-top: -8rem;
         grid-template-columns: 1fr;
     }
 }
