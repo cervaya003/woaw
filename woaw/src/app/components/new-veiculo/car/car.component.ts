@@ -65,9 +65,7 @@ export class CarComponent implements OnInit {
   descripcion: string = '';
   moneda: 'MXN' | 'USD' = 'MXN';
   extrasTexto: string = '';
-
-  nombreAuto: string = '';
-  anioAuto: number | null = null;
+  
   precioEstimado: number | null = null;
   tipoFactura: string = '';
 

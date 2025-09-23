@@ -217,15 +217,15 @@ export class PolizaPage implements OnInit {
 
     const rfc = this.datosUsuario?.person?.rfc;
     const id = this.datoscotizacion.id;
-    const idPlan = this.datoscotizacion.plans[0]?.id || null;
+    const idPlan = this.datoscotizacion.plans[0]?.id;
 
     // const start_date = new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
     //   .toISOString()
     //   .slice(0, 10);
 
     const start_date = new Date(Date.now() + 24 * 60 * 60 * 1000 - new Date().getTimezoneOffset() * 60000)
-    .toISOString()
-    .slice(0, 10);
+      .toISOString()
+      .slice(0, 10);
 
     const receivers = ((this.correos?.value as Array<string | null>) ?? [])
       .filter((v): v is string => !!v && v.trim().length > 0)

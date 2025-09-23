@@ -614,3 +614,26 @@ section {
     background-color: red;
   }
 }
+
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(20px, 1fr));
+  gap: 12px;
+  padding: 10px;
+
+  p {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 500;
+
+    strong {
+      font-weight: 700;
+    }
+  }
+
+  .estilo_unico {
+    color: #ff2121;   /* rojo Woaw */
+    font-weight: 700;
+  }
+}
