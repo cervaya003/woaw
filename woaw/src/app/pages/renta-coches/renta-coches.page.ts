@@ -374,6 +374,8 @@ export class RentaCochesPage implements OnInit, OnDestroy {
 
     }
 
+
+
     if (this.vistaActiva === 'todos') {
       this.todosFiltrados = lista;
       this.totalTodos = this.todosFiltrados.length;

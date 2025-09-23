@@ -141,6 +141,7 @@ ion-content {
     }
   }
 
+
   .kpi{
     position: relative;
     background:
@@ -497,9 +498,7 @@ ion-content {
   /* 📱 mejoras móviles */
   @media (max-width: 640px){
     padding: 18px 0 16px;
-
     h2{ padding-inline: 12px; }
-
     .track{
       grid-auto-columns: min(88vw, 360px); /* tarjeta ancha y legible */
       gap: 12px;

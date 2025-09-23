@@ -39,8 +39,6 @@
     }
 }
 
-
-
 .poliza {
     min-height: 90svh;
     background: transparent;
@@ -114,12 +112,6 @@
         color: var(--muted);
         margin-bottom: 8px;
         letter-spacing: .2px;
-
-        span {
-            color: #ff0000;
-            font-weight: 900;
-            font-size: 15px;
-        }
     }
 
 
@@ -360,10 +352,6 @@
     }
 }
 
-
-
-
-
 .carta__steps {
     display: grid;
     grid-auto-flow: column;
@@ -433,5 +421,93 @@
     to {
         opacity: 1;
         transform: translateY(0) scale(1);
+    }
+}
+
+
+
+.correos-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 12px;
+
+    button {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+
+        background: transparent;
+        border: 1.5px dashed var(--accent, #e01414);
+        color: var(--accent, #e01414);
+        font-size: 11px;
+        padding: 8px 14px;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.25s ease;
+
+        &:hover:not(:disabled) {
+            background: var(--accent, #e01414);
+            color: #fff;
+        }
+
+        &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        small {
+            font-size: 8px;
+            font-weight: 400;
+            opacity: 0.8;
+        }
+    }
+}
+
+.correos-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.correo-item {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+    align-items: center;
+
+    .control {
+        width: 100%;
+    }
+
+    input.form-input {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 14px;
+    }
+
+    button {
+        background: #ffeded;
+        border: 1px solid #ff4d4f;
+        color: #d93025;
+        padding: 6px 12px;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all .2s ease;
+
+        &:hover {
+            background: #ff4d4f;
+            color: #fff;
+        }
+    }
+
+    .error {
+        grid-column: 1 / -1;
+        font-size: 12px;
+        color: #e01414;
+        margin: 4px 0 0;
     }
 }

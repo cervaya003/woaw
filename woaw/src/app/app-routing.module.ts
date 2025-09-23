@@ -255,6 +255,10 @@ const routes: Routes = [
     loadChildren: () => import('./pages/renta-ciudades/renta-ciudades.module').then( m => m.RentaCiudadesPageModule)
   },
   {
+    path: 'seguros/poliza',
+    loadChildren: () => import('./pages/seguro/poliza/poliza.module').then( m => m.PolizaPageModule)
+  },
+  {
     path: "**",
     loadChildren: () =>
       import("./pages/error/error.module").then((m) => m.ErrorPageModule),

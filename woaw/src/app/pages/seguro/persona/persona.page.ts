@@ -23,7 +23,8 @@ export class PersonaPage implements OnInit {
   esDispositivoMovil: boolean = false;
   form_poliza: FormGroup;
   currentStepform: 1 | 2 | 3 | 4 = 1;
-  datosPoliza: any = null;
+  datosCoche: any = null;
+  datoscotizacion: any = null;
   tipoPersonaSeleccionada: string | null = null;
   mostrarMasOpciones: boolean = false;
 
@@ -55,11 +56,34 @@ export class PersonaPage implements OnInit {
     this.generalService.dispositivo$.subscribe((tipo) => {
       this.esDispositivoMovil = tipo === 'telefono' || tipo === 'tablet';
     });
-    const nav = this.router.getCurrentNavigation();
-    if (nav?.extras?.state?.['datos']) {
-      this.datosPoliza = nav.extras.state['datos'];
+
+    const stored = localStorage.getItem('datosCoche');
+    if (stored) {
+      this.datosCoche = JSON.parse(stored);
+      console.log(this.datosCoche)
+    } else {
+      this.datosCoche = null;
+      this.router.navigate(['/seguros']);
+      this.generalService.alert(
+        'Debes seleccionar un coche antes de continuar con tu registro.',
+        'Atención',
+        'warning'
+      );
+    }
+
+    const cotizacion = localStorage.getItem('cotizacion');
+    if (cotizacion) {
+      this.datoscotizacion = cotizacion;
+    } else {
+      this.router.navigate(['/seguros']);
+      this.generalService.alert(
+        'Debes cotizar un coche antes de continuar con tu registro.',
+        'Atención',
+        'warning'
+      );
     }
   }
+
   siguiente() {
     if (this.form_poliza.invalid) {
       this.form_poliza.markAllAsTouched();
@@ -87,7 +111,7 @@ export class PersonaPage implements OnInit {
     } else if (this.currentStepform === 2) {
       this.currentStepform = 3;
       this.form_poliza.addControl('telefono', this.fb.control('', [Validators.required, Validators.pattern(/^\d{10}$/)]));
-      this.form_poliza.addControl('calle', this.fb.control('', [Validators.required, Validators.minLength(5)]));
+      this.form_poliza.addControl('calle', this.fb.control('', [Validators.required, Validators.minLength(4)]));
       this.form_poliza.addControl('int', this.fb.control('', [Validators.required, Validators.minLength(1)]));
       this.form_poliza.addControl('ext', this.fb.control('', [Validators.required, Validators.minLength(1)]));
       this.form_poliza.addControl('col', this.fb.control('', [Validators.required, Validators.minLength(5)]));
@@ -100,7 +124,13 @@ export class PersonaPage implements OnInit {
       this.form_poliza.addControl('estado', this.fb.control('', [Validators.required]));
       this.form_poliza.addControl('actE', this.fb.control('', [Validators.required]));
     } else if (this.currentStepform === 4) {
-      this.prepararDatos();
+      this.generalService.confirmarAccion(
+        '¿Autorizas enviar tu datos par acrear tu registro?',
+        'Envir datos',
+        async () => {
+          this.prepararDatos();
+        }
+      );
     }
   }
   analizaForm(campo: string): boolean {
@@ -110,7 +140,8 @@ export class PersonaPage implements OnInit {
   regresar() {
     let controlesAEliminar: string[] = [];
     if (this.currentStepform === 1) {
-      this.location.back();
+      // this.location.back();
+      this.router.navigate(['/seguros']);
     } else if (this.currentStepform === 2) {
       this.tipoPersonaSeleccionada = null;
       this.currentStepform = 1;
@@ -172,10 +203,17 @@ export class PersonaPage implements OnInit {
       'casado': 2, 'casado(a)': 2,
       'divorciado': 4, 'divorciado(a)': 4
     };
-    const gender_code = generoMap[(this.datosPoliza?.genero || '').toLowerCase()] ?? 0;
-    const civil_status_code = estadoCivilMap[(this.datosPoliza?.estadoCivil || '').toLowerCase()] ?? 0;
-    const birthdate = this.toISODate(this.datosPoliza?.nacimiento);
-    const postal_code = String(this.datosPoliza?.cp ?? '');
+    const gender_code = generoMap[(this.datosCoche?.genero || '').toLowerCase()] ?? 0;
+    const civil_status_code = estadoCivilMap[(this.datosCoche?.estadoCivil || '').toLowerCase()] ?? 0;
+
+    const nacimiento = this.datosCoche?.nacimiento;
+    let birthdate: string | null = null;
+    if (nacimiento?.anio && nacimiento?.mes && nacimiento?.dia) {
+      const pad2 = (n: number) => String(n).padStart(2, '0');
+      birthdate = `${nacimiento.anio}-${pad2(nacimiento.mes)}-${pad2(nacimiento.dia)}`;
+    }
+
+    const postal_code = String(this.datosCoche?.cp ?? '');
     const nationality_code = 1;
     const country_of_origin_code = Number(this.form_poliza.get('pais')?.value ?? 1);
     const state_of_origin_code = Number(this.form_poliza.get('estado')?.value ?? 0);
@@ -216,6 +254,7 @@ export class PersonaPage implements OnInit {
       basePerson.legal_representative = this.form_poliza.get('nmRepLegal')?.value;
     }
     const payload = { person: basePerson };
+    localStorage.setItem('datosUsuario', JSON.stringify(payload));
     this.enviarDatosCrearPersona(payload);
   }
   private toISODate(input: any): string | null {
@@ -270,16 +309,23 @@ export class PersonaPage implements OnInit {
     });
   }
   enviarDatosCrearPersona(payload: any) {
+    this.mostrar_spinnet = true;
     this.seguros.crearPersona(payload).subscribe({
       next: (data) => {
-        this.router.navigate(['/seguros/poliza'], {
-          state: {
-            datos: payload,
-            respuesta: data
-          }
-        });
+        const nombre = data.response?.first_name || this.form_poliza.get('nombre')?.value || 'Tu registro';
+        this.generalService.alert(
+          `¡Listo! ${nombre} quedó registrado correctamente.`,
+          'Registro exitoso',
+          'success'
+        );
+        localStorage.setItem('UsuarioRespuesta', JSON.stringify(data));
+        this.mostrar_spinnet = true;
+        this.router.navigate(['/seguros/poliza']);
       },
-      error: (error) => console.error('Error al obtener actividades economicas:', error),
+      error: (error) => {
+        this.mostrar_spinnet = false;
+        console.error('Error al obtener actividades economicas:', error)
+      }
     });
   }
 }

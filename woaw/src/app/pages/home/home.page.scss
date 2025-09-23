@@ -629,6 +629,7 @@ ion-content {
   width: min(90vw, 520px);      /* ⬅️ controla el “estirado” horizontal */
   min-width: 50px;
 
+
   /* centrado robusto */
   margin: 24px auto 28px;       /* centra en flujo normal */
   justify-self: center;         /* si el padre es grid */
