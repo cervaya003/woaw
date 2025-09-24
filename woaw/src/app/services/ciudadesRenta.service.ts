@@ -14,9 +14,8 @@ export class CiudadesRentaService {
     return this.http.get(`${this.api}/rentalcars/estados`);
   }
 
-  // ← ahora recibe estadoId y lo manda como ?estado=...
-  getCiudades(estadoId: number | string): Observable<any> {
-    const params = new HttpParams().set('estado', String(estadoId));
-    return this.http.get(`${this.api}/rentalcars/estados/ciudades`, { params });
+  getJalarEstado(): Observable<any>{
+    return this.http.get(`${this.api}/info/mexico-states`);
   }
+
 }
