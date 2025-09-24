@@ -1,0 +1,97 @@
+<ion-header>
+  <ion-toolbar color="dark">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Check-In</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ng-container *ngIf="booking as b">
+    <ion-card class="ck-card">
+      <ion-card-header class="ck-header">
+        <div class="ck-title">
+          <span class="codigo">Reserva <b>#{{ b.codigo || b._id }}</b></span>
+          <ion-badge [color]="(b.estatus || 'primary')">{{ b.estatus }}</ion-badge>
+        </div>
+        <ion-card-subtitle class="fecha">
+          {{ b.fechaInicio | date:'medium' }} → {{ b.fechaFin | date:'medium' }}
+        </ion-card-subtitle>
+
+        <!-- Auto mostrado solo si rentalCar viene como objeto -->
+        <div class="auto" *ngIf="getRentalCar(b) as rc">
+          <ion-chip *ngIf="rc?.marca || rc?.modelo" outline>
+            <ion-icon name="car-outline"></ion-icon>
+            <ion-label>{{ rc?.marca }} {{ rc?.modelo }}</ion-label>
+          </ion-chip>
+          <ion-chip *ngIf="rc?.transmision" outline>
+            <ion-icon name="settings-outline"></ion-icon>
+            <ion-label>{{ rc?.transmision }}</ion-label>
+          </ion-chip>
+          <ion-chip *ngIf="rc?.combustible" outline>
+            <ion-icon name="flame-outline"></ion-icon>
+            <ion-label>{{ rc?.combustible }}</ion-label>
+          </ion-chip>
+        </div>
+      </ion-card-header>
+
+      <ion-card-content class="ck-body">
+        <!-- Combustible -->
+        <div class="bloque">
+          <div class="bloque-head">
+            <div class="titulo">Combustible</div>
+            <div class="valor">{{ combustible }}%</div>
+          </div>
+          <ion-range min="0" max="100" step="1" [(ngModel)]="combustible" [pin]="true" [snaps]="true" [ticks]="false"
+            aria-label="Nivel de combustible" class="ck-range">
+            <ion-icon size="small" slot="start" name="ellipse-outline"></ion-icon>
+            <ion-icon size="small" slot="end" name="ellipse"></ion-icon>
+          </ion-range>
+        </div>
+
+        <!-- Notas -->
+        <div class="bloque">
+          <div class="bloque-head">
+            <div class="titulo">Notas</div>
+            <div class="hint">Rayones, accesorios, kilometraje, etc.</div>
+          </div>
+          <ion-textarea class="ck-textarea" autoGrow rows="4" placeholder="Escribe aquí…" [(ngModel)]="notas">
+          </ion-textarea>
+        </div>
+
+        <!-- Fotos -->
+        <div class="bloque">
+          <div class="bloque-head">
+            <div class="titulo">Fotos</div>
+            <div class="hint">Hasta 12 imágenes</div>
+          </div>
+
+          <div class="uploader">
+            <input #fileInput type="file" accept="image/*" multiple hidden (change)="onFiles($event)" />
+            <ion-button size="small" (click)="abrirSelectorFotos(fileInput)">
+              <ion-icon slot="start" name="image-outline"></ion-icon>
+              Elegir archivos
+            </ion-button>
+            <span class="uploader-info" *ngIf="files?.length">{{ files.length }} seleccionadas</span>
+            <span class="uploader-info" *ngIf="!files?.length">Sin archivos seleccionados</span>
+          </div>
+
+          <!-- Previews -->
+          <div class="grid-preview" *ngIf="previewUrls?.length">
+            <ion-img *ngFor="let url of previewUrls; trackBy: trackByUrl" [src]="url"></ion-img>
+          </div>
+        </div>
+      </ion-card-content>
+
+      <!-- Barra de acciones sticky dentro de la card -->
+      <div class="ck-actions">
+        <ion-button expand="block" size="default" [disabled]="loading.guardar || loading.fotos"
+          (click)="guardarYSalir()">
+          <ion-spinner *ngIf="loading.guardar || loading.fotos" name="dots"></ion-spinner>
+          <span *ngIf="!(loading.guardar || loading.fotos)">GUARDAR Y SALIR</span>
+        </ion-button>
+      </div>
+    </ion-card>
+  </ng-container>
+</ion-content>
