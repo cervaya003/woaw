@@ -1,0 +1,90 @@
+.vacio {
+  text-align: center;
+  margin-top: 60px;
+  color: var(--ion-color-medium);
+
+  ion-icon {
+    font-size: 64px;
+    color: var(--ion-color-danger);
+    margin-bottom: 8px;
+  }
+
+  p {
+    font-size: 16px;
+    font-weight: 500;
+  }
+}
+
+/* Tarjetas */
+ion-card {
+  margin: 12px;
+  border-radius: 14px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+
+  ion-card-header {
+    padding-bottom: 4px;
+
+    .header-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    ion-card-title {
+      font-size: 16px;
+      font-weight: 600;
+      flex: 1;
+      margin-right: 8px;
+    }
+
+    ion-badge {
+      text-transform: capitalize;
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 8px;
+    }
+
+    ion-card-subtitle {
+      font-size: 13px;
+      color: var(--ion-color-medium);
+    }
+  }
+
+  ion-card-content {
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin: 10px 0;
+
+      small {
+        display: block;
+        font-size: 12px;
+        color: var(--ion-color-medium);
+      }
+
+      div {
+        font-size: 14px;
+        font-weight: 500;
+      }
+    }
+
+    .acciones {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 12px;
+
+      ion-button {
+        --border-radius: 10px;
+        font-size: 14px;
+        font-weight: 500;
+      }
+    }
+  }
+}
+
+/* Loader */
+ion-skeleton-text {
+  border-radius: 12px;
+}

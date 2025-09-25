@@ -195,7 +195,7 @@ export class ContactosService {
       // Dueño del auto
       telefonoVariable = `${auto.usuarioId?.lada}${auto.usuarioId?.telefono}`;
     } else if (
-      auto.lote != null 
+      auto.lote != null
     ) {
       nombre = auto.lote.nombre
       id = auto.lote._id
@@ -299,37 +299,54 @@ export class ContactosService {
       // );
     }
   }
+
+
   contactarPorPublicacionParticular(
-    nombreAuto: string,
     anioAuto: number | string,
+    marcaAuto: string,
+    modeloAuto: string,
     precioEstimado?: number,
     tipoFactura?: string
   ): void {
-    if (!nombreAuto || !anioAuto) {
-      this.generalService.alert(
+    // Validaciones básicas
+    if (!anioAuto || !marcaAuto || !modeloAuto) {
+      this.generalService?.alert?.(
         'Campos incompletos',
-        'Por favor proporciona el nombre del auto y su año para poder contactar.',
+        'Por favor proporciona año, marca y modelo para poder contactar.',
         'warning'
       );
       return;
     }
 
-    let mensaje = `Hola, me gustaría que me ayudaran a vender el siguiente vehículo:\n\n🚗 *${nombreAuto} (${anioAuto})*`;
+    // Normaliza visual
+    const anioTxt = String(anioAuto).trim();
+    const marcaTxt = (marcaAuto || '').toString().trim();
+    const modeloTxt = (modeloAuto || '').toString().trim();
 
-    if (precioEstimado) {
-      mensaje += `\n💰 Precio estimado: *$${precioEstimado.toLocaleString()}*`;
+    // Arma mensaje
+    let mensaje =
+      `Hola, me gustaría que me ayudaran a vender el siguiente vehículo:\n\n` +
+      `🚗 *${marcaTxt} ${modeloTxt} (${anioTxt})*`;
+
+    if (typeof precioEstimado === 'number' && !Number.isNaN(precioEstimado)) {
+      mensaje += `\n💰 Precio estimado: *$${precioEstimado.toLocaleString('es-MX')}*`;
     }
 
     if (tipoFactura) {
-      const facturaFormateada = tipoFactura.charAt(0).toUpperCase() + tipoFactura.slice(1).toLowerCase();
-      mensaje += `\n📄 Tipo de factura: *${facturaFormateada}*`;
+      const facturaFmt = tipoFactura.charAt(0).toUpperCase() + tipoFactura.slice(1).toLowerCase();
+      mensaje += `\n📄 Tipo de factura: *${facturaFmt}*`;
     }
 
     mensaje += `\n\nQuedo atento(a) a su respuesta. ¡Gracias!`;
 
-    const url = `https://api.whatsapp.com/send?phone=${this.telefonoFijo}&text=${encodeURIComponent(mensaje)}`;
+    // Abre WhatsApp
+    const phone = this.telefonoFijo; // Asegúrate que esté en formato internacional, p.ej. 521442XXXXXXX
+    const url = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(mensaje)}`;
     window.open(url, '_blank');
   }
+
+
+
 
   // ARRENDAMIENTO
   enviarWhatsappInteresGeneral(): void {

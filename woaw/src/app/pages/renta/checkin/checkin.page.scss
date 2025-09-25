@@ -1,0 +1,126 @@
+:host {
+    --ck-radius: 16px;
+}
+
+.ck-card {
+    margin: 12px;
+    border-radius: var(--ck-radius);
+    overflow: hidden;
+}
+
+.ck-header {
+    padding-bottom: 4px;
+}
+
+.ck-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+
+    .codigo {
+        font-size: 18px;
+    }
+}
+
+.fecha {
+    opacity: .8;
+}
+
+.auto {
+    margin-top: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.ck-body {
+    display: grid;
+    gap: 18px;
+    padding-bottom: 8px;
+}
+
+.bloque {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 12px;
+    padding: 6px 0;
+}
+
+.bloque-head {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin: 0 4px 6px 2px;
+
+    .titulo {
+        font-weight: 600;
+        letter-spacing: .2px;
+    }
+
+    .valor {
+        margin-left: auto;
+        font-weight: 600;
+        opacity: .9;
+    }
+
+    .hint {
+        font-size: 12px;
+        opacity: .65;
+    }
+}
+
+.ck-range {
+    --bar-background: var(--ion-color-medium);
+    --bar-background-active: var(--ion-color-primary);
+    --knob-size: 20px;
+    --pin-background: var(--ion-color-primary);
+    --pin-color: #fff;
+    margin: 6px 0 0 0;
+}
+
+.ck-textarea {
+    --padding-start: 0;
+    --padding-end: 0;
+    --padding-top: 8px;
+    --padding-bottom: 8px;
+    border-bottom: 1px solid rgba(127, 127, 127, 0.25);
+}
+
+.uploader {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    .uploader-info {
+        font-size: 12px;
+        opacity: .8;
+    }
+}
+
+.grid-preview {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
+    gap: 8px;
+    margin-top: 10px;
+
+    ion-img {
+        width: 100%;
+        height: 88px;
+        object-fit: cover;
+        border-radius: 10px;
+        box-shadow: 0 1px 6px rgba(0, 0, 0, .18);
+    }
+}
+
+.ck-actions {
+    position: sticky;
+    bottom: 0;
+    background: var(--ion-card-background, var(--ion-background-color));
+    padding: 10px 16px 16px;
+    border-top: 1px solid rgba(127, 127, 127, 0.15);
+}
+
+/* dark mode tweaks */
+:host-context(.dark) .bloque {
+    background: rgba(255, 255, 255, 0.04);
+}

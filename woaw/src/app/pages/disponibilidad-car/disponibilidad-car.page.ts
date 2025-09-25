@@ -2,7 +2,6 @@ import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, HostList
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController, LoadingController, ToastController } from '@ionic/angular';
 import { RentaService } from '../../services/renta.service';
-import { ReservaService, RentalBooking } from '../../services/reserva.service';
 
 type EstadoRenta = 'disponible' | 'inactivo';
 type Preset = 'none' | 'week' | 'month' | 'weekdays';
@@ -40,8 +39,8 @@ export class DisponibilidadCarPage implements OnInit {
   private ignoreNextCalendarChange = false;
 
   // Límites del calendario
-  minDate = this.toYmdLocal(new Date());                       // hoy (local)
-  maxDate = this.toYmdLocal(this.addMonths(new Date(), 12));   // +12 meses
+  minDate = this.toYmdLocal(new Date());
+  maxDate = this.toYmdLocal(this.addMonths(new Date(), 12));
 
   // Preview calendario
   selectionHighlights: DayHighlight[] = [];
@@ -49,7 +48,6 @@ export class DisponibilidadCarPage implements OnInit {
 
   // Presets
   activePreset: Preset = 'none';
-  // Días fijos: 0=Dom, 1=Lun, ... 6=Sáb
   weekDays = [
     { label: 'L', value: 1 }, { label: 'M', value: 2 }, { label: 'X', value: 3 },
     { label: 'J', value: 4 }, { label: 'V', value: 5 }, { label: 'S', value: 6 },
@@ -63,17 +61,10 @@ export class DisponibilidadCarPage implements OnInit {
   private currentUserId: string | null = null;
   private lastSnapshot = '';
 
-  // === Reservas pendientes (nuevo) ===
-  pendingBookings: Array<RentalBooking & { dias?: number }> = [];
-  loadingBookings = false;
-  actingIds = new Set<string>();
-  actingAction: 'accept' | 'cancel' | null = null;
-
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private rentaService: RentaService,
-    private reservaService: ReservaService,
     private loadingCtrl: LoadingController,
     private toastCtrl: ToastController,
     private alertCtrl: AlertController,
@@ -110,7 +101,6 @@ export class DisponibilidadCarPage implements OnInit {
 
         this.excepciones = this.mergeRanges(ex);
 
-        // Al cargar, no asumimos preset
         this.activePreset = 'none';
         this.blockedWeekdays.clear();
 
@@ -118,9 +108,6 @@ export class DisponibilidadCarPage implements OnInit {
         const owner = this.extractOwnerId(car);
         const me = this.currentUserId ? String(this.currentUserId) : null;
         this.esPropietario = !!owner && !!me && owner === me;
-
-        // Si es propietario, traer pendientes del coche
-        if (this.esPropietario) this.fetchPendingBookings();
 
         this.rebuildCalendarHighlights();
         this.selectionHighlights = [];
@@ -138,38 +125,7 @@ export class DisponibilidadCarPage implements OnInit {
     });
   }
 
-  // Traer pendientes del coche
-  private fetchPendingBookings() {
-    this.loadingBookings = true; this.cdr.markForCheck();
-    this.reservaService.getBookingsByCar(this.carId, { estatus: 'pendiente', sort: '-createdAt' })
-      .subscribe({
-        next: (arr: RentalBooking[]) => {
-          const list = (Array.isArray(arr) ? arr : []).filter(b => b?.estatus === 'pendiente');
-          this.pendingBookings = list.map(b => ({
-            ...b,
-            dias: this.calcDays(b.fechaInicio, b.fechaFin)
-          }));
-          this.loadingBookings = false;
-          this.cdr.markForCheck();
-        },
-        error: (err) => {
-          console.error(err);
-          this.pendingBookings = [];
-          this.loadingBookings = false;
-          this.toast('No se pudieron cargar las solicitudes pendientes', 'danger');
-          this.cdr.markForCheck();
-        }
-      });
-  }
-
-  // util: quitar de la lista en memoria (optimista)
-  private removeFromPending(id: string) {
-    const before = this.pendingBookings.length;
-    this.pendingBookings = this.pendingBookings.filter(b => b?._id !== id);
-    if (this.pendingBookings.length !== before) this.cdr.markForCheck();
-  }
-
-  // ====== ESTADO ======
+  // ====== Estado global ======
   async onEstadoChange(ev?: CustomEvent) {
     if (!this.esPropietario) return;
     const nuevo = (ev?.detail?.value as EstadoRenta) ?? this.estadoActual;
@@ -182,73 +138,11 @@ export class DisponibilidadCarPage implements OnInit {
     });
   }
 
-  // ====== Acciones de reservas (aceptar / cancelar) ======
-  async accept(b: RentalBooking) {
-    if (!b?._id) return;
-    const ok = await this.confirm('Aceptar reserva', '¿Confirmas que aceptas esta solicitud?');
-    if (!ok) return;
-
-    this.actingAction = 'accept';
-    this.actingIds.add(b._id);
-    this.cdr.markForCheck();
-
-    this.reservaService.acceptBooking(b._id).subscribe({
-      next: () => {
-        this.toast('Reserva aceptada', 'success');
-        // Optimista: quitar de la lista ya
-        this.removeFromPending(b._id);
-        // Refrescar pendientes (consistencia)
-        this.fetchPendingBookings();
-        // Opcional: recargar coche por si cambió algo de disponibilidad
-        this.loadCar();
-      },
-      error: (err) => {
-        console.error(err);
-        this.toast(err?.error?.message || 'Error al aceptar', 'danger');
-      },
-      complete: () => {
-        this.actingIds.delete(b._id);
-        this.actingAction = null;
-        this.cdr.markForCheck();
-      }
-    });
-  }
-
-  async cancel(b: RentalBooking) {
-    if (!b?._id) return;
-    const ok = await this.confirm('Cancelar solicitud', '¿Deseas cancelar esta solicitud?');
-    if (!ok) return;
-
-    this.actingAction = 'cancel';
-    this.actingIds.add(b._id);
-    this.cdr.markForCheck();
-
-    this.reservaService.cancelBooking(b._id, 'Cancelada por propietario').subscribe({
-      next: () => {
-        this.toast('Solicitud cancelada', 'success');
-        // Optimista: quitar de la lista ya
-        this.removeFromPending(b._id);
-        // Refrescar pendientes
-        this.fetchPendingBookings();
-      },
-      error: (err) => {
-        console.error(err);
-        this.toast(err?.error?.message || 'Error al cancelar', 'danger');
-      },
-      complete: () => {
-        this.actingIds.delete(b._id);
-        this.actingAction = null;
-        this.cdr.markForCheck();
-      }
-    });
-  }
-
   // ====== Selección manual ======
   onUnifiedChange(ev: CustomEvent) {
     if (this.ignoreNextCalendarChange) { this.ignoreNextCalendarChange = false; return; }
     const val = ev?.detail?.value as string[] | string | null | undefined;
 
-    // Si empieza interacción manual, salimos de presets
     this.activePreset = 'none';
     this.blockedWeekdays.clear();
 
@@ -295,7 +189,7 @@ export class DisponibilidadCarPage implements OnInit {
 
     if (preset === 'week') {
       const start = new Date(now);
-      const dow = start.getDay(); // 0=Dom
+      const dow = start.getDay();
       const mondayOffset = (dow === 0 ? -6 : 1 - dow);
       start.setDate(start.getDate() + mondayOffset);
       const end = new Date(start); end.setDate(start.getDate() + 6);
@@ -317,10 +211,8 @@ export class DisponibilidadCarPage implements OnInit {
     }
 
     if (preset === 'weekdays') {
-      // 1) Quita SOLO lo generado previamente por este preset ('Día fijo')
       this.excepciones = this.excepciones.filter(e => e.motivo !== 'Día fijo');
 
-      // 2) Si no hay días seleccionados, no borres más; solo actualiza UI
       if (this.blockedWeekdays.size === 0) {
         this.activePreset = 'none';
         this.rebuildCalendarHighlights();
@@ -329,8 +221,7 @@ export class DisponibilidadCarPage implements OnInit {
         return;
       }
 
-      // 3) Genera nuevas excepciones para esos días fijos en un horizonte
-      const { start, end } = this.getWeekendHorizon(6); // 6 meses
+      const { start, end } = this.getWeekendHorizon(6);
       const dates = this.generateWeekdayDates(start, end, this.blockedWeekdays);
       newEx = dates.map(d => ({
         inicio: this.toStartOfDayISO(d),
@@ -339,7 +230,6 @@ export class DisponibilidadCarPage implements OnInit {
       }));
     }
 
-    // Integra SIN perder otras excepciones
     this.excepciones = this.mergeRanges([...this.excepciones, ...newEx]);
     this.activePreset = preset;
     this.rebuildCalendarHighlights();
@@ -354,13 +244,11 @@ export class DisponibilidadCarPage implements OnInit {
     this.cdr.markForCheck();
   }
 
-  // DÍAS FIJOS (chips)
   isWeekdaySelected(val: number) { return this.blockedWeekdays.has(val); }
   toggleWeekday(val: number) {
     if (!this.esPropietario) return;
     if (this.blockedWeekdays.has(val)) this.blockedWeekdays.delete(val);
     else this.blockedWeekdays.add(val);
-
     this.applyPreset('weekdays');
   }
 
@@ -375,14 +263,12 @@ export class DisponibilidadCarPage implements OnInit {
     const nowSnapshot = this.snapshotKey(excepcionesClean);
     if (nowSnapshot === this.lastSnapshot) { this.toast('No hay cambios por guardar', 'medium'); return; }
 
-    // Detecta si realmente cambió el estado vs. snapshot anterior
     const prevEstado = this.getPrevEstadoFromSnapshot();
     const debeCambiarEstado = prevEstado !== this.estadoActual;
 
     this.guardando = true; this.cdr.markForCheck();
     const loading = await this.loading('Guardando…');
 
-    // FIX: mandar excepciones en el primer argumento, no como "entrega"
     this.rentaService.setDisponibilidadCar(this.carId, excepcionesClean).subscribe({
       next: async () => {
         if (!debeCambiarEstado) {
@@ -489,7 +375,6 @@ export class DisponibilidadCarPage implements OnInit {
     return out;
   }
 
-  // highlights: solo excepciones + preview
   get highlightedCombined() {
     const map = new Map<string, DayHighlight>();
     const lay = (arr: DayHighlight[]) => { for (const d of arr) map.set(d.date, d); };
@@ -519,9 +404,6 @@ export class DisponibilidadCarPage implements OnInit {
     this.cdr.markForCheck();
   }
 
-  // Fechas por días fijos en horizonte
-  private isWeekend(d: Date) { const w = d.getUTCDay(); return w === 0 || w === 6; }
-
   private getWeekendHorizon(months = 6) {
     const start = new Date(); start.setUTCHours(0, 0, 0, 0);
     const end = new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth() + months, 0, 0, 0, 0));
@@ -537,7 +419,6 @@ export class DisponibilidadCarPage implements OnInit {
     return out;
   }
 
-  // Reset selección al cambiar modo
   resetSelection() {
     this.ignoreNextCalendarChange = false;
     this.rangeUnified = null;
@@ -546,7 +427,6 @@ export class DisponibilidadCarPage implements OnInit {
     setTimeout(() => { this.calendarMounted = true; this.cdr.markForCheck(); }, 0);
   }
 
-  // Navegación y utilidades de owner (igual que antes)
   volver() {
     try { if (window.history.length > 2) return history.back(); } catch { }
     this.router.navigate(['/renta-coches']);
@@ -638,7 +518,6 @@ export class DisponibilidadCarPage implements OnInit {
     return out;
   }
 
-  // Limpia todas las excepciones (y sale de cualquier preset activo)
   clearExcepciones() {
     this.confirm('Confirmar', '¿Vaciar todas las excepciones?').then(ok => {
       if (!ok) return;
@@ -664,9 +543,8 @@ export class DisponibilidadCarPage implements OnInit {
     return `${y}-${m}-${day}`;
   }
 
-  // Evita seleccionar un día ya bloqueado por alguna excepción
   isDateEnabled = (isoDate: string) => {
-    const ymd = isoDate.slice(0, 10); // 'YYYY-MM-DD'
+    const ymd = isoDate.slice(0, 10);
     for (const e of this.excepciones) {
       const days = this.expandToDateList(e.inicio, e.fin);
       if (days.includes(ymd)) return false;
@@ -674,22 +552,7 @@ export class DisponibilidadCarPage implements OnInit {
     return true;
   };
 
-  // Detecta cambios en disponibilidad/estado
   get hasChanges(): boolean {
     return this.snapshotKey() !== this.lastSnapshot;
-  }
-
-  // ===== Utils reservas =====
-  private calcDays(a: string, b: string): number {
-    const i = new Date(a).getTime();
-    const f = new Date(b || a).getTime();
-    const d = Math.ceil((f - i) / 86_400_000);
-    return Math.max(1, d || 1);
-  }
-
-  displayUsuario(u: any): string {
-    if (!u) return 'Usuario';
-    if (typeof u === 'string') return u;
-    return u.nombre || u.email || 'Usuario';
   }
 }

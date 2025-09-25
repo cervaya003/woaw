@@ -102,7 +102,22 @@
         </ion-item>
       </div>
 
+      <!-- Reservas (solo si hay sesión) -->
+      <div *ngIf="isLoggedIn" class="menu-section" [class.expanded]="expandedSections.reservas"
+        (click)="toggleSection('reservas')" [attr.aria-expanded]="expandedSections.reservas">
+        <span>Reservas</span>
+        <ion-icon [name]="expandedSections.reservas ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
+      </div>
+
+      <div *ngIf="isLoggedIn" class="menu-items" [class.expanded]="expandedSections.reservas">
+        <ion-item (click)="redirecion('mis-reservas')" button lines="none">
+          <ion-icon name="calendar-outline" color="danger"></ion-icon>
+          <ion-label>Mis reservas</ion-label>
+        </ion-item>
+      </div>
+
       <!-- Cuenta (solo si hay sesión) -->
+
       <div
         *ngIf="isLoggedIn"
         class="menu-section"
@@ -110,17 +125,20 @@
         (click)="toggleSection('configuracion')"
         [attr.aria-expanded]="expandedSections.configuracion"
       >
+
         <span>Cuenta</span>
         <ion-icon
           [name]="expandedSections.configuracion ? 'chevron-up-outline' : 'chevron-down-outline'"
         ></ion-icon>
       </div>
 
+
       <div
         *ngIf="isLoggedIn"
         class="menu-items"
         [class.expanded]="expandedSections.configuracion"
       >
+
         <ion-item (click)="abrirModalPerfil()" button lines="none">
           <ion-icon name="person-outline" color="danger"></ion-icon>
           <ion-label>Perfil</ion-label>

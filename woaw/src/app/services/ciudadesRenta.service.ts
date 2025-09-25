@@ -18,4 +18,5 @@ export class CiudadesRentaService {
     return this.http.get(`${this.api}/info/mexico-states`);
   }
 
+
 }

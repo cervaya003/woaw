@@ -26,7 +26,8 @@
       <div class="casilla" [class.activa]="tipoSeleccionado === 'particular'" (click)="seleccionarTipo('particular')">
         <img src="assets/img/particular.png" alt="Particular" />
         <p>Particular</p>
-        <ion-icon *ngIf="tipoSeleccionado === 'particular'" name="checkmark-circle-outline" class="icono-check"></ion-icon>
+        <ion-icon *ngIf="tipoSeleccionado === 'particular'" name="checkmark-circle-outline"
+          class="icono-check"></ion-icon>
       </div>
 
       <div class="casilla" [class.activa]="tipoSeleccionado === 'lote'" (click)="seleccionarTipo('lote')">
@@ -47,7 +48,8 @@
 
   <!-- ===== PREGUNTA "Quién lo vende" (solo particular no-admin) ===== -->
 
-  <div *ngIf="tipoSeleccionado == 'particular' && MyRole !== 'admin' && seccionFormulario == 1" class="pregunta-vendedor">
+  <div *ngIf="tipoSeleccionado == 'particular' && MyRole !== 'admin' && seccionFormulario == 1"
+    class="pregunta-vendedor">
     <p class="texto-pregunta">¿Cómo quieres vender tu camión?</p>
     <div class="botones-vendedor">
       <button class="btn-vender-yo" (click)="quienLovende(0)">Lo vendo yo</button>
@@ -58,25 +60,22 @@
   </div>
 
   <!-- ===== Opción de que Go lo publique ===== -->
-  <div *ngIf="tipoSeleccionado === 'particular' && seccionFormulario === 3 && (MyRole === 'cliente' || MyRole === 'transportista')" class="formulario-publicacion">
+  <div
+    *ngIf="tipoSeleccionado === 'particular' && seccionFormulario === 3 && (MyRole === 'cliente' || MyRole === 'transportista')"
+    class="formulario-publicacion">
 
     <p class="info-texto">
-      <strong>¡Nosotros nos encargamos!</strong> Publicamos tu camión y agendamos citas con interesados.
+      <strong>¡Nosotros nos encargamos!</strong> Publicamos tu camion y agendamos citas con interesados.
       <br />
       <strong>Contáctanos por WhatsApp y te ayudamos.</strong>
     </p>
 
-    <ion-item>
-      <ion-label position="stacked">¿Qué camión es?</ion-label>
-      <ion-input placeholder="Ej. Kenworth T680 2019" [(ngModel)]="nombreCamion"></ion-input>
-    </ion-item>
-
-    <ion-item>
-      <ion-label position="stacked">Año</ion-label>
-      <ion-select [(ngModel)]="anioCamion" placeholder="Selecciona un año">
-        <ion-select-option *ngFor="let year of listaAnios" [value]="year">{{ year }}</ion-select-option>
-      </ion-select>
-    </ion-item>
+    <div class="info-grid">
+      <p>Año: <strong>{{ anio }}</strong></p>
+      <p>Marca: <strong>{{ marca }}</strong></p>
+      <p>Modelo: <strong>{{ modelo }}</strong></p>
+      <p class="estilo_unico">{{ estadoCamion }}</p>
+    </div>
 
     <ion-item>
       <ion-label position="stacked">Precio estimado (opcional)</ion-label>
@@ -88,18 +87,23 @@
       <ion-select [(ngModel)]="tipoFactura" placeholder="Selecciona una opción">
         <ion-select-option value="original">Original</ion-select-option>
         <ion-select-option value="refacturada">Refacturada</ion-select-option>
-        <ion-select-option value="sin-factura">Sin factura</ion-select-option>
+        <ion-select-option value="sin factura">Sin factura</ion-select-option>
       </ion-select>
     </ion-item>
 
     <div class="btn-wsp-container">
-
-      <button class="btn-wsp" (click)="contactosService.contactarPorPublicacionParticular(nombreCamion, anioCamion!, precioEstimado!, tipoFactura)">
-
+      <button class="btn-wsp" (click)="contactosService.contactarPorPublicacionParticular(
+        anio,
+        marca,
+        modelo,
+        precioEstimado!,
+        tipoFactura
+      )">
         <ion-icon name="logo-whatsapp" slot="start"></ion-icon>
         Contáctanos por WhatsApp
       </button>
     </div>
+    
   </div>
 
   <!-- ===== FORMULARIO PRINCIPAL ===== -->
@@ -230,29 +234,29 @@
         </select>
       </div>
 
-     <div class="campo">
-  <label>Capacidad de carga (toneladas): <span class="opcional_css">(opcional)</span></label>
-<select [(ngModel)]="capacidadCargaToneladas">
-  <option [ngValue]="null" selected>Selecciona una opción</option>
-  <option [ngValue]="0.5">0.5 toneladas</option>
-  <option [ngValue]="1">1 tonelada</option>
-  <option [ngValue]="1.25">1.25 toneladas</option>
-  <option [ngValue]="1.4">1.4 toneladas</option>
-  <option [ngValue]="1.5">1.5 toneladas</option>
-  <option [ngValue]="2">2 toneladas</option>
-  <option [ngValue]="3.5">3.5 toneladas</option>
-  <option [ngValue]="5">5 toneladas</option>
-  <option [ngValue]="7.5">7.5 toneladas</option>
-  <option [ngValue]="10">10 toneladas</option>
-  <option [ngValue]="11">11 toneladas</option>
-  <option [ngValue]="14">14 toneladas</option>
-  <option [ngValue]="20">20 toneladas</option>
-  <option [ngValue]="30">30 toneladas</option>
-  <option [ngValue]="50">50 toneladas</option>
-  <option [ngValue]="100">100 toneladas</option>
-</select>
+      <div class="campo">
+        <label>Capacidad de carga (toneladas): <span class="opcional_css">(opcional)</span></label>
+        <select [(ngModel)]="capacidadCargaToneladas">
+          <option [ngValue]="null" selected>Selecciona una opción</option>
+          <option [ngValue]="0.5">0.5 toneladas</option>
+          <option [ngValue]="1">1 tonelada</option>
+          <option [ngValue]="1.25">1.25 toneladas</option>
+          <option [ngValue]="1.4">1.4 toneladas</option>
+          <option [ngValue]="1.5">1.5 toneladas</option>
+          <option [ngValue]="2">2 toneladas</option>
+          <option [ngValue]="3.5">3.5 toneladas</option>
+          <option [ngValue]="5">5 toneladas</option>
+          <option [ngValue]="7.5">7.5 toneladas</option>
+          <option [ngValue]="10">10 toneladas</option>
+          <option [ngValue]="11">11 toneladas</option>
+          <option [ngValue]="14">14 toneladas</option>
+          <option [ngValue]="20">20 toneladas</option>
+          <option [ngValue]="30">30 toneladas</option>
+          <option [ngValue]="50">50 toneladas</option>
+          <option [ngValue]="100">100 toneladas</option>
+        </select>
 
-</div>
+      </div>
 
 
       <div class="campo">
@@ -286,7 +290,8 @@
 
       <div class="campo" style="grid-column: span 2;">
         <label>Descripción del camión: <span class="opcional_css">(opcional)</span></label>
-        <textarea rows="4" placeholder="Ej. Camión en excelente estado, único dueño..." [(ngModel)]="descripcion"></textarea>
+        <textarea rows="4" placeholder="Ej. Camión en excelente estado, único dueño..."
+          [(ngModel)]="descripcion"></textarea>
       </div>
     </div>
   </div>

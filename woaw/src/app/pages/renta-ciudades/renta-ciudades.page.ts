@@ -3,6 +3,7 @@ import { Router } from "@angular/router";
 import { HttpClient } from "@angular/common/http";
 import { CiudadesRentaService } from "../../services/ciudadesRenta.service";
 import { forkJoin } from 'rxjs';
+
 interface Ciudad {
   nombre: string;
   imagen: string;
@@ -16,6 +17,7 @@ interface Ciudad {
   standalone: false,
 })
 export class RentaCiudadesPage implements OnInit {
+
   estados: Ciudad[] = [];                       
   readonly sizes = "(min-width:1200px) 23vw, (min-width:820px) 30vw, 48vw";
 
@@ -121,6 +123,7 @@ seleccionarCiudad(estado: Ciudad) {
     queryParams: { estado: estado.nombre } // clave: 'estado'
   });
 }
+
 
   redirecion(url: string) {
     this.router.navigate([url]);
