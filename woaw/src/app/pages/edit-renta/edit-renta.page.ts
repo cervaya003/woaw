@@ -345,8 +345,6 @@ export class EditRentaPage implements OnInit {
 
     try {
       const [ciudad, estado, lat, lng] = this.ubicacionSeleccionada!;
-
-      // Payload alineado al registrar (solo campos soportados)
       const data: any = {
         // básicos
         tipoVehiculo: this.renta.tipoVehiculo || undefined,
@@ -379,6 +377,7 @@ export class EditRentaPage implements OnInit {
             desdeKm: Number(t.desdeKm),
             hastaKm: Number(t.hastaKm),
             costoFijo: t.costoFijo != null ? Number(t.costoFijo) : undefined,
+
             nota: t.nota || undefined,
           })),
         },
@@ -386,8 +385,7 @@ export class EditRentaPage implements OnInit {
         // ubicación
         ubicacion: { ciudad, estado, lat, lng },
 
-        // imágenes existentes a conservar
-        imagenesExistentes: this.urlsImagenesExistentes,
+        imagenesExistentes: this.urlsImagenesExistentes, // conserva las existentes
       };
 
       // Imagen principal (si es URL existente)

@@ -314,6 +314,7 @@ export class RentaCochesPage implements OnInit, OnDestroy {
           lista = lista.filter(c => this.normStr(c?.marca) === mf);
         }
       }
+
     }
 
     // ---- disponibilidad (asincrono con backend)
@@ -371,7 +372,6 @@ export class RentaCochesPage implements OnInit, OnDestroy {
 
         return;
       }
-
     }
 
 

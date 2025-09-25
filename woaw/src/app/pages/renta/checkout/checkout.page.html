@@ -1,0 +1,57 @@
+<ion-header>
+  <ion-toolbar color="dark">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Check-Out</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ng-container *ngIf="booking as b">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Reserva #{{ b.codigo || b._id }}</ion-card-title>
+        <ion-card-subtitle>
+          {{ b.fechaInicio | date:'short' }} → {{ b.fechaFin | date:'short' }}
+        </ion-card-subtitle>
+      </ion-card-header>
+
+      <ion-card-content>
+        <ion-item>
+          <ion-label position="stacked">Combustible (%)</ion-label>
+          <ion-range min="0" max="100" step="1" [(ngModel)]="combustible">
+            <ion-label slot="start">0</ion-label>
+            <ion-label slot="end">100</ion-label>
+          </ion-range>
+          <div class="badge">{{ combustible }}%</div>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="stacked">Notas de devolución</ion-label>
+          <ion-textarea autoGrow [(ngModel)]="notas" placeholder="Daños, multas, limpieza, faltantes..."></ion-textarea>
+        </ion-item>
+
+        <ion-item lines="none">
+          <ion-label position="stacked">Fotos (múltiples)</ion-label>
+          <input type="file" multiple (change)="onFiles($event)" />
+          <small *ngIf="files.length">({{ files.length }} seleccionadas)</small>
+        </ion-item>
+
+        <div class="acciones">
+          <ion-button [disabled]="loading.guardar" (click)="guardarDatos()">
+            <ion-spinner *ngIf="loading.guardar" name="dots"></ion-spinner>
+            <span *ngIf="!loading.guardar">Guardar datos</span>
+          </ion-button>
+
+          <ion-button [disabled]="loading.fotos || files.length === 0" (click)="subirFotos()">
+            <ion-spinner *ngIf="loading.fotos" name="dots"></ion-spinner>
+            <span *ngIf="!loading.fotos">Subir fotos</span>
+          </ion-button>
+
+          <ion-button fill="clear" (click)="terminar()">Terminar</ion-button>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </ng-container>
+</ion-content>

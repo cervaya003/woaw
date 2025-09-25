@@ -8,7 +8,8 @@ import { SpinnerComponent } from '../../components/spinner/spinner.component';
 import { GeneralService } from "../../services/general.service";
 import { PerfilComponent } from "../modal/perfil/perfil.component";
 
-type SectionKey = "configuracion" | "servicios" | "publicaciones";
+// ✅ AGREGA 'reservas' al union
+type SectionKey = "configuracion" | "servicios" | "publicaciones" | "reservas";
 
 @Component({
   selector: "app-menulateral",
@@ -29,14 +30,14 @@ export class MenulateralComponent implements OnInit, OnDestroy {
     return this.isLoggedIn && this.ALLOWED_ROLES.has(this.MyRole || "");
   }
 
-  expandedSections: Record<
-    "configuracion" | "servicios" | "publicaciones",
-    boolean
-  > = {
-      configuracion: false,
-      servicios: false,
-      publicaciones: false,
-    };
+  // ✅ Cambia el Record para incluir 'reservas'
+  expandedSections: Record<SectionKey, boolean> = {
+    configuracion: false,
+    servicios: false,
+    publicaciones: false,
+    reservas: false, // 👈 nuevo
+  };
+
   constructor(
     private router: Router,
     private menuCtrl: MenuController,
@@ -56,15 +57,17 @@ export class MenulateralComponent implements OnInit, OnDestroy {
           this.setSections({
             configuracion: false,
             servicios: true,
-            publicaciones: false
+            publicaciones: false,
+            reservas: false,            // 👈 opcional, por claridad
           });
           return;
         }
         if (before === false && estado === true) {
           this.setSections({
-            configuracion: false,   // no abras "Cuenta"
-            servicios: true,        // queda desplegado
-            publicaciones: false    // el rol decide si se muestra; inicia cerrada
+            configuracion: false, // no abras "Cuenta"
+            servicios: true,      // queda desplegado
+            publicaciones: false, // el rol decide si se muestra
+            reservas: false,
           });
           return;
         }
@@ -84,7 +87,7 @@ export class MenulateralComponent implements OnInit, OnDestroy {
     this.subs.forEach((s) => s?.unsubscribe());
   }
 
-  // Utilidad para setear ambos flags de golpe (gatilla change detection bien)
+  // ✅ Acepta SectionKey (incluye 'reservas')
   private setSections(state: Partial<Record<SectionKey, boolean>>) {
     this.expandedSections = {
       ...this.expandedSections,
@@ -99,9 +102,9 @@ export class MenulateralComponent implements OnInit, OnDestroy {
   }
 
   toggleSection(section: SectionKey) {
-    const willOpen = !this.expandedSections[section]; // estado deseado para la clickeada
-    this.closeAll(); // cierra todas
-    this.expandedSections[section] = willOpen; // abre solo la seleccionada (o queda todo cerrado si estaba abierta)
+    const willOpen = !this.expandedSections[section];
+    this.closeAll();
+    this.expandedSections[section] = willOpen;
   }
 
   async redirecion(url: string) {
@@ -151,7 +154,7 @@ export class MenulateralComponent implements OnInit, OnDestroy {
   async abrirModalPerfil() {
     this.mostrar_spinnet = true;
     setTimeout(async () => {
-    this.mostrar_spinnet = false;
+      this.mostrar_spinnet = false;
       await this.menuCtrl.close("menuLateral");
       await this.sleep(200);
       await this.generalService.loadingDismiss();

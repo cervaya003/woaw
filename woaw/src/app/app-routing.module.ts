@@ -240,20 +240,34 @@ const routes: Routes = [
   },
   {
     path: 'disponibilidad-car/:id',
-    loadChildren: () => import('./pages/disponibilidad-car/disponibilidad-car.module').then( m => m.DisponibilidadCarPageModule)
+    loadChildren: () => import('./pages/disponibilidad-car/disponibilidad-car.module').then(m => m.DisponibilidadCarPageModule)
   },
   {
     path: 'edit-renta/:id',
-    loadChildren: () => import('./pages/edit-renta/edit-renta.module').then( m => m.EditRentaPageModule)
+    loadChildren: () => import('./pages/edit-renta/edit-renta.module').then(m => m.EditRentaPageModule)
   },
   {
     path: 'reservas/:id',
-    loadChildren: () => import('./pages/reservas/reservas.module').then( m => m.ReservasPageModule)
+    loadChildren: () => import('./pages/reservas/reservas.module').then(m => m.ReservasPageModule)
   },
   {
     path: 'renta-ciudades',
-    loadChildren: () => import('./pages/renta-ciudades/renta-ciudades.module').then( m => m.RentaCiudadesPageModule)
+    loadChildren: () => import('./pages/renta-ciudades/renta-ciudades.module').then(m => m.RentaCiudadesPageModule)
   },
+
+  {
+    path: 'checkin/:id',
+    loadChildren: () => import('./pages/renta/checkin/checkin.module').then(m => m.CheckInPageModule)
+  },
+  {
+    path: 'checkout/:id',
+    loadChildren: () => import('./pages/renta/checkout/checkout.module').then(m => m.CheckoutPageModule)
+  },
+  {
+    path: 'mis-reservas',
+    loadChildren: () => import('./pages/renta/mis-reservas/mis-reservas.module').then(m => m.MisReservasPageModule)
+  },
+
   {
     path: 'seguros/poliza',
     loadChildren: () => import('./pages/seguro/poliza/poliza.module').then( m => m.PolizaPageModule)

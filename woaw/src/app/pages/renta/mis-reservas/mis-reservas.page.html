@@ -1,0 +1,137 @@
+<app-navbar></app-navbar>
+
+<ion-content [fullscreen]="true">
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Loader -->
+  <ion-list *ngIf="loading">
+    <ion-item *ngFor="let i of [1,2,3,4]">
+      <ion-skeleton-text animated style="width:100%; height:86px;"></ion-skeleton-text>
+    </ion-item>
+  </ion-list>
+
+  <!-- NUEVO: Solicitudes de reserva (tus coches) -->
+  <ion-card *ngIf="loadingPending || pendingOwner.length > 0" style="margin: 12px;">
+    <ion-card-header>
+      <ion-card-title>Solicitudes de reserva (tus coches)</ion-card-title>
+      <ion-card-subtitle *ngIf="!loadingPending">
+        {{ pendingOwner.length }} pendiente(s)
+      </ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <!-- Cargando pendientes -->
+      <ion-list *ngIf="loadingPending">
+        <ion-item *ngFor="let s of [1,2,3]">
+          <ion-skeleton-text animated style="width:60%"></ion-skeleton-text>
+        </ion-item>
+      </ion-list>
+
+      <!-- Vacío -->
+      <ion-item *ngIf="!loadingPending && pendingOwner.length === 0" lines="none">
+        <ion-icon name="checkmark-circle-outline" slot="start" color="success"></ion-icon>
+        <ion-label>Sin solicitudes pendientes por ahora.</ion-label>
+      </ion-item>
+
+      <!-- Lista de pendientes -->
+      <ion-list *ngIf="!loadingPending && pendingOwner.length > 0">
+        <ion-item *ngFor="let b of pendingOwner" lines="full">
+          <ion-label>
+            <h3>
+              {{ displayUsuario(b?.usuario) }}
+              <ion-note color="medium">
+                • {{ b?.moneda || 'MXN' }} {{ b?.total | number:'1.0-0' }}
+              </ion-note>
+            </h3>
+            <p>
+              {{ b?.fechaInicio | date:'mediumDate' }} → {{ b?.fechaFin | date:'mediumDate' }}
+              <ion-note color="medium"> ({{ b?.dias }} día(s))</ion-note>
+            </p>
+            <p *ngIf="b?.notasCliente" class="ion-text-wrap">
+              <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
+              {{ b?.notasCliente }}
+            </p>
+          </ion-label>
+
+          <div slot="end" class="actions" style="display:flex; gap:8px;">
+            <ion-button size="small" color="success" (click)="acceptPending(b)" [disabled]="actingIds.has(b._id)">
+              <ion-spinner *ngIf="actingIds.has(b._id) && actingAction==='accept'" name="crescent"></ion-spinner>
+              <span *ngIf="!(actingIds.has(b._id) && actingAction==='accept')">Aceptar</span>
+            </ion-button>
+
+            <ion-button size="small" color="danger" fill="outline" (click)="cancelPending(b)"
+              [disabled]="actingIds.has(b._id)">
+              <ion-spinner *ngIf="actingIds.has(b._id) && actingAction==='cancel'" name="crescent"></ion-spinner>
+              <span *ngIf="!(actingIds.has(b._id) && actingAction==='cancel')">Cancelar</span>
+            </ion-button>
+          </div>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+  <!-- /NUEVO -->
+
+  <!-- Vacío -->
+  <div *ngIf="!loading && datos.length === 0" class="vacio">
+    <ion-icon name="car-outline"></ion-icon>
+    <p>No hay reservas registradas.</p>
+  </div>
+
+  <!-- Listado -->
+  <ion-list *ngIf="!loading && datos.length">
+    <ion-card *ngFor="let b of datos; trackBy: trackByBooking">
+      <ion-card-header>
+        <div class="header-line">
+          <ion-card-title class="truncate">
+            Reserva #{{ b.codigo || b._id }}
+          </ion-card-title>
+          <ion-badge [color]="colorEstatus(b.estatus)">{{ b.estatus }}</ion-badge>
+        </div>
+        <ion-card-subtitle>
+          {{ b.fechaInicio | date:'medium' }} → {{ b.fechaFin | date:'medium' }}
+        </ion-card-subtitle>
+      </ion-card-header>
+
+      <ion-card-content>
+        <div class="grid">
+          <div>
+            <small>Moneda</small>
+            <div>{{ b.moneda || 'MXN' }}</div>
+          </div>
+          <div>
+            <small>Total</small>
+            <div>{{ b.total | currency:(b.moneda || 'MXN'):'symbol-narrow' }}</div>
+          </div>
+        </div>
+
+        <div class="acciones">
+          <!-- Acción principal según rol/estatus -->
+          <ion-button fill="solid" (click)="irAccion(b)">
+            <ng-container *ngIf="soyPropietarioDeAuto(b); else soloDetalle">
+              <ng-container *ngIf="b.estatus === 'aceptada'">Ir a Check-In</ng-container>
+              <ng-container *ngIf="b.estatus === 'en_curso' || b.estatus === 'finalizada'">Ir a Check-Out</ng-container>
+              <ng-container *ngIf="b.estatus !== 'aceptada' && b.estatus !== 'en_curso' && b.estatus !== 'finalizada'">
+                Ver detalle
+              </ng-container>
+            </ng-container>
+            <ng-template #soloDetalle>Ver detalle</ng-template>
+          </ion-button>
+
+          <!-- Secundario: Detalle siempre disponible (abrirá modal) -->
+          <ion-button fill="outline" (click)="openDetalle(b)">
+            Detalle
+          </ion-button>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </ion-list>
+
+  <!-- Infinite scroll -->
+  <ion-infinite-scroll *ngIf="hasMore" threshold="100px" (ionInfinite)="cargarMas($event)">
+    <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Cargando más...">
+    </ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+
+  <app-footer></app-footer>
+</ion-content>

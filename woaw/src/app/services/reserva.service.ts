@@ -5,7 +5,6 @@ import { Observable, from, throwError } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
 import { HeadersService } from './headers.service';
 
-// ───────── Tipos de Bookings ─────────
 export interface BookingFiltro {
   estatus?: 'pendiente' | 'aceptada' | 'en_curso' | 'finalizada' | 'cancelada';
   usuario?: string;
@@ -102,8 +101,6 @@ export interface CreateBookingResponse {
 export class ReservaService {
   private readonly _baseUrl = this.normalizeBaseUrl(environment.api_key);
   public get baseUrl(): string { return this._baseUrl; }
-
-  /** Prefijo correcto del router de bookings */
   private readonly BOOKING_BASE = '/booking/bookings';
 
   constructor(
@@ -111,7 +108,6 @@ export class ReservaService {
     private headersService: HeadersService
   ) { }
 
-  // ───────── helpers base ─────────
   private normalizeBaseUrl(url: string): string {
     return (url || '').replace(/\/+$/, '');
   }
@@ -136,13 +132,11 @@ export class ReservaService {
     return from(this.headersService.obtenerToken()).pipe(
       map((token) => {
         const h = this.headersService.getJsonHeaders(token) as HttpHeaders;
-        // remover Content-Type para que el browser ponga el boundary
         return h.delete('Content-Type');
       })
     );
   }
 
-  // ───────── fallback /api (baseUrl con/sin /api) ─────────
   private buildApiCandidates(path: string): string[] {
     const base = this.baseUrl.replace(/\/+$/, '');
     const p = path.startsWith('/') ? path : `/${path}`;
@@ -152,16 +146,43 @@ export class ReservaService {
     const altBase = hasApi ? base.replace(/\/api$/, '') : `${base}/api`;
     const alt = `${altBase}${p}`;
 
-    // Dedupe + sanea trailing slashes
     const set = new Set([primary.replace(/\/+$/, ''), alt.replace(/\/+$/, '')]);
     return Array.from(set);
   }
 
+  // ======== ANTI-CACHE HELPERS ========
+  private withNoCache(h: HttpHeaders): HttpHeaders {
+    return h
+      .set('Cache-Control', 'no-cache')
+      .set('Pragma', 'no-cache')
+      .set('If-Modified-Since', '0');
+  }
+
+  private withNoCacheHeaders(headers: any): any {
+    if (headers instanceof HttpHeaders) {
+      return this.withNoCache(headers);
+    }
+    // fallback para objetos literales de headers
+    return {
+      ...headers,
+      'Cache-Control': 'no-cache',
+      Pragma: 'no-cache',
+      'If-Modified-Since': '0',
+    };
+  }
+
+  private addCacheBuster(p?: HttpParams): HttpParams {
+    const ts = Date.now().toString();
+    return (p ?? new HttpParams()).set('_ts', ts);
+  }
+  // ====================================
+
   private getWithApiFallback<T>(path: string, headers: any, params?: any) {
     const [primary, alt] = this.buildApiCandidates(path);
-    return this.http.get<T>(primary, { headers, params }).pipe(
+    const h = this.withNoCacheHeaders(headers); // fuerza no-cache en GET
+    return this.http.get<T>(primary, { headers: h, params }).pipe(
       catchError((err) => {
-        if (err?.status === 404 && alt) return this.http.get<T>(alt, { headers, params });
+        if (err?.status === 404 && alt) return this.http.get<T>(alt, { headers: h, params });
         return this.headersService.handleError(err);
       })
     );
@@ -199,12 +220,10 @@ export class ReservaService {
     );
   }
 
-  // ───────── BOOKINGS ─────────
-
   listarBookings(
     filtro: BookingFiltro = {}
   ): Observable<{ total: number; page: number; pages: number; bookings: RentalBooking[]; }> {
-    const params = this.toParams(filtro);
+    const params = this.addCacheBuster(this.toParams(filtro));
     return this.authJsonHeaders$().pipe(
       switchMap((headers) =>
         this.getWithApiFallback<{ total: number; page: number; pages: number; bookings: RentalBooking[] }>(
@@ -217,7 +236,9 @@ export class ReservaService {
   getBookingById(id: string): Observable<RentalBooking> {
     return this.authJsonHeaders$().pipe(
       switchMap((headers) =>
-        this.getWithApiFallback<RentalBooking>(`${this.BOOKING_BASE}/${id}`, headers)
+        this.getWithApiFallback<RentalBooking>(
+          `${this.BOOKING_BASE}/${id}`, headers, this.addCacheBuster()
+        )
       )
     );
   }
@@ -225,13 +246,15 @@ export class ReservaService {
   getMyBookings(): Observable<RentalBooking[]> {
     return this.authJsonHeaders$().pipe(
       switchMap((headers) =>
-        this.getWithApiFallback<RentalBooking[]>(`${this.BOOKING_BASE}/mine`, headers)
+        this.getWithApiFallback<RentalBooking[]>(
+          `${this.BOOKING_BASE}/mine`, headers, this.addCacheBuster()
+        )
       )
     );
   }
 
   getBookingsByCar(carId: string, filtro: Partial<BookingFiltro> = {}): Observable<RentalBooking[]> {
-    const params = this.toParams(filtro);
+    const params = this.addCacheBuster(this.toParams(filtro));
     return this.authJsonHeaders$().pipe(
       switchMap((headers) =>
         this.getWithApiFallback<RentalBooking[]>(`${this.BOOKING_BASE}/car/${carId}`, headers, params)
@@ -242,11 +265,9 @@ export class ReservaService {
   createBookingV2(data: CreateBookingInput): Observable<CreateBookingResponse> {
     const payload: any = { ...data };
 
-    // Convertimos fechas a ISO (servidor espera ISO). Si tu backend maneja solo día, ajusta aquí.
     payload.fechaInicio = new Date(data.fechaInicio).toISOString();
     payload.fechaFin = new Date(data.fechaFin).toISOString();
 
-    // Parse seguro de items si llegan como string JSON desde UI
     if (typeof payload.items === 'string') {
       try { payload.items = JSON.parse(payload.items); }
       catch { return throwError(() => new Error('Formato inválido de items (JSON)')); }
@@ -269,9 +290,6 @@ export class ReservaService {
     );
   }
 
-  // ===== Acciones (únicamente endpoints soportados por el backend) =====
-
-  /** Aceptar reserva. Permite opcionalmente enviar flags (si el backend los soporta). */
   acceptBooking(
     id: string,
     opts: { force?: boolean; ignoreTraslape?: boolean; ignoreOverlap?: boolean } = {}
@@ -321,11 +339,32 @@ export class ReservaService {
     );
   }
 
-  // ===== Fotos / otros endpoints =====
-
-  setCheckIn(id: string, fotos: File[]): Observable<{ message: string; booking: RentalBooking; }> {
+  /**
+   * Enviar datos + fotos de Check-In en UN SOLO request multipart.
+   * Campos esperados por el backend:
+   * - Archivos: checkInFotos[]
+   * - Body: fecha, combustible, notas, checkInFotosExistentes (JSON string)
+   */
+  setCheckIn(
+    id: string,
+    fotos: File[] = [],
+    data?: { fecha?: string; combustible?: number; notas?: string; existentes?: string[] }
+  ): Observable<{ message: string; booking: RentalBooking; }> {
     const fd = new FormData();
+
+    // Archivos
     (fotos || []).forEach((f) => fd.append('checkInFotos', f));
+
+    // Datos
+    if (data?.fecha) fd.append('fecha', data.fecha);
+    if (data?.combustible != null) fd.append('combustible', String(data.combustible));
+    if (data?.notas != null) fd.append('notas', data.notas);
+
+    // Conservar fotos previas (si las hay)
+    if (data?.existentes) {
+      fd.append('checkInFotosExistentes', JSON.stringify(data.existentes));
+    }
+
     return this.authMultipartHeaders$().pipe(
       switchMap((headers) =>
         this.putWithApiFallback<{ message: string; booking: RentalBooking }>(
@@ -365,7 +404,6 @@ export class ReservaService {
     );
   }
 
-  // ⚠️ Alineado con el tipo Deposito.estatus del modelo
   updateDeposit(id: string, data: {
     monto?: number;
     moneda?: string;
@@ -411,8 +449,17 @@ export class ReservaService {
     );
   }
 
+  updateBookingPartial(id: string, data: Partial<RentalBooking>) {
+    return this.authJsonHeaders$().pipe(
+      switchMap(headers =>
+        this.putWithApiFallback<{ message: string; booking: RentalBooking }>(
+          `${this.BOOKING_BASE}/${id}`, data, headers
+        )
+      )
+    );
+  }
+
   removeLineItem(id: string, index: number): Observable<{ message: string; booking: RentalBooking; }> {
-    // Nota: DELETE con body puede fallar en algunos proxies. Si da problemas, mover a POST /items/remove
     return this.authJsonHeaders$().pipe(
       switchMap((headers) =>
         this.deleteWithApiFallback<{ message: string; booking: RentalBooking }>(
@@ -431,4 +478,18 @@ export class ReservaService {
       )
     );
   }
+
+  /** Opcional: solo datos en JSON (si no vas a subir fotos en el mismo request) */
+  saveCheckInData(id: string, data: { fecha?: string; combustible?: number; notas?: string }) {
+    return this.authJsonHeaders$().pipe(
+      switchMap(headers =>
+        this.putWithApiFallback<{ message: string; booking: RentalBooking }>(
+          `${this.BOOKING_BASE}/${id}/checkin`,
+          data,
+          headers
+        )
+      )
+    );
+  }
+
 }
