@@ -1,7 +1,6 @@
 import { Component, OnInit, ViewChild, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { IonContent, PopoverController } from '@ionic/angular';
 import { Router, NavigationStart } from '@angular/router';
-
 import { RentaService, ListarCochesResp } from '../../services/renta.service';
 import { ListComponent } from '../../components/filtos/list/list.component';
 import { filter, map, catchError } from 'rxjs/operators';

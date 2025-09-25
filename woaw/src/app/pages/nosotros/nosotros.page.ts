@@ -19,7 +19,7 @@ export class NosotrosPage implements AfterViewInit {
 
   historia = [
     { titulo: '2023 · Origen', desc: 'Nace la idea de ordenar el caos en clasificados de vehículos.' },
-    { titulo: '2024 · MVP', desc: 'Lanzamiento del prototipo con Ionic + Angular.' },
+    { titulo: '2025 · MVP', desc: 'Lanzamiento del prototipo.' },
     { titulo: '2025 · Escala', desc: 'Módulos: autos, motos, camiones, seguros y arrendamiento.' }
   ];
 
