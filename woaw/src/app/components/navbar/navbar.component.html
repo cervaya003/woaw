@@ -76,16 +76,6 @@
           inicio
         </ion-button>
 
-
-
-        <ion-button
-          fill="clear"
-          [ngClass]="{ 'activo': isActive('conocenos') }"
-          (click)="redirecion('conocenos')"
-        >
-          Nosotros
-        </ion-button>
-
         <ion-button
           fill="clear"
           (click)="abrirPopover('Autos')"
@@ -134,7 +124,13 @@
           Seguros de autos
         </ion-button>
 
-         
+         <ion-button
+          fill="clear"
+          [ngClass]="{ 'activo': isActive('conocenos') }"
+          (click)="redirecion('conocenos')"
+        >
+          Nosotros
+        </ion-button>
 
         <ion-button
           fill="clear"
