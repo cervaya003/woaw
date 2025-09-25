@@ -1,14 +1,131 @@
-<!-- <div class="contenedor_titulo">
+<div class="contenedor_titulo">
   <h2 class="titulo_principal">Nuestros Servicios</h2>
 </div>
 
-<section class="grid-categorias">
-  <div class="side-card" data-side="left" style="--i:0"><span>AUTOS NUEVOS</span></div>
-  <div class="side-card" data-side="left" style="--i:1"><span>SEMINUEVOS</span></div>
 
-  <div class="side-card" data-side="right" style="--i:0"><span>MOTOS NUEVAS</span></div>
-  <div class="side-card" data-side="right" style="--i:1"><span>CAMIONES</span></div>
+
+
+<!-- <section class="grid-categorias">
+  <div class="side-card" data-side="left" style="--i:0;">
+    <img src="/assets/autos/W3.png" alt="Autos usados" class="card-img">
+    <span>AUTOS USADOS</span>
+  </div>
+  <div class="side-card" data-side="left" style="--i:1;">
+    <img src="/assets/autos/W2.png" alt="Autos seminuevos" class="card-img">
+    <span>AUTOS SEMINUEVOS</span>
+  </div>
+  <div class="side-card" data-side="left" style="--i:2;">
+    <img src="/assets/autos/W1.png" alt="Autos nuevos" class="card-img">
+    <span>AUTOS NUEVOS</span>
+  </div>
+
+  <div class="center-card" style="--top:5rem;">
+    <img src="/assets/autos/home8.png" alt="Servicio top" class="card-img">
+    <span>ARRENDAMIENTO</span>
+  </div>
+  <div class="center-card" style="--j:1;">
+    <img src="/assets/autos/home7.png" alt="Promociones" class="card-img">
+    <span>SEGUROS</span>
+  </div>
+
+  <div class="side-card" data-side="right" style="--i:0;">
+    <img src="/assets/autos/A3.png" alt="Camiones" class="card-img">
+    <span>CAMIONES</span>
+  </div>
+  <div class="side-card" data-side="right" style="--i:1;">
+    <img src="/assets/autos/renta.jpg" alt="Renta" class="card-img">
+    <span>RENTA</span>
+  </div>
+  <div class="side-card" data-side="right" style="--i:2;">
+    <img src="/assets/autos/A5.png" alt="Motos" class="card-img">
+    <span>MOTOS</span>
+  </div>
+</section> -->
+
+
+
+
+
+
+
+<section class="grid-categorias">
+  <div class="grid-categorias__wrap">
+
+    <a class="cat-card" href="/menu-vehiculos/autos">
+      <img class="cat-card__bg animacion__1" [src]="img1" alt="Autos" />
+      <span class="cat-card__overlay">
+        <h3 class="cat-card__title">Autos</h3>
+        <p class="cat-card__subtitle">Nuevos, seminuevos y usados</p>
+      </span>
+    </a>
+    <a class="cat-card" href="/m-nuevos">
+      <img class="cat-card__bg animacion__2" [src]="img2" alt="Motos" />
+      <span class="cat-card__overlay">
+        <h3 class="cat-card__title">Motos</h3>
+        <p class="cat-card__subtitle">De calle, touring y más</p>
+      </span>
+    </a>
+    <a class="cat-card" href="/camiones/todos">
+      <img class="cat-card__bg animacion__3" [src]="img3" alt="Camiones" />
+      <span class="cat-card__overlay">
+        <h3 class="cat-card__title">Camiones</h3>
+        <p class="cat-card__subtitle">Carga y flotillas</p>
+      </span>
+    </a>
+    <ng-container>
+      <a class="cat-card2" href="/arrendamiento">
+        <span class="cat-card__overlay">
+          <img src="/assets/img/ic1.png" alt="icono arrendamiento" class="cat-card__icon" />
+
+          <h5 class="cat-card__title">Arrendamiento</h5>
+          <p *ngIf="!esDispositivoMovil" class="cat-card__subtitle">
+            Nuevos, seminuevos y usados
+          </p>
+          <button class="cat-card__btn">
+            Ver más <ion-icon name="chevron-forward-outline"></ion-icon>
+          </button>
+          <small class="cat-card__note">Para empresas y personas físicas</small>
+        </span>
+      </a>
+
+      <a class="cat-card2" href="/renta-coches">
+        <span class="cat-card__overlay">
+          <img src="/assets/img/ic4.png" alt="icono renta" class="cat-card__icon" />
+          <h5 class="cat-card__title">Renta de autos</h5>
+          <p *ngIf="!esDispositivoMovil" class="cat-card__subtitle">
+            De calle, touring y más
+          </p>
+          <button class="cat-card__btn">
+            Ver más <ion-icon name="chevron-forward-outline"></ion-icon>
+          </button>
+          <small class="cat-card__note">Reserva 100% en línea</small>
+        </span>
+      </a>
+
+      <a class="cat-card2" href="/seguros">
+        <span class="cat-card__overlay">
+          <img src="/assets/img/ic5.png" alt="icono seguros" class="cat-card__icon" />
+          <h5 class="cat-card__title">Seguros autos</h5>
+          <p *ngIf="!esDispositivoMovil" class="cat-card__subtitle">
+            Carga y flotillas
+          </p>
+          <button class="cat-card__btn">
+            Cotizar <ion-icon name="chevron-forward-outline"></ion-icon>
+          </button>
+          <small class="cat-card__note">Emisión rápida y soporte</small>
+        </span>
+      </a>
+    </ng-container>
+  </div>
 </section>
+
+
+
+
+
+
+
+
 
 <section class="anuncio-app" *ngIf="!isNative">
   <div class="contenido">
@@ -30,11 +147,9 @@
         <img src="/assets/autos/QR.png" alt="QR Play Store" />
       </div>
     </div>
-
-
     <p class="msj_2">Prepárate para una experiencia única en compra, venta y gestión de vehículos.</p>
   </div>
-</section> -->
+</section>
 
 
 
@@ -57,7 +172,7 @@
 
 
 
-<div class="contenedor_titulo">
+<!-- <div class="contenedor_titulo">
   <div class="animate three">
     <span>N</span><span>u</span><span>e</span><span>s</span><span>t</span><span>r</span><span>o</span><span>s</span> &nbsp;
     <span>S</span><span>e</span><span>r</span><span>v</span><span>i</span><span>c</span><span>i</span><span>o</span><span>s</span>
@@ -161,4 +276,4 @@
 
     <p class="msj_2">Prepárate para una experiencia única en compra, venta y gestión de vehículos.</p>
   </div>
-</section> 
+</section> -->

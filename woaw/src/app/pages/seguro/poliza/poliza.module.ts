@@ -3,8 +3,10 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
-import { SegurosPageRoutingModule } from './seguros-routing.module';
-import { SegurosPage } from './seguros.page';
+
+import { PolizaPageRoutingModule } from './poliza-routing.module';
+
+import { PolizaPage } from './poliza.page';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NavbarComponent } from '../../../components/navbar/navbar.component';
 import { MenuComponent } from '../../../components/filtos/menu/menu.component';
@@ -13,14 +15,13 @@ import { AddComponent } from '../../../components/lote/add/add.component';
 import { AcomodoComponent } from '../../../components/filtos/acomodo/acomodo.component';
 import { FooterComponent } from '../../../components/footer/footer.component';
 import { SpinnerComponent } from '../../../components/spinner/spinner.component';
-import { DynamicIslandComponent } from '../../../components/dynamic-island/dynamic-island.component';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    SegurosPageRoutingModule,
+    PolizaPageRoutingModule, 
     NavbarComponent,
     MenuComponent,
     CartasComponent,
@@ -28,9 +29,8 @@ import { DynamicIslandComponent } from '../../../components/dynamic-island/dynam
     FooterComponent,
     AddComponent,
     ReactiveFormsModule,
-    SpinnerComponent,
-    DynamicIslandComponent
+    SpinnerComponent
   ],
-  declarations: [SegurosPage]
+  declarations: [PolizaPage]
 })
-export class SegurosPageModule { }
+export class PolizaPageModule {}

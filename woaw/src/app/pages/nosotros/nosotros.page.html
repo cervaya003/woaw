@@ -1,12 +1,17 @@
-<ion-header [translucent]="true">
+<!-- <ion-header [translucent]="true">
   <ion-toolbar color="dark" class="woaw-toolbar">
     <div class="brand">
-      <img src="assets/icon/logo4.png" alt="WOAW" />
+      <a class="brand__logo" routerLink="/" aria-label="/home">
+        <img src="assets/icon/logo4.png" alt="WOAW" />
+      </a>
       <span>Conócenos</span>
     </div>
     <span></span>
   </ion-toolbar>
-</ion-header>
+</ion-header> -->
+
+<app-navbar></app-navbar>
+
 
 <ion-content
   [fullscreen]="true"
@@ -18,11 +23,11 @@
     <div class="hero__bg" aria-hidden="true"></div>
     <div class="hero__glow" aria-hidden="true"></div>
     <div class="hero__content reveal">
-      <h1>Cono<span>cenos.</span></h1>
+      <h1>WO<span>AW</span></h1>
       <p>
-        Una plataforma digital que transforma la experiencia de
-compra y venta de autos nuevos, seminuevos y usados
-en México.
+        Una plataforma digital que transforma la experiencia de compra y venta
+        de autos nuevos, seminuevos y usados en México.
+
       </p>
       <!-- <div class="hero__pills">
         <span class="pill">Web · Mobile</span>
@@ -33,65 +38,48 @@ en México.
   </section>
 
   <!-- MISIÓN / VISIÓN / VALORES -->
-<section class="mvv">
-  <article class="card reveal">
-    <ion-icon name="flag-outline" aria-hidden="true"></ion-icon>
-    <h3>Misión</h3>
-    <p>
-      <strong>Conectar personas con su próximo auto</strong>, simplificando la compra-venta de
-      autos nuevos, seminuevos y particulares a través de una <strong>plataforma digital</strong>
-      que brinda una experiencia segura, ágil y 100% confiable. En WOAW,
-      <strong>impulsamos relaciones inteligentes</strong> entre compradores y vendedores a través
-      de tecnología y asesoría personalizada que generan confianza desde el primer clic
-      hasta el cierre de la venta.
-    </p>
-  </article>
-
-  <article class="card reveal">
-    <ion-icon name="sparkles-outline" aria-hidden="true"></ion-icon>
-    <h3>Visión</h3>
-    <p>
-      <strong>Ser la plataforma líder en México en intermediación de autos</strong>, reconocida
-      por revolucionar la forma de comprar y vender con un modelo digital centrado en la
-      comodidad del usuario siendo accesible, justa y transparente en el proceso. Queremos que
-      cada persona pueda <strong>adquirir o vender un auto con tranquilidad</strong>, con respaldo
-      profesional y sin complicaciones, desde cualquier lugar.
-    </p>
-  </article>
-
-  <article class="card reveal">
-    <ion-icon name="shield-checkmark-outline" aria-hidden="true"></ion-icon>
-    <h3>Valores</h3>
-    <ul>
-      <li>Innovación</li>
-      <li>Seguridad</li>
-      <li>Accesibilidad</li>
-      <li>Dinamismo</li>
-      <li>Transparencia</li>
-      <li>Confianza</li>
-    </ul>
-  </article>
-</section>
-
-
-
- 
-
-  <!-- QUIÉNES SOMOS -->
-  <section class="who reveal">
-    <div class="copy">
-      <h2>Quiénes somos</h2>
+  <section class="mvv">
+    <article class="card reveal">
+      <ion-icon name="flag-outline" aria-hidden="true"></ion-icon>
+      <h3>Misión</h3>
       <p>
-        Equipo mexicano que diseña soluciones para compra, venta, renta y
-        arrendamiento de vehículos. Ingeniería con alma artesanal, obsesión por
-        el detalle y respeto por lo clásico, mirando siempre al futuro.
+        <strong>Conectar personas con su próximo auto</strong>, simplificando la
+        compra-venta de autos nuevos, seminuevos y particulares a través de una
+        <strong>plataforma digital</strong>
+        que brinda una experiencia segura, ágil y 100% confiable. En WOAW,
+        <strong>impulsamos relaciones inteligentes</strong> entre compradores y
+        vendedores a través de tecnología y asesoría personalizada que generan
+        confianza desde el primer clic hasta el cierre de la venta.
       </p>
-    </div>
-    <div class="poster parallax">
-      <img src="assets/icon/logo5.png" alt="Equipo WOAW" />
-    </div>
-  </section>
+    </article>
 
+    <article class="card reveal">
+      <ion-icon name="sparkles-outline" aria-hidden="true"></ion-icon>
+      <h3>Visión</h3>
+      <p>
+        <strong
+          >Ser la plataforma líder en México en intermediación de autos</strong
+        >, reconocida por revolucionar la forma de comprar y vender con un
+        modelo digital centrado en la comodidad del usuario siendo accesible,
+        justa y transparente en el proceso. Queremos que cada persona pueda
+        <strong>adquirir o vender un auto con tranquilidad</strong>, con
+        respaldo profesional y sin complicaciones, desde cualquier lugar.
+      </p>
+    </article>
+
+    <article class="card reveal">
+      <ion-icon name="shield-checkmark-outline" aria-hidden="true"></ion-icon>
+      <h3>Valores</h3>
+      <ul>
+        <li>Innovación</li>
+        <li>Seguridad</li>
+        <li>Accesibilidad</li>
+        <li>Dinamismo</li>
+        <li>Transparencia</li>
+        <li>Confianza</li>
+      </ul>
+    </article>
+  </section>
 
 
   <!-- LÍNEA DE TIEMPO -->
@@ -110,9 +98,6 @@ en México.
     </div>
   </section>
 
- 
-
-
 
   <!-- KPIs -->
   <section class="kpis">
@@ -122,14 +107,17 @@ en México.
     </div>
   </section>
 
+  <!-- CTA -->
+  <!-- <section class="cta reveal">
 
-    <!-- CTA -->
-  <section class="cta reveal">
     <h2>¿Listo para acelerar con nosotros?</h2>
     <p>Si compartes nuestra obsesión por el detalle y el servicio, hablemos.</p>
     <a class="btn" href="mailto:comercial@wo-aw.com">Contactar</a>
-  </section>
+  </section> -->
 
 
-  <div class="spacer" aria-hidden="true"></div>
+    <app-footer></app-footer>
 </ion-content>
+
+
+

@@ -5,7 +5,9 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 
 import { NosotrosPageRoutingModule } from './nosotros-routing.module';
+import { NavbarComponent } from '../../components/navbar/navbar.component';
 
+import { FooterComponent } from '../../components/footer/footer.component';
 import { NosotrosPage } from './nosotros.page';
 
 @NgModule({
@@ -13,7 +15,9 @@ import { NosotrosPage } from './nosotros.page';
     CommonModule,
     FormsModule,
     IonicModule,
-    NosotrosPageRoutingModule
+    NosotrosPageRoutingModule,
+    NavbarComponent,
+    FooterComponent
   ],
   declarations: [NosotrosPage]
 })

@@ -1,4 +1,5 @@
 <section>
+
   <div class="resumen-estado" *ngIf="seccionFormulario == 2 && Pregunta == 'no'">
     <!-- Botón arriba -->
     <button type="button" class="btn-guardar" (click)="EnviarVeiculo()">
@@ -56,31 +57,28 @@
       <button class="btn-vender-yo" (click)="quienLovende(0)">Lo vendo yo</button>
       <button class="btn-vende-go" (click)="quienLovende(1)">
         Que lo venda
-        <img src="assets/icon/logo4.png" alt="Go Autos" class="logo-boton" />
+        <img src="assets/icon/logo4.png" alt="woaw" class="logo-boton" />
       </button>
     </div>
   </div>
 
+
   <div
     *ngIf="tipoSeleccionado === 'particular' && seccionFormulario === 3 && (MyRole === 'cliente' || MyRole === 'vendedor')"
     class="formulario-publicacion">
+
     <p class="info-texto">
       <strong>¡Nosotros nos encargamos!</strong> Publicamos tu auto y agendamos citas con interesados.
       <br />
       <strong>Contáctanos por WhatsApp y te ayudamos.</strong>
     </p>
 
-    <ion-item>
-      <ion-label position="stacked">¿Qué auto es?</ion-label>
-      <ion-input placeholder="Ej. Nissan Versa 2020" [(ngModel)]="nombreAuto"></ion-input>
-    </ion-item>
-
-    <ion-item>
-      <ion-label position="stacked">Año</ion-label>
-      <ion-select [(ngModel)]="anioAuto" placeholder="Selecciona un año">
-        <ion-select-option *ngFor="let year of listaAnios" [value]="year">{{ year }}</ion-select-option>
-      </ion-select>
-    </ion-item>
+    <div class="info-grid">
+      <p>Año: <strong>{{ anio }}</strong></p>
+      <p>Marca: <strong>{{ marca }}</strong></p>
+      <p>Modelo: <strong>{{ modelo }}</strong></p>
+      <p class="estilo_unico">{{ estadoVehiculo }}</p>
+    </div>
 
     <ion-item>
       <ion-label position="stacked">Precio estimado (opcional)</ion-label>
@@ -92,38 +90,29 @@
       <ion-select [(ngModel)]="tipoFactura" placeholder="Selecciona una opción">
         <ion-select-option value="original">Original</ion-select-option>
         <ion-select-option value="refacturada">Refacturada</ion-select-option>
-        <ion-select-option value="sin-factura">Sin factura</ion-select-option>
+        <ion-select-option value="sin factura">Sin factura</ion-select-option>
       </ion-select>
     </ion-item>
 
     <div class="btn-wsp-container">
       <button class="btn-wsp" (click)="contactosService.contactarPorPublicacionParticular(
-      nombreAuto,
-      anioAuto!,
-      precioEstimado!,
-      tipoFactura)">
+        anio,
+        marca,
+        modelo,
+        precioEstimado!,
+        tipoFactura
+      )">
         <ion-icon name="logo-whatsapp" slot="start"></ion-icon>
         Contáctanos por WhatsApp
       </button>
     </div>
-
   </div>
+
+
+
 
   <!-- # ------ FORMULARIO -----  -->
   <div class="formulario" *ngIf="Pregunta == 'no' && seccionFormulario == 2">
-
-    <!-- <div class="estado-vehiculo" *ngIf="MyRole === 'admin'" >
-      <label>
-        <input type="radio" name="estado" value="Nuevo" [(ngModel)]="estadoVehiculo" (change)="cambiarEstado('Nuevo')">
-        Nuevo
-      </label>
-      <label>
-        <input type="radio" name="estado" value="Seminuevo" [(ngModel)]="estadoVehiculo"
-          (change)="cambiarEstado('Seminuevo')">
-        Seminuevo
-      </label>
-    </div> -->
-
     <!-- Ubicación  -->
     <div class="contenedor-botones">
 

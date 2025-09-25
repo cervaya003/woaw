@@ -1,7 +1,53 @@
 <app-navbar></app-navbar>
 
 <ion-content [fullscreen]="true">
+
+  <img class="hero-bg" [src]="imgenPrincipal" alt="" loading="lazy" decoding="async" fetchpriority="low" />
+
+  <section class="hero">
+    <div class="glow glow-a"></div>
+    <div class="glow glow-b"></div>
+    <div class="grain"></div>
+    <div class="container">
+      <span class="eyebrow">
+        <span class="dot"></span> Próximamente
+      </span>
+      <img src="/assets/autos/escudo.png" alt="Escudo" class="escudo-icon" loading="lazy" decoding="async"
+        fetchpriority="low" />
+      <h1 class="title">
+        Seguros de Auto <span class="brand">WOAW</span>
+      </h1>
+      <p class="subtitle">
+        Cotiza, compara y asegura en minutos.
+      </p>
+      <ul class="bullets">
+        <li>
+          <ion-icon name="shield-checkmark-outline"></ion-icon>
+          Coberturas: amplia, limitada y RC.
+        </li>
+        <li>
+          <ion-icon name="card-outline"></ion-icon>
+          Meses sin intereses
+        </li>
+        <li>
+          <ion-icon name="timer-outline"></ion-icon>
+          Activación digital inmediata
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <app-footer></app-footer>
+</ion-content>
+
+
+
+ 
+<!-- <app-navbar></app-navbar>
+
+<ion-content [fullscreen]="true">
   <app-spinner *ngIf="mostrar_spinnet"></app-spinner>
+  <app-dynamic-island></app-dynamic-island>
   <div class="fondo-diagonal"></div>
 
   <div class="progress">
@@ -144,7 +190,6 @@
                 formControlName="cp" />
             </div>
 
-            <!-- Género -->
             <label for="genero" style="margin-top:12px;">Género</label>
             <div class="control control--select">
 
@@ -171,12 +216,10 @@
                   {{ e.label }}
                 </ion-select-option>
               </ion-select>
-              <!-- <button type="button" class="icon-btn" aria-label="Regresar" (click)="clearPaso6()">&#x2B05;</button> -->
             </div>
 
           </div>
 
-          <!-- Paso 8: Resumen -->
           <div class="field" *ngIf="currentStep === 7">
             <label>Verifica tu información</label>
 
@@ -205,12 +248,7 @@
               <div class="summary__row">
                 <span class="k">Estado civil</span><span class="v">{{ getEstadoCivilLabel() }}</span>
               </div>
-              <!-- <div class="summary__row">
-              <span class="k">Duración</span><span class="v">{{ form.get('duracion')?.value }} meses</span>
-            </div> -->
             </div>
-
-            <!-- <button type="button" class="icon-btn" aria-label="Regresar" (click)="clearPaso8()">&#x2B05;</button> -->
 
           </div>
 
@@ -233,29 +271,7 @@
 
     </div>
 
-    <!-- <div class="carta_pre_cotizacion">
-      <div class="contenido_pre_cotizacion">
-        <div class=container_animacion>
-          ¡CUIDA
-          <div id=flip>
-            <div>
-              <div>TU AUTO</div>
-            </div>
-            <div>
-              <div>TU VIAJE</div>
-            </div>
-            <div>
-              <div>TU FUTURO</div>
-            </div>
-          </div>
-          😊 ...!
-        </div>
-      </div>
-    </div> -->
-
   </div>
-
-  <!-- resultado de la cotización  -->
 
   <div class="cotizacion_carta">
 
@@ -343,10 +359,9 @@
                 </ng-container>
               </div>
 
-              <!-- CTA -->
               <div class="paybox__cta">
                 <button type="button" class="btn-secondary" (click)="nuevoSeguro()">Cotizar nuevamente</button>
-                <button type="button" class="btn-primary" (click)="confirmarPoliza()">Continuar &#x27A1;</button>
+                <button type="button" class="btn-primary" (click)="confirmarCrearPersona()">Continuar &#x27A1;</button>
               </div>
             </div>
           </section>
@@ -372,5 +387,6 @@
 
   </div>
 
+
   <app-footer></app-footer>
-</ion-content>
+</ion-content>  -->

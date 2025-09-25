@@ -1,0 +1,97 @@
+<app-navbar></app-navbar>
+
+<ion-content [fullscreen]="true">
+  <app-spinner *ngIf="mostrar_spinnet"></app-spinner>
+
+  <div class="fondo-diagonal"></div>
+
+  <div class="poliza">
+    <section class="poliza__card">
+
+      <h1>Crar poliza</h1>
+
+      <form [formGroup]="form_poliza" (ngSubmit)="siguiente()">
+
+        <!-- Campos base -->
+        <div class="field field-grid">
+          <div>
+            <label for="vin">VIN del auto</label>
+            <div class="control">
+              <input id="vin" type="text" class="form-input" placeholder="XX17XFSF" formControlName="vin"
+                (input)="toUpper('vin')" />
+            </div>
+            <p *ngIf="analizaForm('vin')" class="error">El VIN es obligatorio</p>
+          </div>
+
+          <div>
+            <label for="placas">Placas del auto</label>
+            <div class="control">
+              <input id="placas" type="text" class="form-input" placeholder="UQTWRBS" formControlName="placas"
+                (input)="toUpper('placas')" />
+            </div>
+            <p *ngIf="analizaForm('placas')" class="error">Las placas son obligatorias</p>
+          </div>
+
+          <div>
+            <label for="color">Color del auto</label>
+            <div class="control">
+              <select id="color" class="form-input" formControlName="color">
+                <option value="" disabled selected>Selecciona un color</option>
+                <option *ngFor="let opt of colorOpts" [value]="opt.value">
+                  {{ opt.label }}
+                </option>
+              </select>
+            </div>
+            <p *ngIf="analizaForm('color')" class="error">
+              El color es obligatorio
+            </p>
+          </div>
+        </div>
+
+        <!-- Correos dinámicos -->
+        <div class="field">
+          <label>Correos de contacto (opcional)</label>
+
+          <div formArrayName="correos" class="correos-wrap">
+            <div class="correo-item" *ngFor="let ctrl of correos.controls; let i = index;">
+
+              <div class="control">
+                <input class="form-input" type="email" [formControlName]="i" placeholder="correo@ejemplo.com"
+                  inputmode="email" autocomplete="email" (input)="normalizeCorreo(i)" />
+              </div>
+
+              <button type="button" class="btn-ghost danger" (click)="removeCorreo(i)" aria-label="Eliminar correo">
+                Eliminar
+              </button>
+
+              <p *ngIf="ctrl.invalid && (ctrl.dirty || ctrl.touched)" class="error">
+                {{ getCorreoError(ctrl.errors) }}
+              </p>
+            </div>
+          </div>
+
+          <div class="correos-actions">
+            <button type="button" class="btn-outline" (click)="addCorreo()" [disabled]="!canAddCorreo">
+              Agregar correo
+              <small *ngIf="correos.length>0">({{correos.length}}/2)</small>
+            </button>
+          </div>
+
+          <p *ngIf="correos.hasError('duplicated') && (correos.dirty || correos.touched)" class="error">
+            No repitas el mismo correo.
+          </p>
+
+        </div>
+
+
+        <div class="paybox__cta">
+          <button type="submit" class="btn-primary" >
+            Siguiente &#x27A1;
+          </button>
+        </div>
+
+      </form>
+
+    </section>
+  </div>
+</ion-content>

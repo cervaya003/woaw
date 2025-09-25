@@ -59,23 +59,20 @@
   <div
     *ngIf="tipoSeleccionado === 'particular' && seccionFormulario === 3 && (MyRole === 'cliente' || MyRole === 'vendedor')"
     class="formulario-publicacion">
+
+
     <p class="info-texto">
       <strong>¡Nosotros nos encargamos!</strong> Publicamos tu moto y agendamos citas con interesados.
       <br />
       <strong>Contáctanos por WhatsApp y te ayudamos.</strong>
     </p>
 
-    <ion-item>
-      <ion-label position="stacked">¿Qué moto es?</ion-label>
-      <ion-input placeholder="Ej. Kawasaki Ninja 2020" [(ngModel)]="nombreMoto"></ion-input>
-    </ion-item>
-
-    <ion-item>
-      <ion-label position="stacked">Año</ion-label>
-      <ion-select [(ngModel)]="anioMoto" placeholder="Selecciona un año">
-        <ion-select-option *ngFor="let year of listaAnios" [value]="year">{{ year }}</ion-select-option>
-      </ion-select>
-    </ion-item>
+    <div class="info-grid">
+      <p>Año: <strong>{{ anio }}</strong></p>
+      <p>Marca: <strong>{{ marca }}</strong></p>
+      <p>Modelo: <strong>{{ modelo }}</strong></p>
+      <p class="estilo_unico">{{ estadoVehiculo }}</p>
+    </div>
 
     <ion-item>
       <ion-label position="stacked">Precio estimado (opcional)</ion-label>
@@ -87,17 +84,23 @@
       <ion-select [(ngModel)]="tipoFactura" placeholder="Selecciona una opción">
         <ion-select-option value="original">Original</ion-select-option>
         <ion-select-option value="refacturada">Refacturada</ion-select-option>
-        <ion-select-option value="sin-factura">Sin factura</ion-select-option>
+        <ion-select-option value="sin factura">Sin factura</ion-select-option>
       </ion-select>
     </ion-item>
 
     <div class="btn-wsp-container">
-      <button class="btn-wsp"
-        (click)="ContactosService.contactarPorPublicacionParticular(nombreMoto, anioMoto!, precioEstimado!, tipoFactura)">
+      <button class="btn-wsp" (click)="ContactosService.contactarPorPublicacionParticular(
+        anio,
+        marca,
+        modelo,
+        precioEstimado!,
+        tipoFactura
+      )">
         <ion-icon name="logo-whatsapp" slot="start"></ion-icon>
         Contáctanos por WhatsApp
       </button>
     </div>
+    
   </div>
 
   <!-- # ------ FORMULARIO PRINCIPAL -----  -->
