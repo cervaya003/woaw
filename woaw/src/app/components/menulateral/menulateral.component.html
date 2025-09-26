@@ -20,6 +20,7 @@
         (click)="toggleSection('servicios')"
         [attr.aria-expanded]="expandedSections.servicios"
       >
+
         <span>Servicios</span>
         <ion-icon
           [name]="expandedSections.servicios ? 'chevron-up-outline' : 'chevron-down-outline'"
@@ -75,6 +76,7 @@
         (click)="toggleSection('publicaciones')"
         [attr.aria-expanded]="expandedSections.publicaciones"
       >
+
         <span>Mis publicaciones</span>
         <ion-icon
           [name]="expandedSections.publicaciones ? 'chevron-up-outline' : 'chevron-down-outline'"
@@ -86,6 +88,7 @@
         class="menu-items"
         [class.expanded]="expandedSections.publicaciones"
       >
+
         <ion-item (click)="redirecion('mis-autos')" button lines="none">
           <ion-icon name="car-sport-outline" color="danger"></ion-icon>
           <ion-label>Mis autos</ion-label>
@@ -131,6 +134,7 @@
           [name]="expandedSections.configuracion ? 'chevron-up-outline' : 'chevron-down-outline'"
         ></ion-icon>
       </div>
+
 
 
       <div

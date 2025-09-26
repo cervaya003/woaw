@@ -25,12 +25,16 @@ export class PersonaPage implements OnInit {
   currentStepform: 1 | 2 | 3 | 4 = 1;
   datosCoche: any = null;
   datoscotizacion: any = null;
+  UsuarioRespuesta: any = null;
+  statusUserDtos: boolean = false;
   tipoPersonaSeleccionada: string | null = null;
   mostrarMasOpciones: boolean = false;
 
   paises: any[] = [];
   estados: any[] = [];
   ActEconomicas: any[] = [];
+
+  islandKey = 0;
 
   mostrar_spinnet: boolean = false;
 
@@ -49,28 +53,26 @@ export class PersonaPage implements OnInit {
   ) {
     this.form_poliza = this.fb.group({
       tipoPersona: [null, Validators.required]
-    });
+    }); 
   }
 
   ngOnInit() {
+    this.detectaUsuario();
     this.generalService.dispositivo$.subscribe((tipo) => {
       this.esDispositivoMovil = tipo === 'telefono' || tipo === 'tablet';
     });
-
     const stored = localStorage.getItem('datosCoche');
     if (stored) {
       this.datosCoche = JSON.parse(stored);
-      console.log(this.datosCoche)
     } else {
       this.datosCoche = null;
       this.router.navigate(['/seguros']);
-      this.generalService.alert(
-        'Debes seleccionar un coche antes de continuar con tu registro.',
-        'Atención',
-        'warning'
-      );
+      // this.generalService.alert(
+      //   'Debes seleccionar un coche antes de continuar con tu registro.',
+      //   'Atención',
+      //   'warning'
+      // );
     }
-
     const cotizacion = localStorage.getItem('cotizacion');
     if (cotizacion) {
       this.datoscotizacion = cotizacion;
@@ -82,8 +84,29 @@ export class PersonaPage implements OnInit {
         'warning'
       );
     }
-  }
 
+  }
+  detectaUsuario() {
+    const storedPersona = localStorage.getItem('UsuarioRespuesta');
+    if (storedPersona) {
+      this.statusUserDtos = true;
+      this.UsuarioRespuesta = JSON.parse(storedPersona);
+    } else {
+      this.UsuarioRespuesta = null;
+      this.statusUserDtos = false;
+      return;
+    }
+  }
+  nuevosDatos() {
+    this.mostrar_spinnet = true;
+    setTimeout(() => {
+      this.mostrar_spinnet = false;
+      this.router.navigate(['/seguros/poliza']);
+    }, 1500);
+  }
+  editarUser(){
+      this.statusUserDtos = false;
+  }
   siguiente() {
     if (this.form_poliza.invalid) {
       this.form_poliza.markAllAsTouched();
@@ -138,8 +161,10 @@ export class PersonaPage implements OnInit {
     return !!(control && control.invalid && (control.dirty || control.touched));
   }
   regresar() {
+    this.detectaUsuario();
     let controlesAEliminar: string[] = [];
     if (this.currentStepform === 1) {
+      this.islandKey++;
       // this.location.back();
       this.router.navigate(['/seguros']);
     } else if (this.currentStepform === 2) {
@@ -312,6 +337,7 @@ export class PersonaPage implements OnInit {
     this.mostrar_spinnet = true;
     this.seguros.crearPersona(payload).subscribe({
       next: (data) => {
+        this.islandKey++;
         const nombre = data.response?.first_name || this.form_poliza.get('nombre')?.value || 'Tu registro';
         this.generalService.alert(
           `¡Listo! ${nombre} quedó registrado correctamente.`,
@@ -319,7 +345,7 @@ export class PersonaPage implements OnInit {
           'success'
         );
         localStorage.setItem('UsuarioRespuesta', JSON.stringify(data));
-        this.mostrar_spinnet = true;
+        this.mostrar_spinnet = false;
         this.router.navigate(['/seguros/poliza']);
       },
       error: (error) => {

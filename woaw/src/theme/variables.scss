@@ -718,3 +718,43 @@ $color in $tipos-venta {
 img.oculta {
   display: none;
 }
+
+
+
+
+
+
+
+
+
+
+.split-woaw-seguros {
+  display: grid;
+  grid-template-columns: var(--left, auto) var(--right, 1fr);
+  gap: 0px;
+
+  .divicion1 {
+    padding: 0 10px;
+    box-sizing: border-box;
+
+    min-width: 0;
+    overflow: auto;
+    min-height: 100svh;
+  }
+
+  .divicion2 {
+    min-width: 0;
+    overflow: auto;
+    background-color: #000000;
+  }
+
+  @media (max-width: 860px) {
+    grid-template-columns: 1fr;
+
+    .divicion1,
+    .divicion2 {
+      max-height: none;
+      overflow: visible;
+    }
+  }
+}

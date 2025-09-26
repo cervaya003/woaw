@@ -1,3 +1,4 @@
+
 import {
   Component,
   OnInit,
@@ -24,6 +25,7 @@ import { of, forkJoin, Subscription } from "rxjs";
 import { ActivatedRoute } from "@angular/router";
 import { finalize } from "rxjs/operators";
 import { distinctUntilChanged } from "rxjs/operators";
+
 
 type NumOrDots = number | string;
 type Segmento = "todos" | "mios";
@@ -460,6 +462,7 @@ export class RentaCochesPage implements OnInit, OnDestroy {
     }
 
     if (this.vistaActiva === "todos") {
+
       this.todosFiltrados = lista;
       this.totalTodos = this.todosFiltrados.length;
       this.calcularPaginacion("todos");

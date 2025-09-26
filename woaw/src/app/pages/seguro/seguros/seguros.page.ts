@@ -7,7 +7,7 @@ import { GeneralService } from '../../../services/general.service';
 import { SeguroService } from '../../../services/seguro.service';
 
 
-import { AfterViewInit, ElementRef, QueryList, ViewChildren } from '@angular/core';
+import { AfterViewInit, ElementRef, QueryList, ViewChildren, ViewChild } from '@angular/core';
 
 @Component({
   selector: 'app-seguros',
@@ -20,21 +20,25 @@ export class SegurosPage implements OnInit {
   usuario: any;
   public isLoggedIn = false;
   pedir_datos: boolean = false;
-
   activePlan: any = null;
-
   quote: any | null = null;
   cotizacion = false;
   selectedPaymentByPlan: Record<string, string> = {};
-
   imgenPrincipal = '';
   form: FormGroup;
-
   // Pasos: 1=marca, 2=modelo, 3=año, 4=versión, 5=nacimiento, 6=cp/género/estado
   currentStep = 1;
+  islandKey = 0;
+
+  // --- propiedades auxiliares ---
+  marcas: Array<{ id: number; name: string }> = [];
+  opciones: Array<{ key: string; nombre: string; imageUrl: string | null }> = [];
+  searchTerm = '';
+  filteredBrandsVM: Array<{ id: number; name: string; imageUrl: string | null }> = [];
+  brandsVM: Array<{ id: number; name: string; imageUrl: string | null }> = [];
+  brandsVMFull: Array<{ id: number; name: string; imageUrl: string | null }> = [];
 
   // Catálogos previos
-  marcas: { id: number; name: string }[] = [];
   modelos: { id: number; name: string }[] = [];
   anios: number[] = [];
   versions: { id: number; parts: string }[] = [];
@@ -116,7 +120,6 @@ export class SegurosPage implements OnInit {
       this.isLoggedIn = estado;
     });
     this.buildAniosNacimiento();
-    this.obtenerMarcas();
     this.cargaimagen();
   }
   verificaStorage() {
@@ -124,6 +127,8 @@ export class SegurosPage implements OnInit {
 
     if (!raw) {
       this.router.navigate(['/seguros']);
+      this.getMarcas_cohes();
+      this.obtenerMarcas();
       return;
     }
     this.currentStep = 7;
@@ -177,10 +182,12 @@ export class SegurosPage implements OnInit {
     };
   };
   // ---------- Data ----------
-  obtenerMarcas() {
+  private obtenerMarcas(): void {
     this.seguros.getMarcas().subscribe({
       next: (data) => {
         this.marcas = data?.response?.brands ?? [];
+        this.buildVM();
+        // console.log(this.marcas)
       },
       error: (error) => console.error('Error al obtener marcas:', error),
     });
@@ -254,11 +261,13 @@ export class SegurosPage implements OnInit {
     // }
   }
   // ---------- Flow ----------
+  // submit del form 
   siguiente() {
     // 1 -> 2
     if (this.currentStep === 1) {
       if (this.form.get('marca')?.invalid) return;
       this.selectedMarcaId = Number(this.form.get('marca')?.value);
+      console.log(this.selectedMarcaId)
       this.obtenerModelos(this.selectedMarcaId);
       if (!this.form.get('modelo')) {
         this.form.addControl('modelo', this.fb.control(null, Validators.required));
@@ -525,7 +534,11 @@ export class SegurosPage implements OnInit {
       '¿Estás seguro en cotizar un nuevo coche?',
       'Cotizar nuevo coche',
       async () => {
+        this.verificaStorage();
+        localStorage.removeItem('datosCoche');
         localStorage.removeItem('cotizacion');
+        localStorage.removeItem('datosPolizaVin_Respuesta');
+        localStorage.removeItem('datosPolizaVin');
         this.cotizacion = false;
         this.quote = null;
         this.selectedPaymentByPlan = {};
@@ -549,6 +562,7 @@ export class SegurosPage implements OnInit {
         this.form.setErrors(null);
 
         try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch { }
+        this.islandKey++;
       }
     );
   }
@@ -564,6 +578,7 @@ export class SegurosPage implements OnInit {
 
           if (this.quote) {
             localStorage.setItem('cotizacion', JSON.stringify(this.quote));
+            this.islandKey++;
           } else {
             localStorage.removeItem('cotizacion');
           }
@@ -716,7 +731,7 @@ export class SegurosPage implements OnInit {
       );
       return;
     }
-
+    this.islandKey++;
     this.router.navigate(['/seguros/persona']);
   }
   private normalizeCoverage(cov: any) {
@@ -750,20 +765,16 @@ export class SegurosPage implements OnInit {
     return Object.values(out);
   }
   trackByCov = (_: number, c: any) => c?.code || _;
-
   @ViewChildren('lista', { read: ElementRef })
   allSelects!: QueryList<ElementRef<HTMLElement>>;
-
   private setVar(name: string, value: string) {
     document.documentElement.style.setProperty(name, value);
   }
-
   ngAfterViewInit() {
     const syncAll = () => this.syncPopoverWidths();
     syncAll();
     window.addEventListener('resize', syncAll);
   }
-
   syncPopoverWidths() {
     this.allSelects.forEach(ref => {
       const el = ref.nativeElement;
@@ -772,5 +783,92 @@ export class SegurosPage implements OnInit {
       document.documentElement.style.setProperty('--pop-width', `${w}px`);
     });
   }
+  getMarcas_cohes(): void {
+    this.carsService.GetMarcas(2025).subscribe({
+      next: (res: any[]) => {
+        this.opciones = (res || []).map(m => ({
+          key: (m?.key || '').toLowerCase(),
+          nombre: m?.nombre || '',
+          imageUrl: m?.imageUrl ?? null
+        }));
+        this.buildVM();
+      },
+      error: () => { },
+    });
+  }
+  private slug(s: string): string {
+    const map: Record<string, string> = {
+      á: 'a', é: 'e', í: 'i', ó: 'o', ú: 'u', ü: 'u', ñ: 'n',
+      Á: 'a', É: 'e', Í: 'i', Ó: 'o', Ú: 'u', Ü: 'u', Ñ: 'n'
+    };
+    return (s || '')
+      .trim()
+      .replace(/[ÁÉÍÓÚÜÑáéíóúüñ]/g, ch => map[ch] || ch)
+      .toLowerCase()
+      .replace(/&/g, 'and')
+      .replace(/\s+|[-]+/g, '_')
+      .replace(/[^a-z0-9_]/g, '')
+      .replace(/_+/g, '_');
+  }
+  private aliasKey(name: string): string {
+    const k = this.slug(name);
+    const dict: Record<string, string> = {
+      'alfa_romeo': 'alfa_romeo',
+      'land_rover': 'land_rover',
+      'great_wall': 'great_wall',
+      'mercedes_benz': 'mercedes_benz',
+      'rolls_royce': 'rolls_royce',
+      'mg': 'mg',
+      'vw': 'volkswagen',
+      'seat': 'seat',
+      'lynk_co': 'lynk_co',
+      'byd': 'byd',
+    };
+    return dict[k] || k;
+  }
+  private buildVM(): void {
+    if (!this.marcas?.length) {
+      this.brandsVM = [];
+      this.brandsVMFull = [];
+      return;
+    }
 
+    const byKey = new Map<string, { imageUrl: string | null; nombre: string }>();
+    const byName = new Map<string, { imageUrl: string | null; nombre: string }>();
+
+    for (const o of this.opciones || []) {
+      const k = (o?.key || '').toLowerCase();
+      if (k) byKey.set(k, { imageUrl: o.imageUrl ?? null, nombre: o.nombre });
+      const n = (o?.nombre || '').toLowerCase();
+      if (n) byName.set(n, { imageUrl: o.imageUrl ?? null, nombre: o.nombre });
+    }
+
+    // llena el respaldo con TODAS las marcas
+    this.brandsVMFull = this.marcas.map(m => {
+      const display = (m.name || '').trim();
+      const k = this.aliasKey(display);
+      const hit = byKey.get(k) || byName.get(display.toLowerCase()) || null;
+      return {
+        id: m.id,
+        name: display,
+        imageUrl: hit?.imageUrl ?? null
+      };
+    });
+
+    // inicial visible
+    this.brandsVM = [...this.brandsVMFull];
+  }
+  // BUSCADOR -----
+  isSelected(id: number): boolean {
+    return this.form.get('marca')?.value === id;
+  }
+  selectBrand(id: number): void {
+    this.form.get('marca')?.setValue(id);
+  }
+  onSearchBrand(query: string | null | undefined): void {
+    const term = (query || '').trim().toLowerCase();
+    this.brandsVM = !term
+      ? [...this.brandsVMFull]
+      : this.brandsVMFull.filter(b => b.name.toLowerCase().includes(term));
+  }
 }

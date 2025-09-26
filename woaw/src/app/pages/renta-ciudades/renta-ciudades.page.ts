@@ -33,7 +33,7 @@ export class RentaCiudadesPage implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.cargarEstadosYDespuesEstados();
+    // this.cargarEstadosYDespuesEstados();
   }
 
   // 🔹 Trae estados y arma tus tarjetas sin imágenes estáticas
@@ -106,7 +106,9 @@ private cargarEstadosYDespuesEstados(): void {
  
 private enviarEstadoAlBackend(estado: string): void {
   if (!estado?.trim()) return;
+
   const url = `/rentalcars?estado=${encodeURIComponent(estado)}`; // ajusta si tu endpoint es otro
+
   this.http.get(url).subscribe({
     next: (resp: any) => {
       this.ciudadesApi = Array.isArray(resp) ? resp :
@@ -117,11 +119,13 @@ private enviarEstadoAlBackend(estado: string): void {
 }
 
 
+
 seleccionarCiudad(estado: Ciudad) {
   if (!estado?.disponible) return;
   this.router.navigate(['/renta-coches'], {
     queryParams: { estado: estado.nombre }
      // clave: 'estado'
+
   });
 }
 

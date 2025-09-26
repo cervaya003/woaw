@@ -1,69 +1,75 @@
-.dock-seguros {
-  --brand: #ff2121;
-  --ink: #0b0b0e;
-  --muted: #6b7280;
-  --ring: rgba(0,0,0,.10);
-  --rail-bg: #0f1114;
-  --rail-ink: #e5e7eb;
-  --shadow: 0 22px 60px rgba(0,0,0,.35);
 
-  position: relative;
-  z-index: 9999;
+:host {
+  display: block;
+  position: sticky;
+  top: calc(var(--ion-safe-area-top, 0px) + var(--woaw-toolbar-h, 64px));
+  z-index: 50;
+  isolation: isolate;
+}
 
-  /* ───────── Rail lateral fijo */
-  .dock-rail {
-    position: fixed;
-    left: 8px;                 /* pegado al borde */
-    top: 50%;
-    transform: translateY(-50%);
-    display: grid;
-    gap: 10px;
-    padding: 6px;
+.poliza__card {
+  position: static;
+  padding-inline: 8px;
+
+  .dock-pasos {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 12px;
+    padding: 12px 8px;
+    overflow-x: auto;
     background: transparent;
-    pointer-events: auto;
+    scrollbar-gutter: stable both-edges;
 
-    .dock-tab {
-      --w: 52px;
-      display: grid;
-      grid-auto-flow: column;
+    .card {
+      position: relative;
+      display: flex;
       align-items: center;
-      justify-content: start;
-      gap: 8px;
-      width: var(--w);
-      height: 46px;
-      padding: 0 12px 0 10px;
-      border-radius: 0 14px 14px 0;         /* oreja derecha */
-      background: var(--rail-bg);
-      color: var(--rail-ink);
-      border: 1px solid var(--ring);
-      box-shadow: 0 10px 28px rgba(0,0,0,.25);
-      cursor: pointer;
-      opacity: .95;
-      transition: width .18s ease, background .18s ease, color .18s ease, box-shadow .18s ease, transform .12s ease;
+      gap: 10px;
+      padding: 9px 13px;
+      border-radius: 16px;
+      background: #101014;
+      color: #f2f2f5;
+      border: 2px solid #22c55e;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, .35);
+      transition: filter .2s, opacity .2s, transform .2s, border-color .2s;
+      white-space: nowrap;
 
-      ion-icon { font-size: 18px; opacity: .9; }
-      span { font-weight: 900; font-size: 13px; white-space: nowrap; opacity: 0; transition: opacity .18s ease; }
+      h3 {
+        margin: 0;
+        font-size: clamp(11px, 1vw, 13px);
+        letter-spacing: .2px;
+      }
 
-      /* hover: despliega etiqueta */
-      &:hover { width: 138px; transform: translateX(2px); }
-      &:hover span { opacity: 1; }
+      ion-icon {
+        font-size: clamp(10px, 1vw, 13px);
+      }
+
+      &::after {
+        content: "✓";
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #22c55e;
+        color: #0b0b0e;
+        display: grid;
+        place-items: center;
+        font-size: 12px;
+        box-shadow: 0 6px 14px rgba(0, 0, 0, .35);
+      }
+
+      &.disabled {
+        border-color: #ff2121;
+
+        &::after {
+          content: "✕";
+          background: #ff2121;
+          color: #0b0b0e;
+        }
+      }
     }
   }
-
-  /* ───────── Estado activo (por radios) */
-  #dock-coche:checked  ~ .dock-rail label[for="dock-coche"],
-  #dock-cotiza:checked ~ .dock-rail label[for="dock-cotiza"],
-  #dock-datos:checked  ~ .dock-rail label[for="dock-datos"],
-  #dock-poliza:checked ~ .dock-rail label[for="dock-poliza"] {
-    background: linear-gradient(180deg, #ff2121 0%, #ba0b0b 100%);
-    color: #fff;
-    border-color: transparent;
-    box-shadow: 0 18px 40px rgba(255,33,33,.35), inset 0 0 0 1px rgba(255,255,255,.16);
-    width: 138px;             /* activa siempre expandida */
-  }
-  #dock-coche:checked  ~ .dock-rail label[for="dock-coche"]  span,
-  #dock-cotiza:checked ~ .dock-rail label[for="dock-cotiza"] span,
-  #dock-datos:checked  ~ .dock-rail label[for="dock-datos"]  span,
-  #dock-poliza:checked ~ .dock-rail label[for="dock-poliza"] span { opacity: 1; }
-
 }

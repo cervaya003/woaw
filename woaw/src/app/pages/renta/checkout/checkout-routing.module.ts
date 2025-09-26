@@ -1,13 +1,10 @@
 import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
-
-import { CheckoutPage } from './checkout.page';
+import { RouterModule, Routes } from '@angular/router';
+import { CheckOutPage } from './checkout.page';
 
 const routes: Routes = [
-  {
-    path: '',
-    component: CheckoutPage
-  }
+  { path: '', component: CheckOutPage }
+
 ];
 
 @NgModule({

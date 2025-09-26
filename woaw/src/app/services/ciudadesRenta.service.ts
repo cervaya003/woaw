@@ -20,6 +20,7 @@ export class CiudadesRentaService {
 
   getFiltrarCiudades(): Observable<any> {
     return this.http.get(`${this.api}/rentalcars/estados/ciudades`);
+
   }
 
 
