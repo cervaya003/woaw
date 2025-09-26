@@ -14,12 +14,14 @@
     <app-spinner *ngIf="mostrar_spinnet"></app-spinner>
     <ion-list>
       <!-- Servicios (para todos) -->
+
       <div
         class="menu-section"
         [class.expanded]="expandedSections.servicios"
         (click)="toggleSection('servicios')"
         [attr.aria-expanded]="expandedSections.servicios"
       >
+
         <span>Servicios</span>
         <ion-icon
           [name]="expandedSections.servicios ? 'chevron-up-outline' : 'chevron-down-outline'"
@@ -68,6 +70,7 @@
       </div>
 
       <!-- Mis publicaciones (solo roles permitidos) -->
+
       <div
         *ngIf="isPublisher"
         class="menu-section"
@@ -75,17 +78,20 @@
         (click)="toggleSection('publicaciones')"
         [attr.aria-expanded]="expandedSections.publicaciones"
       >
+
         <span>Mis publicaciones</span>
         <ion-icon
           [name]="expandedSections.publicaciones ? 'chevron-up-outline' : 'chevron-down-outline'"
         ></ion-icon>
       </div>
 
+
       <div
         *ngIf="isPublisher"
         class="menu-items"
         [class.expanded]="expandedSections.publicaciones"
       >
+
         <ion-item (click)="redirecion('mis-autos')" button lines="none">
           <ion-icon name="car-sport-outline" color="danger"></ion-icon>
           <ion-label>Mis autos</ion-label>
@@ -133,11 +139,13 @@
       </div>
 
 
+
       <div
         *ngIf="isLoggedIn"
         class="menu-items"
         [class.expanded]="expandedSections.configuracion"
       >
+
 
         <ion-item (click)="abrirModalPerfil()" button lines="none">
           <ion-icon name="person-outline" color="danger"></ion-icon>

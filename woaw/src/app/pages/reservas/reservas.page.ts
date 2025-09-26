@@ -28,6 +28,13 @@ function startOfDayLocal(d: Date): Date {
   return new Date(d.getFullYear(), d.getMonth(), d.getDate());
 }
 
+/** ✅ NUEVO: de 'YYYY-MM-DD' (local) a ISO con mediodía en UTC */
+function ymdToUtcNoonISO(ymd: string): string {
+  const [y, m, d] = ymd.slice(0, 10).split('-').map(Number);
+  const dt = new Date(Date.UTC(y, (m - 1), d, 12, 0, 0)); // 12:00Z para evitar “día anterior” en MX
+  return dt.toISOString();
+}
+
 /* ============================
    Validadores personalizados (LOCAL)
    ============================ */
@@ -68,7 +75,7 @@ export class ReservasPage implements OnInit {
   ocupadasISO = new Set<string>();
   // Valor del ion-datetime (arreglo de YYYY-MM-DD)
   rangeValue: string[] = [];
-  // Rango resaltado (como renta-ficha)
+  // Rango resaltado
   highlightedRange: Array<{ date: string; textColor?: string; backgroundColor?: string }> = [];
 
   constructor(
@@ -249,7 +256,7 @@ export class ReservasPage implements OnInit {
     this.buildHighlightedRange();
   }
 
-  /** ==== Highlight igual a renta-ficha (rango inclusivo, LOCAL) ==== */
+  /** ==== Highlight (rango inclusivo, LOCAL) ==== */
   private buildHighlightedRange(): void {
     this.highlightedRange = [];
 
@@ -283,7 +290,11 @@ export class ReservasPage implements OnInit {
     }
 
     this.enviando = true;
-    let { fechaInicio, fechaFin, notasCliente } = this.form.value as { fechaInicio: string; fechaFin: string | null; notasCliente: string; };
+    let { fechaInicio, fechaFin, notasCliente } = this.form.value as {
+      fechaInicio: string;
+      fechaFin: string | null;
+      notasCliente: string;
+    };
     if (fechaInicio && !fechaFin) fechaFin = fechaInicio;
 
     const minDias = Number(this.coche?.minDias || 1);
@@ -301,15 +312,19 @@ export class ReservasPage implements OnInit {
     const loading = await this.loadingCtrl.create({ message: 'Creando reserva...' });
     await loading.present();
 
+    // ✅ Enviar al backend con hora fija 12:00Z para que NO se recorra un día
+    const fechaInicioISO = ymdToUtcNoonISO(fechaInicio);
+    const fechaFinISO = ymdToUtcNoonISO(fechaFin!);
+
     this.reservaService.createBookingV2({
-      rentalCar: this.coche._id,         // tal cual me pediste
-      fechaInicio,
-      fechaFin: fechaFin!,               // ya garantizado
+      rentalCar: this.coche._id,
+      fechaInicio: fechaInicioISO,   // ISO 12:00Z
+      fechaFin: fechaFinISO,         // ISO 12:00Z
       items: [],
       moneda: this.coche?.precio?.moneda ?? 'MXN',
       notasCliente,
       politicaCancelacion: 'flex',
-      aceptoTerminos: true,              // lo enviamos fijo para el backend
+      aceptoTerminos: true,
     }).subscribe({
       next: async (res: CreateBookingResponse) => {
         await loading.dismiss();

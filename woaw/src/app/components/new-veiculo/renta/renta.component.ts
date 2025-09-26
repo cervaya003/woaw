@@ -174,10 +174,8 @@ export class RentaComponent implements OnInit, OnChanges {
       return;
     }
     const url = `${this.BASE_DISPO}/${id}`;
-    this.router.navigateByUrl(url).then((navigated) => {
-      if (!navigated) { window.location.href = url; return; }
-      setTimeout(() => window.location.reload(), 0);
-    }).catch(() => window.location.href = url);
+    // 👉 Solo Router, sin reload ni window.location.*
+    await this.router.navigateByUrl(url, { replaceUrl: true });
   }
 
   // ---------- tarifas ----------
@@ -323,7 +321,7 @@ export class RentaComponent implements OnInit, OnChanges {
         return false;
       }
       if (costoFijo == null || !Number.isFinite(costoFijo) || costoFijo < 0) {
-        this.generalService.alert('Tarifas por distancia', `Tarifa #${i + 1}: define “Costo fijo”.`, 'warning'); // ← actualizado
+        this.generalService.alert('Tarifas por distancia', `Tarifa #${i + 1}: define “Costo fijo”.`, 'warning');
         return false;
       }
       if (i > 0) {

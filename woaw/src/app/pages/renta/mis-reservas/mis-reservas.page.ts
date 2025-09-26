@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { ReservaService, RentalBooking } from '../../../services/reserva.service';
 import { finalize, timeout, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { ToastController } from '@ionic/angular';
 
 @Component({
   selector: 'app-mis-reservas',
@@ -15,11 +16,10 @@ export class MisReservasPage implements OnInit {
   loading = false;
   datos: RentalBooking[] = [];
 
-  // NUEVO: solicitudes pendientes como dueño
   pendingOwner: Array<RentalBooking & { dias?: number }> = [];
   loadingPending = false;
   actingIds = new Set<string>();
-  actingAction: 'accept' | 'cancel' | null = null;
+  actingAction: 'accept' | 'cancel' | 'start' | 'finish' | null = null;
 
   private myUserId: string | null = null;
   private myRole: 'admin' | 'lotero' | 'vendedor' | 'cliente' | 'invitado' = 'invitado';
@@ -29,7 +29,6 @@ export class MisReservasPage implements OnInit {
   hasMore = true;
   loadingMore = false;
 
-  /** Cache */
   private myAll: RentalBooking[] = [];       // reservas que YO hice
   private ownerAll: RentalBooking[] = [];    // reservas hechas a MIS coches
   private mergedAll: RentalBooking[] = [];
@@ -39,8 +38,9 @@ export class MisReservasPage implements OnInit {
   constructor(
     private reservas: ReservaService,
     private router: Router,
-    private cdr: ChangeDetectorRef
-  ) {}
+    private cdr: ChangeDetectorRef,
+    private toast: ToastController
+  ) { }
 
   ngOnInit(): void {
     const me = this.leerUsuario();
@@ -60,7 +60,6 @@ export class MisReservasPage implements OnInit {
     this.ownerAll = [];
     this.mergedAll = [];
 
-    // reset pendientes
     this.pendingOwner = [];
     this.loadingPending = false;
     this.actingIds.clear();
@@ -72,27 +71,23 @@ export class MisReservasPage implements OnInit {
   private cargar(done?: () => void): void {
     this.loading = !(this.myAllLoaded && (this.myUserId ? this.ownerAllLoaded : true));
     this.cdr.markForCheck();
-
-    /** --- MIS RESERVAS (siempre) --- */
     const petMy$ = this.myAllLoaded
       ? of(this.myAll)
       : this.reservas.getMyBookings().pipe(
-          timeout(6000),
-          catchError(() => of([] as RentalBooking[]))
-        );
+        timeout(6000),
+        catchError(() => of([] as RentalBooking[]))
+      );
 
     petMy$.subscribe((mine) => {
       if (!this.myAllLoaded) {
         this.myAll = (mine || []).sort(this.sortBookingDesc);
         this.myAllLoaded = true;
       }
-      // pinta con lo que ya hay
       this.aplicarPaginaBase(this.myAll);
     });
 
     /** --- RESERVAS A MIS COCHES (solo si tengo myUserId) --- */
     if (!this.myUserId) {
-      // cerrar loading si no habrá rama de dueño
       this.loading = false;
       this.loadingMore = false;
       this.cdr.markForCheck();
@@ -116,9 +111,9 @@ export class MisReservasPage implements OnInit {
     const petOwner$ = this.ownerAllLoaded
       ? of({ bookings: this.ownerAll })
       : this.reservas.listarBookings(filtroOwner).pipe(
-          timeout(6000),
-          catchError(() => of({ total: 0, page: 1, pages: 1, bookings: [] }))
-        );
+        timeout(6000),
+        catchError(() => of({ total: 0, page: 1, pages: 1, bookings: [] }))
+      );
 
     petOwner$
       .pipe(
@@ -168,10 +163,11 @@ export class MisReservasPage implements OnInit {
     const universo = this.mergedAll.length ? this.mergedAll : this.myAll;
     const end = this.page * this.limit;
     this.datos = universo.slice(0, end);
-    this.hasMore = this.datos.length < universo.length;
+    const total = universo.length;
+    this.hasMore = this.datos.length < total;
 
     this.loadingMore = false;
-       this.cdr.markForCheck();
+    this.cdr.markForCheck();
     (ev.target as any).complete();
   }
 
@@ -213,7 +209,7 @@ export class MisReservasPage implements OnInit {
 
   private sortBookingDesc = (a: RentalBooking, b: RentalBooking) => {
     const ka = a.createdAt || a.fechaInicio || '';
-       const kb = b.createdAt || b.fechaInicio || '';
+    const kb = b.createdAt || b.fechaInicio || '';
     return (kb as string).localeCompare(ka as string);
   };
 
@@ -243,18 +239,161 @@ export class MisReservasPage implements OnInit {
     }
     return false;
   }
+  
+  public esSolicitante(b: RentalBooking): boolean {
+    try {
+      if (!b) return false;
+      const raw = localStorage.getItem('user');
+      if (!raw) return false;
+      const me = JSON.parse(raw);
+      const myId = me?._id || me?.id || me?.uid || me?.userId || me?.usuarioId || null;
+      if (!myId) return false;
+
+      const u: any = (b as any).usuario;
+      if (!u) return false;
+      if (typeof u === 'string') return u === myId;
+      const uid = u?._id || u?.id || u?.uid || u?.userId || null;
+      return uid === myId;
+    } catch {
+      return false;
+    }
+  }
+
+  /** ====== Helpers de fecha (sin TZ shift) ====== */
+  private normalizarFechaLocalISO(d: string | Date): string {
+    const dt = new Date(d);
+    const y = dt.getFullYear();
+    const m = String(dt.getMonth() + 1).padStart(2, '0');
+    const day = String(dt.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  }
+
+  public esHoy(fecha: string | Date): boolean {
+    const hoy = this.normalizarFechaLocalISO(new Date());
+    const f = this.normalizarFechaLocalISO(fecha);
+    return hoy === f;
+  }
+
+  public tieneCheckIn(b: RentalBooking): boolean {
+    const ci: any = (b as any)?.checkIn;
+    if (!ci) return false;
+    const tieneAlgo =
+      (ci.combustible != null) ||
+      (typeof ci.notas === 'string' && ci.notas.trim().length > 0) ||
+      (Array.isArray(ci.fotos) && ci.fotos.length > 0) ||
+      Boolean(ci.fecha);
+    return !!tieneAlgo;
+  }
+
+  public puedeIniciar(b: RentalBooking): boolean {
+    return this.soyPropietarioDeAuto(b)
+      && b?.estatus === 'aceptada'
+      && this.esHoy(b?.fechaInicio as any)
+      && this.tieneCheckIn(b);
+  }
+
+  /** ✅ Mostrar botón de Finalizar si soy dueño y está en curso (sin importar el día) */
+  public puedeFinalizar(b: RentalBooking): boolean {
+    return this.soyPropietarioDeAuto(b)
+      && b?.estatus === 'en_curso';
+  }
+
+  async iniciarRenta(b: RentalBooking) {
+    if (!b?._id) return;
+
+    // Guardas defensivas
+    if (!this.soyPropietarioDeAuto(b)) {
+      await constToast(this.toast, 'Solo el propietario puede iniciar la renta', 'warning');
+      return;
+    }
+    if (b.estatus !== 'aceptada') {
+      await constToast(this.toast, 'La renta debe estar aceptada para iniciar', 'warning');
+      return;
+    }
+    if (!this.esHoy(b.fechaInicio)) {
+      await constToast(this.toast, 'Solo puedes iniciar el día de inicio', 'warning');
+      return;
+    }
+    if (!this.tieneCheckIn(b)) {
+      await constToast(this.toast, 'No puedes iniciar sin Check-In', 'danger');
+      return;
+    }
+
+    this.actingAction = 'start';
+    this.actingIds.add(b._id);
+    this.cdr.markForCheck();
+
+    const rs: any = this.reservas as any;
+    let pet$;
+    if (typeof rs.startBooking === 'function') {
+      pet$ = rs.startBooking(b._id);
+    } else if (typeof rs.setStatus === 'function') {
+      pet$ = rs.setStatus(b._id, 'en_curso');
+    } else {
+      pet$ = of({ ok: false });
+    }
+
+    pet$.subscribe({
+      next: async () => {
+        const patch = (x: RentalBooking) => x._id === b._id ? ({ ...x, estatus: 'en_curso' } as RentalBooking) : x;
+
+        this.ownerAll = this.ownerAll.map(patch);
+        this.myAll = this.myAll.map(patch);
+        this.mergedAll = this.mergedAll.map(patch);
+        this.datos = this.datos.map(patch);
+
+        await constToast(this.toast, 'Renta iniciada', 'success');
+      },
+      error: async () => {
+        await constToast(this.toast, 'No se pudo iniciar la renta', 'danger');
+      },
+      complete: () => {
+        this.actingIds.delete(b._id);
+        this.actingAction = null;
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
+  /** ⛳ Ahora solo navega al Checkout (NO cambia el estatus aquí) */
+  irCheckout(b: RentalBooking) {
+    if (!b?._id) return;
+    if (!this.soyPropietarioDeAuto(b)) return;
+    if (b.estatus !== 'en_curso') return;
+
+    this.router.navigate(['/checkout', b._id]);
+  }
 
   irAccion(b: RentalBooking): void {
-    if (this.soyPropietarioDeAuto(b)) {
+    const soyOwner = this.soyPropietarioDeAuto(b);
+    const soyCliente = this.esSolicitante(b);
+
+    if (soyOwner) {
       if (b.estatus === 'aceptada') {
         this.router.navigate(['/checkin', b._id]);
         return;
       }
-      if (b.estatus === 'en_curso' || b.estatus === 'finalizada') {
+      if (b.estatus === 'en_curso') {
+        this.router.navigate(['/checkin', b._id], { queryParams: { viewerOnly: '1' } });
+        return;
+      }
+      if (b.estatus === 'finalizada') {
         this.router.navigate(['/checkout', b._id]);
         return;
       }
     }
+
+    if (soyCliente) {
+      if (b.estatus === 'finalizada') {
+        this.router.navigate(['/checkout', b._id], { queryParams: { viewerOnly: '1' } });
+        return;
+      }
+      if (b.estatus === 'aceptada' || b.estatus === 'en_curso') {
+        this.router.navigate(['/checkin', b._id], { queryParams: { viewerOnly: '1' } });
+        return;
+      }
+    }
+
     this.openDetalle(b);
   }
 
@@ -262,7 +401,6 @@ export class MisReservasPage implements OnInit {
     console.log('Detalle de reserva:', b);
   }
 
-  /** NUEVO: acciones sobre pendientes del dueño */
   acceptPending(b: RentalBooking) {
     if (!b?._id) return;
     this.actingAction = 'accept';
@@ -327,4 +465,9 @@ export class MisReservasPage implements OnInit {
     if (typeof u === 'string') return u;
     return u.nombre || u.email || 'Usuario';
   }
+}
+
+async function constToast(toast: ToastController, msg: string, color: 'success' | 'danger' | 'warning' = 'success') {
+  const t = await toast.create({ message: msg, duration: 1800, color });
+  await t.present();
 }

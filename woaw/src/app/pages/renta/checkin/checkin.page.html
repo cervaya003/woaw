@@ -19,7 +19,7 @@
           {{ b.fechaInicio | date:'medium' }} → {{ b.fechaFin | date:'medium' }}
         </ion-card-subtitle>
 
-        <!-- Auto mostrado solo si rentalCar viene como objeto -->
+
         <div class="auto" *ngIf="getRentalCar(b) as rc">
           <ion-chip *ngIf="rc?.marca || rc?.modelo" outline>
             <ion-icon name="car-outline"></ion-icon>
@@ -34,6 +34,21 @@
             <ion-label>{{ rc?.combustible }}</ion-label>
           </ion-chip>
         </div>
+
+        <!-- Banner de sólo lectura -->
+        <ion-item color="light" lines="none" *ngIf="soloLectura" style="margin-top:8px; border-radius:10px;">
+          <ion-icon name="eye-outline" slot="start"></ion-icon>
+          <ion-label>
+            Vista de sólo lectura
+            <ng-container *ngIf="viewerOnly; else porEnCurso">
+              (eres el solicitante de esta renta)
+            </ng-container>
+            <ng-template #porEnCurso>
+              (la renta está en curso)
+            </ng-template>
+          </ion-label>
+        </ion-item>
+
       </ion-card-header>
 
       <ion-card-content class="ck-body">
@@ -44,7 +59,9 @@
             <div class="valor">{{ combustible }}%</div>
           </div>
           <ion-range min="0" max="100" step="1" [(ngModel)]="combustible" [pin]="true" [snaps]="true" [ticks]="false"
-            aria-label="Nivel de combustible" class="ck-range">
+
+            [disabled]="soloLectura" aria-label="Nivel de combustible" class="ck-range">
+
             <ion-icon size="small" slot="start" name="ellipse-outline"></ion-icon>
             <ion-icon size="small" slot="end" name="ellipse"></ion-icon>
           </ion-range>
@@ -56,41 +73,106 @@
             <div class="titulo">Notas</div>
             <div class="hint">Rayones, accesorios, kilometraje, etc.</div>
           </div>
-          <ion-textarea class="ck-textarea" autoGrow rows="4" placeholder="Escribe aquí…" [(ngModel)]="notas">
+
+          <ion-textarea class="ck-textarea" autoGrow rows="4" placeholder="Escribe aquí…" [(ngModel)]="notas"
+            [readonly]="soloLectura">
           </ion-textarea>
         </div>
 
-        <!-- Fotos -->
+        <!-- Fotos guardadas -->
         <div class="bloque">
           <div class="bloque-head">
-            <div class="titulo">Fotos</div>
+            <div class="titulo">Fotos guardadas</div>
+            <div class="hint" *ngIf="existingUrls?.length; else sinGuardadas">
+              {{ existingUrls.length }} en la reserva
+            </div>
+            <ng-template #sinGuardadas>
+              <div class="hint">No hay fotos guardadas</div>
+            </ng-template>
+          </div>
+
+          <div class="grid-preview" *ngIf="existingUrls?.length">
+            <div class="preview-item" *ngFor="let url of existingUrls; let i = index; trackBy: trackByUrl">
+              <ion-img [src]="url" alt="foto guardada"></ion-img>
+
+              <!-- Botón quitar sólo si NO es soloLectura -->
+              <ion-button *ngIf="!soloLectura" fill="clear" size="small" class="btn-del"
+                (click)="quitarFotoExistente(i)" aria-label="Eliminar foto guardada">
+                <ion-icon name="trash-outline"></ion-icon>
+              </ion-button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Agregar fotos (oculto en soloLectura) -->
+        <div class="bloque" *ngIf="!soloLectura">
+          <div class="bloque-head">
+            <div class="titulo">Agregar fotos</div>
             <div class="hint">Hasta 12 imágenes</div>
           </div>
 
           <div class="uploader">
-            <input #fileInput type="file" accept="image/*" multiple hidden (change)="onFiles($event)" />
+
+            <input #fileInput type="file" accept="image/*" capture="environment" multiple hidden
+              (change)="onFiles($event)" />
             <ion-button size="small" (click)="abrirSelectorFotos(fileInput)">
               <ion-icon slot="start" name="image-outline"></ion-icon>
               Elegir archivos
             </ion-button>
+
+
+            <ion-button size="small" (click)="tomarFotoCapacitor()">
+              <ion-icon slot="start" name="camera-outline"></ion-icon>
+              Tomar foto
+            </ion-button>
+
             <span class="uploader-info" *ngIf="files?.length">{{ files.length }} seleccionadas</span>
             <span class="uploader-info" *ngIf="!files?.length">Sin archivos seleccionados</span>
           </div>
 
-          <!-- Previews -->
+
+          <div class="uploader-err" *ngIf="fileError">
+            <ion-icon name="alert-circle-outline"></ion-icon>
+            <span>{{ fileError }}</span>
+          </div>
+
           <div class="grid-preview" *ngIf="previewUrls?.length">
-            <ion-img *ngFor="let url of previewUrls; trackBy: trackByUrl" [src]="url"></ion-img>
+            <div class="preview-item" *ngFor="let url of previewUrls; let i = index; trackBy: trackByUrl">
+              <ion-img [src]="url" alt="foto nueva"></ion-img>
+              <ion-button fill="clear" size="small" class="btn-del" (click)="quitarFoto(i)"
+                aria-label="Eliminar foto nueva">
+                <ion-icon name="close-circle-outline"></ion-icon>
+              </ion-button>
+            </div>
           </div>
         </div>
       </ion-card-content>
 
-      <!-- Barra de acciones sticky dentro de la card -->
+      <!-- Acciones -->
       <div class="ck-actions">
-        <ion-button expand="block" size="default" [disabled]="loading.guardar || loading.fotos"
-          (click)="guardarYSalir()">
-          <ion-spinner *ngIf="loading.guardar || loading.fotos" name="dots"></ion-spinner>
-          <span *ngIf="!(loading.guardar || loading.fotos)">GUARDAR Y SALIR</span>
+        <!-- Si es soloLectura: sólo botón de volver -->
+        <ion-button *ngIf="soloLectura" expand="block" fill="solid" (click)="continuar()">
+          VOLVER
         </ion-button>
+
+        <!-- Si NO es soloLectura: botones de guardar/subir -->
+        <ng-container *ngIf="!soloLectura">
+          <ion-button expand="block" size="default"
+            [disabled]="loading.booking || loading.guardar || loading.fotos || !!fileError || !hayCambios"
+            (click)="guardarYSalir()">
+            <ion-spinner *ngIf="loading.guardar || loading.fotos" name="dots"></ion-spinner>
+            <span *ngIf="!(loading.guardar || loading.fotos)">GUARDAR Y SALIR</span>
+          </ion-button>
+
+          <ion-button expand="block" fill="outline" size="default"
+            [disabled]="loading.fotos || !!fileError || files.length === 0" (click)="subirFotos()">
+            <ion-spinner *ngIf="loading.fotos" name="dots"></ion-spinner>
+            <span *ngIf="!loading.fotos">SUBIR SOLO FOTOS NUEVAS</span>
+          </ion-button>
+
+          <ion-button expand="block" fill="clear" (click)="continuar()">VOLVER SIN GUARDAR</ion-button>
+        </ng-container>
+
       </div>
     </ion-card>
   </ng-container>

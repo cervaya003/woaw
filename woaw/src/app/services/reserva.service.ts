@@ -374,9 +374,18 @@ export class ReservaService {
     );
   }
 
-  setCheckOut(id: string, fotos: File[]): Observable<{ message: string; booking: RentalBooking; }> {
+  setCheckOut(
+    id: string,
+    fotos: File[] = [],
+    data?: { fecha?: string; combustible?: number; notas?: string  }
+  ): Observable<{ message: string; booking: RentalBooking; }> {
     const fd = new FormData();
     (fotos || []).forEach((f) => fd.append('checkOutFotos', f));
+
+    if (data?.fecha) fd.append('fecha', data.fecha);
+    if (data?.combustible != null) fd.append('combustible', String(data.combustible));
+    if (data?.notas != null) fd.append('notas', data.notas);
+
     return this.authMultipartHeaders$().pipe(
       switchMap((headers) =>
         this.putWithApiFallback<{ message: string; booking: RentalBooking }>(
