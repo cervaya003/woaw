@@ -5,93 +5,130 @@
 
   <div class="fondo-diagonal"></div>
 
-  <div class="poliza">
-    <section class="poliza__card">
+  <div class="split-woaw-seguros" style="--left: 85%; --right: 15%; --gap: 1px;">
 
-      <h1>Crar poliza</h1>
+    <div class="divicion1">
+      <div class="poliza">
+        <section class="poliza__card">
 
-      <form [formGroup]="form_poliza" (ngSubmit)="siguiente()">
 
-        <!-- Campos base -->
-        <div class="field field-grid">
-          <div>
-            <label for="vin">VIN del auto</label>
-            <div class="control">
-              <input id="vin" type="text" class="form-input" placeholder="XX17XFSF" formControlName="vin"
-                (input)="toUpper('vin')" />
-            </div>
-            <p *ngIf="analizaForm('vin')" class="error">El VIN es obligatorio</p>
-          </div>
+          <ng-container *ngIf="!polizaCreada">
+            <h1>Crear poliza</h1>
+            <form [formGroup]="form_poliza" (ngSubmit)="siguiente()">
+              <div class="field field-grid">
+                <div>
+                  <label for="vin">VIN del auto</label>
+                  <div class="control">
+                    <input id="vin" type="text" class="form-input" placeholder="XX17XFSF" formControlName="vin"
+                      (input)="toUpper('vin')" />
+                  </div>
+                  <p *ngIf="analizaForm('vin')" class="error">El VIN es obligatorio</p>
+                </div>
 
-          <div>
-            <label for="placas">Placas del auto</label>
-            <div class="control">
-              <input id="placas" type="text" class="form-input" placeholder="UQTWRBS" formControlName="placas"
-                (input)="toUpper('placas')" />
-            </div>
-            <p *ngIf="analizaForm('placas')" class="error">Las placas son obligatorias</p>
-          </div>
+                <div>
+                  <label for="placas">Placas del auto</label>
+                  <div class="control">
+                    <input id="placas" type="text" class="form-input" placeholder="UQTWRBS" formControlName="placas"
+                      (input)="toUpper('placas')" />
+                  </div>
+                  <p *ngIf="analizaForm('placas')" class="error">Las placas son obligatorias</p>
+                </div>
 
-          <div>
-            <label for="color">Color del auto</label>
-            <div class="control">
-              <select id="color" class="form-input" formControlName="color">
-                <option value="" disabled selected>Selecciona un color</option>
-                <option *ngFor="let opt of colorOpts" [value]="opt.value">
-                  {{ opt.label }}
-                </option>
-              </select>
-            </div>
-            <p *ngIf="analizaForm('color')" class="error">
-              El color es obligatorio
-            </p>
-          </div>
-        </div>
-
-        <!-- Correos dinámicos -->
-        <div class="field">
-          <label>Correos de contacto (opcional)</label>
-
-          <div formArrayName="correos" class="correos-wrap">
-            <div class="correo-item" *ngFor="let ctrl of correos.controls; let i = index;">
-
-              <div class="control">
-                <input class="form-input" type="email" [formControlName]="i" placeholder="correo@ejemplo.com"
-                  inputmode="email" autocomplete="email" (input)="normalizeCorreo(i)" />
+                <div>
+                  <label for="color">Color del auto</label>
+                  <div class="control">
+                    <select id="color" class="form-input" formControlName="color">
+                      <option value="" disabled selected>Selecciona un color</option>
+                      <option *ngFor="let opt of colorOpts" [value]="opt.value">
+                        {{ opt.label }}
+                      </option>
+                    </select>
+                  </div>
+                  <p *ngIf="analizaForm('color')" class="error">
+                    El color es obligatorio
+                  </p>
+                </div>
               </div>
 
-              <button type="button" class="btn-ghost danger" (click)="removeCorreo(i)" aria-label="Eliminar correo">
-                Eliminar
-              </button>
+              <!-- Correos dinámicos -->
+              <div class="field">
+                <label>Correos de contacto (opcional)</label>
 
-              <p *ngIf="ctrl.invalid && (ctrl.dirty || ctrl.touched)" class="error">
-                {{ getCorreoError(ctrl.errors) }}
-              </p>
-            </div>
-          </div>
+                <div formArrayName="correos" class="correos-wrap">
+                  <div class="correo-item" *ngFor="let ctrl of correos.controls; let i = index;">
 
-          <div class="correos-actions">
-            <button type="button" class="btn-outline" (click)="addCorreo()" [disabled]="!canAddCorreo">
-              Agregar correo
-              <small *ngIf="correos.length>0">({{correos.length}}/2)</small>
-            </button>
-          </div>
+                    <div class="control">
+                      <input class="form-input" type="email" [formControlName]="i" placeholder="correo@ejemplo.com"
+                        inputmode="email" autocomplete="email" (input)="normalizeCorreo(i)" />
+                    </div>
 
-          <p *ngIf="correos.hasError('duplicated') && (correos.dirty || correos.touched)" class="error">
-            No repitas el mismo correo.
-          </p>
+                    <button type="button" class="btn-ghost danger" (click)="removeCorreo(i)"
+                      aria-label="Eliminar correo">
+                      Eliminar
+                    </button>
 
-        </div>
+                    <p *ngIf="ctrl.invalid && (ctrl.dirty || ctrl.touched)" class="error">
+                      {{ getCorreoError(ctrl.errors) }}
+                    </p>
+                  </div>
+                </div>
+
+                <div class="correos-actions">
+                  <button type="button" class="btn-outline" (click)="addCorreo()" [disabled]="!canAddCorreo">
+                    Agregar correo
+                    <small *ngIf="correos.length>0">({{correos.length}}/2)</small>
+                  </button>
+                </div>
+
+                <p *ngIf="correos.hasError('duplicated') && (correos.dirty || correos.touched)" class="error">
+                  No repitas el mismo correo.
+                </p>
+
+              </div>
 
 
-        <div class="paybox__cta">
-          <button type="submit" class="btn-primary" >
-            Siguiente &#x27A1;
-          </button>
-        </div>
+              <div class="paybox__cta">
+                <button type="submit" class="btn-primary">
+                  Siguiente &#x27A1;
+                </button>
+              </div>
 
-      </form>
+            </form>
+          </ng-container>
 
-    </section>
+          <ng-container *ngIf="polizaCreada && datosPolizaCreada as d">
+            <section class="poliza_creada">
+
+              <div class="poliza__hero">
+                <ion-icon name="checkmark-circle"></ion-icon>
+                <h2>Póliza creada correctamente</h2>
+
+                <p class="poliza__msg">
+                  Hemos enviado la información de tu póliza a tu correo electrónico <strong>{{ this.email }}📧.</strong>
+                  <br><br>
+                  Revisa tu bandeja de entrada para descargar tus documentos digitales.
+                </p>
+                <button class="bt_paga" (click)="regresar()">
+                  <ion-icon name="cash-outline"></ion-icon>
+                  Regresar
+                </button>
+                <button class="bt_paga" (click)="realizarPago()">
+                  <ion-icon name="cash-outline"></ion-icon>
+                  Realizar pago
+                </button>
+              </div>
+
+            </section>
+          </ng-container>
+
+        </section>
+      </div>
+      <app-dynamic-island [refreshKey]="islandKey"></app-dynamic-island>
+    </div>
+
+    <div class="divicion2">
+      <app-otros-seguros></app-otros-seguros>
+    </div>
   </div>
+
 </ion-content>

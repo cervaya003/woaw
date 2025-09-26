@@ -1,46 +1,46 @@
 :host {
-    --ink: #0b0b0e;
-    --muted: #6b7280;
-    --line: rgba(0, 0, 0, .06);
-    --chip: #f5f7fb;
-    --primary: #ff2121;
-    --primary-ink: #fff;
-    --card: #ffffff;
-    --fondo2: rgba(176, 176, 176, 0.144);
+  --ink: #0b0b0e;
+  --muted: #000000;
+  --line: rgba(0, 0, 0, .06);
+  --chip: #f5f7fb;
+  --primary: #ff2121;
+  --primary-ink: #fff;
+  --card: #ffffff;
+  --negro: #0b0b0e;
+  --fondo2: rgba(176, 176, 176, 0);
 }
 
 .fondo-diagonal {
-    position: fixed;
-    inset: 0;
+  position: fixed;
+  inset: 0;
+  background:
+    linear-gradient(120deg, rgba(0, 0, 0, 0.37) 0 100%, var(--fondo2) 0% 100%),
+    url("/assets/autos/seg1.png");
+  background-size: cover;
+  background-position: left;
+  background-repeat: no-repeat;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 1;
+
+  @media (max-width: 1220px) {
     background:
-        linear-gradient(120deg, rgba(0, 0, 0, 0.67) 0 70%, var(--fondo2) 30% 100%),
-        url("/assets/img/seguro.png");
+      linear-gradient(80deg, rgba(0, 0, 0, 0.37) 0 100%, var(--fondo2) 0% 100%),
+      url("/assets/autos/seg1.png");
     background-size: cover;
     background-position: left;
-    background-repeat: no-repeat;
-    z-index: -1;
-    pointer-events: none;
-    opacity: 1;
+  }
 
-    @media (max-width: 1220px) {
-        background:
-            linear-gradient(80deg, rgba(0, 0, 0, 0.4) 0 85%, var(--fondo2) 15% 100%),
-            url("/assets/img/seguro.png");
-        background-size: cover;
-        background-position: left;
-    }
-
-    @media (max-width: 820px) {
-        background:
-            linear-gradient(180deg, rgba(0, 0, 0, 0.4) 0 100%, var(--fondo2) 0% 100%),
-            url("/assets/img/seguroTelefono.png");
-        background-size: cover;
-        background-position: left;
-    }
+  @media (max-width: 820px) {
+    background:
+      linear-gradient(180deg, rgba(0, 0, 0, 0.37) 0 100%, var(--fondo2) 0% 100%),
+      url("/assets/autos/seg1.png");
+    background-size: cover;
+    background-position: left;
+  }
 }
 
 .poliza {
-    min-height: 90svh;
     background: transparent;
     display: flex;
     justify-content: center;
@@ -53,7 +53,15 @@
     }
 
     .poliza__card {
-        background: #ffffff;
+
+        background: rgba(215, 215, 215, 0.629);
+        border-radius: 16px;
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(11.1px);
+        -webkit-backdrop-filter: blur(11.1px);
+        border: 1px solid rgba(215, 215, 215, 0.3);
+
+        // background: #ffffff;
         border-radius: 16px;
         box-shadow: 0 8px 24px rgba(0, 0, 0, .08);
         padding: 20px;
@@ -109,73 +117,12 @@
     label {
         display: block;
         font-size: 12px;
-        color: var(--muted);
+        color: #dedede;
         margin-bottom: 8px;
         letter-spacing: .2px;
     }
 
 
-    .control {
-        width: 100%;
-        max-width: 100%;
-        overflow: hidden;
-
-        position: relative;
-        display: flex;
-        align-items: center;
-        border: 1px solid var(--line);
-        border-radius: 12px;
-        padding: 0 10px;
-        background: #fff;
-        transition: box-shadow .2s ease, border-color .2s ease;
-
-        height: clamp(46px, 5vh, 92px);
-
-        &:focus-within {
-            border-color: rgba(52, 165, 4, 0.558);
-        }
-
-        :is(input, select) {
-            flex: 1 1 auto;
-            min-width: 0;
-            width: 100%;
-            height: 44px;
-            line-height: 44px;
-            font-size: clamp(11px, 0.9vw, 14px);
-            color: var(--ink);
-            border: 0;
-            outline: none;
-            background: transparent;
-            padding: 0 34px 0 2px;
-            box-shadow: none;
-            appearance: none;
-        }
-
-        select {
-            cursor: pointer;
-        }
-
-        input::placeholder {
-            font-size: clamp(11px, 0.9vw, 14px);
-            color: var(--muted);
-            opacity: .9;
-        }
-
-        select option[disabled] {
-            color: var(--muted);
-        }
-
-        &:has(select)::after {
-            content: "▾";
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 14px;
-            color: var(--muted);
-            pointer-events: none;
-        }
-    }
 
     .summary {
         display: grid;
@@ -424,8 +371,6 @@
     }
 }
 
-
-
 .correos-actions {
     display: flex;
     justify-content: center;
@@ -510,4 +455,81 @@
         color: #e01414;
         margin: 4px 0 0;
     }
+}
+
+.poliza_creada {
+    display: grid;
+    gap: 20px;
+    justify-items: center;
+    padding: 12px;
+
+    .poliza__hero {
+        display: grid;
+        justify-items: center;
+        gap: 14px;
+        text-align: center;
+
+        ion-icon {
+            font-size: 56px;
+            color: #28a745;
+        }
+
+        h2 {
+            margin: 0;
+            font-size: clamp(20px, 2.6vw, 28px);
+            font-weight: 800;
+            color: #28a745;
+            letter-spacing: .2px;
+        }
+
+        .poliza__msg {
+            max-width: 480px;
+            font-size: 15px;
+            line-height: 1.4;
+            color: #444;
+            background: #f9f9f9;
+            border: 1px solid #e2e2e2;
+            padding: 12px 16px;
+            border-radius: 12px;
+        }
+
+        .bt_paga {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            color: #fff;
+            background-color: #d93025;
+            font-size: 14px;
+            font-weight: 700;
+            padding: 14px 28px;
+            border-radius: 12px 25px 12px 25px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 6px 18px rgba(217, 48, 37, .25);
+            transition: transform .12s ease, box-shadow .12s ease;
+
+            ion-icon {
+                color: #fff;
+                font-size: 16px;
+            }
+
+            &:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 8px 24px rgba(217, 48, 37, .35);
+            }
+
+            &:active {
+                transform: translateY(0);
+                box-shadow: 0 4px 14px rgba(217, 48, 37, .2);
+            }
+        }
+    }
+}
+
+app-dynamic-island {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px auto;
 }

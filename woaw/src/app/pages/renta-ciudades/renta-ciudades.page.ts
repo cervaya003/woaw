@@ -1,6 +1,8 @@
 import { Component, OnInit, TrackByFunction } from "@angular/core";
 import { Router } from "@angular/router";
+import { HttpClient } from "@angular/common/http";
 import { CiudadesRentaService } from "../../services/ciudadesRenta.service";
+import { forkJoin } from 'rxjs';
 
 interface Ciudad {
   nombre: string;
@@ -15,78 +17,113 @@ interface Ciudad {
   standalone: false,
 })
 export class RentaCiudadesPage implements OnInit {
-  estados: Ciudad[] = [
-    {
-      nombre: "Guadalajara",
-      imagen: "/assets/autos/publicidad/guadalajara.png",
-      disponible: false,
-    },
-    {
-      nombre: "Ciudad de México",
-      imagen: "/assets/autos/publicidad/cmx.png",
-      disponible: false,
-    },
-    {
-      nombre: "Querétaro",
-      imagen: "/assets/autos/publicidad/q.png",
-      disponible: false,
-    },
-  ];
 
+  estados: Ciudad[] = [];                       
   readonly sizes = "(min-width:1200px) 23vw, (min-width:820px) 30vw, 48vw";
 
   estadoApi: any[] = [];
   ciudadesApi: any[] = [];
 
-  trackByNombre: TrackByFunction<Ciudad> = (_: number, item: Ciudad) =>
-    item.nombre;
+  trackByNombre: TrackByFunction<Ciudad> = (_: number, item: Ciudad) => item.nombre;
 
   constructor(
     private router: Router,
+    private http: HttpClient,                      
     private ciudadesRenta: CiudadesRentaService
   ) {}
 
   ngOnInit(): void {
-    this.cargarEstadosYDespuesEstados();
+    // this.cargarEstadosYDespuesEstados();
   }
 
-  private cargarEstadosYDespuesEstados(): void {
-    this.ciudadesRenta.getObtenerEstado().subscribe({
-      next: (datos: any) => {
-        const estadosApi: string[] = Array.isArray(datos?.estados)
-          ? datos.estados
-          : [];
-        console.log(estadosApi);
+  // 🔹 Trae estados y arma tus tarjetas sin imágenes estáticas
+private cargarEstadosYDespuesEstados(): void {
+  forkJoin({
+    todos: this.ciudadesRenta.getJalarEstado(),
+    disponibles: this.ciudadesRenta.getObtenerEstado(),
+  }).subscribe({
+    next: ({ todos, disponibles }) => {
+      const rawTodos: any[] =
+        Array.isArray(todos?.estados) ? todos.estados :
+        Array.isArray(todos?.data)    ? todos.data    :
+        Array.isArray(todos?.result)  ? todos.result  :
+        Array.isArray(todos)          ? todos         : [];
 
-        const nombreNuevo = estadosApi[0];
-        if (
-          typeof nombreNuevo === "string" &&
-          !this.estados.some((e) => e.nombre === nombreNuevo)
-        ) {
-          this.estados = [
-            ...this.estados,
-            {
-              nombre: nombreNuevo,
-              imagen: "/assets/autos/publicidad/cancun.png",
-              disponible: true,
-            },
-          ].reverse();
-        }
-      },
-      error: (e) => console.error("Error al obtener estados:", e),
-    });
-  }
+      const rawDisp: any[] =
+        Array.isArray(disponibles?.estados) ? disponibles.estados :
+        Array.isArray(disponibles?.data)    ? disponibles.data    :
+        Array.isArray(disponibles?.result)  ? disponibles.result  :
+        Array.isArray(disponibles)          ? disponibles         : [];
 
-  // ✅ adapta aquí al shape real que regrese tu API
-  private getEstadoId(e: any): number | string | undefined {
-    return e?.id ?? e?.clave ?? e?.code ?? e?.codigo ?? e?.estadoId;
-  }
+      const norm = (s: string) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+      const disponiblesSet = new Set(
+        rawDisp
+          .map((x: any) => typeof x === 'string'
+            ? x
+            : (x?.name ?? x?.nombre ?? x?.estado ?? x?.nombreEstado ?? x?.state ?? '')
+          )
+          .map((n: any) => String(n || ''))
+          .map(norm)
+          .filter(Boolean)
+      );
 
-  seleccionarCiudad(ciudad: Ciudad) {
-    this.router.navigate(["/renta-coches"], {
-      queryParams: { ciudad: ciudad.nombre },
-    });
-  }
+      const seen = new Set<string>();
+      this.estados = rawTodos.reduce<Ciudad[]>((acc, item: any) => {
+        const nombre = (
+          typeof item === 'string'
+            ? item
+            : (item?.name ?? item?.nombre ?? item?.estado ?? item?.nombreEstado ?? item?.state ?? '')
+        ).toString().trim();
+        if (!nombre) return acc;
+
+        const key = norm(nombre);
+        if (seen.has(key)) return acc;
+        seen.add(key);
+
+        const url = (
+          typeof item === 'object'
+            ? (item.imageURL ?? item.imagen ?? item.image ?? item.img ?? item.foto ?? item.icon ?? item.urlImagen ?? '')
+            : ''
+        ).toString().trim();
+        const imagen = url && /^(https?:)?\/\//i.test(url) ? url : '';
+
+        const disponible = disponiblesSet.has(key);
+        acc.push({ nombre, imagen, disponible });
+        return acc;
+      }, []);
+
+      // Disponibles primero; luego alfabético (ignorando acentos)
+      this.estados.sort((a, b) => {
+        if (a.disponible !== b.disponible) return a.disponible ? -1 : 1;
+        const an = norm(a.nombre), bn = norm(b.nombre);
+        return an < bn ? -1 : an > bn ? 1 : 0;
+      });
+    },
+    error: (e) => console.error('Error al obtener estados:', e),
+  });
+}
+
+ 
+private enviarEstadoAlBackend(estado: string): void {
+  if (!estado?.trim()) return;
+  const url = `/api/rentalcars?estado=${encodeURIComponent(estado)}`; // ajusta si tu endpoint es otro
+  this.http.get(url).subscribe({
+    next: (resp: any) => {
+      this.ciudadesApi = Array.isArray(resp) ? resp :
+      Array.isArray(resp?.autos) ? resp.autos : [];
+    },
+    error: (e) => console.error(`Error al obtener autos de ${estado}:`, e),
+  });
+}
+
+ 
+seleccionarCiudad(estado: Ciudad) {
+  if (!estado?.disponible) return;
+  this.router.navigate(['/renta-coches'], {
+    queryParams: { estado: estado.nombre } // clave: 'estado'
+  });
+}
+
 
   redirecion(url: string) {
     this.router.navigate([url]);

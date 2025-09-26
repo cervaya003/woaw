@@ -106,7 +106,6 @@ export class CheckInPage implements OnInit, OnDestroy {
       .subscribe({
         next: (b: RentalBooking) => {
           this.booking = b;
-
           // Vista sólo lectura si soy el solicitante (cliente)
           this.viewerOnly = this.soySolicitante(b);
 
@@ -117,7 +116,6 @@ export class CheckInPage implements OnInit, OnDestroy {
           const raw = (b as any)?.checkIn?.fotos ?? [];
           let fotos: string[] = Array.isArray(raw) ? raw : (typeof raw === 'string' ? raw.split(',') : []);
           this.existingUrls = fotos.map((u: string) => (u || '').trim()).filter(Boolean);
-
           this.cdr.markForCheck();
         },
         error: () => this.cdr.markForCheck()
@@ -125,12 +123,14 @@ export class CheckInPage implements OnInit, OnDestroy {
   }
 
   abrirSelectorFotos(fileInput: HTMLInputElement) {
+
     if (this.soloLectura) return;
     fileInput.click();
   }
 
   async onFiles(ev: Event): Promise<void> {
     if (this.soloLectura) return;
+
 
     const input = ev.target as HTMLInputElement | null;
     const list: FileList | null = input?.files ?? null;
@@ -141,6 +141,7 @@ export class CheckInPage implements OnInit, OnDestroy {
 
     if (arr.length > this.MAX_FILES) {
       this.errors.push(`Máximo ${this.MAX_FILES} fotos.`);
+
     }
 
     const valid: File[] = [];

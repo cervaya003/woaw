@@ -191,6 +191,7 @@ export class CarComponent implements OnInit {
     if (this.MyRole === 'admin') {
       this.Pregunta = 'si';
       this.seccionFormulario = 2;
+      this.getLotes('all');
     } else if (this.MyRole === 'lotero') {
       this.Pregunta = 'si';
       this.seccionFormulario = 2;
@@ -214,9 +215,9 @@ export class CarComponent implements OnInit {
   }
   continuar() {
     if (!this.tipoSeleccionado) return;
-    if (this.tipoSeleccionado == 'lote') {
-      this.getLotes('mios');
-    }
+    // if (this.tipoSeleccionado == 'lote') {
+    //   this.getLotes('mios');
+    // }
     this.Pregunta = 'no';
   }
   definirEstadoVehiculo() {
@@ -878,7 +879,7 @@ export class CarComponent implements OnInit {
   getLotes(tipo: 'all' | 'mios') {
     this.registroService.allLotes(tipo).subscribe({
       next: async (res) => {
-        // console.log(res);
+        console.log(res);
         this.lotes = res.lotes;
         this.totalLotes = this.lotes.length;
 

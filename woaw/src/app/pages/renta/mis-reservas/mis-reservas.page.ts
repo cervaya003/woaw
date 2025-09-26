@@ -71,7 +71,6 @@ export class MisReservasPage implements OnInit {
   private cargar(done?: () => void): void {
     this.loading = !(this.myAllLoaded && (this.myUserId ? this.ownerAllLoaded : true));
     this.cdr.markForCheck();
-
     const petMy$ = this.myAllLoaded
       ? of(this.myAll)
       : this.reservas.getMyBookings().pipe(
@@ -240,7 +239,7 @@ export class MisReservasPage implements OnInit {
     }
     return false;
   }
-
+  
   public esSolicitante(b: RentalBooking): boolean {
     try {
       if (!b) return false;
@@ -397,7 +396,6 @@ export class MisReservasPage implements OnInit {
 
     this.openDetalle(b);
   }
-
 
   openDetalle(b: RentalBooking): void {
     console.log('Detalle de reserva:', b);

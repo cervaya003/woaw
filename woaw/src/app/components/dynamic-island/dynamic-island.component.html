@@ -1,26 +1,8 @@
-<!-- DOCK LATERAL + PANEL (HTML + CSS only) -->
-<section class="dock-seguros">
-
-  <!-- Radios para controlar la pestaña activa -->
-  <input type="radio" name="dockTab" id="dock-coche" class="dock-radio" checked hidden />
-  <input type="radio" name="dockTab" id="dock-cotiza" class="dock-radio" hidden />
-  <input type="radio" name="dockTab" id="dock-datos"  class="dock-radio" hidden />
-  <input type="radio" name="dockTab" id="dock-poliza" class="dock-radio" hidden />
-
-  <!-- Rail vertical izquierdo (pestañas) -->
-  <nav class="dock-rail" aria-label="Atajos de seguros">
-    <label class="dock-tab" for="dock-coche"   title="Coche">
-      <ion-icon name="car-sport-outline"></ion-icon><span>Coche</span>
-    </label>
-    <label class="dock-tab" for="dock-cotiza"  title="Cotización">
-      <ion-icon name="pricetag-outline"></ion-icon><span>Cotización</span>
-    </label>
-    <label class="dock-tab" for="dock-datos"   title="Mis datos">
-      <ion-icon name="person-outline"></ion-icon><span>Mis datos</span>
-    </label>
-    <label class="dock-tab" for="dock-poliza"  title="Póliza">
-      <ion-icon name="document-text-outline"></ion-icon><span>Póliza</span>
-    </label>
-  </nav>
-
+<section class="poliza__card">
+  <div class="dock-pasos">
+    <div class="card" *ngFor="let card of cards" [class.disabled]="!card.estatus" [attr.aria-disabled]="!card.estatus">
+      <ion-icon [name]="card.icon"></ion-icon>
+      <h3>{{ card.nombre }}</h3>
+    </div>
+  </div>
 </section>

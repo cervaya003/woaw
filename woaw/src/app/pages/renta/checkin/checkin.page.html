@@ -19,6 +19,7 @@
           {{ b.fechaInicio | date:'medium' }} → {{ b.fechaFin | date:'medium' }}
         </ion-card-subtitle>
 
+
         <div class="auto" *ngIf="getRentalCar(b) as rc">
           <ion-chip *ngIf="rc?.marca || rc?.modelo" outline>
             <ion-icon name="car-outline"></ion-icon>
@@ -47,6 +48,7 @@
             </ng-template>
           </ion-label>
         </ion-item>
+
       </ion-card-header>
 
       <ion-card-content class="ck-body">
@@ -57,7 +59,9 @@
             <div class="valor">{{ combustible }}%</div>
           </div>
           <ion-range min="0" max="100" step="1" [(ngModel)]="combustible" [pin]="true" [snaps]="true" [ticks]="false"
+
             [disabled]="soloLectura" aria-label="Nivel de combustible" class="ck-range">
+
             <ion-icon size="small" slot="start" name="ellipse-outline"></ion-icon>
             <ion-icon size="small" slot="end" name="ellipse"></ion-icon>
           </ion-range>
@@ -69,6 +73,7 @@
             <div class="titulo">Notas</div>
             <div class="hint">Rayones, accesorios, kilometraje, etc.</div>
           </div>
+
           <ion-textarea class="ck-textarea" autoGrow rows="4" placeholder="Escribe aquí…" [(ngModel)]="notas"
             [readonly]="soloLectura">
           </ion-textarea>
@@ -107,13 +112,14 @@
           </div>
 
           <div class="uploader">
+
             <input #fileInput type="file" accept="image/*" capture="environment" multiple hidden
               (change)="onFiles($event)" />
-
             <ion-button size="small" (click)="abrirSelectorFotos(fileInput)">
               <ion-icon slot="start" name="image-outline"></ion-icon>
               Elegir archivos
             </ion-button>
+
 
             <ion-button size="small" (click)="tomarFotoCapacitor()">
               <ion-icon slot="start" name="camera-outline"></ion-icon>
@@ -123,6 +129,7 @@
             <span class="uploader-info" *ngIf="files?.length">{{ files.length }} seleccionadas</span>
             <span class="uploader-info" *ngIf="!files?.length">Sin archivos seleccionados</span>
           </div>
+
 
           <div class="uploader-err" *ngIf="fileError">
             <ion-icon name="alert-circle-outline"></ion-icon>
@@ -165,6 +172,7 @@
 
           <ion-button expand="block" fill="clear" (click)="continuar()">VOLVER SIN GUARDAR</ion-button>
         </ng-container>
+
       </div>
     </ion-card>
   </ng-container>

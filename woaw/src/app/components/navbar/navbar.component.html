@@ -3,181 +3,96 @@
   <ion-toolbar class="custom-toolbar" color="dark">
     <ion-buttons slot="start">
       <div class="logo_content">
-        <img
-          src="/assets/icon/logo4.png"
-          loading="lazy"
-          alt="WOAW"
-          class="logo"
-          (click)="redirecion_logo()"
-        />
+        <img src="/assets/icon/logo4.png" loading="lazy" alt="WOAW" class="logo" (click)="redirecion_logo()" />
 
         <!-- <span class="titulo-movil" *ngIf="!mostrarBuscador && esDispositivoMovil">
           {{ getTituloSeccion() }}
         </span> -->
 
         <!-- Botón lupa para mostrar buscador -->
-        <ion-button
-          fill="clear"
-          class="btn-buscar"
-          *ngIf="!mostrarBuscador  && !estaEnHome && esDispositivoMovil"
-          (click)="mostrarBuscador = true"
-        >
+        <ion-button fill="clear" class="btn-buscar" *ngIf="!mostrarBuscador  && !estaEnHome && esDispositivoMovil"
+          (click)="mostrarBuscador = true">
           <ion-icon name="search-outline"></ion-icon>
         </ion-button>
 
         <!-- Botón cerrar buscador -->
-        <ion-button
-          fill="clear"
-          class="btn-buscar"
-          *ngIf="mostrarBuscador && !estaEnHome && esDispositivoMovil"
-          (click)="cerrarBuscador()"
-        >
+        <ion-button fill="clear" class="btn-buscar" *ngIf="mostrarBuscador && !estaEnHome && esDispositivoMovil"
+          (click)="cerrarBuscador()">
           <ion-icon name="close-outline"></ion-icon>
         </ion-button>
       </div>
 
       <!-- Searchbar solo visible si mostrarBuscador está activo -->
-      <div
-        class="buscador-container"
-        *ngIf="!estaEnHome && !esDispositivoMovil"
-      >
-        <ion-searchbar
-          [(ngModel)]="terminoBusqueda"
-          (ionInput)="onInputChange($event)"
-          (keyup.enter)="irABusqueda(terminoBusqueda)"
-          placeholder="Busca por marca, modelo o año"
-          animated="true"
-        >
+      <div class="buscador-container" *ngIf="!estaEnHome && !esDispositivoMovil">
+        <ion-searchbar [(ngModel)]="terminoBusqueda" (ionInput)="onInputChange($event)"
+          (keyup.enter)="irABusqueda(terminoBusqueda)" placeholder="Busca por marca, modelo o año" animated="true">
         </ion-searchbar>
       </div>
 
-      <div
-        class="buscador-container"
-        *ngIf="mostrarBuscador && !estaEnHome && esDispositivoMovil"
-      >
-        <ion-searchbar
-          [(ngModel)]="terminoBusqueda"
-          (ionInput)="onInputChange($event)"
-          (keyup.enter)="irABusqueda(terminoBusqueda)"
-          placeholder="Busca por marca, modelo o año"
-          animated="true"
-        >
+      <div class="buscador-container" *ngIf="mostrarBuscador && !estaEnHome && esDispositivoMovil">
+        <ion-searchbar [(ngModel)]="terminoBusqueda" (ionInput)="onInputChange($event)"
+          (keyup.enter)="irABusqueda(terminoBusqueda)" placeholder="Busca por marca, modelo o año" animated="true">
         </ion-searchbar>
       </div>
     </ion-buttons>
 
     <ion-buttons slot="end">
       <ng-container *ngIf="!esDispositivoMovil">
-        <ion-button
-          fill="clear"
-          [ngClass]="{ 'activo': isActive('home') }"
-          (click)="redirecion('home')"
-        >
+        <ion-button fill="clear" [ngClass]="{ 'activo': isActive('home') }" (click)="redirecion('home')">
           inicio
         </ion-button>
 
-
-
-        <ion-button
-          fill="clear"
-          [ngClass]="{ 'activo': isActive('conocenos') }"
-          (click)="redirecion('conocenos')"
-        >
-          Nosotros
-        </ion-button>
-
-        <ion-button
-          fill="clear"
-          (click)="abrirPopover('Autos')"
-          [ngClass]="{ 'activo': isActive('menu-vehiculos/autos') }"
-        >
+        <ion-button fill="clear" (click)="abrirPopover('Autos')"
+          [ngClass]="{ 'activo': isActive('menu-vehiculos/autos') }">
           Vehiculos
         </ion-button>
 
-        <ion-button
-          fill="clear"
-          [ngClass]="{ 'activo': isActive('m-nuevos') }"
-          (click)="redirecion('m-nuevos')"
-        >
+        <ion-button fill="clear" [ngClass]="{ 'activo': isActive('m-nuevos') }" (click)="redirecion('m-nuevos')">
           Motos
         </ion-button>
 
-        <ion-button
-          fill="clear"
-          [ngClass]="{ 'activo': isActive('camiones/todos') }"
-          (click)="redirecion('camiones/todos')"
-        >
+        <ion-button fill="clear" [ngClass]="{ 'activo': isActive('camiones/todos') }"
+          (click)="redirecion('camiones/todos')">
           Camiones
         </ion-button>
 
-        <ion-button
-          fill="clear"
-          [ngClass]="{ 'activo': isActive('arrendamiento') }"
-          (click)="redirecion('arrendamiento')"
-        >
+        <ion-button fill="clear" [ngClass]="{ 'activo': isActive('arrendamiento') }"
+          (click)="redirecion('arrendamiento')">
           Arrendamiento
         </ion-button>
 
-        <ion-button
-          fill="clear"
-          [ngClass]="{ 'activo': isActive('renta-ciudades') }"
-          (click)="redirecion('renta-ciudades')"
-        >
+        <ion-button fill="clear" [ngClass]="{ 'activo': isActive('renta-ciudades') }"
+          (click)="redirecion('renta-ciudades')">
           Renta de coches
         </ion-button>
 
-        <ion-button
-          fill="clear"
-          [ngClass]="{ 'activo': isActive('seguros') }"
-          (click)="redirecion('seguros')"
-        >
+        <ion-button fill="clear" [ngClass]="{ 'activo': isActive('seguros') }" (click)="redirecion('seguros')">
           Seguros de autos
         </ion-button>
 
-         
+        <ion-button fill="clear" [ngClass]="{ 'activo': isActive('conocenos') }" (click)="redirecion('conocenos')">
+          Nosotros
+        </ion-button>
 
-        <ion-button
-          fill="clear"
-          [ngClass]="{ 'activo': isActive('inicio') }"
-          (click)="redirecion('inicio')"
-          *ngIf="!isLoggedIn"
-        >
+        <ion-button fill="clear" [ngClass]="{ 'activo': isActive('inicio') }" (click)="redirecion('inicio')"
+          *ngIf="!isLoggedIn">
           Iniciar sesión
         </ion-button>
 
-        <button
-          class="btn-vender"
-          [ngClass]="{ 'activo-btn-new': isActive('new-car') }"
-          (click)="redirecion('new-car')"
-          *ngIf="!esDispositivoMovil"
-        >
+        <button class="btn-vender" [ngClass]="{ 'activo-btn-new': isActive('new-car') }" (click)="redirecion('new-car')"
+          *ngIf="!esDispositivoMovil">
           <ion-icon name="add-outline"></ion-icon>
           Publicar
         </button>
 
         <!-- USUARIO (con foto de Google si existe) -->
-        <div
-          class="usuario-info"
-          *ngIf="isLoggedIn"
-          (click)="abrirModalPerfil()"
-        >
-          <img
-            *ngIf="!esDispositivoMovil"
-            src="assets/icon/mexico.png"
-            alt="MX"
-            class="icono-bandera"
-          />
+        <div class="usuario-info" *ngIf="isLoggedIn" (click)="abrirModalPerfil()">
+          <img *ngIf="!esDispositivoMovil" src="assets/icon/mexico.png" alt="MX" class="icono-bandera" />
           <div class="contenedor-nombre">
             <ng-container *ngIf="fotoPerfil; else iconoDefault">
-              <img
-                [src]="fotoPerfil"
-                alt="Foto de perfil"
-                width="20"
-                height="20"
-                style="border-radius: 50%; object-fit: cover;"
-                referrerpolicy="no-referrer"
-                (error)="fotoPerfil = null"
-              />
+              <img [src]="fotoPerfil" alt="Foto de perfil" width="20" height="20"
+                style="border-radius: 50%; object-fit: cover;" referrerpolicy="no-referrer"
+                (error)="fotoPerfil = null" />
             </ng-container>
             <ng-template #iconoDefault>
               <ion-icon name="person-outline" class="icono-user"></ion-icon>
@@ -188,26 +103,16 @@
         <!-- /USUARIO -->
       </ng-container>
 
-      <ion-button
-        fill="clear"
-        class="stack"
-        [ngClass]="{ 'activo': isActive('favoritos') }"
-        (click)="redirecion('favoritos')"
-        *ngIf="isLoggedIn && !mostrarBuscador"
-      >
+      <ion-button fill="clear" class="stack" [ngClass]="{ 'activo': isActive('favoritos') }"
+        (click)="redirecion('favoritos')" *ngIf="isLoggedIn && !mostrarBuscador">
         <span class="vcol">
           <ion-icon name="heart-outline"></ion-icon>
           <span *ngIf="esDispositivoMovil" class="label">Favoritos</span>
         </span>
       </ion-button>
 
-      <ion-button
-        fill="clear"
-        class="stack"
-        [ngClass]="{ 'activo': isActive('m-nuevos') }"
-        (click)="redirecion('m-nuevos')"
-        *ngIf="!mostrarBuscador && esDispositivoMovil"
-      >
+      <ion-button fill="clear" class="stack" [ngClass]="{ 'activo': isActive('m-nuevos') }"
+        (click)="redirecion('m-nuevos')" *ngIf="!mostrarBuscador && esDispositivoMovil">
         <span class="vcol">
           <span class="iconbox">
             <ion-icon name="bicycle-outline"></ion-icon>
@@ -216,26 +121,16 @@
         </span>
       </ion-button>
 
-      <ion-button
-        fill="clear"
-        class="stack"
-        [ngClass]="{ 'activo': isActive('seguros') }"
-        (click)="redirecion('seguros')"
-        *ngIf="!mostrarBuscador && esDispositivoMovil"
-      >
+      <ion-button fill="clear" class="stack" [ngClass]="{ 'activo': isActive('seguros') }"
+        (click)="redirecion('seguros')" *ngIf="!mostrarBuscador && esDispositivoMovil">
         <span class="vcol">
           <ion-icon name="shield-checkmark-outline"></ion-icon>
           <span class="label">Seguros</span>
         </span>
       </ion-button>
 
-      <ion-button
-        fill="clear"
-        class="stack"
-        [ngClass]="{ 'activo': isActive('renta-ciudades') }"
-        (click)="redirecion('renta-ciudades')"
-        *ngIf="!mostrarBuscador && esDispositivoMovil"
-      >
+      <ion-button fill="clear" class="stack" [ngClass]="{ 'activo': isActive('renta-ciudades') }"
+        (click)="redirecion('renta-ciudades')" *ngIf="!mostrarBuscador && esDispositivoMovil">
         <span class="vcol">
           <ion-icon name="key-outline"></ion-icon>
           <span class="label">Renta</span>

@@ -6,6 +6,7 @@ import { ToastController } from '@ionic/angular';
 import { Capacitor } from '@capacitor/core';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 
+
 @Component({
   selector: 'app-checkout',
   templateUrl: './checkout.page.html',
@@ -13,6 +14,7 @@ import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: false
 })
+
 export class CheckOutPage implements OnInit, OnDestroy {
   id!: string;
   booking?: RentalBooking;

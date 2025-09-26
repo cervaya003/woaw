@@ -66,4 +66,7 @@ export class SeguroService {
       headers: { 'Content-Type': 'application/json' }
     });
   }
+  pagoPoliza(id: string): Observable<any> {
+    return this.http.get(`${environment.api_key}/crabi/checkout/${id}`);
+  }
 }
