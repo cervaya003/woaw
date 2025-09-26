@@ -5,242 +5,270 @@
   <app-spinner *ngIf="mostrar_spinnet"></app-spinner>
   <div class="fondo-diagonal"></div>
 
-  <div class="poliza">
-    <section class="poliza__card">
+  <div class="split-woaw-seguros" style="--left: 85%; --right: 15%; --gap: 1px;">
 
-      <!-- Bloques de progreso -->
-      <div class="carta__steps" role="group" aria-label="Progreso de cotización">
-        <div class="carta__step" [class.is-active]="currentStepform >= 1" aria-hidden="true"></div>
-        <div class="carta__step" [class.is-active]="currentStepform >= 2" aria-hidden="true"></div>
-        <div class="carta__step" [class.is-active]="currentStepform >= 3" aria-hidden="true"></div>
-        <div class="carta__step" [class.is-active]="currentStepform >= 4" aria-hidden="true"></div>
+    <div class="divicion1">
+      <div class="poliza">
+        <section class="poliza__card">
+
+          <!-- Bloques de progreso -->
+          <div class="carta__steps" role="group" aria-label="Progreso de cotización">
+            <div class="carta__step" [class.is-active]="currentStepform >= 1" aria-hidden="true"></div>
+            <div class="carta__step" [class.is-active]="currentStepform >= 2" aria-hidden="true"></div>
+            <div class="carta__step" [class.is-active]="currentStepform >= 3" aria-hidden="true"></div>
+            <div class="carta__step" [class.is-active]="currentStepform >= 4" aria-hidden="true"></div>
+          </div>
+
+          <h1>Mis datos</h1>
+
+          <form [formGroup]="form_poliza" (ngSubmit)="siguiente()">
+
+            <!-- SECCION FORMULARIO 1  -->
+            <div class="field_persona" *ngIf="currentStepform === 1">
+              <!-- <p class="header">Crear persona</p> -->
+              <h1 class="pregunta">¿Qué tipo de persona eres?</h1>
+              <div class="persona-radio">
+                <label class="radio-card">
+                  <input type="radio" formControlName="tipoPersona" value="fisica" />
+                  <span>Física</span>
+                </label>
+
+                <label class="radio-card">
+                  <input type="radio" formControlName="tipoPersona" value="moral" />
+                  <span>Moral</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- <h1 *ngIf="currentStepform !== 1" class="header">Ingresa tus datos</h1> -->
+
+            <!-- ESTO VA A ESTAR SIEMPRE  -->
+            <ng-container *ngIf="datosCoche && currentStepform !== 1">
+              <table class="tabla-resumen-horizontal">
+                <thead>
+                  <tr>
+                    <th>Marca</th>
+                    <th>Modelo</th>
+                    <th>Año</th>
+                    <th>Nacimiento</th>
+                    <th>C.P.</th>
+                    <th *ngIf="tipoPersonaSeleccionada === 'fisica'">Género</th>
+                    <th *ngIf="tipoPersonaSeleccionada === 'fisica'">Estado civil</th>
+                    <th>Versión</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>{{ datosCoche.marca }}</td>
+                    <td>{{ datosCoche.modelo }}</td>
+                    <td>{{ datosCoche.anio }}</td>
+                    <td>{{ datosCoche.nacimiento.dia }}/{{ datosCoche.nacimiento.mes }}/{{ datosCoche.nacimiento.anio }}
+                    </td>
+                    <td>{{ datosCoche.cp }}</td>
+                    <td *ngIf="tipoPersonaSeleccionada === 'fisica'">{{ datosCoche.genero }}</td>
+                    <td *ngIf="tipoPersonaSeleccionada === 'fisica'">{{ datosCoche.estadoCivil }}</td>
+                    <td>{{ datosCoche.version }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </ng-container>
+
+            <!-- SECCION FORMULARIO 2  -->
+            <div class="field field-grid" *ngIf="currentStepform === 2">
+              <div>
+                <label *ngIf="tipoPersonaSeleccionada === 'fisica'" for="nombre">Nombre completo <span>*</span></label>
+                <label *ngIf="tipoPersonaSeleccionada === 'moral'" for="nombre">Nombre de la
+                  empresa<span>*</span></label>
+                <div class="control">
+                  <input id="nombre" type="text" class="form-input" placeholder="NOMBRE" formControlName="nombre"
+                    (input)="toUpper('nombre')" />
+                </div>
+                <p *ngIf="analizaForm('nombre')" class="error">El nombre es obligatorio</p>
+              </div>
+              <div *ngIf="tipoPersonaSeleccionada === 'fisica'">
+                <label for="apellidoP">Apellido paterno<span>*</span></label>
+                <div class="control">
+                  <input id="apellidoP" type="text" class="form-input" placeholder="Ej. PÉREZ"
+                    formControlName="apellidoP" (input)="toUpper('apellidoP')" />
+                </div>
+                <p *ngIf="analizaForm('apellidoP')" class="error">Ingresa tu primer apellido.</p>
+              </div>
+              <div *ngIf="tipoPersonaSeleccionada === 'fisica'">
+                <label for="apellidoM">Apellido materno<span>*</span></label>
+                <div class="control">
+                  <input id="apellidoM" type="text" class="form-input" placeholder="Ej. LÓPEZ"
+                    formControlName="apellidoM" (input)="toUpper('apellidoM')" />
+                </div>
+                <p *ngIf="analizaForm('apellidoM')" class="error">Ingresa tu segundo apellido.</p>
+              </div>
+              <div>
+                <label for="email">Correo electrónico<span>*</span></label>
+                <div class="control">
+                  <input id="email" type="email" class="form-input" placeholder="tucorreo@dominio.com"
+                    formControlName="email" />
+                </div>
+                <p *ngIf="analizaForm('email')" class="error">Ingresa tu correo</p>
+              </div>
+              <div *ngIf="tipoPersonaSeleccionada === 'fisica'">
+                <label for="curp">CURP<span>*</span></label>
+                <div class="control">
+                  <input id="curp" type="text" class="form-input" placeholder="Ej. ABCD001122HDFRRN09"
+                    formControlName="curp" (input)="toUpper('curp')" />
+                </div>
+                <p *ngIf="analizaForm('curp')" class="error">Ingresa tu CURP</p>
+              </div>
+              <div>
+                <label for="rfc">RFC<span>*</span></label>
+                <div class="control">
+                  <input id="rfc" type="text" class="form-input" placeholder="Ej. ABCD001122XXX" formControlName="rfc"
+                    (input)="toUpper('rfc')" />
+                </div>
+                <p *ngIf="analizaForm('rfc')" class="error">Ingresa tu RFC</p>
+              </div>
+              <div *ngIf="tipoPersonaSeleccionada === 'moral'">
+                <label for="folio">Folio mercantil<span>*</span></label>
+                <div class="control">
+                  <input id="folio" type="text" class="form-input" placeholder="Folio" formControlName="folio"
+                    (input)="toUpper('folio')" />
+                </div>
+                <p *ngIf="analizaForm('folio')" class="error">Ingresa tu folio mercantil</p>
+              </div>
+
+              <div *ngIf="tipoPersonaSeleccionada === 'moral'">
+                <label for="nmRepLegal">Nombre representante legal<span>*</span></label>
+                <div class="control">
+                  <input id="nmRepLegal" type="text" class="form-input" placeholder="Reprecentante Legal"
+                    formControlName="nmRepLegal" (input)="toUpper('nmRepLegal')" />
+                </div>
+                <p *ngIf="analizaForm('nmRepLegal')" class="error">Ingresa tu folio mercantil</p>
+              </div>
+
+            </div>
+
+            <!-- SECCION FORMULARIO 3  -->
+            <div class="field field-grid" *ngIf="currentStepform === 3">
+
+              <div>
+                <label for="telefono">Teléfono<span>*</span></label>
+                <div class="control">
+                  <input id="telefono" type="number" class="form-input" placeholder="Ej. 4412654387"
+                    formControlName="telefono" />
+                </div>
+                <p *ngIf="analizaForm('telefono')" class="error">Ingresa tu número</p>
+              </div>
+              <div>
+                <label for="calle">calle<span>*</span></label>
+                <div class="control">
+                  <input id="calle" type="text" class="form-input" placeholder="Av. bulevares"
+                    formControlName="calle" />
+                </div>
+                <p *ngIf="analizaForm('calle')" class="error">Ingresa tu calle</p>
+              </div>
+              <div>
+                <label for="int">Num. Interior<span>*</span></label>
+                <div class="control">
+                  <input id="int" type="text" class="form-input" placeholder="Int" formControlName="int" />
+                </div>
+                <p *ngIf="analizaForm('int')" class="error">Ingresa tu número interior</p>
+              </div>
+              <div>
+                <label for="ext">Num. Exterior<span>*</span></label>
+                <div class="control">
+                  <input id="ext" type="text" class="form-input" placeholder="Ext" formControlName="ext" />
+                </div>
+                <p *ngIf="analizaForm('int')" class="error">Ingresa tu número exterior</p>
+              </div>
+              <div>
+                <label for="col">Colonia<span>*</span></label>
+                <div class="control">
+                  <input id="col" type="text" class="form-input" placeholder="Colonia" formControlName="col" />
+                </div>
+                <p *ngIf="analizaForm('col')" class="error">Ingresa tu Colonia</p>
+              </div>
+
+            </div>
+
+            <!-- SECCION FORMULARIO 4  -->
+            <div class="field field-grid" *ngIf="currentStepform === 4">
+
+              <div>
+                <label for="pais">País<span>*</span></label>
+                <div class="control">
+                  <select id="pais" class="form-input" formControlName="pais">
+                    <option value="" disabled>Selecciona un país...</option>
+                    <option *ngFor="let p of paises" [value]="p._id">{{ p.name }}</option>
+                  </select>
+                </div>
+                <p *ngIf="analizaForm('pais')" class="error">Selecciona un país válido</p>
+              </div>
+              <div>
+                <label for="estado">Estado<span>*</span></label>
+                <div class="control">
+                  <select id="estado" class="form-input" formControlName="estado">
+                    <option value="" disabled>Selecciona un estado...</option>
+                    <option *ngFor="let e of estados" [value]="e._id">{{ e.name }}</option>
+                  </select>
+                </div>
+                <p *ngIf="analizaForm('estado')" class="error">Selecciona un estado</p>
+              </div>
+              <div>
+                <label for="actE">Actividad Económica<span>*</span></label>
+                <div class="control">
+                  <select id="actE" class="form-input" formControlName="actE" (change)="onActividadChange($event)">
+                    <option value="" disabled>Selecciona una actividad...</option>
+                    <option *ngFor="let a of ActEconomicas | slice:0:4" [value]="a._id">
+                      {{ a.description }}
+                    </option>
+                  </select>
+                </div>
+                <p *ngIf="analizaForm('actE')" class="error">Selecciona una actividad</p>
+              </div>
+              <div *ngIf="mostrarMasOpciones">
+                <label for="actEextra">Selecciona otra actividad<span>*</span></label>
+                <div class="control">
+                  <select id="actEextra" class="form-input" formControlName="actEextra">
+                    <option value="" disabled>Selecciona una actividad...</option>
+                    <option *ngFor="let a of ActEconomicas | slice:4" [value]="a._id">
+                      {{ a.description }}
+                    </option>
+                  </select>
+                </div>
+                <p *ngIf="analizaForm('actEextra')" class="error">Selecciona una actividad válida</p>
+              </div>
+
+            </div>
+
+            <div class="paybox__cta">
+              <button type="button" *ngIf="datosCoche" class="btn-secondary" (click)="regresar()">&#x2B05;
+                Regresar
+              </button>
+              <button type="submit" class="btn-primary" *ngIf="datosCoche">Siguiente &#x27A1;</button>
+              <button type="button" class="btn-primary" *ngIf="!datosCoche">&#x2B05; Selecionar coche</button>
+            </div>
+
+            <div class="carta_msj">
+              <div class="carta__body">
+                <p>
+                  Bienvenido 👋, estás a un paso de cotizar el coche que te interesa en Woaw.
+                  Para crear tu cuenta y continuar con la cotización de forma segura y personalizada, es necesario que
+                  te
+                  registres con tus datos básicos.
+                </p>
+              </div>
+            </div>
+
+          </form>
+
+        </section>
       </div>
 
-      <h1>Mis datos</h1>
+      <app-dynamic-island [refreshKey]="islandKey"></app-dynamic-island>
+    </div>
 
-      <form [formGroup]="form_poliza" (ngSubmit)="siguiente()">
-
-        <!-- SECCION FORMULARIO 1  -->
-        <div class="field_persona" *ngIf="currentStepform === 1">
-          <!-- <p class="header">Crear persona</p> -->
-          <h1 class="pregunta">¿Qué tipo de persona eres?</h1>
-          <div class="persona-radio">
-            <label class="radio-card">
-              <input type="radio" formControlName="tipoPersona" value="fisica" />
-              <span>Física</span>
-            </label>
-
-            <label class="radio-card">
-              <input type="radio" formControlName="tipoPersona" value="moral" />
-              <span>Moral</span>
-            </label>
-          </div>
-        </div>
-
-        <!-- <h1 *ngIf="currentStepform !== 1" class="header">Ingresa tus datos</h1> -->
-
-        <!-- ESTO VA A ESTAR SIEMPRE  -->
-        <ng-container *ngIf="datosCoche && currentStepform !== 1">
-          <div class="grid-resumen">
-            <p><strong>Marca:</strong> {{ datosCoche.marca }}</p>
-            <p><strong>Modelo:</strong> {{ datosCoche.modelo }}</p>
-            <p><strong>Año:</strong> {{ datosCoche.anio }}</p>
-            <p>
-              <strong>Nacimiento:</strong>
-              {{ datosCoche.nacimiento.dia }}/{{ datosCoche.nacimiento.mes }}/{{ datosCoche.nacimiento.anio }}
-            </p>
-            <p><strong>C.P.:</strong> {{ datosCoche.cp }}</p>
-            <p *ngIf="tipoPersonaSeleccionada === 'fisica'"><strong>Género:</strong> {{ datosCoche.genero }}</p>
-            <p *ngIf="tipoPersonaSeleccionada === 'fisica'"><strong>Estado civil:</strong> {{ datosCoche.estadoCivil
-              }}</p>
-            <p><strong>Versión:</strong> {{ datosCoche.version }}</p>
-          </div>
-        </ng-container>
-
-        <!-- SECCION FORMULARIO 2  -->
-        <div class="field field-grid" *ngIf="currentStepform === 2">
-          <div>
-            <label *ngIf="tipoPersonaSeleccionada === 'fisica'" for="nombre">Nombre completo <span>*</span></label>
-            <label *ngIf="tipoPersonaSeleccionada === 'moral'" for="nombre">Nombre de la empresa<span>*</span></label>
-            <div class="control">
-              <input id="nombre" type="text" class="form-input" placeholder="NOMBRE" formControlName="nombre"
-                (input)="toUpper('nombre')" />
-            </div>
-            <p *ngIf="analizaForm('nombre')" class="error">El nombre es obligatorio</p>
-          </div>
-          <div *ngIf="tipoPersonaSeleccionada === 'fisica'">
-            <label for="apellidoP">Apellido paterno<span>*</span></label>
-            <div class="control">
-              <input id="apellidoP" type="text" class="form-input" placeholder="Ej. PÉREZ" formControlName="apellidoP"
-                (input)="toUpper('apellidoP')" />
-            </div>
-            <p *ngIf="analizaForm('apellidoP')" class="error">Ingresa tu primer apellido.</p>
-          </div>
-          <div *ngIf="tipoPersonaSeleccionada === 'fisica'">
-            <label for="apellidoM">Apellido materno<span>*</span></label>
-            <div class="control">
-              <input id="apellidoM" type="text" class="form-input" placeholder="Ej. LÓPEZ" formControlName="apellidoM"
-                (input)="toUpper('apellidoM')" />
-            </div>
-            <p *ngIf="analizaForm('apellidoM')" class="error">Ingresa tu segundo apellido.</p>
-          </div>
-          <div>
-            <label for="email">Correo electrónico<span>*</span></label>
-            <div class="control">
-              <input id="email" type="email" class="form-input" placeholder="tucorreo@dominio.com"
-                formControlName="email" />
-            </div>
-            <p *ngIf="analizaForm('email')" class="error">Ingresa tu correo</p>
-          </div>
-          <div *ngIf="tipoPersonaSeleccionada === 'fisica'">
-            <label for="curp">CURP<span>*</span></label>
-            <div class="control">
-              <input id="curp" type="text" class="form-input" placeholder="Ej. ABCD001122HDFRRN09"
-                formControlName="curp" (input)="toUpper('curp')" />
-            </div>
-            <p *ngIf="analizaForm('curp')" class="error">Ingresa tu CURP</p>
-          </div>
-          <div>
-            <label for="rfc">RFC<span>*</span></label>
-            <div class="control">
-              <input id="rfc" type="text" class="form-input" placeholder="Ej. ABCD001122XXX" formControlName="rfc"
-                (input)="toUpper('rfc')" />
-            </div>
-            <p *ngIf="analizaForm('rfc')" class="error">Ingresa tu RFC</p>
-          </div>
-          <div *ngIf="tipoPersonaSeleccionada === 'moral'">
-            <label for="folio">Folio mercantil<span>*</span></label>
-            <div class="control">
-              <input id="folio" type="text" class="form-input" placeholder="Folio" formControlName="folio"
-                (input)="toUpper('folio')" />
-            </div>
-            <p *ngIf="analizaForm('folio')" class="error">Ingresa tu folio mercantil</p>
-          </div>
-
-          <div *ngIf="tipoPersonaSeleccionada === 'moral'">
-            <label for="nmRepLegal">Nombre representante legal<span>*</span></label>
-            <div class="control">
-              <input id="nmRepLegal" type="text" class="form-input" placeholder="Reprecentante Legal"
-                formControlName="nmRepLegal" (input)="toUpper('nmRepLegal')" />
-            </div>
-            <p *ngIf="analizaForm('nmRepLegal')" class="error">Ingresa tu folio mercantil</p>
-          </div>
-
-        </div>
-
-        <!-- SECCION FORMULARIO 3  -->
-        <div class="field field-grid" *ngIf="currentStepform === 3">
-
-          <div>
-            <label for="telefono">Teléfono<span>*</span></label>
-            <div class="control">
-              <input id="telefono" type="number" class="form-input" placeholder="Ej. 4412654387"
-                formControlName="telefono" />
-            </div>
-            <p *ngIf="analizaForm('telefono')" class="error">Ingresa tu número</p>
-          </div>
-          <div>
-            <label for="calle">calle<span>*</span></label>
-            <div class="control">
-              <input id="calle" type="text" class="form-input" placeholder="Av. bulevares" formControlName="calle" />
-            </div>
-            <p *ngIf="analizaForm('calle')" class="error">Ingresa tu calle</p>
-          </div>
-          <div>
-            <label for="int">Num. Interior<span>*</span></label>
-            <div class="control">
-              <input id="int" type="text" class="form-input" placeholder="Int" formControlName="int" />
-            </div>
-            <p *ngIf="analizaForm('int')" class="error">Ingresa tu número interior</p>
-          </div>
-          <div>
-            <label for="ext">Num. Exterior<span>*</span></label>
-            <div class="control">
-              <input id="ext" type="text" class="form-input" placeholder="Ext" formControlName="ext" />
-            </div>
-            <p *ngIf="analizaForm('int')" class="error">Ingresa tu número exterior</p>
-          </div>
-          <div>
-            <label for="col">Colonia<span>*</span></label>
-            <div class="control">
-              <input id="col" type="text" class="form-input" placeholder="Colonia" formControlName="col" />
-            </div>
-            <p *ngIf="analizaForm('col')" class="error">Ingresa tu Colonia</p>
-          </div>
-
-        </div>
-
-        <!-- SECCION FORMULARIO 4  -->
-        <div class="field field-grid" *ngIf="currentStepform === 4">
-
-          <div>
-            <label for="pais">País<span>*</span></label>
-            <div class="control">
-              <select id="pais" class="form-input" formControlName="pais">
-                <option value="" disabled>Selecciona un país...</option>
-                <option *ngFor="let p of paises" [value]="p._id">{{ p.name }}</option>
-              </select>
-            </div>
-            <p *ngIf="analizaForm('pais')" class="error">Selecciona un país válido</p>
-          </div>
-          <div>
-            <label for="estado">Estado<span>*</span></label>
-            <div class="control">
-              <select id="estado" class="form-input" formControlName="estado">
-                <option value="" disabled>Selecciona un estado...</option>
-                <option *ngFor="let e of estados" [value]="e._id">{{ e.name }}</option>
-              </select>
-            </div>
-            <p *ngIf="analizaForm('estado')" class="error">Selecciona un estado</p>
-          </div>
-          <div>
-            <label for="actE">Actividad Económica<span>*</span></label>
-            <div class="control">
-              <select id="actE" class="form-input" formControlName="actE" (change)="onActividadChange($event)">
-                <option value="" disabled>Selecciona una actividad...</option>
-                <option *ngFor="let a of ActEconomicas | slice:0:4" [value]="a._id">
-                  {{ a.description }}
-                </option>
-              </select>
-            </div>
-            <p *ngIf="analizaForm('actE')" class="error">Selecciona una actividad</p>
-          </div>
-          <div *ngIf="mostrarMasOpciones">
-            <label for="actEextra">Selecciona otra actividad<span>*</span></label>
-            <div class="control">
-              <select id="actEextra" class="form-input" formControlName="actEextra">
-                <option value="" disabled>Selecciona una actividad...</option>
-                <option *ngFor="let a of ActEconomicas | slice:4" [value]="a._id">
-                  {{ a.description }}
-                </option>
-              </select>
-            </div>
-            <p *ngIf="analizaForm('actEextra')" class="error">Selecciona una actividad válida</p>
-          </div>
-
-        </div>
-
-        <div class="paybox__cta">
-          <button type="button" *ngIf="datosCoche" class="btn-secondary" (click)="regresar()">&#x2B05;
-            Regresar
-          </button>
-          <button type="submit" class="btn-primary" *ngIf="datosCoche">Siguiente &#x27A1;</button>
-          <button type="button" class="btn-primary" *ngIf="!datosCoche">&#x2B05; Selecionar coche</button>
-        </div>
-
-        <div class="carta_msj">
-          <div class="carta__body">
-            <p>
-              Bienvenido 👋, estás a un paso de cotizar el coche que te interesa en Woaw.
-              Para crear tu cuenta y continuar con la cotización de forma segura y personalizada, es necesario que te
-              registres con tus datos básicos.
-            </p>
-          </div>
-        </div>
-
-      </form>
-
-    </section>
+    <div class="divicion2">
+      <app-otros-seguros></app-otros-seguros>
+    </div>
   </div>
 
+  <app-footer></app-footer>
 </ion-content>

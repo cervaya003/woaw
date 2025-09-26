@@ -381,6 +381,10 @@ ion-popover.select-popover[class*="pop-"] {
 
 // ----- SELECT -----
 .control {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+
   position: relative;
   display: flex;
   align-items: center;
@@ -390,25 +394,26 @@ ion-popover.select-popover[class*="pop-"] {
   background: #fff;
   transition: box-shadow .2s ease, border-color .2s ease;
 
+  height: clamp(46px, 5vh, 92px);
+
   &:focus-within {
-    border-color: rgba(255, 1, 1, 0.22);
-    box-shadow: 0 0 0 3px rgba(255, 1, 1, 0.06);
+    border-color: rgba(52, 165, 4, 0.558);
   }
 
   :is(input, select) {
-    flex: 1;
+    flex: 1 1 auto;
+    min-width: 0;
+    width: 100%;
     height: 44px;
     line-height: 44px;
-    font-size: 15px;
-    color: var(--ink);
+    font-size: clamp(11px, 0.9vw, 14px);
+    color: #ae0000;
     border: 0;
     outline: none;
     background: transparent;
     padding: 0 34px 0 2px;
     box-shadow: none;
     appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
   }
 
   select {
@@ -416,12 +421,13 @@ ion-popover.select-popover[class*="pop-"] {
   }
 
   input::placeholder {
-    color: var(--muted);
+    font-size: clamp(11px, 0.9vw, 14px);
+    color: #c2c2c2;
     opacity: .9;
   }
 
   select option[disabled] {
-    color: var(--muted);
+    color: #7c7c7c;
   }
 
   &:has(select)::after {
@@ -431,7 +437,7 @@ ion-popover.select-popover[class*="pop-"] {
     top: 50%;
     transform: translateY(-50%);
     font-size: 14px;
-    color: var(--muted);
+    color: #7c7c7c;
     pointer-events: none;
   }
 }
@@ -454,12 +460,12 @@ ion-popover.select-popover[class*="pop-"] {
   ion-select {
     flex: 1;
     width: 100%;
-    height: 56px;
+    height: 46px;
     --min-height: 56px;
     --padding-start: 4px;
-    --padding-end: 38px;
+    --padding-end: 0px;
     font-size: clamp(9px, 1vw, 12px);
-    font-weight: 600;
+    font-weight:400;
   }
 
   ion-select::part(text),

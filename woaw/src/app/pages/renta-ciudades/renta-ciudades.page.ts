@@ -33,7 +33,7 @@ export class RentaCiudadesPage implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.cargarEstadosYDespuesEstados();
+    // this.cargarEstadosYDespuesEstados();
   }
 
   // 🔹 Trae estados y arma tus tarjetas sin imágenes estáticas

@@ -24,6 +24,11 @@ export class PolizaPage implements OnInit {
   datosUsuario: any = null;
   datoscotizacion: any = null;
   UsuarioRespuesta: any = null;
+  polizaCreada: boolean = false;
+  datosPolizaCreada: any = null;
+  email: any = null;
+
+  islandKey = 0;
 
   colorOpts = [
     { value: 'blanco', label: 'Blanco' },
@@ -61,7 +66,7 @@ export class PolizaPage implements OnInit {
 
   ngOnInit() {
     const nav = this.router.getCurrentNavigation();
-
+    this.mostrarPresouestaPoliza();
     // === cotización ===
     const cotizacion = localStorage.getItem('cotizacion');
     if (cotizacion) {
@@ -212,9 +217,11 @@ export class PolizaPage implements OnInit {
   siguiente() {
     if (this.form_poliza.invalid) {
       this.form_poliza.markAllAsTouched();
+      console.log('heyyyy ')
       return;
     }
 
+    console.log(this.datoscotizacion)
     const rfc = this.datosUsuario?.person?.rfc;
     const id = this.datoscotizacion.id;
     const idPlan = this.datoscotizacion.plans[0]?.id;
@@ -242,10 +249,10 @@ export class PolizaPage implements OnInit {
         id: id,
         plan_id: idPlan
       },
-      preferred_beneficiary: true,
+      // preferred_beneficiary: true,
       receivers,
       start_date,
-      use_crabi_checkout: false,
+      use_crabi_checkout: true,
       send_mail_to_client: true,
       send_whatsapp_to_client: true
     };
@@ -253,11 +260,14 @@ export class PolizaPage implements OnInit {
     localStorage.setItem('datosPolizaVin', JSON.stringify(payload));
     console.log('Payload de la póliza:', payload);
   }
-
+  regresar() {
+    this.polizaCreada = false;
+  }
   enviarDatosCrearPersona(payload: any) {
     this.mostrar_spinnet = true;
     this.seguros.crearPoliza(payload).subscribe({
       next: (data) => {
+        this.islandKey++;
         const nombre = data.response?.first_name || this.form_poliza.get('nombre')?.value || 'Tu registro';
         this.generalService.alert(
           `¡Listo! La póliza de ${nombre} se creó correctamente.`,
@@ -266,12 +276,70 @@ export class PolizaPage implements OnInit {
         );
         localStorage.setItem('datosPolizaVin_Respuesta', JSON.stringify(data));
         this.mostrar_spinnet = false;
+        this.mostrarPresouestaPoliza();
       },
       error: (error) => {
         this.mostrar_spinnet = false;
         console.error('Error al crear la póliza:', error);
         this.generalService.alert(
           'Ocurrió un error al crear la póliza. Intenta nuevamente más tarde.',
+          'Error',
+          'danger'
+        );
+      }
+    });
+  }
+  mostrarPresouestaPoliza() {
+    const cotizacionRespuestra = localStorage.getItem('datosPolizaVin_Respuesta');
+    if (cotizacionRespuestra) {
+
+      const storedPersona = localStorage.getItem('datosUsuario');
+      if (storedPersona) {
+        let datos = JSON.parse(storedPersona);
+        this.email = datos.person.email;
+      }
+
+      this.polizaCreada = true;
+      this.datosPolizaCreada = JSON.parse(cotizacionRespuestra);
+      console.log(this.datosPolizaCreada)
+
+      const cotizacionRespuestrap = localStorage.getItem('datosPolizaVin');
+
+      if (cotizacionRespuestrap) {
+        const gr = JSON.parse(cotizacionRespuestrap);
+        console.log(gr);
+      }
+    }
+  }
+  realizarPago() {
+    if (!this.datosPolizaCreada?.response?.policies?.length) {
+      console.error('No hay pólizas en la respuesta');
+      return;
+    }
+
+    let id: string = '';
+    const targetId = "a64c55ab-03bb-4774-89e6-ad69d2362966";
+    const policy = this.datosPolizaCreada.response.policies.find(
+      (p: any) => p.policy_type?.id === targetId
+    );
+
+    if (policy) {
+      const policyId = policy.policy_id;
+      id = policyId;
+      console.log("Policy encontrada:", policyId);
+    } else {
+      console.warn("No se encontró la póliza con el ID buscado");
+    }
+
+    this.mostrar_spinnet = true;
+    this.seguros.pagoPoliza(id).subscribe({
+      next: (data) => {
+      },
+      error: (error) => {
+        this.mostrar_spinnet = false;
+        console.error('Error al crer pago:', error);
+        this.generalService.alert(
+          'Ocurrió un error en le metodo de pago. Intenta nuevamente más tarde.',
           'Error',
           'danger'
         );

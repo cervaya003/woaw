@@ -32,6 +32,8 @@ export class PersonaPage implements OnInit {
   estados: any[] = [];
   ActEconomicas: any[] = [];
 
+  islandKey = 0;
+
   mostrar_spinnet: boolean = false;
 
   constructor(
@@ -56,7 +58,6 @@ export class PersonaPage implements OnInit {
     this.generalService.dispositivo$.subscribe((tipo) => {
       this.esDispositivoMovil = tipo === 'telefono' || tipo === 'tablet';
     });
-
     const stored = localStorage.getItem('datosCoche');
     if (stored) {
       this.datosCoche = JSON.parse(stored);
@@ -70,7 +71,6 @@ export class PersonaPage implements OnInit {
         'warning'
       );
     }
-
     const cotizacion = localStorage.getItem('cotizacion');
     if (cotizacion) {
       this.datoscotizacion = cotizacion;
@@ -140,6 +140,7 @@ export class PersonaPage implements OnInit {
   regresar() {
     let controlesAEliminar: string[] = [];
     if (this.currentStepform === 1) {
+      this.islandKey++;
       // this.location.back();
       this.router.navigate(['/seguros']);
     } else if (this.currentStepform === 2) {
@@ -312,6 +313,7 @@ export class PersonaPage implements OnInit {
     this.mostrar_spinnet = true;
     this.seguros.crearPersona(payload).subscribe({
       next: (data) => {
+        this.islandKey++;
         const nombre = data.response?.first_name || this.form_poliza.get('nombre')?.value || 'Tu registro';
         this.generalService.alert(
           `¡Listo! ${nombre} quedó registrado correctamente.`,

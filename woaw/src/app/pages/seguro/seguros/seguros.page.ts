@@ -7,7 +7,7 @@ import { GeneralService } from '../../../services/general.service';
 import { SeguroService } from '../../../services/seguro.service';
 
 
-import { AfterViewInit, ElementRef, QueryList, ViewChildren } from '@angular/core';
+import { AfterViewInit, ElementRef, QueryList, ViewChildren, ViewChild } from '@angular/core';
 
 @Component({
   selector: 'app-seguros',
@@ -32,6 +32,7 @@ export class SegurosPage implements OnInit {
 
   // Pasos: 1=marca, 2=modelo, 3=año, 4=versión, 5=nacimiento, 6=cp/género/estado
   currentStep = 1;
+  islandKey = 0;
 
   // Catálogos previos
   marcas: { id: number; name: string }[] = [];
@@ -525,6 +526,7 @@ export class SegurosPage implements OnInit {
       '¿Estás seguro en cotizar un nuevo coche?',
       'Cotizar nuevo coche',
       async () => {
+        localStorage.removeItem('datosCoche');
         localStorage.removeItem('cotizacion');
         this.cotizacion = false;
         this.quote = null;
@@ -549,6 +551,7 @@ export class SegurosPage implements OnInit {
         this.form.setErrors(null);
 
         try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch { }
+        this.islandKey++;
       }
     );
   }
@@ -564,6 +567,7 @@ export class SegurosPage implements OnInit {
 
           if (this.quote) {
             localStorage.setItem('cotizacion', JSON.stringify(this.quote));
+            this.islandKey++;
           } else {
             localStorage.removeItem('cotizacion');
           }

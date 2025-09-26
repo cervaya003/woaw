@@ -15,6 +15,8 @@ import { AddComponent } from '../../../components/lote/add/add.component';
 import { AcomodoComponent } from '../../../components/filtos/acomodo/acomodo.component';
 import { FooterComponent } from '../../../components/footer/footer.component';
 import { SpinnerComponent } from '../../../components/spinner/spinner.component';
+import { DynamicIslandComponent } from '../../../components/dynamic-island/dynamic-island.component';
+import { OtrosSegurosComponent } from '../../../components/otros-seguros/otros-seguros.component';
 
 @NgModule({
   imports: [
@@ -29,7 +31,9 @@ import { SpinnerComponent } from '../../../components/spinner/spinner.component'
     FooterComponent,
     AddComponent,
     ReactiveFormsModule,
-    SpinnerComponent
+    SpinnerComponent, 
+    DynamicIslandComponent, 
+    OtrosSegurosComponent
   ],
   declarations: [PersonaPage]
 })

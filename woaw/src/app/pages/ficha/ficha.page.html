@@ -1,18 +1,12 @@
 <ion-header>
   <ion-toolbar color="dark">
     <ion-buttons slot="start">
-      <ion-back-button
-        text=""
-        routerDirection="back"
-        defaultHref="/"
-      ></ion-back-button>
+      <ion-back-button text="" routerDirection="back" defaultHref="/"></ion-back-button>
       <div class="perfil-header">
         <img src="/assets/icon/logo4.png" alt="Go Autos" class="logo" />
       </div>
       <ion-title>
-        <span *ngIf="auto" class="titulo-perfil"
-          >{{ auto.marca }} {{ auto.modelo }} {{ auto.anio }}</span
-        >
+        <span *ngIf="auto" class="titulo-perfil">{{ auto.marca }} {{ auto.modelo }} {{ auto.anio }}</span>
       </ion-title>
     </ion-buttons>
   </ion-toolbar>
@@ -33,21 +27,12 @@
         <!-- Columna izquierda: Imagen grande, miniaturas y especificaciones -->
         <ion-col size="12" size-md="8" class="columna-izquierda responsive-col">
           <div class="contenedor-imagenes">
-            <div
-              class="contenedor_imagen_principal"
-              (touchstart)="esDispositivoMovil && onTouchStart($event)"
-              (touchend)="esDispositivoMovil && onTouchEnd($event)"
-            >
-              <div
-                class="imagen-principal"
-                (click)="abrirModalImagen(auto.imagenes, auto.imagenes.indexOf(imagenSeleccionada)); $event.stopPropagation()"
-              >
+            <div class="contenedor_imagen_principal" (touchstart)="esDispositivoMovil && onTouchStart($event)"
+              (touchend)="esDispositivoMovil && onTouchEnd($event)">
+              <div class="imagen-principal"
+                (click)="abrirModalImagen(auto.imagenes, auto.imagenes.indexOf(imagenSeleccionada)); $event.stopPropagation()">
                 <!-- Imagen -->
-                <img
-                  [src]="imagenSeleccionada"
-                  alt="Imagen principal del auto"
-                  (load)="onImagenPrincipalCargada()"
-                />
+                <img [src]="imagenSeleccionada" alt="Imagen principal del auto" (load)="onImagenPrincipalCargada()" />
                 <!-- Loader -->
                 <div class="loader_carta" *ngIf="!imagenPrincipalCargada">
                   <div class="spinner_carta"></div>
@@ -55,18 +40,12 @@
                 </div>
                 <!-- Flechas (pantallas grandes) -->
                 <ng-container *ngIf="!esDispositivoMovil">
-                  <button
-                    class="flecha izquierda"
-                    (click)="cambiarImagen('anterior'); $event.stopPropagation()"
-                    [disabled]="imagenSeleccionada === auto.imagenes[0]"
-                  >
+                  <button class="flecha izquierda" (click)="cambiarImagen('anterior'); $event.stopPropagation()"
+                    [disabled]="imagenSeleccionada === auto.imagenes[0]">
                     ‹
                   </button>
-                  <button
-                    class="flecha derecha"
-                    (click)="cambiarImagen('siguiente'); $event.stopPropagation()"
-                    [disabled]="imagenSeleccionada === auto.imagenes[auto.imagenes.length - 1]"
-                  >
+                  <button class="flecha derecha" (click)="cambiarImagen('siguiente'); $event.stopPropagation()"
+                    [disabled]="imagenSeleccionada === auto.imagenes[auto.imagenes.length - 1]">
                     ›
                   </button>
                 </ng-container>
@@ -76,14 +55,9 @@
             <!-- Miniaturas -->
             <div class="miniaturas-vertical">
               <ng-container *ngFor="let img of auto.imagenes">
-                <img
-                  [src]="img"
-                  alt="Miniatura"
-                  [class.activa]="img === imagenSeleccionada"
-                  [class.oculta]="!miniaturasCargadas[img]"
-                  (click)="imagenSeleccionada = img"
-                  (load)="onMiniaturaCargada(img)"
-                />
+                <img [src]="img" alt="Miniatura" [class.activa]="img === imagenSeleccionada"
+                  [class.oculta]="!miniaturasCargadas[img]" (click)="imagenSeleccionada = img"
+                  (load)="onMiniaturaCargada(img)" />
 
                 <div class="loader_miniatura" *ngIf="!miniaturasCargadas[img]">
                   <div class="spinner_miniatura"></div>
@@ -94,31 +68,18 @@
 
           <ion-card *ngIf="!esDispositivoMovil" class="mapa_admin">
             <h1 class="text_ubicacion">Ubicación</h1>
-            <div
-              #mapAutoContainer
-              style="width: 100%; height: 300px; border-radius: px;"
-            ></div>
+            <div #mapAutoContainer style="width: 100%; height: 300px; border-radius: px;"></div>
             <!-- Dirección debajo del mapa -->
-            <ion-card-content
-              style="margin-top: 0.2rem; font-size: 14px; color: #4b5563;"
-            >
-              <ion-icon
-                name="location-outline"
-                style="margin-right: 6px;"
-              ></ion-icon>
+            <ion-card-content style="margin-top: 0.2rem; font-size: 14px; color: #4b5563;">
+              <ion-icon name="location-outline" style="margin-right: 6px;"></ion-icon>
               {{ direccionCompleta }}
             </ion-card-content>
           </ion-card>
 
           <!-- Especificaciones -->
-          <div
-            class="especificaciones"
-            *ngIf=" !esDispositivoMovil && tipo_veiculo === 'autos'"
-          >
+          <div class="especificaciones" *ngIf=" !esDispositivoMovil && tipo_veiculo === 'autos'">
             <h4>Especificaciones</h4>
-            <ng-container
-              *ngFor="let esp of especificacionesAuto; let i = index"
-            >
+            <ng-container *ngFor="let esp of especificacionesAuto; let i = index">
               <h5 *ngIf="especificacionesAuto.length > 1">
                 Versión {{ i + 1 }}: {{ esp.version }}
               </h5>
@@ -186,10 +147,8 @@
               </table>
             </ng-container>
           </div>
-          <div
-            *ngIf="!esDispositivoMovil &&  (tipo_veiculo === 'motos' || tipo_veiculo === 'camiones')"
-            class="especificaciones"
-          >
+          <div *ngIf="!esDispositivoMovil &&  (tipo_veiculo === 'motos' || tipo_veiculo === 'camiones')"
+            class="especificaciones">
             <h4>Especificaciones</h4>
             <table>
               <tr *ngIf="auto.marca">
@@ -228,9 +187,7 @@
                 <td>Suspensión</td>
                 <td>{{ auto.suspension }}</td>
               </tr>
-              <tr
-                *ngIf="auto.kilometraje !== null && auto.kilometraje !== undefined"
-              >
+              <tr *ngIf="auto.kilometraje !== null && auto.kilometraje !== undefined">
                 <td>Kilometraje</td>
                 <td>{{ auto.kilometraje }} km</td>
               </tr>
@@ -249,10 +206,7 @@
             </table>
           </div>
 
-          <div
-            *ngIf="esDispositivoMovil && auto.estadoVehiculo === 'disponible'"
-            class="card-detalle"
-          >
+          <div *ngIf="esDispositivoMovil && auto.estadoVehiculo === 'disponible'" class="card-detalle">
             <h2>{{ auto.marca }} {{ auto.modelo }} {{ auto.anio }}</h2>
             <p class="precio-principal" *ngIf="tipo_veiculo === 'autos'">
               {{ versionSeleccionada?.nombre }}:
@@ -269,26 +223,16 @@
             <!-- Versiones -->
             <div class="versiones">
               <p class="titulo-seccion">Versiones</p>
-              <div
-                class="version"
-                *ngFor="let version of versiones"
-                (click)="onSeleccionarVersion(version)"
-                [class.activa]="versionSeleccionada?.nombre === version.nombre"
-              >
+              <div class="version" *ngFor="let version of versiones" (click)="onSeleccionarVersion(version)"
+                [class.activa]="versionSeleccionada?.nombre === version.nombre">
                 <span>{{ version.nombre }}</span>
-                <span class="precio-version"
-                  >{{ version.precio | currency:'MXN':'symbol' }}</span
-                >
+                <span class="precio-version">{{ version.precio | currency:'MXN':'symbol' }}</span>
               </div>
             </div>
             <div *ngIf="tipo_veiculo === 'motos'">
               Colores
               <div class="fila-colores" *ngIf="auto.color?.length > 0">
-                <div
-                  *ngFor="let color of auto.color"
-                  class="color-pill"
-                  [ngStyle]="getEstiloColor(color)"
-                >
+                <div *ngFor="let color of auto.color" class="color-pill" [ngStyle]="getEstiloColor(color)">
                   <!-- {{ color }} -->
                 </div>
               </div>
@@ -296,38 +240,26 @@
 
             <!-- Botón contactar -->
             <div class="botones-contacto-responsive">
-              <button
-                *ngIf="!esMio"
-                (click)="contactosService.contactarWOAW(auto, tipo_veiculo)"
-                class="btn-personalizado success"
-              >
+              <button *ngIf="!esMio" (click)="contactosService.contactarWOAW(auto, tipo_veiculo)"
+                class="btn-personalizado success">
                 <ion-icon name="logo-whatsapp"></ion-icon>
                 <!-- WhatsApp -->
               </button>
 
-              <button
-                (click)="contactosService.compartirAuto(auto, tipo_veiculo)"
-                class="btn-personalizado medium"
-              >
+              <button (click)="contactosService.compartirAuto(auto, tipo_veiculo)" class="btn-personalizado medium">
                 <ion-icon name="share-social-outline"></ion-icon>
                 <!-- Compartir -->
               </button>
 
-              <button
-                *ngIf="MyRole !== 'admin' && !esMio"
-                (click)="contactosService.llamar()"
-                class="btn-personalizado primary"
-              >
+              <button *ngIf="MyRole !== 'admin' && !esMio" (click)="contactosService.llamar()"
+                class="btn-personalizado primary">
                 <ion-icon name="call-outline"></ion-icon>
                 <!-- Llamar -->
               </button>
 
               <br />
-              <button
-                *ngIf="tipo_veiculo === 'autos' && MyRole !== 'admin' && !esMio"
-                class="btn-personalizado danger"
-                (click)="contactosService.ArrendamientoAuto(auto)"
-              >
+              <button *ngIf="tipo_veiculo === 'autos' && MyRole !== 'admin' && !esMio" class="btn-personalizado danger"
+                (click)="contactosService.ArrendamientoAuto(auto)">
                 <ion-icon name="car-sport"></ion-icon>
                 Arrendar
               </button>
@@ -342,114 +274,69 @@
 
             <p *ngIf="tipo_veiculo === 'motos'">
               {{ descripcionCorta }}
-              <span
-                *ngIf="auto.descripcion?.split(' ').length > 20"
-                (click)="descripcionExpandida = !descripcionExpandida"
-                style="color: #ff0000; cursor: pointer;"
-              >
+              <span *ngIf="auto.descripcion?.split(' ').length > 20"
+                (click)="descripcionExpandida = !descripcionExpandida" style="color: #ff0000; cursor: pointer;">
                 {{ descripcionExpandida ? 'Ver menos' : 'Ver más' }}
               </span>
             </p>
 
             <div class="mapa_admin">
               <h1 class="text_ubicacion">Ubicación</h1>
-              <div
-                #mapAutoContainer
-                style="width: 100%; height: 200px; border-radius: px;"
-                (click)="openDirection()"
-              ></div>
+              <div #mapAutoContainer style="width: 100%; height: 200px; border-radius: px;" (click)="openDirection()">
+              </div>
               <!-- Dirección debajo del mapa -->
-              <ion-card-content
-                style="margin-top: 0.2rem; font-size: 14px; color: #4b5563;"
-              >
-                <ion-icon
-                  name="location-outline"
-                  style="margin-right: 6px;"
-                ></ion-icon>
+              <ion-card-content style="margin-top: 0.2rem; font-size: 14px; color: #4b5563;">
+                <ion-icon name="location-outline" style="margin-right: 6px;"></ion-icon>
                 {{ direccionCompleta }}
               </ion-card-content>
             </div>
 
             <!-- Componente de cotizador Nuevos ☢️ -->
-            <app-cotizador
-              *ngIf="mostrarCotizador  && !esMio && tipo_veiculo!=='camiones'"
-              [coche]="auto"
-              [versionNuevo]="versionSeleccionada?.nombre ?? null"
-              [precioNuevo]="versionSeleccionada?.precio ?? null"
-            >
+            <app-cotizador *ngIf="mostrarCotizador && tipo_veiculo!=='camiones'" [coche]="auto"
+              [versionNuevo]="versionSeleccionada?.nombre ?? null" [precioNuevo]="versionSeleccionada?.precio ?? null">
             </app-cotizador>
 
             <ion-card>
               <!-- Datos del vendedor -->
-              <ion-card-content
-                style="margin-top: 0.8rem; font-size: 14px; color: #4b5563;"
-                *ngIf="auto.lote == null && (MyRole == 'admin' || esMio)"
-              >
-                <ion-label style="font-weight: bold; font-size: 15px;"
-                  >Vendedor</ion-label
-                >
+              <ion-card-content style="margin-top: 0.8rem; font-size: 14px; color: #4b5563;"
+                *ngIf="auto.lote == null && (MyRole == 'admin' || esMio)">
+                <ion-label style="font-weight: bold; font-size: 15px;">Vendedor</ion-label>
                 <p style="margin: 4px 0 0 0;">
-                  <ion-icon
-                    name="person-circle-outline"
-                    style="margin-right: 6px;"
-                  ></ion-icon>
+                  <ion-icon name="person-circle-outline" style="margin-right: 6px;"></ion-icon>
                   {{ auto.usuarioId.nombre }} {{ auto.usuarioId.apellidos }}
                 </p>
                 <p style="margin: 4px 0 0 0;">
-                  <ion-icon
-                    name="mail-outline"
-                    style="margin-right: 6px;"
-                  ></ion-icon>
+                  <ion-icon name="mail-outline" style="margin-right: 6px;"></ion-icon>
                   {{ auto.usuarioId.email }}
                 </p>
                 <p style="margin: 4px 0 0 0;">
-                  <ion-icon
-                    name="call-outline"
-                    style="margin-right: 6px;"
-                  ></ion-icon>
+                  <ion-icon name="call-outline" style="margin-right: 6px;"></ion-icon>
                   {{ auto.usuarioId.lada }} {{ auto.usuarioId.telefono }}
                 </p>
               </ion-card-content>
 
-              <ion-card-content
-                style="margin-top: 0.8rem; font-size: 14px; color: #4b5563;"
-                *ngIf="auto.lote != null"
-                (click)="mostrarAutos(auto.lote)"
-                button
-              >
-                <ion-label style="font-weight: bold; font-size: 15px;"
-                  >Lote</ion-label
-                >
+              <ion-card-content style="margin-top: 0.8rem; font-size: 14px; color: #4b5563;" *ngIf="auto.lote != null"
+                (click)="mostrarAutos(auto.lote)" button>
+                <ion-label style="font-weight: bold; font-size: 15px;">Lote</ion-label>
 
                 <!-- Imagen del lote como avatar -->
-                <div
-                  style="
+                <div style="
                     display: flex;
                     align-items: center;
                     gap: 12px;
                     margin: 8px 0;
-                  "
-                >
+                  ">
                   <ion-avatar style="width: 70px; height: 70px;">
-                    <img
-                      [src]="auto.lote.imagenPrincipal"
-                      alt="Logo del lote"
-                    />
+                    <img [src]="auto.lote.imagenPrincipal" alt="Logo del lote" />
                   </ion-avatar>
 
                   <div>
                     <p style="margin: 4px 0 0 0; font-weight: 600;">
-                      <ion-icon
-                        name="business-outline"
-                        style="margin-right: 6px;"
-                      ></ion-icon>
+                      <ion-icon name="business-outline" style="margin-right: 6px;"></ion-icon>
                       {{ auto.lote.nombre }}
                     </p>
                     <p style="margin: 4px 0 0 0;">
-                      <ion-icon
-                        name="call-outline"
-                        style="margin-right: 6px;"
-                      ></ion-icon>
+                      <ion-icon name="call-outline" style="margin-right: 6px;"></ion-icon>
                       +52 {{ auto.lote.telefonoContacto }}
                     </p>
                   </div>
@@ -457,20 +344,14 @@
               </ion-card-content>
             </ion-card>
           </div>
-          <div
-            class="overlay"
-            *ngIf="esDispositivoMovil && auto.estadoVehiculo === 'vendido'"
-          >
+          <div class="overlay" *ngIf="esDispositivoMovil && auto.estadoVehiculo === 'vendido'">
             <img src="/assets/icon/vendido.png" alt="Vendido" />
           </div>
         </ion-col>
 
         <!-- Columna derecha: Detalles comerciales -->
         <ion-col size="12" size-md="4" class="columna-derecha responsive-col">
-          <div
-            *ngIf="!esDispositivoMovil && auto.estadoVehiculo === 'disponible'"
-            class="card-detalle"
-          >
+          <div *ngIf="!esDispositivoMovil && auto.estadoVehiculo === 'disponible'" class="card-detalle">
             <h2>{{ auto.marca }} {{ auto.modelo }} {{ auto.anio }}</h2>
             <p class="precio-principal" *ngIf="tipo_veiculo === 'autos'">
               {{ versionSeleccionada?.nombre }}:
@@ -487,27 +368,17 @@
             <!-- Versiones -->
             <div class="versiones" *ngIf="tipo_veiculo === 'autos'">
               <p class="titulo-seccion">Versiones</p>
-              <div
-                class="version"
-                *ngFor="let version of versiones"
-                (click)="onSeleccionarVersion(version)"
-                [class.activa]="versionSeleccionada?.nombre === version.nombre"
-              >
+              <div class="version" *ngFor="let version of versiones" (click)="onSeleccionarVersion(version)"
+                [class.activa]="versionSeleccionada?.nombre === version.nombre">
                 <span>{{ version.nombre }}</span>
-                <span class="precio-version"
-                  >{{ version.precio | currency:'MXN':'symbol' }}</span
-                >
+                <span class="precio-version">{{ version.precio | currency:'MXN':'symbol' }}</span>
               </div>
             </div>
 
             <div *ngIf="tipo_veiculo === 'motos'">
               Colores
               <div class="fila-colores" *ngIf="auto.color?.length > 0">
-                <div
-                  *ngFor="let color of auto.color"
-                  class="color-pill"
-                  [ngStyle]="getEstiloColor(color)"
-                >
+                <div *ngFor="let color of auto.color" class="color-pill" [ngStyle]="getEstiloColor(color)">
                   <!-- {{ color }} -->
                 </div>
               </div>
@@ -515,29 +386,20 @@
 
             <!-- Botón contactar -->
             <div class="botones-contacto-responsive">
-              <button
-                *ngIf="!esMio"
-                (click)="contactosService.contactarWOAW(auto, tipo_veiculo)"
-                class="btn-personalizado success"
-              >
+              <button *ngIf="!esMio" (click)="contactosService.contactarWOAW(auto, tipo_veiculo)"
+                class="btn-personalizado success">
                 <ion-icon name="logo-whatsapp"></ion-icon>
                 WhatsApp
               </button>
 
-              <button
-                (click)="contactosService.compartirAuto(auto, tipo_veiculo)"
-                class="btn-personalizado medium"
-              >
+              <button (click)="contactosService.compartirAuto(auto, tipo_veiculo)" class="btn-personalizado medium">
                 <ion-icon name="share-social-outline"></ion-icon>
                 Compartir
               </button>
 
               <br />
-              <button
-                *ngIf="tipo_veiculo === 'autos' && MyRole !== 'admin' && !esMio"
-                class="btn-personalizado danger"
-                (click)="contactosService.ArrendamientoAuto(auto)"
-              >
+              <button *ngIf="tipo_veiculo === 'autos' && MyRole !== 'admin' && !esMio" class="btn-personalizado danger"
+                (click)="contactosService.ArrendamientoAuto(auto)">
                 <ion-icon name="car-sport"></ion-icon>
                 Arrendar
               </button>
@@ -554,85 +416,51 @@
             </p>
 
             <!-- Componente de cotizador Nuevos ☢️ -->
-            <app-cotizador
-              *ngIf="mostrarCotizador && !esMio && tipo_veiculo!=='camiones'"
-              [coche]="auto"
-              [versionNuevo]="versionSeleccionada?.nombre ?? null"
-              [precioNuevo]="versionSeleccionada?.precio ?? null"
-            >
+            <app-cotizador *ngIf="mostrarCotizador && tipo_veiculo!=='camiones'" [coche]="auto"
+              [versionNuevo]="versionSeleccionada?.nombre ?? null" [precioNuevo]="versionSeleccionada?.precio ?? null">
             </app-cotizador>
 
             <ion-card>
               <!-- Datos del vendedor -->
-              <ion-card-content
-                style="margin-top: 0.8rem; font-size: 14px; color: #4b5563;"
-                *ngIf="auto.lote == null && (MyRole == 'admin' || esMio)"
-              >
-                <ion-label style="font-weight: bold; font-size: 15px;"
-                  >Vendedor</ion-label
-                >
+              <ion-card-content style="margin-top: 0.8rem; font-size: 14px; color: #4b5563;"
+                *ngIf="auto.lote == null && (MyRole == 'admin' || esMio)">
+                <ion-label style="font-weight: bold; font-size: 15px;">Vendedor</ion-label>
                 <p style="margin: 4px 0 0 0;">
-                  <ion-icon
-                    name="person-circle-outline"
-                    style="margin-right: 6px;"
-                  ></ion-icon>
+                  <ion-icon name="person-circle-outline" style="margin-right: 6px;"></ion-icon>
                   {{ auto.usuarioId.nombre }} {{ auto.usuarioId.apellidos }}
                 </p>
                 <p style="margin: 4px 0 0 0;">
-                  <ion-icon
-                    name="mail-outline"
-                    style="margin-right: 6px;"
-                  ></ion-icon>
+                  <ion-icon name="mail-outline" style="margin-right: 6px;"></ion-icon>
                   {{ auto.usuarioId.email }}
                 </p>
                 <p style="margin: 4px 0 0 0;">
-                  <ion-icon
-                    name="call-outline"
-                    style="margin-right: 6px;"
-                  ></ion-icon>
+                  <ion-icon name="call-outline" style="margin-right: 6px;"></ion-icon>
                   {{ auto.usuarioId.lada }} {{ auto.usuarioId.telefono }}
                 </p>
               </ion-card-content>
 
-              <ion-card-content
-                style="margin-top: 0.8rem; font-size: 14px; color: #4b5563;"
-                *ngIf="auto.lote != null"
-                (click)="mostrarAutos(auto.lote)"
-                button
-              >
-                <ion-label style="font-weight: bold; font-size: 15px;"
-                  >Lote</ion-label
-                >
+              <ion-card-content style="margin-top: 0.8rem; font-size: 14px; color: #4b5563;" *ngIf="auto.lote != null"
+                (click)="mostrarAutos(auto.lote)" button>
+                <ion-label style="font-weight: bold; font-size: 15px;">Lote</ion-label>
 
                 <!-- Imagen del lote como avatar -->
-                <div
-                  style="
+                <div style="
                     display: flex;
                     align-items: center;
                     gap: 12px;
                     margin: 8px 0;
-                  "
-                >
+                  ">
                   <ion-avatar style="width: 70px; height: 70px;">
-                    <img
-                      [src]="auto.lote.imagenPrincipal"
-                      alt="Logo del lote"
-                    />
+                    <img [src]="auto.lote.imagenPrincipal" alt="Logo del lote" />
                   </ion-avatar>
 
                   <div>
                     <p style="margin: 4px 0 0 0; font-weight: 600;">
-                      <ion-icon
-                        name="business-outline"
-                        style="margin-right: 6px;"
-                      ></ion-icon>
+                      <ion-icon name="business-outline" style="margin-right: 6px;"></ion-icon>
                       {{ auto.lote.nombre }}
                     </p>
                     <p style="margin: 4px 0 0 0;">
-                      <ion-icon
-                        name="call-outline"
-                        style="margin-right: 6px;"
-                      ></ion-icon>
+                      <ion-icon name="call-outline" style="margin-right: 6px;"></ion-icon>
                       +52 {{ auto.lote.telefonoContacto }}
                     </p>
                   </div>
@@ -640,23 +468,15 @@
               </ion-card-content>
             </ion-card>
           </div>
-          <div
-            class="overlay"
-            *ngIf="!esDispositivoMovil && auto.estadoVehiculo === 'vendido'"
-          >
+          <div class="overlay" *ngIf="!esDispositivoMovil && auto.estadoVehiculo === 'vendido'">
             <img src="/assets/icon/vendido.png" alt="Vendido" />
           </div>
 
           <!-- Especificaciones -->
-          <div
-            class="especificaciones"
-            *ngIf="esDispositivoMovil && tipo_veiculo === 'autos'"
-          >
+          <div class="especificaciones" *ngIf="esDispositivoMovil && tipo_veiculo === 'autos'">
             <h4>Especificaciones</h4>
 
-            <ng-container
-              *ngFor="let esp of especificacionesAuto; let i = index"
-            >
+            <ng-container *ngFor="let esp of especificacionesAuto; let i = index">
               <h5 *ngIf="especificacionesAuto.length > 1">
                 Versión {{ i + 1 }}: {{ esp.version }}
               </h5>
@@ -720,10 +540,8 @@
               </table>
             </ng-container>
           </div>
-          <div
-            *ngIf="esDispositivoMovil && (tipo_veiculo === 'motos' || tipo_veiculo === 'camiones')"
-            class="especificaciones"
-          >
+          <div *ngIf="esDispositivoMovil && (tipo_veiculo === 'motos' || tipo_veiculo === 'camiones')"
+            class="especificaciones">
             <h4>Especificaciones</h4>
             <table>
               <tr *ngIf="auto.marca">
@@ -762,9 +580,7 @@
                 <td>Suspensión</td>
                 <td>{{ auto.suspension }}</td>
               </tr>
-              <tr
-                *ngIf="auto.kilometraje !== null && auto.kilometraje !== undefined"
-              >
+              <tr *ngIf="auto.kilometraje !== null && auto.kilometraje !== undefined">
                 <td>Kilometraje</td>
                 <td>{{ auto.kilometraje }} km</td>
               </tr>
@@ -791,21 +607,12 @@
         <!-- Columna izquierda: Imagen grande, miniaturas y especificaciones -->
         <ion-col size="12" size-md="8" class="columna-izquierda responsive-col">
           <div class="contenedor-imagenes">
-            <div
-              class="contenedor_imagen_principal"
-              (touchstart)="esDispositivoMovil && onTouchStart($event)"
-              (touchend)="esDispositivoMovil && onTouchEnd($event)"
-            >
-              <div
-                class="imagen-principal"
-                (click)="abrirModalImagen(auto.imagenes, auto.imagenes.indexOf(imagenSeleccionada)); $event.stopPropagation()"
-              >
+            <div class="contenedor_imagen_principal" (touchstart)="esDispositivoMovil && onTouchStart($event)"
+              (touchend)="esDispositivoMovil && onTouchEnd($event)">
+              <div class="imagen-principal"
+                (click)="abrirModalImagen(auto.imagenes, auto.imagenes.indexOf(imagenSeleccionada)); $event.stopPropagation()">
                 <!-- Imagen -->
-                <img
-                  [src]="imagenSeleccionada"
-                  alt="Imagen principal del auto"
-                  (load)="onImagenPrincipalCargada()"
-                />
+                <img [src]="imagenSeleccionada" alt="Imagen principal del auto" (load)="onImagenPrincipalCargada()" />
                 <!-- Loader -->
                 <div class="loader_carta" *ngIf="!imagenPrincipalCargada">
                   <div class="spinner_carta"></div>
@@ -813,18 +620,12 @@
                 </div>
                 <!-- Flechas (pantallas grandes) -->
                 <ng-container *ngIf="!esDispositivoMovil">
-                  <button
-                    class="flecha izquierda"
-                    (click)="cambiarImagen('anterior'); $event.stopPropagation()"
-                    [disabled]="imagenSeleccionada === auto.imagenes[0]"
-                  >
+                  <button class="flecha izquierda" (click)="cambiarImagen('anterior'); $event.stopPropagation()"
+                    [disabled]="imagenSeleccionada === auto.imagenes[0]">
                     ‹
                   </button>
-                  <button
-                    class="flecha derecha"
-                    (click)="cambiarImagen('siguiente'); $event.stopPropagation()"
-                    [disabled]="imagenSeleccionada === auto.imagenes[auto.imagenes.length - 1]"
-                  >
+                  <button class="flecha derecha" (click)="cambiarImagen('siguiente'); $event.stopPropagation()"
+                    [disabled]="imagenSeleccionada === auto.imagenes[auto.imagenes.length - 1]">
                     ›
                   </button>
                 </ng-container>
@@ -833,14 +634,9 @@
             <!-- Miniaturas -->
             <div class="miniaturas-vertical">
               <ng-container *ngFor="let img of auto.imagenes">
-                <img
-                  [src]="img"
-                  alt="Miniatura"
-                  [class.activa]="img === imagenSeleccionada"
-                  [class.oculta]="!miniaturasCargadas[img]"
-                  (click)="imagenSeleccionada = img"
-                  (load)="onMiniaturaCargada(img)"
-                />
+                <img [src]="img" alt="Miniatura" [class.activa]="img === imagenSeleccionada"
+                  [class.oculta]="!miniaturasCargadas[img]" (click)="imagenSeleccionada = img"
+                  (load)="onMiniaturaCargada(img)" />
 
                 <div class="loader_miniatura" *ngIf="!miniaturasCargadas[img]">
                   <div class="spinner_miniatura"></div>
@@ -851,18 +647,10 @@
 
           <div *ngIf="!esDispositivoMovil" class="mapa_admin">
             <h1 class="text_ubicacion">Ubicación</h1>
-            <div
-              #mapAutoContainer
-              style="width: 100%; height: 300px; border-radius: px;"
-            ></div>
+            <div #mapAutoContainer style="width: 100%; height: 300px; border-radius: px;"></div>
             <!-- Dirección debajo del mapa -->
-            <ion-card-content
-              style="margin-top: 0.2rem; font-size: 14px; color: #4b5563;"
-            >
-              <ion-icon
-                name="location-outline"
-                style="margin-right: 6px;"
-              ></ion-icon>
+            <ion-card-content style="margin-top: 0.2rem; font-size: 14px; color: #4b5563;">
+              <ion-icon name="location-outline" style="margin-right: 6px;"></ion-icon>
               {{ direccionCompleta }}
             </ion-card-content>
           </div>
@@ -935,9 +723,7 @@
                 <td>Rines</td>
                 <td>{{ auto.rines }}</td>
               </tr>
-              <tr
-                *ngIf="auto.kilometraje !== undefined && auto.kilometraje !== null"
-              >
+              <tr *ngIf="auto.kilometraje !== undefined && auto.kilometraje !== null">
                 <td>Kilometraje</td>
                 <td>{{ auto.kilometraje }} km</td>
               </tr>
@@ -968,10 +754,7 @@
             </table>
           </div>
 
-          <div
-            *ngIf="esDispositivoMovil && auto.estadoVehiculo === 'disponible'"
-            class="card-detalle"
-          >
+          <div *ngIf="esDispositivoMovil && auto.estadoVehiculo === 'disponible'" class="card-detalle">
             <h2>{{ auto.marca }} {{ auto.modelo }} {{ auto.anio }}</h2>
             <p class="precio-principal" *ngIf="tipo_veiculo === 'autos'">
               {{ versionSeleccionada?.nombre }}:
@@ -987,28 +770,19 @@
 
             <!-- Botón contactar -->
             <div class="botones-contacto-responsive">
-              <button
-                *ngIf="!esMio"
-                (click)="contactosService.contactarWOAW(auto, tipo_veiculo)"
-                class="btn-personalizado success"
-              >
+              <button *ngIf="!esMio" (click)="contactosService.contactarWOAW(auto, tipo_veiculo)"
+                class="btn-personalizado success">
                 <ion-icon name="logo-whatsapp"></ion-icon>
                 WhatsApp
               </button>
 
-              <button
-                (click)="contactosService.compartirAuto(auto, tipo_veiculo)"
-                class="btn-personalizado medium"
-              >
+              <button (click)="contactosService.compartirAuto(auto, tipo_veiculo)" class="btn-personalizado medium">
                 <ion-icon name="share-social-outline"></ion-icon>
                 Compartir
               </button>
 
-              <button
-                *ngIf="MyRole !== 'admin' && !esMio"
-                (click)="contactosService.llamar()"
-                class="btn-personalizado primary"
-              >
+              <button *ngIf="MyRole !== 'admin' && !esMio" (click)="contactosService.llamar()"
+                class="btn-personalizado primary">
                 <ion-icon name="call-outline"></ion-icon>
                 Llamar
               </button>
@@ -1022,11 +796,8 @@
 
             <p>
               {{ descripcionCorta }}
-              <span
-                *ngIf="auto.descripcion?.split(' ').length > 20"
-                (click)="descripcionExpandida = !descripcionExpandida"
-                style="color: #ff0000; cursor: pointer;"
-              >
+              <span *ngIf="auto.descripcion?.split(' ').length > 20"
+                (click)="descripcionExpandida = !descripcionExpandida" style="color: #ff0000; cursor: pointer;">
 
                 {{ descripcionExpandida ? 'Ver menos' : 'Ver más' }}
               </span>
@@ -1034,19 +805,11 @@
 
             <div class="mapa_admin">
               <h1 class="text_ubicacion">Ubicación</h1>
-              <div
-                #mapAutoContainer
-                style="width: 100%; height: 200px; border-radius: px;"
-                (click)="openDirection()"
-              ></div>
+              <div #mapAutoContainer style="width: 100%; height: 200px; border-radius: px;" (click)="openDirection()">
+              </div>
               <!-- Dirección debajo del mapa -->
-              <ion-card-content
-                style="margin-top: 0.2rem; font-size: 14px; color: #4b5563;"
-              >
-                <ion-icon
-                  name="location-outline"
-                  style="margin-right: 6px;"
-                ></ion-icon>
+              <ion-card-content style="margin-top: 0.2rem; font-size: 14px; color: #4b5563;">
+                <ion-icon name="location-outline" style="margin-right: 6px;"></ion-icon>
                 {{ direccionCompleta }}
               </ion-card-content>
             </div>
@@ -1054,85 +817,51 @@
             <ion-row>
               <ion-col size="12" size-md="7">
                 <!-- Componente de cotizador ☢️ -->
-                <app-cotizador *ngIf="!esMio && tipo_veiculo!=='camiones'" [coche]="auto"></app-cotizador>
+                <app-cotizador *ngIf="tipo_veiculo!=='camiones'" [coche]="auto"></app-cotizador>
               </ion-col>
 
-              <ion-col
-                size="12"
-                size-md="5"
-                *ngIf="(auto.lote == null ||auto.lote != null) "
-              >
+              <ion-col size="12" size-md="5" *ngIf="(auto.lote == null ||auto.lote != null) ">
                 <ion-card>
                   <!-- Datos del vendedor -->
-                  <ion-card-content
-                    style="margin-top: 0.8rem; font-size: 14px; color: #4b5563;"
-                    *ngIf="auto.lote == null && (MyRole == 'admin' || esMio)"
-                  >
-                    <ion-label style="font-weight: bold; font-size: 15px;"
-                      >Vendedor</ion-label
-                    >
+                  <ion-card-content style="margin-top: 0.8rem; font-size: 14px; color: #4b5563;"
+                    *ngIf="auto.lote == null && (MyRole == 'admin' || esMio)">
+                    <ion-label style="font-weight: bold; font-size: 15px;">Vendedor</ion-label>
                     <p style="margin: 4px 0 0 0;">
-                      <ion-icon
-                        name="person-circle-outline"
-                        style="margin-right: 6px;"
-                      ></ion-icon>
+                      <ion-icon name="person-circle-outline" style="margin-right: 6px;"></ion-icon>
                       {{ auto.usuarioId.nombre }} {{ auto.usuarioId.apellidos }}
                     </p>
                     <p style="margin: 4px 0 0 0;">
-                      <ion-icon
-                        name="mail-outline"
-                        style="margin-right: 6px;"
-                      ></ion-icon>
+                      <ion-icon name="mail-outline" style="margin-right: 6px;"></ion-icon>
                       {{ auto.usuarioId.email }}
                     </p>
                     <p style="margin: 4px 0 0 0;">
-                      <ion-icon
-                        name="call-outline"
-                        style="margin-right: 6px;"
-                      ></ion-icon>
+                      <ion-icon name="call-outline" style="margin-right: 6px;"></ion-icon>
                       {{ auto.usuarioId.lada }} {{ auto.usuarioId.telefono }}
                     </p>
                   </ion-card-content>
 
-                  <ion-card-content
-                    style="margin-top: 0.8rem; font-size: 14px; color: #4b5563;"
-                    *ngIf="auto.lote != null"
-                    (click)="mostrarAutos(auto.lote)"
-                    button
-                  >
-                    <ion-label style="font-weight: bold; font-size: 15px;"
-                      >Lote</ion-label
-                    >
+                  <ion-card-content style="margin-top: 0.8rem; font-size: 14px; color: #4b5563;"
+                    *ngIf="auto.lote != null" (click)="mostrarAutos(auto.lote)" button>
+                    <ion-label style="font-weight: bold; font-size: 15px;">Lote</ion-label>
 
                     <!-- Imagen del lote como avatar -->
-                    <div
-                      style="
+                    <div style="
                         display: flex;
                         align-items: center;
                         gap: 12px;
                         margin: 8px 0;
-                      "
-                    >
+                      ">
                       <ion-avatar style="width: 70px; height: 70px;">
-                        <img
-                          [src]="auto.lote.imagenPrincipal"
-                          alt="Logo del lote"
-                        />
+                        <img [src]="auto.lote.imagenPrincipal" alt="Logo del lote" />
                       </ion-avatar>
 
                       <div>
                         <p style="margin: 4px 0 0 0; font-weight: 600;">
-                          <ion-icon
-                            name="business-outline"
-                            style="margin-right: 6px;"
-                          ></ion-icon>
+                          <ion-icon name="business-outline" style="margin-right: 6px;"></ion-icon>
                           {{ auto.lote.nombre }}
                         </p>
                         <p style="margin: 4px 0 0 0;">
-                          <ion-icon
-                            name="call-outline"
-                            style="margin-right: 6px;"
-                          ></ion-icon>
+                          <ion-icon name="call-outline" style="margin-right: 6px;"></ion-icon>
                           +52 {{ auto.lote.telefonoContacto }}
                         </p>
                       </div>
@@ -1143,20 +872,14 @@
             </ion-row>
           </div>
 
-          <div
-            class="overlay"
-            *ngIf="esDispositivoMovil && auto.estadoVehiculo === 'vendido'"
-          >
+          <div class="overlay" *ngIf="esDispositivoMovil && auto.estadoVehiculo === 'vendido'">
             <img src="/assets/icon/vendido.png" alt="Vendido" />
           </div>
         </ion-col>
 
         <!-- Columna derecha: Detalles comerciales -->
         <ion-col size="12" size-md="4" class="columna-derecha responsive-col">
-          <div
-            *ngIf="!esDispositivoMovil && auto.estadoVehiculo === 'disponible'"
-            class="card-detalle"
-          >
+          <div *ngIf="!esDispositivoMovil && auto.estadoVehiculo === 'disponible'" class="card-detalle">
             <h2>{{ auto.marca }} {{ auto.modelo }} {{ auto.anio }}</h2>
             <p class="precio-principal" *ngIf="tipo_veiculo === 'autos'">
               {{ versionSeleccionada?.nombre }}:
@@ -1172,18 +895,12 @@
 
             <!-- MIS DATOS ( {{MyRole}} - {{ esMio }} ) -->
             <div class="botones-contacto-responsive">
-              <button
-                *ngIf="!esMio"
-                (click)="contactosService.contactarWOAW(auto, tipo_veiculo)"
-                class="btn-personalizado success"
-              >
+              <button *ngIf="!esMio" (click)="contactosService.contactarWOAW(auto, tipo_veiculo)"
+                class="btn-personalizado success">
                 <ion-icon name="logo-whatsapp"></ion-icon>
                 WhatsApp
               </button>
-              <button
-                (click)="contactosService.compartirAuto(auto, tipo_veiculo)"
-                class="btn-personalizado medium"
-              >
+              <button (click)="contactosService.compartirAuto(auto, tipo_veiculo)" class="btn-personalizado medium">
                 <ion-icon name="share-social-outline"></ion-icon>
                 Compartir
               </button>
@@ -1200,79 +917,49 @@
             </p>
 
             <!-- Componente de cotizador ☢️ -->
-            <app-cotizador *ngIf="!esMio && tipo_veiculo!=='camiones'" [coche]="auto"></app-cotizador>
+            <app-cotizador *ngIf="tipo_veiculo!=='camiones'" [coche]="auto"></app-cotizador>
 
             <ion-card>
               <!-- Datos del vendedor -->
-              <ion-card-content
-                style="margin-top: 0.8rem; font-size: 14px; color: #4b5563;"
-                *ngIf="auto.lote == null && (MyRole == 'admin' || esMio)"
-              >
-                <ion-label style="font-weight: bold; font-size: 15px;"
-                  >Vendedor</ion-label
-                >
+              <ion-card-content style="margin-top: 0.8rem; font-size: 14px; color: #4b5563;"
+                *ngIf="auto.lote == null && (MyRole == 'admin' || esMio)">
+                <ion-label style="font-weight: bold; font-size: 15px;">Vendedor</ion-label>
                 <p style="margin: 4px 0 0 0;">
-                  <ion-icon
-                    name="person-circle-outline"
-                    style="margin-right: 6px;"
-                  ></ion-icon>
+                  <ion-icon name="person-circle-outline" style="margin-right: 6px;"></ion-icon>
                   {{ auto.usuarioId.nombre }} {{ auto.usuarioId.apellidos }}
                 </p>
                 <p style="margin: 4px 0 0 0;">
-                  <ion-icon
-                    name="mail-outline"
-                    style="margin-right: 6px;"
-                  ></ion-icon>
+                  <ion-icon name="mail-outline" style="margin-right: 6px;"></ion-icon>
                   {{ auto.usuarioId.email }}
                 </p>
                 <p style="margin: 4px 0 0 0;">
-                  <ion-icon
-                    name="call-outline"
-                    style="margin-right: 6px;"
-                  ></ion-icon>
+                  <ion-icon name="call-outline" style="margin-right: 6px;"></ion-icon>
                   {{ auto.usuarioId.lada }} {{ auto.usuarioId.telefono }}
                 </p>
               </ion-card-content>
 
-              <ion-card-content
-                style="margin-top: 0.8rem; font-size: 14px; color: #4b5563;"
-                *ngIf="auto.lote != null"
-                (click)="mostrarAutos(auto.lote)"
-                button
-              >
-                <ion-label style="font-weight: bold; font-size: 15px;"
-                  >Lote</ion-label
-                >
+              <ion-card-content style="margin-top: 0.8rem; font-size: 14px; color: #4b5563;" *ngIf="auto.lote != null"
+                (click)="mostrarAutos(auto.lote)" button>
+                <ion-label style="font-weight: bold; font-size: 15px;">Lote</ion-label>
 
                 <!-- Imagen del lote como avatar -->
-                <div
-                  style="
+                <div style="
                     display: flex;
                     align-items: center;
                     gap: 12px;
                     margin: 8px 0;
-                  "
-                >
+                  ">
                   <ion-avatar style="width: 70px; height: 70px;">
-                    <img
-                      [src]="auto.lote.imagenPrincipal"
-                      alt="Logo del lote"
-                    />
+                    <img [src]="auto.lote.imagenPrincipal" alt="Logo del lote" />
                   </ion-avatar>
 
                   <div>
                     <p style="margin: 4px 0 0 0; font-weight: 600;">
-                      <ion-icon
-                        name="business-outline"
-                        style="margin-right: 6px;"
-                      ></ion-icon>
+                      <ion-icon name="business-outline" style="margin-right: 6px;"></ion-icon>
                       {{ auto.lote.nombre }}
                     </p>
                     <p style="margin: 4px 0 0 0;">
-                      <ion-icon
-                        name="call-outline"
-                        style="margin-right: 6px;"
-                      ></ion-icon>
+                      <ion-icon name="call-outline" style="margin-right: 6px;"></ion-icon>
                       +52 {{ auto.lote.telefonoContacto }}
                     </p>
                   </div>
@@ -1280,10 +967,7 @@
               </ion-card-content>
             </ion-card>
           </div>
-          <div
-            class="overlay"
-            *ngIf="!esDispositivoMovil && auto.estadoVehiculo === 'vendido'"
-          >
+          <div class="overlay" *ngIf="!esDispositivoMovil && auto.estadoVehiculo === 'vendido'">
             <img src="/assets/icon/vendido.png" alt="Vendido" />
           </div>
 
@@ -1355,9 +1039,7 @@
                 <td>Rines</td>
                 <td>{{ auto.rines }}</td>
               </tr>
-              <tr
-                *ngIf="auto.kilometraje !== undefined && auto.kilometraje !== null"
-              >
+              <tr *ngIf="auto.kilometraje !== undefined && auto.kilometraje !== null">
                 <td>Kilometraje</td>
                 <td>{{ auto.kilometraje }} km</td>
               </tr>
