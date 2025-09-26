@@ -1,44 +1,45 @@
 :host {
-  --ink: #0b0b0e;
-  --muted: #000000;
-  --line: rgba(0, 0, 0, .06);
-  --chip: #f5f7fb;
-  --primary: #ff2121;
-  --primary-ink: #fff;
-  --card: #ffffff;
-  --negro: #0b0b0e;
-  --fondo2: rgba(176, 176, 176, 0);
+    --ink: #0b0b0e;
+    --muted: #000000;
+    --line: rgba(0, 0, 0, .06);
+    --chip: #f5f7fb;
+    --primary: #ff2121;
+    --primary-ink: #fff;
+    --card: #ffffff;
+    --negro: #0b0b0e;
+    --fondo2: rgba(176, 176, 176, 0);
 }
 
 .fondo-diagonal {
-  position: fixed;
-  inset: 0;
-  background:
-    linear-gradient(120deg, rgba(0, 0, 0, 0.37) 0 100%, var(--fondo2) 0% 100%),
-    url("/assets/autos/seg1.png");
-  background-size: cover;
-  background-position: left;
-  background-repeat: no-repeat;
-  z-index: -1;
-  pointer-events: none;
-  opacity: 1;
-
-  @media (max-width: 1220px) {
+    position: fixed;
+    inset: 0;
     background:
-      linear-gradient(80deg, rgba(0, 0, 0, 0.37) 0 100%, var(--fondo2) 0% 100%),
-      url("/assets/autos/seg1.png");
+        linear-gradient(120deg, rgba(0, 0, 0, 0.37) 0 100%, var(--fondo2) 0% 100%),
+        url("/assets/autos/seg1.png");
     background-size: cover;
     background-position: left;
-  }
+    background-repeat: no-repeat;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 1;
 
-  @media (max-width: 820px) {
-    background:
-      linear-gradient(180deg, rgba(0, 0, 0, 0.37) 0 100%, var(--fondo2) 0% 100%),
-      url("/assets/autos/seg1.png");
-    background-size: cover;
-    background-position: left;
-  }
+    @media (max-width: 1220px) {
+        background:
+            linear-gradient(80deg, rgba(0, 0, 0, 0.37) 0 100%, var(--fondo2) 0% 100%),
+            url("/assets/autos/seg1.png");
+        background-size: cover;
+        background-position: left;
+    }
+
+    @media (max-width: 820px) {
+        background:
+            linear-gradient(180deg, rgba(0, 0, 0, 0.37) 0 100%, var(--fondo2) 0% 100%),
+            url("/assets/autos/seg1.png");
+        background-size: cover;
+        background-position: left;
+    }
 }
+
 
 .poliza {
     background: transparent;
@@ -54,11 +55,12 @@
 
     .poliza__card {
 
-        background: rgba(215, 215, 215, 0.629);
+        background: rgba(179, 179, 179, 0.638);
         border-radius: 16px;
-        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-        backdrop-filter: blur(11.1px);
-        -webkit-backdrop-filter: blur(11.1px);
+        margin: 16px auto;
+        box-sizing: border-box;
+        backdrop-filter: blur(4.1px);
+        -webkit-backdrop-filter: blur(4.1px);
         border: 1px solid rgba(215, 215, 215, 0.3);
 
         // background: #ffffff;
@@ -66,7 +68,7 @@
         box-shadow: 0 8px 24px rgba(0, 0, 0, .08);
         padding: 20px;
         width: 100%;
-        max-width: 990px;
+        max-width: 790px;
         height: auto;
         margin: 10px !important;
 
@@ -164,12 +166,12 @@
 
     .btn-primary,
     .btn-secondary {
-        min-width: clamp(160px, 28vw, 240px);
+        min-width: clamp(80px, 28vw, 140px);
         padding: 20px 10px;
         border-radius: 14px;
         border: 0;
         font-weight: 700;
-        font-size: clamp(10px, 1vw, 18px);
+        font-size: clamp(9px, 1vw, 15px);
         cursor: pointer;
         transition: transform .18s ease, box-shadow .18s ease;
     }
@@ -486,9 +488,9 @@
             max-width: 480px;
             font-size: 15px;
             line-height: 1.4;
-            color: #444;
-            background: #f9f9f9;
-            border: 1px solid #e2e2e2;
+            color: #ffffff;
+            background: #0f1115;
+            border: 1px solid #232633;
             padding: 12px 16px;
             border-radius: 12px;
         }
@@ -524,12 +526,38 @@
                 box-shadow: 0 4px 14px rgba(217, 48, 37, .2);
             }
         }
+
+        .bt_regresar_r {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            color: #a70000;
+            background-color: #e6e6e6;
+            font-size: 14px;
+            font-weight: 700;
+            padding: 14px 28px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            transition: transform .12s ease, box-shadow .12s ease;
+
+            &:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 8px 24px rgba(217, 48, 37, .35);
+            }
+
+            &:active {
+                transform: translateY(0);
+                box-shadow: 0 4px 14px rgba(217, 48, 37, .2);
+            }
+        }
     }
 }
 
 app-dynamic-island {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 20px auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px auto;
 }

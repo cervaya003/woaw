@@ -9,6 +9,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { SeguroService } from '../../../services/seguro.service';
 import { Location } from '@angular/common';
 
+import { Browser } from '@capacitor/browser';
+import { Capacitor } from '@capacitor/core';
+
+
 @Component({
   selector: 'app-poliza',
   templateUrl: './poliza.page.html',
@@ -67,101 +71,14 @@ export class PolizaPage implements OnInit {
   ngOnInit() {
     const nav = this.router.getCurrentNavigation();
     this.mostrarPresouestaPoliza();
-    // === cotización ===
-    const cotizacion = localStorage.getItem('cotizacion');
-    if (cotizacion) {
-      this.datoscotizacion = JSON.parse(cotizacion);
-      console.log('Cotización cargada:', this.datoscotizacion);
-    } else {
-      this.datoscotizacion = null;
-      this.router.navigate(['/seguros']);
-      this.generalService.alert(
-        'Debes cotizar un coche antes de continuar con tu registro.',
-        'Atención',
-        'warning'
-      );
-    }
-
-    // === datosCoche ===
-    const datosCoche = nav?.extras?.state?.['datosCoche'] || null;
-    if (datosCoche) {
-      this.datosCoche = datosCoche;
-      localStorage.setItem('datosCoche', JSON.stringify(datosCoche));
-      console.log('DATOS - coche ', this.datosCoche);
-    } else {
-      const storedAuto = localStorage.getItem('datosCoche');
-      if (storedAuto) {
-        this.datosCoche = JSON.parse(storedAuto);
-        console.log('DATOS - coche ', this.datosCoche);
-      } else {
-        this.datosCoche = null;
-        this.router.navigate(['/seguros/persona']);
-        this.generalService.alert(
-          'Debes de cotizar un aut antes de continuar.',
-          'Atención',
-          'warning'
-        );
-        return;
-      }
-    }
-
-    // === UsuarioRespuesta ===
-    const UsuarioRespuesta = nav?.extras?.state?.['UsuarioRespuesta'] || null;
-    if (UsuarioRespuesta) {
-      this.UsuarioRespuesta = UsuarioRespuesta;
-      localStorage.setItem('UsuarioRespuesta', JSON.stringify(UsuarioRespuesta));
-      console.log('DATOS - PERSONALES RESPUESTA ', this.UsuarioRespuesta);
-    } else {
-      const storedPersona = localStorage.getItem('UsuarioRespuesta');
-      if (storedPersona) {
-        this.UsuarioRespuesta = JSON.parse(storedPersona);
-        console.log('DATOS - PERSONALES RESPUESTA ', this.UsuarioRespuesta);
-      } else {
-        this.UsuarioRespuesta = null;
-        this.router.navigate(['/seguros/persona']);
-        this.generalService.alert(
-          'Debes de llenar tus datos personales.',
-          'Atención',
-          'warning'
-        );
-        return;
-      }
-    }
-
-    // === datosUsuario ===
-    const datosUsuario = nav?.extras?.state?.['datosUsuario'] || null;
-    if (datosUsuario) {
-      this.datosUsuario = datosUsuario;
-      localStorage.setItem('datosUsuario', JSON.stringify(datosUsuario));
-      console.log('DATOS - PERSONALES ', this.datosUsuario);
-    } else {
-      const storedPersona = localStorage.getItem('datosUsuario');
-      if (storedPersona) {
-        this.datosUsuario = JSON.parse(storedPersona);
-        console.log('DATOS - PERSONALES ', this.datosUsuario);
-      } else {
-        this.datosUsuario = null;
-        this.router.navigate(['/seguros/persona']);
-        this.generalService.alert(
-          'Debes de llenar tus datos personales.',
-          'Atención',
-          'warning'
-        );
-        return;
-      }
-    }
   }
-
   // ====== Correos dinámicos ======
-
   get correos(): FormArray<FormControl<string | null>> {
     return this.form_poliza.get('correos') as FormArray<FormControl<string | null>>;
   }
-
   get canAddCorreo(): boolean {
     return this.correos.length < 2;
   }
-
   addCorreo(): void {
     if (!this.canAddCorreo) return;
     this.correos.push(
@@ -169,19 +86,16 @@ export class PolizaPage implements OnInit {
     );
     this.correos.updateValueAndValidity({ emitEvent: false });
   }
-
   removeCorreo(index: number): void {
     if (index < 0 || index >= this.correos.length) return;
     this.correos.removeAt(index);
     this.correos.updateValueAndValidity({ emitEvent: false });
   }
-
   normalizeCorreo(index: number): void {
     const c = this.correos.at(index);
     const v = (c.value ?? '').toString().trim().toLowerCase();
     if (v !== c.value) c.setValue(v, { emitEvent: false });
   }
-
   duplicatedEmailsValidator = (ctrl: AbstractControl): ValidationErrors | null => {
     const arr = ctrl as FormArray;
     const values: string[] = (arr.value || [])
@@ -192,34 +106,30 @@ export class PolizaPage implements OnInit {
     const duplicated = set.size !== values.length;
     return duplicated ? { duplicated: true } : null;
   };
-
   getCorreoError(errors: ValidationErrors | null): string {
     if (!errors) return '';
     if (errors['required']) return 'Este campo es obligatorio.';
     if (errors['email']) return 'Formato de correo inválido.';
     return 'Revisa este correo.';
   }
-
   // ====== Utilidades existentes ======
-
   toUpper(ctrlName: string) {
     const c = this.form_poliza.get(ctrlName);
     if (!c) return;
     const v = (c.value ?? '').toString().toUpperCase();
     if (v !== c.value) c.setValue(v, { emitEvent: false });
   }
-
   analizaForm(campo: string): boolean {
     const control = this.form_poliza.get(campo);
     return !!(control && control.invalid && (control.dirty || control.touched));
   }
-
   siguiente() {
     if (this.form_poliza.invalid) {
       this.form_poliza.markAllAsTouched();
       console.log('heyyyy ')
       return;
     }
+    this.mostrarPresouestaPoliza();
 
     console.log(this.datoscotizacion)
     const rfc = this.datosUsuario?.person?.rfc;
@@ -260,9 +170,6 @@ export class PolizaPage implements OnInit {
     localStorage.setItem('datosPolizaVin', JSON.stringify(payload));
     console.log('Payload de la póliza:', payload);
   }
-  regresar() {
-    this.polizaCreada = false;
-  }
   enviarDatosCrearPersona(payload: any) {
     this.mostrar_spinnet = true;
     this.seguros.crearPoliza(payload).subscribe({
@@ -275,6 +182,8 @@ export class PolizaPage implements OnInit {
           'success'
         );
         localStorage.setItem('datosPolizaVin_Respuesta', JSON.stringify(data));
+        localStorage.removeItem('datosCoche');
+        localStorage.removeItem('cotizacion');
         this.mostrar_spinnet = false;
         this.mostrarPresouestaPoliza();
       },
@@ -301,13 +210,76 @@ export class PolizaPage implements OnInit {
 
       this.polizaCreada = true;
       this.datosPolizaCreada = JSON.parse(cotizacionRespuestra);
-      console.log(this.datosPolizaCreada)
+      // console.log(this.datosPolizaCreada)
 
       const cotizacionRespuestrap = localStorage.getItem('datosPolizaVin');
 
       if (cotizacionRespuestrap) {
         const gr = JSON.parse(cotizacionRespuestrap);
-        console.log(gr);
+        // console.log(gr);
+      }
+    } else {
+      // === cotización ===
+      const cotizacion = localStorage.getItem('cotizacion');
+      if (cotizacion) {
+        this.datoscotizacion = JSON.parse(cotizacion);
+        // console.log('Cotización cargada:', this.datoscotizacion);
+      } else {
+        this.datoscotizacion = null;
+        this.router.navigate(['/seguros']);
+        // this.generalService.alert(
+        //   'Debes cotizar un coche antes de continuar con tu registro.',
+        //   'Atención',
+        //   'warning'
+        // );
+      }
+
+      // === datosCoche ===
+      const storedAuto = localStorage.getItem('datosCoche');
+      if (storedAuto) {
+        this.datosCoche = JSON.parse(storedAuto);
+        // console.log('DATOS - coche ', this.datosCoche);
+      } else {
+        this.datosCoche = null;
+        this.router.navigate(['/seguros']);
+        this.generalService.alert(
+          'Debes de cotizar un aut antes de continuar.',
+          'Atención',
+          'warning'
+        );
+        return;
+      }
+
+      // === UsuarioRespuesta ===
+      const storedPersonaRespuesta = localStorage.getItem('UsuarioRespuesta');
+      if (storedPersonaRespuesta) {
+        this.UsuarioRespuesta = JSON.parse(storedPersonaRespuesta);
+        // console.log('DATOS - PERSONALES RESPUESTA ', this.UsuarioRespuesta);
+      } else {
+        this.UsuarioRespuesta = null;
+        this.router.navigate(['/seguros/persona']);
+        this.generalService.alert(
+          'Debes de llenar tus datos personales.',
+          'Atención',
+          'warning'
+        );
+        return;
+      }
+
+      // === datosUsuario ===
+      const storedPersona = localStorage.getItem('datosUsuario');
+      if (storedPersona) {
+        this.datosUsuario = JSON.parse(storedPersona);
+        // console.log('DATOS - PERSONALES ', this.datosUsuario);
+      } else {
+        this.datosUsuario = null;
+        this.router.navigate(['/seguros/persona']);
+        this.generalService.alert(
+          'Debes de llenar tus datos personales.',
+          'Atención',
+          'warning'
+        );
+        return;
       }
     }
   }
@@ -326,24 +298,80 @@ export class PolizaPage implements OnInit {
     if (policy) {
       const policyId = policy.policy_id;
       id = policyId;
-      console.log("Policy encontrada:", policyId);
+      // console.log("Policy encontrada:", policyId);
     } else {
       console.warn("No se encontró la póliza con el ID buscado");
     }
 
     this.mostrar_spinnet = true;
     this.seguros.pagoPoliza(id).subscribe({
-      next: (data) => {
+      next: async (data: any) => {
+        try {
+          const url = data?.response?.checkout_url as string;
+          const policyNumber = data?.response?.policy_number as string;
+          const validUntilISO = data?.response?.valid_until as string;
+
+          // (opcional) guarda datos útiles
+          if (policyNumber) localStorage.setItem('crabi_policy_number', policyNumber);
+          if (validUntilISO) localStorage.setItem('crabi_valid_until', validUntilISO);
+
+          await this.abrirPagoForzado(url);
+        } catch (e) {
+          console.error('Error al abrir pago:', e);
+          await this.generalService.alert(
+            'No se pudo abrir la URL de pago. Intenta de nuevo.',
+            'Error',
+            'danger'
+          );
+        } finally {
+          this.mostrar_spinnet = false;
+        }
       },
-      error: (error) => {
+      error: async (error) => {
         this.mostrar_spinnet = false;
-        console.error('Error al crer pago:', error);
-        this.generalService.alert(
-          'Ocurrió un error en le metodo de pago. Intenta nuevamente más tarde.',
+        console.error('Error al crear pago:', error);
+        await this.generalService.alert(
+          'Ocurrió un error en el método de pago. Intenta nuevamente más tarde.',
           'Error',
           'danger'
         );
       }
     });
+
+  }
+  private async abrirPagoForzado(url: string) {
+    if (!url || typeof url !== 'string') {
+      await this.generalService.alert('No se recibió una URL de pago válida.', 'Error', 'danger');
+      return;
+    }
+
+    try {
+      // Preferente: pestaña del sistema (Chrome Custom Tabs / SFSafariViewController)
+      await Browser.open({ url });
+    } catch (e) {
+      // Fallback por si falla el plugin o estás en Web sin plugin
+      const win = window.open(url, '_blank', 'noopener,noreferrer');
+      if (!win) {
+        // Último recurso: misma pestaña
+        window.location.href = url;
+      }
+    }
+  }
+  regresar() {
+    this.generalService.confirmarAccion(
+      '¿Estás seguro en cotizar un nuevo coche?',
+      'Salir de proceso',
+      async () => {
+        localStorage.removeItem('datosPolizaVin_Respuesta');
+        localStorage.removeItem('datosPolizaVin');
+        this.polizaCreada = false;
+        this.islandKey++;
+        this.router.navigate(['/seguros']);
+      }
+    );
+  }
+  regresarPage() {
+    this.islandKey++;
+    this.router.navigate(['/seguros/persona']);
   }
 }

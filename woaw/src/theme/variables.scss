@@ -734,6 +734,9 @@ img.oculta {
   gap: 0px;
 
   .divicion1 {
+    padding: 0 10px;
+    box-sizing: border-box;
+
     min-width: 0;
     overflow: auto;
     min-height: 100svh;

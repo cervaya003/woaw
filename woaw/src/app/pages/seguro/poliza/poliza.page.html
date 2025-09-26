@@ -88,6 +88,9 @@
 
 
               <div class="paybox__cta">
+                <button type="button" class="btn-secondary" (click)="regresarPage()">
+                  &#x2B05; Regresar
+                </button>
                 <button type="submit" class="btn-primary">
                   Siguiente &#x27A1;
                 </button>
@@ -100,21 +103,27 @@
             <section class="poliza_creada">
 
               <div class="poliza__hero">
-                <ion-icon name="checkmark-circle"></ion-icon>
-                <h2>Póliza creada correctamente</h2>
 
-                <p class="poliza__msg">
-                  Hemos enviado la información de tu póliza a tu correo electrónico <strong>{{ this.email }}📧.</strong>
-                  <br><br>
-                  Revisa tu bandeja de entrada para descargar tus documentos digitales.
-                </p>
-                <button class="bt_paga" (click)="regresar()">
-                  <ion-icon name="cash-outline"></ion-icon>
-                  Regresar
-                </button>
+                <div class="poliza__msg">
+
+                  <ion-icon name="checkmark-circle"></ion-icon>
+                  <h2>Póliza creada correctamente</h2>
+
+                  <p>
+                    Hemos enviado la información de tu póliza a tu correo electrónico <strong>{{ this.email
+                      }}📧.</strong>
+                    <br><br>
+                    Revisa tu bandeja de entrada para descargar tus documentos digitales.
+                  </p>
+                </div>
+
                 <button class="bt_paga" (click)="realizarPago()">
                   <ion-icon name="cash-outline"></ion-icon>
                   Realizar pago
+                </button>
+                <button class="bt_regresar_r" (click)="regresar()">
+                  &#x2B05;
+                  Realizar nueva cotizacón
                 </button>
               </div>
 
