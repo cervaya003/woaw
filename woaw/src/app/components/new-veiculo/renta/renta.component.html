@@ -1,40 +1,41 @@
 <section class="renta">
-  <!-- Resumen/encabezado -->
-  <div class="resumen">
-    <button type="button" class="btn-publicar" (click)="publicar()">
-      <ion-icon name="save-outline"></ion-icon>
+  <!-- Resumen / encabezado (mismo patrón que car: resumen-estado) -->
+  <div class="resumen-estado">
+    <button type="button" class="btn-guardar" (click)="publicar()">
+      <ion-icon name="save-outline" class="icono-guardar"></ion-icon>
       Publicar
     </button>
 
-    <div class="fila">
+    <div class="fila-info">
       <p>Marca: <strong>{{ marca }}</strong></p>
       <p>Modelo: <strong>{{ modelo }}</strong></p>
     </div>
   </div>
 
-  <!-- Ubicación + Imágenes -->
-  <div class="bloques">
-    <div class="bloque">
-      <button type="button" class="btn btn-lg btn-green" (click)="seleccionarUbicacion()">
-        <ion-icon name="location-outline"></ion-icon>
+  <!-- Bloques superiores (ubicación + imágenes) replicando .contenedor-botones/.bloque-imagenes -->
+  <div class="contenedor-botones">
+    <!-- Ubicación -->
+    <div class="bloque-imagenes">
+      <button type="button" (click)="seleccionarUbicacion()">
+        <ion-icon name="location-outline" class="icono"></ion-icon>
         Seleccionar ubicación
       </button>
 
-      <div class="ubicacion" *ngIf="direccionCompleta">
+      <div class="ubicacion-mostrada" *ngIf="direccionCompleta">
         <ion-icon name="location-outline"></ion-icon>
         <span>{{ direccionCompleta }}</span>
       </div>
     </div>
 
-    <div class="bloque">
+    <!-- Imágenes + TC -->
+    <div class="bloque-imagenes">
       <div class="grupo-botones">
-        <button class="btn btn-lg btn-blue" type="button" (click)="seleccionarImagenes()">
+        <button class="btn-imagenes" type="button" (click)="seleccionarImagenes()">
           <ion-icon name="image-outline"></ion-icon>
           Seleccionar imágenes
         </button>
 
-        <button *ngIf="imagenesIntentadas" class="btn btn-lg btn-danger btn-full" type="button"
-          (click)="limpiarImagenes()">
+        <button *ngIf="imagenesIntentadas" class="btn-limpiar" type="button" (click)="limpiarImagenes()">
           <ion-icon name="trash-outline"></ion-icon>
           Limpiar imágenes
         </button>
@@ -42,162 +43,160 @@
 
       <label class="tc">
         <span class="tc__label">Tarjeta de circulación (opcional)</span>
-        <button type="button" class="btn btn-soft btn-full" (click)="fileTC.click()">
+        <button type="button" class="btn-subir" (click)="fileTC.click()">
           <ion-icon name="document-attach-outline"></ion-icon>
           Subir archivo
         </button>
-        <input #fileTC type="file" (change)="onFileTC($event)" accept="image/*,application/pdf" hidden>
+        <input #fileTC type="file" (change)="onFileTC($event)" accept="image/*,application/pdf" hidden />
         <small class="tc__filename" *ngIf="tarjetaCirculacion">{{ tarjetaCirculacion.name }}</small>
       </label>
     </div>
   </div>
 
-  <!-- Ficha rápida -->
-  <div class="grid">
-    <!-- Tipo de vehículo -->
-    <div class="campo">
-      <label>Tipo de vehículo</label>
-      <select [(ngModel)]="tipoVehiculoLocal">
-        <option value="">Seleccione…</option>
-        <option>sedan</option>
-        <option>suv</option>
-        <option>pickup</option>
-        <option>van</option>
-        <option>hatchback</option>
-        <option>otro</option>
-      </select>
-    </div>
-
-    <!-- Transmisión -->
-    <div class="campo">
-      <label>Transmisión</label>
-      <select [(ngModel)]="transmision">
-        <option value="">Seleccione…</option>
-        <option>manual</option>
-        <option>automática</option>
-        <option>CVT</option>
-      </select>
-    </div>
-
-    <!-- Combustible -->
-    <div class="campo">
-      <label>Combustible</label>
-      <select [(ngModel)]="combustible">
-        <option value="">Seleccione…</option>
-        <option>gasolina</option>
-        <option>diesel</option>
-        <option>híbrido</option>
-        <option>eléctrico</option>
-      </select>
-    </div>
-
-    <!-- Pasajeros -->
-    <div class="campo">
-      <label>Pasajeros</label>
-      <input type="number" min="1" [(ngModel)]="pasajeros" placeholder="Ej. 5">
-    </div>
-  </div>
-
-  <!-- Precio -->
-  <div class="grid">
-    <div class="campo">
-      <label>Precio por día <span class="req">*</span></label>
-      <input type="number" min="500" [(ngModel)]="precioPorDia" placeholder="Ej. 900" />
-    </div>
-  </div>
-
-  <!-- Extras (nuevo selector + chips) -->
-  <div class="grid">
-    <div class="campo full">
-      <label>Extras opcionales</label>
-
-      <div class="extras-row">
-        <select [(ngModel)]="extraSeleccionado" (ngModelChange)="onExtraChange($event)">
+  <!-- Formulario (mismo patrón .formulario > .grid-form > .campo) -->
+  <div class="formulario">
+    <!-- Ficha rápida -->
+    <div class="grid-form cols-4">
+      <div class="campo">
+        <label>Tipo de vehículo</label>
+        <select [(ngModel)]="tipoVehiculoLocal">
           <option value="">Seleccione…</option>
-          <option *ngFor="let e of extrasPredefinidos" [value]="e">{{ e }}</option>
-          <option value="__OTRO__">Otro (especificar)</option>
+          <option>sedan</option>
+          <option>suv</option>
+          <option>pickup</option>
+          <option>van</option>
+          <option>hatchback</option>
+          <option>otro</option>
         </select>
-
-        <input *ngIf="extraSeleccionado === '__OTRO__'" type="text" [(ngModel)]="extraOtroTexto"
-          placeholder="Escribe el extra" (keyup.enter)="agregarExtra()" style="margin-top:6px;" />
-
-        <button type="button" class="btn btn-soft" (click)="agregarExtra()">Agregar</button>
-        <button type="button" class="btn btn-danger btn-soft" (click)="limpiarExtras()" [disabled]="!extras.length">
-          Limpiar extras
-        </button>
       </div>
 
-      <div class="chips" *ngIf="extras?.length">
-        <span class="chip" *ngFor="let x of extras; let i = index">
-          {{ x }}
-          <button type="button" class="chip__close" (click)="quitarExtra(i)">×</button>
-        </span>
+      <div class="campo">
+        <label>Transmisión</label>
+        <select [(ngModel)]="transmision">
+          <option value="">Seleccione…</option>
+          <option>manual</option>
+          <option>automática</option>
+          <option>CVT</option>
+        </select>
+      </div>
+
+      <div class="campo">
+        <label>Combustible</label>
+        <select [(ngModel)]="combustible">
+          <option value="">Seleccione…</option>
+          <option>gasolina</option>
+          <option>diesel</option>
+          <option>híbrido</option>
+          <option>eléctrico</option>
+        </select>
+      </div>
+
+      <div class="campo">
+        <label>Pasajeros</label>
+        <input type="number" min="1" [(ngModel)]="pasajeros" placeholder="Ej. 5" />
+      </div>
+    </div>
+
+    <!-- Precio -->
+    <div class="grid-form cols-4">
+      <div class="campo">
+        <label>Precio por día <span class="requerido">*</span></label>
+        <input type="number" min="500" [(ngModel)]="precioPorDia" placeholder="Ej. 900" />
+      </div>
+    </div>
+
+    <!-- Extras con chips -->
+    <div class="grid-form cols-2">
+      <div class="campo full">
+        <label>Extras opcionales</label>
+        <div class="extras-row">
+          <select [(ngModel)]="extraSeleccionado" (ngModelChange)="onExtraChange($event)">
+            <option value="">Seleccione…</option>
+            <option *ngFor="let e of extrasPredefinidos" [value]="e">{{ e }}</option>
+            <option value="__OTRO__">Otro (especificar)</option>
+          </select>
+
+          <input *ngIf="extraSeleccionado === '__OTRO__'" type="text" [(ngModel)]="extraOtroTexto"
+            placeholder="Escribe el extra" (keyup.enter)="agregarExtra()" />
+
+          <button type="button" class="btn-secundario" (click)="agregarExtra()">Agregar</button>
+          <button type="button" class="btn-limpiar" (click)="limpiarExtras()" [disabled]="!extras.length">
+            Limpiar extras
+          </button>
+        </div>
+
+        <div class="chips" *ngIf="extras?.length">
+          <span class="chip" *ngFor="let x of extras; let i = index">
+            {{ x }}
+            <button type="button" class="chip__close" (click)="quitarExtra(i)">×</button>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Políticas / requisitos -->
+    <div class="grid-form cols-4">
+      <div class="campo">
+        <label>Política combustible</label>
+        <select [(ngModel)]="politicaCombustible">
+          <option value="lleno-lleno">lleno-lleno</option>
+          <option value="como-esta">como-esta</option>
+        </select>
+      </div>
+
+      <div class="campo">
+        <label>Política limpieza</label>
+        <select [(ngModel)]="politicaLimpieza">
+          <option value="normal">normal</option>
+          <option value="estricta">estricta</option>
+        </select>
+      </div>
+
+      <div class="campo">
+        <label>Edad mínima</label>
+        <input type="number" min="18" [(ngModel)]="requisitosConductor.edadMinima" />
+      </div>
+
+      <div class="campo">
+        <label>Antigüedad licencia (meses)</label>
+        <input type="number" min="0" [(ngModel)]="requisitosConductor.antiguedadLicenciaMeses" />
+      </div>
+
+      <div class="campo">
+        <label>Conductor adicional</label>
+        <select [(ngModel)]="requisitosConductor.permiteConductorAdicional">
+          <option [ngValue]="false">No</option>
+          <option [ngValue]="true">Sí</option>
+        </select>
+      </div>
+
+      <div class="campo" *ngIf="requisitosConductor.permiteConductorAdicional">
+        <label>Costo conductor adicional</label>
+        <input type="number" min="0" [(ngModel)]="requisitosConductor.costoConductorAdicional" />
+      </div>
+    </div>
+
+    <!-- Entrega -->
+    <div class="grid-form cols-4">
+      <div class="campo">
+        <label>Entrega gratis hasta (km)</label>
+        <input type="number" min="0" [(ngModel)]="entrega.gratuitoHastaKm" (ngModelChange)="onGratisHastaChange()" />
       </div>
     </div>
   </div>
 
-  <!-- Políticas / requisitos -->
-  <div class="grid">
-    <div class="campo">
-      <label>Política combustible</label>
-      <select [(ngModel)]="politicaCombustible">
-        <option value="lleno-lleno">lleno-lleno</option>
-        <option value="como-esta">como-esta</option>
-      </select>
-    </div>
-
-    <div class="campo">
-      <label>Política limpieza</label>
-      <select [(ngModel)]="politicaLimpieza">
-        <option value="normal">normal</option>
-        <option value="estricta">estricta</option>
-      </select>
-    </div>
-
-    <div class="campo">
-      <label>Edad mínima</label>
-      <input type="number" min="18" [(ngModel)]="requisitosConductor.edadMinima">
-    </div>
-
-    <div class="campo">
-      <label>Antigüedad licencia (meses)</label>
-      <input type="number" min="0" [(ngModel)]="requisitosConductor.antiguedadLicenciaMeses">
-    </div>
-
-    <div class="campo">
-      <label>Conductor adicional</label>
-      <select [(ngModel)]="requisitosConductor.permiteConductorAdicional">
-        <option [ngValue]="false">No</option>
-        <option [ngValue]="true">Sí</option>
-      </select>
-    </div>
-
-    <div class="campo" *ngIf="requisitosConductor.permiteConductorAdicional">
-      <label>Costo conductor adicional</label>
-      <input type="number" min="0" [(ngModel)]="requisitosConductor.costoConductorAdicional">
-    </div>
-  </div>
-
-  <!-- Entrega -->
-  <div class="grid">
-    <div class="campo">
-      <label>Entrega gratis hasta (km)</label>
-      <input type="number" min="0" [(ngModel)]="entrega.gratuitoHastaKm" (ngModelChange)="onGratisHastaChange()">
-    </div>
-  </div>
-
-  <!-- Tarifas por distancia -->
+  <!-- Tarifas por distancia (cards como en car: estilo tarjeta) -->
   <div class="tarifas">
     <div class="tarifas__header">
       <label class="tarifas__title">Tarifas por distancia</label>
-      <button type="button" class="btn btn-soft btn-sm" (click)="addTarifa()">+ Agregar tarifa</button>
+      <button type="button"  (click)="addTarifa()">+ Agregar tarifa</button>
     </div>
     <p class="hint">Agrega al menos una tarifa o especifica “Entrega gratis hasta (km)”.</p>
 
     <div class="tarifa-card" *ngFor="let t of entrega.tarifasPorDistancia; let i = index">
       <div class="tarifa-card__top">
         <h5 class="tarifa-card__title">Tarifa {{ i + 1 }}</h5>
-        <button type="button" class="btn btn-danger btn-sm" (click)="removeTarifa(i)">
+        <button type="button" class="btn-limpiar" (click)="removeTarifa(i)">
           <ion-icon name="trash-outline"></ion-icon> Quitar
         </button>
       </div>

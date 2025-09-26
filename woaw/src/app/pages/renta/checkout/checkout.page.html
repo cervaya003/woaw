@@ -9,49 +9,155 @@
 
 <ion-content [fullscreen]="true">
   <ng-container *ngIf="booking as b">
-    <ion-card>
-      <ion-card-header>
-        <ion-card-title>Reserva #{{ b.codigo || b._id }}</ion-card-title>
-        <ion-card-subtitle>
-          {{ b.fechaInicio | date:'short' }} → {{ b.fechaFin | date:'short' }}
+    <ion-card class="ck-card">
+      <ion-card-header class="ck-header">
+        <div class="ck-title">
+          <span class="codigo">Reserva <b>#{{ b.codigo || b._id }}</b></span>
+          <ion-badge [color]="(b.estatus || 'primary')">{{ b.estatus }}</ion-badge>
+        </div>
+        <ion-card-subtitle class="fecha">
+          {{ b.fechaInicio | date:'medium' }} → {{ b.fechaFin | date:'medium' }}
         </ion-card-subtitle>
+
+        <div class="auto" *ngIf="getRentalCar(b) as rc">
+          <ion-chip *ngIf="rc?.marca || rc?.modelo" outline>
+            <ion-icon name="car-outline"></ion-icon>
+            <ion-label>{{ rc?.marca }} {{ rc?.modelo }}</ion-label>
+          </ion-chip>
+          <ion-chip *ngIf="rc?.transmision" outline>
+            <ion-icon name="settings-outline"></ion-icon>
+            <ion-label>{{ rc?.transmision }}</ion-label>
+          </ion-chip>
+          <ion-chip *ngIf="rc?.combustible" outline>
+            <ion-icon name="flame-outline"></ion-icon>
+            <ion-label>{{ rc?.combustible }}</ion-label>
+          </ion-chip>
+        </div>
+
+        <!-- Banner de sólo lectura -->
+        <ion-item color="light" lines="none" *ngIf="soloLectura" style="margin-top:8px; border-radius:10px;">
+          <ion-icon name="eye-outline" slot="start"></ion-icon>
+          <ion-label>
+            Vista de sólo lectura
+            <ng-container *ngIf="viewerOnly; else porFinalizada">
+              (eres el solicitante de esta renta)
+            </ng-container>
+            <ng-template #porFinalizada>
+              (la reserva está finalizada)
+            </ng-template>
+          </ion-label>
+        </ion-item>
       </ion-card-header>
 
-      <ion-card-content>
-        <ion-item>
-          <ion-label position="stacked">Combustible (%)</ion-label>
-          <ion-range min="0" max="100" step="1" [(ngModel)]="combustible">
-            <ion-label slot="start">0</ion-label>
-            <ion-label slot="end">100</ion-label>
+      <ion-card-content class="ck-body">
+        <!-- Combustible -->
+        <div class="bloque">
+          <div class="bloque-head">
+            <div class="titulo">Combustible</div>
+            <div class="valor">{{ combustible }}%</div>
+          </div>
+          <ion-range min="0" max="100" step="1" [(ngModel)]="combustible" [pin]="true" [snaps]="true" [ticks]="false"
+            [disabled]="soloLectura" aria-label="Nivel de combustible" class="ck-range">
+            <ion-icon size="small" slot="start" name="ellipse-outline"></ion-icon>
+            <ion-icon size="small" slot="end" name="ellipse"></ion-icon>
           </ion-range>
-          <div class="badge">{{ combustible }}%</div>
-        </ion-item>
+        </div>
 
-        <ion-item>
-          <ion-label position="stacked">Notas de devolución</ion-label>
-          <ion-textarea autoGrow [(ngModel)]="notas" placeholder="Daños, multas, limpieza, faltantes..."></ion-textarea>
-        </ion-item>
+        <!-- Notas -->
+        <div class="bloque">
+          <div class="bloque-head">
+            <div class="titulo">Notas</div>
+            <div class="hint">Daños, accesorios, kilometraje, etc.</div>
+          </div>
+          <ion-textarea class="ck-textarea" autoGrow rows="4" placeholder="Escribe aquí…" [(ngModel)]="notas"
+            [readonly]="soloLectura">
+          </ion-textarea>
+        </div>
 
-        <ion-item lines="none">
-          <ion-label position="stacked">Fotos (múltiples)</ion-label>
-          <input type="file" multiple (change)="onFiles($event)" />
-          <small *ngIf="files.length">({{ files.length }} seleccionadas)</small>
-        </ion-item>
+        <!-- Fotos guardadas (Checkout) -->
+        <div class="bloque">
+          <div class="bloque-head">
+            <div class="titulo">Fotos guardadas</div>
+            <div class="hint" *ngIf="existingUrls?.length; else sinGuardadas">
+              {{ existingUrls.length }} en la reserva
+            </div>
+            <ng-template #sinGuardadas>
+              <div class="hint">No hay fotos de check-out guardadas</div>
+            </ng-template>
+          </div>
 
-        <div class="acciones">
-          <ion-button [disabled]="loading.guardar" (click)="guardarDatos()">
-            <ion-spinner *ngIf="loading.guardar" name="dots"></ion-spinner>
-            <span *ngIf="!loading.guardar">Guardar datos</span>
-          </ion-button>
+          <div class="grid-preview" *ngIf="existingUrls?.length">
+            <div class="preview-item" *ngFor="let url of existingUrls; let i = index; trackBy: trackByUrl">
+              <ion-img [src]="url" alt="foto guardada"></ion-img>
+              <!-- En checkout NO se permite eliminar existentes (limitación del endpoint) -->
+            </div>
+          </div>
+        </div>
 
-          <ion-button [disabled]="loading.fotos || files.length === 0" (click)="subirFotos()">
-            <ion-spinner *ngIf="loading.fotos" name="dots"></ion-spinner>
-            <span *ngIf="!loading.fotos">Subir fotos</span>
-          </ion-button>
+        <!-- Agregar fotos nuevas -->
+        <div class="bloque" *ngIf="!soloLectura">
+          <div class="bloque-head">
+            <div class="titulo">Agregar fotos</div>
+            <div class="hint">Hasta 12 imágenes</div>
+          </div>
 
-          <ion-button fill="clear" (click)="terminar()">Terminar</ion-button>
+          <div class="uploader">
+            <input #fileInput type="file" accept="image/*" capture="environment" multiple hidden
+              (change)="onFiles($event)" />
+
+            <ion-button size="small" (click)="abrirSelectorFotos(fileInput)">
+              <ion-icon slot="start" name="image-outline"></ion-icon>
+              Elegir archivos
+            </ion-button>
+
+            <ion-button size="small" (click)="tomarFotoCapacitor()">
+              <ion-icon slot="start" name="camera-outline"></ion-icon>
+              Tomar foto
+            </ion-button>
+
+            <span class="uploader-info" *ngIf="files?.length">{{ files.length }} seleccionadas</span>
+            <span class="uploader-info" *ngIf="!files?.length">Sin archivos seleccionados</span>
+          </div>
+
+          <div class="uploader-err" *ngIf="fileError">
+            <ion-icon name="alert-circle-outline"></ion-icon>
+            <span>{{ fileError }}</span>
+          </div>
+
+          <div class="grid-preview" *ngIf="previewUrls?.length">
+            <div class="preview-item" *ngFor="let url of previewUrls; let i = index; trackBy: trackByUrl">
+              <ion-img [src]="url" alt="foto nueva"></ion-img>
+              <ion-button fill="clear" size="small" class="btn-del" (click)="quitarFotoNueva(i)"
+                aria-label="Eliminar foto nueva">
+                <ion-icon name="close-circle-outline"></ion-icon>
+              </ion-button>
+            </div>
+          </div>
         </div>
       </ion-card-content>
+
+      <!-- Acciones -->
+      <div class="ck-actions">
+        <ion-button *ngIf="soloLectura" expand="block" fill="solid" (click)="continuar()">
+          VOLVER
+        </ion-button>
+
+        <ng-container *ngIf="!soloLectura">
+          <ion-button expand="block" fill="outline" [disabled]="loading.fotos || files.length === 0 || !!fileError"
+            (click)="subirFotos()">
+            <ion-spinner *ngIf="loading.fotos" name="dots"></ion-spinner>
+            <span *ngIf="!loading.fotos">SUBIR SOLO FOTOS NUEVAS</span>
+          </ion-button>
+
+          <ion-button color="success" expand="block" [disabled]="loading.finalizar || loading.fotos || loading.booking"
+            (click)="guardarYFinalizar()">
+            <ion-spinner *ngIf="loading.finalizar" name="dots"></ion-spinner>
+            <span *ngIf="!loading.finalizar">GUARDAR Y FINALIZAR</span>
+          </ion-button>
+
+          <ion-button expand="block" fill="clear" (click)="continuar()">VOLVER</ion-button>
+        </ng-container>
+      </div>
     </ion-card>
   </ng-container>
 </ion-content>
