@@ -27,8 +27,11 @@ export class PersonaPage implements OnInit {
   datoscotizacion: any = null;
   UsuarioRespuesta: any = null;
   statusUserDtos: boolean = false;
+  statusBuscar: boolean = false;
   tipoPersonaSeleccionada: string | null = null;
   mostrarMasOpciones: boolean = false;
+
+  buscarForm!: FormGroup;
 
   paises: any[] = [];
   estados: any[] = [];
@@ -53,9 +56,23 @@ export class PersonaPage implements OnInit {
   ) {
     this.form_poliza = this.fb.group({
       tipoPersona: [null, Validators.required]
-    }); 
-  }
+    });
 
+    this.buscarForm = this.fb.group({
+      rfc: [
+        '',
+        {
+          validators: [
+            Validators.required,
+            Validators.minLength(12),
+            Validators.maxLength(13),
+            Validators.pattern(/^[A-ZÑ&]{3,4}\d{6}[A-Z0-9]{3}$/),
+          ],
+          updateOn: 'change'
+        }
+      ],
+    });
+  }
   ngOnInit() {
     this.detectaUsuario();
     this.generalService.dispositivo$.subscribe((tipo) => {
@@ -86,6 +103,49 @@ export class PersonaPage implements OnInit {
     }
 
   }
+  toUpperCase(event: any) {
+    const value = event.target.value.toUpperCase();
+    this.buscarForm.get('rfc')?.setValue(value, { emitEvent: false });
+  }
+onBuscar() {
+  if (this.buscarForm.valid) {
+    const rfc = this.buscarForm.value.rfc;
+    console.log('Buscando RFC:', rfc);
+
+    this.mostrar_spinnet = true;
+    this.seguros.buscarPersona(rfc).subscribe({
+      next: (data: any) => {
+        this.mostrar_spinnet = false;
+        this.islandKey++;
+
+        if (data?.found === false) {
+          this.generalService.alert(
+            `El RFC ${rfc} no fue encontrado en Crabi.`,
+            'No existe',
+            'danger'
+          );
+          return;
+        }
+
+        localStorage.setItem('UsuarioRespuesta', JSON.stringify(data));
+        this.statusBuscar = false;
+        this.detectaUsuario();
+      },
+      error: (error) => {
+        this.mostrar_spinnet = false;
+        console.error('Error al obtener persona:', error);
+        this.generalService.alert(
+          'Ocurrió un error al consultar Crabi. Intenta nuevamente más tarde.',
+          'Error',
+          'danger'
+        );
+      }
+    });
+  }
+}
+  buscarSeccion() {
+    this.statusBuscar = !this.statusBuscar;
+  }
   detectaUsuario() {
     const storedPersona = localStorage.getItem('UsuarioRespuesta');
     if (storedPersona) {
@@ -104,8 +164,8 @@ export class PersonaPage implements OnInit {
       this.router.navigate(['/seguros/poliza']);
     }, 1500);
   }
-  editarUser(){
-      this.statusUserDtos = false;
+  editarUser() {
+    this.statusUserDtos = false;
   }
   siguiente() {
     if (this.form_poliza.invalid) {
@@ -279,7 +339,7 @@ export class PersonaPage implements OnInit {
       basePerson.legal_representative = this.form_poliza.get('nmRepLegal')?.value;
     }
     const payload = { person: basePerson };
-    localStorage.setItem('datosUsuario', JSON.stringify(payload));
+    // localStorage.setItem('datosUsuario', JSON.stringify(payload));
     this.enviarDatosCrearPersona(payload);
   }
   private toISODate(input: any): string | null {

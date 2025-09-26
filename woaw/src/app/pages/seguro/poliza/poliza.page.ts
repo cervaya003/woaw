@@ -61,10 +61,38 @@ export class PolizaPage implements OnInit {
     private location: Location
   ) {
     this.form_poliza = this.fb.group({
-      vin: ['', Validators.required],
-      placas: ['', Validators.required],
+      vin: [
+        '',
+        [
+          Validators.required,
+          Validators.pattern(/^[A-HJ-NPR-Z0-9]{17}$/)
+        ]
+      ],
+      placas: [
+        '',
+        [
+          Validators.required,
+          this.placasMxValidator
+        ]
+      ],
       color: ['', Validators.required],
       correos: this.fb.array([], [this.duplicatedEmailsValidator])
+    });
+
+    this.form_poliza.get('vin')!.valueChanges.subscribe(v => {
+      const norm = String(v || '')
+        .toUpperCase()
+        .replace(/[^A-HJ-NPR-Z0-9]/g, '')
+        .slice(0, 17);
+      if (norm !== v) this.form_poliza.get('vin')!.setValue(norm, { emitEvent: false });
+    });
+
+    this.form_poliza.get('placas')!.valueChanges.subscribe(v => {
+      const norm = String(v || '')
+        .toUpperCase()
+        .replace(/[^A-Z0-9]/g, '')
+        .slice(0, 7);
+      if (norm !== v) this.form_poliza.get('placas')!.setValue(norm, { emitEvent: false });
     });
   }
 
@@ -113,12 +141,6 @@ export class PolizaPage implements OnInit {
     return 'Revisa este correo.';
   }
   // ====== Utilidades existentes ======
-  toUpper(ctrlName: string) {
-    const c = this.form_poliza.get(ctrlName);
-    if (!c) return;
-    const v = (c.value ?? '').toString().toUpperCase();
-    if (v !== c.value) c.setValue(v, { emitEvent: false });
-  }
   analizaForm(campo: string): boolean {
     const control = this.form_poliza.get(campo);
     return !!(control && control.invalid && (control.dirty || control.touched));
@@ -132,7 +154,8 @@ export class PolizaPage implements OnInit {
     this.mostrarPresouestaPoliza();
 
     console.log(this.datoscotizacion)
-    const rfc = this.datosUsuario?.person?.rfc;
+    // const rfc = this.datosUsuario?.person?.rfc;
+    const rfc = this.UsuarioRespuesta.response.rfc;
     const id = this.datoscotizacion.id;
     const idPlan = this.datoscotizacion.plans[0]?.id;
 
@@ -202,10 +225,10 @@ export class PolizaPage implements OnInit {
     const cotizacionRespuestra = localStorage.getItem('datosPolizaVin_Respuesta');
     if (cotizacionRespuestra) {
 
-      const storedPersona = localStorage.getItem('datosUsuario');
+      const storedPersona = localStorage.getItem('UsuarioRespuesta');
       if (storedPersona) {
         let datos = JSON.parse(storedPersona);
-        this.email = datos.person.email;
+        this.email = datos.response.email;
       }
 
       this.polizaCreada = true;
@@ -254,7 +277,6 @@ export class PolizaPage implements OnInit {
       const storedPersonaRespuesta = localStorage.getItem('UsuarioRespuesta');
       if (storedPersonaRespuesta) {
         this.UsuarioRespuesta = JSON.parse(storedPersonaRespuesta);
-        // console.log('DATOS - PERSONALES RESPUESTA ', this.UsuarioRespuesta);
       } else {
         this.UsuarioRespuesta = null;
         this.router.navigate(['/seguros/persona']);
@@ -266,21 +288,6 @@ export class PolizaPage implements OnInit {
         return;
       }
 
-      // === datosUsuario ===
-      const storedPersona = localStorage.getItem('datosUsuario');
-      if (storedPersona) {
-        this.datosUsuario = JSON.parse(storedPersona);
-        // console.log('DATOS - PERSONALES ', this.datosUsuario);
-      } else {
-        this.datosUsuario = null;
-        this.router.navigate(['/seguros/persona']);
-        this.generalService.alert(
-          'Debes de llenar tus datos personales.',
-          'Atención',
-          'warning'
-        );
-        return;
-      }
     }
   }
   realizarPago() {
@@ -374,4 +381,39 @@ export class PolizaPage implements OnInit {
     this.islandKey++;
     this.router.navigate(['/seguros/persona']);
   }
+  onVinInput(ev: Event) {
+    const el = ev.target as HTMLInputElement;
+    const norm = (el.value || '')
+      .toUpperCase()
+      .replace(/[^A-HJ-NPR-Z0-9]/g, '')
+      .slice(0, 17);
+    if (norm !== el.value) {
+      this.form_poliza.get('vin')?.setValue(norm);
+    }
+  }
+  onPlacasInput(ev: Event) {
+    const el = ev.target as HTMLInputElement;
+    const norm = (el.value || '')
+      .toUpperCase()
+      .replace(/[^A-Z0-9]/g, '')
+      .slice(0, 7);
+    if (norm !== el.value) {
+      this.form_poliza.get('placas')?.setValue(norm);
+    }
+  }
+  private placasMxValidator = (ctrl: AbstractControl) => {
+    const raw = String(ctrl.value || '')
+      .toUpperCase()
+      .replace(/[^A-Z0-9]/g, ''); 
+    if (!raw) return { required: true };
+
+    const patterns = [
+      /^[A-Z]{3}\d{4}$/,    
+      /^[A-Z]{3}\d{3}[A-Z]$/, 
+      /^[A-Z]{3}\d[A-Z]\d{2}$/ 
+    ];
+
+    const ok = raw.length === 7 && patterns.some(r => r.test(raw));
+    return ok ? null : { placaFormato: true };
+  };
 }

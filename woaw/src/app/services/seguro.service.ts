@@ -69,4 +69,13 @@ export class SeguroService {
   pagoPoliza(id: string): Observable<any> {
     return this.http.get(`${environment.api_key}/crabi/checkout/${id}`);
   }
+  buscarPersona(rfc: string): Observable<any> {
+    return this.http.post(
+      `${environment.api_key}/crabi/person`, 
+      { value: rfc },                      
+      {
+        headers: { 'Content-Type': 'application/json' } 
+      }
+    );
+  }
 }

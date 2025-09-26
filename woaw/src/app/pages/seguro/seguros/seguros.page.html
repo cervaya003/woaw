@@ -41,8 +41,6 @@
 </ion-content>  -->
 
 
-
-
 <app-navbar></app-navbar>
 
 <ion-content [fullscreen]="true">
@@ -52,6 +50,7 @@
   <div class="split-woaw-seguros" style="--left: 85%; --right: 15%; --gap: 1px;">
 
     <div class="divicion1">
+      
       <div class="progress">
         <div class="progress__bar" [style.width.%]="progress()"></div>
         <div class="progress__markers">
@@ -401,12 +400,12 @@
 
       </div>
 
-      <app-dynamic-island [refreshKey]="islandKey"></app-dynamic-island>
+      <!-- <app-dynamic-island [refreshKey]="islandKey"></app-dynamic-island> -->
 
     </div>
 
     <div class="divicion2">
-      <app-otros-seguros></app-otros-seguros>
+      <app-otros-seguros [refreshKey]="islandKey"></app-otros-seguros>
     </div>
   </div>
 

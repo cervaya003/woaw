@@ -349,13 +349,16 @@ ion-content {
 .layout-seguros {
   position: relative;
   z-index: 1;
+  // min-height: 70svh;
   display: grid;
+  // grid-template-columns: 1fr 450px;
   align-items: start;
 
   margin: 10px;
 
   @media (max-width: 1063px) {
     grid-template-columns: 1fr;
+    // min-height: 90svh;
   }
 
 }
@@ -365,7 +368,7 @@ ion-content {
   grid-template-columns: 1fr 450px;
 }
 
-.carta_pre_cotizacion { 
+.carta_pre_cotizacion {
   position: relative;
   z-index: 1;
   display: flex;

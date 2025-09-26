@@ -1,14 +1,105 @@
 <div class="contenedor_otros">
   <h2 class="titulo">Otras opciones</h2>
+
   <div class="opciones-grid">
-    <div class="card motos">
-      <h3>Motos</h3>
+    <!-- COTIZACIÓN -->
+    <div class="card motos" [class.card--ok]="cards[0].estatus" [class.card--off]="!cards[0].estatus">
+      <ion-icon [name]="cards[0].icon"></ion-icon>
+      <h3>{{ cards[0].nombre }}</h3>
+
+      <div class="card__body" *ngIf="cotizacionVM; else cotizacionVacia">
+        <div class="kv">
+          <span class="k">Plan</span>
+          <span class="v">{{ cotizacionVM.plan }}</span>
+        </div>
+        <div class="kv">
+          <span class="k">Total</span>
+          <span class="v">{{ formatMXN(cotizacionVM.total) }}</span>
+        </div>
+        <div class="kv">
+          <span class="k">Pago</span>
+          <span class="v pill">{{ cotizacionVM.pagos }}</span>
+        </div>
+        <div class="kv">
+          <span class="k">Vehículo</span>
+          <span class="v">{{ cotizacionVM.vehiculo }}</span>
+        </div>
+      </div>
+      <ng-template #cotizacionVacia>
+        <div class="card__empty">Sin cotización guardada.</div>
+      </ng-template>
     </div>
-    <div class="card camiones">
-      <h3>Camiones</h3>
+
+    <!-- MIS DATOS -->
+    <div class="card camiones" [class.card--ok]="cards[1].estatus" [class.card--off]="!cards[1].estatus">
+      <ion-icon [name]="cards[1].icon"></ion-icon>
+      <h3>{{ cards[1].nombre }}</h3>
+
+      <div class="card__body" *ngIf="usuarioVM; else usuarioVacio">
+        <div class="kv">
+          <span class="k">Nombre</span>
+          <span class="v">{{ usuarioVM.nombre }}</span>
+        </div>
+        <div class="kv">
+          <span class="k">RFC</span>
+          <span class="v">{{ usuarioVM.rfc }}</span>
+        </div>
+        <div class="kv" *ngIf="usuarioVM.email">
+          <span class="k">Correo</span>
+          <span class="v">{{ usuarioVM.email }}</span>
+        </div>
+        <div class="kv" *ngIf="usuarioVM.phone">
+          <span class="k">Teléfono</span>
+          <span class="v">{{ usuarioVM.phone }}</span>
+        </div>
+        <div class="kv" *ngIf="usuarioVM.direccion">
+          <span class="k">Dirección</span>
+          <span class="v">{{ usuarioVM.direccion }}</span>
+        </div>
+      </div>
+      <ng-template #usuarioVacio>
+        <div class="card__empty">Sin datos de usuario.</div>
+      </ng-template>
     </div>
-    <div class="card plataforma">
-      <h3>Plataforma RT</h3>
+
+    <!-- PÓLIZA -->
+    <div class="card plataforma" [class.card--ok]="cards[2].estatus" [class.card--off]="!cards[2].estatus">
+      <ion-icon [name]="cards[2].icon"></ion-icon>
+      <h3>{{ cards[2].nombre }}</h3>
+
+      <div class="card__body" *ngIf="polizaVM; else polizaVacia">
+        <div class="kv">
+          <span class="k">RFC</span>
+          <span class="v">{{ polizaVM.rfc }}</span>
+        </div>
+        <div class="kv" *ngIf="polizaVM.vin">
+          <span class="k">VIN</span>
+          <span class="v mono">{{ polizaVM.vin }}</span>
+        </div>
+        <div class="kv" *ngIf="polizaVM.placas">
+          <span class="k">Placas</span>
+          <span class="v">{{ polizaVM.placas }}</span>
+        </div>
+        <div class="kv" *ngIf="polizaVM.color">
+          <span class="k">Color</span>
+          <span class="v">{{ polizaVM.color | titlecase }}</span>
+        </div>
+        <div class="kv" *ngIf="polizaVM.quotationId">
+          <span class="k">ID Cotización</span>
+          <span class="v mono">{{ polizaVM.quotationId }}</span>
+        </div>
+        <div class="kv" *ngIf="polizaVM.planId">
+          <span class="k">Plan ID</span>
+          <span class="v mono">{{ polizaVM.planId }}</span>
+        </div>
+        <div class="kv" *ngIf="polizaVM.inicio">
+          <span class="k">Inicio</span>
+          <span class="v">{{ polizaVM.inicio | date:'dd/MM/yyyy' }}</span>
+        </div>
+      </div>
+      <ng-template #polizaVacia>
+        <div class="card__empty">Sin póliza configurada.</div>
+      </ng-template>
     </div>
   </div>
 </div>

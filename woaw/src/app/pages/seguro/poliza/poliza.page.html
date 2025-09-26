@@ -16,20 +16,20 @@
             <h1>Crear poliza</h1>
             <form [formGroup]="form_poliza" (ngSubmit)="siguiente()">
               <div class="field field-grid">
+                
                 <div>
                   <label for="vin">VIN del auto</label>
                   <div class="control">
-                    <input id="vin" type="text" class="form-input" placeholder="XX17XFSF" formControlName="vin"
-                      (input)="toUpper('vin')" />
+                    <input id="vin" type="text" class="form-input" placeholder="XX17XFSF" 
+                      formControlName="vin" maxlength="17" (input)="onVinInput($event)"/>
                   </div>
                   <p *ngIf="analizaForm('vin')" class="error">El VIN es obligatorio</p>
                 </div>
-
                 <div>
                   <label for="placas">Placas del auto</label>
                   <div class="control">
-                    <input id="placas" type="text" class="form-input" placeholder="UQTWRBS" formControlName="placas"
-                      (input)="toUpper('placas')" />
+                    <input id="placas" type="text" class="form-input" placeholder="UQTWRBS" 
+                      formControlName="placas" maxlength="7" (input)="onPlacasInput($event)"/>
                   </div>
                   <p *ngIf="analizaForm('placas')" class="error">Las placas son obligatorias</p>
                 </div>
