@@ -22,35 +22,35 @@
     <div class="hero__bg" aria-hidden="true"></div>
     <div class="hero__glow" aria-hidden="true"></div>
     <div class="hero__content reveal">
-       <!-- <h1>WO<span>AW</span></h1>  -->
+      <!-- <h1>WO<span>AW</span></h1>  -->
       <p>
-       La Plataforma digital que transforma la experiencia de compra y venta de autos nuevos, seminuevos y usados en México.
+        La Plataforma digital que transforma la experiencia de compra - venta de
+        autos nuevos, seminuevos y usados en México.
       </p>
-     
     </div>
   </section>
 
-
-  <figure class="phone-mock" aria-hidden="true">
-  <!-- Usa <picture> si tienes versión WEBP -->
-  <picture>
-    <source srcset="/assets/nosotros/phone.webp" type="image/webp" />
-    <img src="/assets/nosotros/phone.png" alt="" loading="lazy" />
-  </picture>
-</figure>
+  <section>
+    <!-- Teléfono superpuesto (usa tu mismo asset) -->
+    <figure class="phone-mock" aria-hidden="true">
+      <picture>
+        <source srcset="/assets/nosotros/iphone.png" type="image/webp" />
+        <img src="/assets/nosotros/iphone.png" alt="" loading="lazy" />
+      </picture>
+    </figure>
+  </section>
 
   <!-- CARTAS CON IMÁGENES -->
-<section class="cards-row">
-  <div class="cards-row__wrap">
-    <article class="card-img" *ngFor="let c of cardsNosotros">
-      <figure class="thumb">
-        <img [src]="c.img" [alt]="c.title" />
-      </figure>
-      <h4>{{ c.title }}</h4>
-    </article>
-  </div>
-</section>
-
+  <section class="cards-row">
+    <div class="cards-row__wrap">
+      <article class="card-img" *ngFor="let c of cardsNosotros">
+        <figure class="thumb">
+          <img [src]="c.img" [alt]="c.title" />
+        </figure>
+        <h4>{{ c.title }}</h4>
+      </article>
+    </div>
+  </section>
 
   <!-- MISIÓN / VISIÓN / VALORES -->
   <section class="mvv">
@@ -67,9 +67,6 @@
         confianza desde el primer clic hasta el cierre de la venta.
       </p>
     </article>
-
- 
-
 
     <article class="card reveal">
       <ion-icon name="sparkles-outline" aria-hidden="true"></ion-icon>
@@ -100,9 +97,7 @@
   </section>
 
   <!-- LÍNEA DE TIEMPO -->
-  <section  >
-     
-  </section>
+  <section></section>
 
   <!-- KPIs -->
   <!-- <section class="kpis">

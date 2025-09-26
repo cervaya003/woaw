@@ -36,8 +36,8 @@ ion-content {
   position: relative;
   min-height: clamp(380px, 58svh, 620px);
   display: grid;
-  align-items: end;          /* coloca el contenido abajo */
-  justify-items: start;      /* alinea a la izquierda */
+  align-items: end;
+  justify-items: start;
   overflow: hidden;
   isolation: isolate;
   z-index: 0;
@@ -82,20 +82,20 @@ ion-content {
       }
     }
 
-     p{
-  color: #fff;
-  font-weight: 800;                 
-  font-size: clamp(18px, 2.2vw, 26px); 
-  line-height: 1.35;
-  letter-spacing: .2px;
-  margin: 0;
-  max-width: 720px;
-  text-wrap: balance;
+    p {
+      color: #fff;
+      font-weight: 800;
+      font-size: clamp(18px, 2.2vw, 26px);
+      line-height: 1.35;
+      letter-spacing: .2px;
+      margin: 0;
+      max-width: 720px;
+      text-wrap: balance;
 
-  /* mejora de legibilidad sobre la imagen */
-  text-shadow: 0 2px 8px rgba(0,0,0,.55);
-  -webkit-text-stroke: .2px rgba(0,0,0,.18);
-}
+      /* mejora de legibilidad sobre la imagen */
+      text-shadow: 0 2px 8px rgba(0, 0, 0, .55);
+      -webkit-text-stroke: .2px rgba(0, 0, 0, .18);
+    }
 
     .hero__pills {
       display: flex;
@@ -135,27 +135,27 @@ ion-content {
 
 /* ===================== BARRA DE CARTAS + TELÉFONO ===================== */
 /* Franja blanca con 6 cartas negras y el teléfono superpuesto a la derecha */
- .features-bar{
+.features-bar {
   background: #fff;
   color: #0a0a0a;
   position: relative;
-  padding: 18px 0 24px;      /* un poco más de aire inferior */
-  z-index: 2;                /* por encima del hero */
+  padding: 18px 0 24px;
+  z-index: 2;
 }
 
-.features-bar__wrap{
+.features-bar__wrap {
   width: min(1200px, 94vw);
   margin: 0 auto;
   position: relative;
   display: grid;
-  grid-template-columns: repeat(6, minmax(0,1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: clamp(16px, 2vw, 28px);
   align-items: start;
   justify-items: center;
 }
 
 /* Item */
-.feature-card{
+.feature-card {
   display: grid;
   justify-items: center;
   gap: 8px;
@@ -163,34 +163,34 @@ ion-content {
 }
 
 /* Cuadro negro */
-.feature-card__icon{
+.feature-card__icon {
   width: clamp(72px, 8.4vw, 86px);
   height: clamp(72px, 8.4vw, 86px);
   background: #0d0d11;
   border-radius: 16px;
-  border: 1px solid rgba(0,0,0,.12);
-  box-shadow: 0 8px 18px rgba(0,0,0,.18), inset 0 0 0 1px rgba(255,255,255,.05);
+  border: 1px solid rgba(0, 0, 0, .12);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, .18), inset 0 0 0 1px rgba(255, 255, 255, .05);
   display: grid;
   place-items: center;
   transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
 }
 
-.feature-card__icon img{
-  width: 78%;                 /* respeta proporción del PNG */
+.feature-card__icon img {
+  width: 78%;
   height: 78%;
   object-fit: contain;
   display: block;
-  filter: drop-shadow(0 0 12px rgba(255,33,33,.28));
+  filter: drop-shadow(0 0 12px rgba(255, 33, 33, .28));
 }
 
-.feature-card:hover .feature-card__icon{
+.feature-card:hover .feature-card__icon {
   transform: translateY(-2px);
-  border-color: rgba(255,33,33,.32);
-  box-shadow: 0 14px 28px rgba(0,0,0,.22), inset 0 0 0 1px rgba(255,33,33,.22);
+  border-color: rgba(255, 33, 33, .32);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, .22), inset 0 0 0 1px rgba(255, 33, 33, .22);
 }
 
 /* Texto debajo en mayúsculas */
-.feature-card__label{
+.feature-card__label {
   margin-top: 2px;
   font-weight: 900;
   letter-spacing: .35px;
@@ -199,100 +199,21 @@ ion-content {
   text-transform: uppercase;
 }
 
-/* Teléfono superpuesto */
-.phone-mock{
-  position: absolute;
-  right: clamp(8px, 5vw, 48px);
-  top: calc(-96px - 1.2vw);   /* súbelo/bájalo aquí */
-  margin: 0;
-  transform: rotate(-10deg);
-  filter: drop-shadow(0 26px 48px rgba(0,0,0,.45));
-  pointer-events: none;
-  z-index: 3;
-}
-.phone-mock img{
-  display: block;
-  width: min(360px, 36vw);
-  height: auto;
-}
 
-/* 📱 Responsive */
-@media (max-width: 980px){
-  .phone-mock{ display: none; }   /* para que no tape en móvil */
-  .features-bar__wrap{
-    display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: min(46vw, 190px);
-    overflow-x: auto;
-    gap: 12px;
-    padding-inline: 12px;
-    scroll-snap-type: x mandatory;
-    scroll-padding-inline: 12px;
-    -webkit-overflow-scrolling: touch;
-    mask-image: linear-gradient(to right, transparent 0, #000 10%, #000 90%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 10%, #000 90%, transparent 100%);
+
+/* 📱 En móvil se oculta y se quita la reserva para conservar el carrusel */
+@media (max-width: 980px) {
+  .features-bar>.phone-mock {
+    display: none;
   }
-  .feature-card{ scroll-snap-align: start; scroll-snap-stop: always; }
-}
 
-
-.features-bar__wrap{
-  width: min(1200px, 94vw);
-  margin: 0 auto;
-  position: relative;
-  display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: clamp(12px, 2vw, 22px);
-  align-items: end;
-}
-
-/* Carta */
-.feature-card{
-  display: grid;
-  justify-items: center;
-  gap: 10px;
-  text-align: center;
-}
-.feature-card__icon{
-  width: clamp(64px, 8vw, 78px);
-  height: clamp(64px, 8vw, 78px);
-  background: #0d0d11;
-  border-radius: 14px;
-  border: 1px solid rgba(0,0,0,.08);
-  box-shadow: 0 6px 14px rgba(0,0,0,.14), inset 0 0 0 1px rgba(255,255,255,.06);
-  display: grid; place-items: center;
-}
-.feature-card__icon img{
-  display: block;
-  width: clamp(30px, 4.2vw, 40px);
-  height: auto;
-  filter: drop-shadow(0 0 10px rgba(255, 33, 33, .22));
-}
-.feature-card__label{
-  font-weight: 900;
-  letter-spacing: .4px;
-  font-size: clamp(11px, 1.6vw, 13px);
-  color: #000;
-}
-
-/* Teléfono superpuesto (se muestra en desktop/tablet) */
-.phone-mock{
-  position: absolute;
-  right: clamp(6px, 5vw, 40px);
-  top: calc(-100px - 2vw);  /* súbelo/bájalo ajustando este valor */
-  margin: 0;
-  transform: rotate(-10deg);
-  filter: drop-shadow(0 26px 48px rgba(0,0,0,.45));
-  pointer-events: none;
-}
-.phone-mock img{
-  display: block;
-  width: min(360px, 36vw);
-  height: auto;
+  .features-bar__wrap {
+    padding-right: 0;
+  }
 }
 
 /* ===================== KPIs ===================== */
-.kpis{
+.kpis {
   --kpi-min-h: 112px;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -302,11 +223,11 @@ ion-content {
   margin: 0 auto;
   align-items: stretch;
 
-  @media (max-width: 1024px){
-    grid-template-columns: repeat(2, minmax(0,1fr));
+  @media (max-width: 1024px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  @media (max-width: 640px){
+  @media (max-width: 640px) {
     grid-template-columns: unset;
     grid-auto-flow: column;
     grid-auto-columns: min(88vw, 360px);
@@ -321,23 +242,23 @@ ion-content {
     mask-image: linear-gradient(to right, transparent 0, #000 10%, #000 90%, transparent 100%);
     -webkit-mask-image: linear-gradient(to right, transparent 0, #000 10%, #000 90%, transparent 100%);
 
-    &::after{
+    &::after {
       content: "";
       width: 12px;
       height: 1px;
     }
   }
 
-  .kpi{
+  .kpi {
     position: relative;
     background:
-      linear-gradient(180deg, rgba(255,255,255,.02), rgba(0,0,0,0)),
+      linear-gradient(180deg, rgba(255, 255, 255, .02), rgba(0, 0, 0, 0)),
       var(--card);
     border: 1px solid color-mix(in srgb, #ffffff 16%, transparent);
     border-radius: 16px;
     box-shadow:
-      inset 0 0 0 1px rgba(255,255,255,.06),
-      0 8px 18px rgba(0,0,0,.20);
+      inset 0 0 0 1px rgba(255, 255, 255, .06),
+      0 8px 18px rgba(0, 0, 0, .20);
     padding: 18px 16px 16px;
     display: flex;
     flex-direction: column;
@@ -347,32 +268,35 @@ ion-content {
     isolation: isolate;
     transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
 
-    @media (max-width: 640px){
+    @media (max-width: 640px) {
       min-height: 100px;
       scroll-snap-align: start;
       scroll-snap-stop: always;
     }
 
-    &::before{
-      content:"";
+    &::before {
+      content: "";
       position: absolute;
-      top: 10px; left: 10px;
-      width: 10px; height: 10px;
+      top: 10px;
+      left: 10px;
+      width: 10px;
+      height: 10px;
       border-radius: 50%;
       background: var(--accent, #e01414);
-      box-shadow: 0 0 0 3px rgba(224,20,20,.15);
+      box-shadow: 0 0 0 3px rgba(224, 20, 20, .15);
       z-index: 1;
     }
 
-    &:hover{
+    &:hover {
       transform: translateY(-2px);
       border-color: color-mix(in srgb, var(--accent, #e01414) 40%, #ffffff 16%);
       box-shadow:
-        inset 0 0 0 1px rgba(224,20,20,.28),
-        0 12px 24px rgba(0,0,0,.28);
+        inset 0 0 0 1px rgba(224, 20, 20, .28),
+        0 12px 24px rgba(0, 0, 0, .28);
     }
 
-    h3, .kpi__num{
+    h3,
+    .kpi__num {
       margin: 2px 0 4px;
       font-weight: 900;
       font-size: clamp(16px, 1.8vw, 20px);
@@ -380,18 +304,24 @@ ion-content {
       color: #fff;
       padding-left: 14px;
     }
-    p, .kpi__label{
+
+    p,
+    .kpi__label {
       margin: 0;
       color: var(--muted);
       font-size: clamp(12.5px, 1.3vw, 14px);
       line-height: 1.55;
     }
-    .kpi__spacer{ margin-top: auto; }
-    &.is-accent{
-      border-color: rgba(224,20,20,.55);
+
+    .kpi__spacer {
+      margin-top: auto;
+    }
+
+    &.is-accent {
+      border-color: rgba(224, 20, 20, .55);
       box-shadow:
-        inset 0 0 0 1px rgba(224,20,20,.38),
-        0 8px 18px rgba(0,0,0,.20);
+        inset 0 0 0 1px rgba(224, 20, 20, .38),
+        0 8px 18px rgba(0, 0, 0, .20);
     }
   }
 }
@@ -411,7 +341,10 @@ ion-content {
       margin: 0 0 8px;
       font-size: clamp(22px, 3vw, 34px);
     }
-    p { color: var(--muted); }
+
+    p {
+      color: var(--muted);
+    }
   }
 
   .poster {
@@ -432,13 +365,13 @@ ion-content {
 }
 
 /* ===================== TIMELINE (si lo usas) ===================== */
-.timeline{
+.timeline {
   --accent: #f00101;
   font-size: large;
   max-width: 1080px;
   margin: 0 auto;
 
-  h2{
+  h2 {
     margin: 0 auto 12px;
     text-align: center;
     width: 100%;
@@ -449,7 +382,7 @@ ion-content {
     text-wrap: balance;
   }
 
-  .track{
+  .track {
     display: grid;
     grid-auto-flow: column;
     grid-auto-columns: clamp(260px, 32vw, 340px);
@@ -469,16 +402,16 @@ ion-content {
     -webkit-mask-image: linear-gradient(to right, transparent, #000 20%, #000 80%, transparent);
   }
 
-  .hit{
+  .hit {
     position: relative;
     background:
-      linear-gradient(180deg, rgba(255,255,255,.02), rgba(0,0,0,0)),
+      linear-gradient(180deg, rgba(255, 255, 255, .02), rgba(0, 0, 0, 0)),
       var(--card);
     border: 1px solid color-mix(in srgb, #ffffff 16%, transparent);
     border-radius: 16px;
     box-shadow:
-      inset 0 0 0 1px rgba(255,255,255,.06),
-      0 8px 18px rgba(0,0,0,.20);
+      inset 0 0 0 1px rgba(255, 255, 255, .06),
+      0 8px 18px rgba(0, 0, 0, .20);
     padding: 18px 16px 16px;
     display: flex;
     flex-direction: column;
@@ -490,18 +423,20 @@ ion-content {
     isolation: isolate;
     transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease;
 
-    &:hover{
+    &:hover {
       transform: translateY(-1px);
       border-color: color-mix(in srgb, var(--accent) 40%, #ffffff 16%);
       box-shadow:
         inset 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent),
-        0 12px 24px rgba(0,0,0,.28);
+        0 12px 24px rgba(0, 0, 0, .28);
     }
 
-    .dot{
+    .dot {
       position: absolute;
-      top: 12px; left: 12px;
-      width: 10px; height: 10px;
+      top: 12px;
+      left: 12px;
+      width: 10px;
+      height: 10px;
       border-radius: 50%;
       background: var(--accent);
       box-shadow:
@@ -510,34 +445,39 @@ ion-content {
       z-index: 1;
     }
 
-    h4{
+    h4 {
       margin: 0 0 4px;
       padding-left: 22px;
       font-weight: 800;
       font-size: clamp(14px, 1.7vw, 16px);
       color: #fff;
     }
-    p{
+
+    p {
       margin: 0;
       color: var(--muted);
       line-height: 1.45;
     }
   }
 
-  @media (min-width: 1024px){
-    .track{
+  @media (min-width: 1024px) {
+    .track {
       grid-auto-flow: row;
-      grid-template-columns: repeat(3, minmax(0,1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       overflow: visible;
       mask-image: none;
       -webkit-mask-image: none;
     }
   }
 
-  @media (max-width: 640px){
+  @media (max-width: 640px) {
     padding: 18px 0 16px;
-    h2{ padding-inline: 12px; }
-    .track{
+
+    h2 {
+      padding-inline: 12px;
+    }
+
+    .track {
       grid-auto-columns: min(88vw, 360px);
       gap: 12px;
       padding-inline: 12px;
@@ -546,163 +486,177 @@ ion-content {
       -webkit-mask-image: linear-gradient(to right, transparent 0, #000 10%, #000 90%, transparent 100%);
     }
 
-    .hit{ border-radius: 14px; padding: 14px; min-height: 96px; }
-    .hit .dot{ top: 10px; left: 10px; width: 9px; height: 9px; }
-    .hit h4{ font-size: 16px; }
+    .hit {
+      border-radius: 14px;
+      padding: 14px;
+      min-height: 96px;
+    }
+
+    .hit .dot {
+      top: 10px;
+      left: 10px;
+      width: 9px;
+      height: 9px;
+    }
+
+    .hit h4 {
+      font-size: 16px;
+    }
   }
 }
 
 /* ===================== CARTAS (icons negros con texto abajo) ===================== */
-.cards-row{
-  background:#fff;
-  padding:18px 0 22px;
+.cards-row {
+  background: #fff;
+  margin-left: calc(50% - 50vw);
+  padding: 18px 0 22px;
 
-  .cards-row__wrap{
-    width:min(1200px,94vw);
-    margin:0 auto;
-    display:grid;
-    grid-template-columns:repeat(6, minmax(0,1fr));
-    gap:clamp(14px,2vw,22px);
-    align-items:start;
-    justify-items:center;
+  .cards-row__wrap {
+    width: 100%;
+    margin: 0;
+    padding-left: clamp(12px, 6vw, 80px);
+    display: inline-grid;
+    grid-template-columns: repeat(6, max-content);
+    gap: clamp(12px, 1.5vw, 18px);
+    align-items: start;
+    justify-items: start;
+    justify-content: start;
   }
 
   /* item */
-  .card-img{
-    display:grid;
-    justify-items:center;
-    gap:6px; /* menos espacio vertical */
-    background:transparent;
-    border:0; box-shadow:none;
-    text-align:center;
+  .card-img {
+    display: grid;
+    justify-items: center;
+    gap: 4px;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    text-align: center;
   }
 
-  .thumb{
-    width:clamp(60px,7vw,72px);   /* más pequeñas */
-    height:clamp(60px,7vw,72px);
-    border-radius:14px;
+
+  .thumb {
+    width: clamp(48px, 6vw, 60px);
+    height: clamp(48px, 6vw, 60px);
+    border-radius: 12px;
     background:
-      radial-gradient(140% 100% at 0% 0%, rgba(255,255,255,.04), transparent 60%),
+      radial-gradient(140% 100% at 0% 0%, rgba(255, 255, 255, .04), transparent 60%),
       #0d0d11;
-    border:1px solid rgba(0,0,0,.12);
-    box-shadow:0 6px 14px rgba(0,0,0,.18), inset 0 0 0 1px rgba(255,255,255,.05);
-    display:grid; place-items:center;
-    overflow:hidden;
-    transition:transform .16s ease, box-shadow .16s ease, border-color .16s ease;
-  }
-  .thumb img{
-    width:70%; height:70%;
-    object-fit:contain;
-    display:block;
-    filter:drop-shadow(0 0 10px rgba(255,33,33,.25));
-  }
-  .card-img:hover .thumb{
-    transform:translateY(-2px);
-    border-color:rgba(255,33,33,.35);
-    box-shadow:0 12px 24px rgba(0,0,0,.22), inset 0 0 0 1px rgba(255,33,33,.22);
+    border: 1px solid rgba(0, 0, 0, .12);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, .18), inset 0 0 0 1px rgba(255, 255, 255, .05);
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
   }
 
-  h4{
-    margin:2px 0 0;
-    font-size:clamp(10px,1.4vw,12px); /* más chico */
-    font-weight:800;
-    letter-spacing:.3px;
-    color:#000;
-    text-transform:uppercase;
+  h4 {
+    margin: 2px 0 0;
+    font-size: clamp(9px, 1.2vw, 11px);
+    /* 🔽 texto más chico */
+    font-weight: 800;
+    letter-spacing: .3px;
+    color: #000;
+    text-transform: uppercase;
   }
 
   /* Teléfono: carrusel horizontal con snap */
-  @media (max-width: 980px){
-    .cards-row__wrap{
-      grid-template-columns:unset;
-      grid-auto-flow:column;
-      grid-auto-columns:min(36vw, 140px); /* cartas más estrechas */
-      overflow-x:auto;
-      gap:10px;
-      padding-inline:10px;
-      scroll-snap-type:x mandatory;
-      scroll-padding-inline:10px;
-      -webkit-overflow-scrolling:touch;
-      overscroll-behavior-x:contain;
-      mask-image:linear-gradient(to right, transparent 0, #000 10%, #000 90%, transparent 100%);
-      -webkit-mask-image:linear-gradient(to right, transparent 0, #000 10%, #000 90%, transparent 100%);
-      scrollbar-width:none;
+  @media (max-width: 980px) {
+    .cards-row__wrap {
+      margin: 0 auto;
+      padding-left: 0;
+      grid-template-columns: unset;
+      grid-auto-flow: column;
+      grid-auto-columns: min(36vw, 140px);
+      overflow-x: auto;
+      gap: 10px;
+      padding-inline: 10px;
+      scroll-snap-type: x mandatory;
+      scroll-padding-inline: 10px;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-x: contain;
+      mask-image: linear-gradient(to right, transparent 0, #000 10%, #000 90%, transparent 100%);
+      -webkit-mask-image: linear-gradient(to right, transparent 0, #000 10%, #000 90%, transparent 100%);
+      scrollbar-width: none;
     }
-    .cards-row__wrap::-webkit-scrollbar{ display:none; }
-    .card-img{ scroll-snap-align:start; scroll-snap-stop:always; }
-    .cards-row__wrap::after{ content:""; width:10px; height:1px; }
+
+    .cards-row__wrap::-webkit-scrollbar {
+      display: none;
+    }
+
+    .card-img {
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+    }
+
+    .cards-row__wrap::after {
+      content: "";
+      width: 10px;
+      height: 1px;
+    }
   }
 }
-
-
-
-
-
-
-
-
-
-
-
 
 
 
 
 /* ===================== MVV (Misión / Visión / Valores en TARJETAS) ===================== */
-.mvv-band{
+.mvv-band {
   position: relative;
-  background: #0b0b0e;                    /* franja oscura */
+  background: #0b0b0e;
   padding: clamp(18px, 3vw, 28px) 0;
   isolation: isolate;
 }
 
-.mvv-band__grid{
+.mvv-band__grid {
   width: min(1200px, 94vw);
   margin: 0 auto;
   display: grid;
-  grid-template-columns: repeat(3, minmax(0,1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: clamp(16px, 2vw, 22px);
   align-items: start;
 }
 
- 
-.mvv{
+
+.mvv {
   position: relative;
-  /* la banda ocupa todo el ancho de la ventana aunque .mvv esté centrado */
   padding: clamp(18px, 3vw, 28px) 0;
   width: min(1200px, 94vw);
   margin: 0 auto;
   display: grid;
-  grid-template-columns: repeat(3, minmax(0,1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: clamp(14px, 2vw, 20px);
   align-items: start;
   isolation: isolate;
 }
 
 /* fondo fotográfico oscurecido de borde a borde */
-.mvv::before{
-  content:"";
+.mvv::before {
+  content: "";
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  top: 0; height: 100%;
-  width: 100vw;                    /* cubre de orilla a orilla */
+  top: 0;
+  height: 100%;
+  width: 100vw;
   background: url('/assets/nosotros/fondo.png') center/cover no-repeat;
   filter: brightness(.35) contrast(.95);
   z-index: -2;
 }
+
 /* velo sutil encima para legibilidad */
-.mvv::after{
-  content:"";
-  position: absolute; inset: 0;
-  background: linear-gradient(to bottom, rgba(0,0,0,.25), rgba(0,0,0,.25));
+.mvv::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, .25), rgba(0, 0, 0, .25));
   z-index: -1;
 }
 
 /* ===== columnas (tus <article class="card">) ===== */
-.mvv .card{
-  margin: 0;                        /* quita el “salto” anterior */
-  background: transparent;          /* sin cajas */
+.mvv .card {
+  margin: 0;
+  background: transparent;
   border: 0;
   box-shadow: none;
   padding: clamp(10px, 1.8vw, 14px);
@@ -711,16 +665,18 @@ ion-content {
 }
 
 /* separadores rojos punteados entre columnas */
-.mvv .card:not(:last-child)::after{
-  content:"";
+.mvv .card:not(:last-child)::after {
+  content: "";
   position: absolute;
-  top: 6px; bottom: 6px; right: -10px;
+  top: 6px;
+  bottom: 6px;
+  right: -10px;
   border-right: 3px dashed #ff2121;
   opacity: .95;
 }
 
 /* títulos centrados, fuertes */
-.mvv .card h3{
+.mvv .card h3 {
   margin: 0 0 8px;
   font-weight: 900;
   font-size: clamp(16px, 2.2vw, 22px);
@@ -730,34 +686,47 @@ ion-content {
 }
 
 /* párrafos blancos con buen leading */
-.mvv .card p{
+.mvv .card p {
   margin: 0;
   font-size: clamp(13px, 1.55vw, 16px);
   line-height: 1.7;
-  color: rgba(255,255,255,.95);
+  color: rgba(255, 255, 255, .95);
   text-wrap: pretty;
 }
-.mvv .card p strong{
-  font-weight: 800; color: #fff;
+
+.mvv .card p strong {
+  font-weight: 800;
+  color: #fff;
 }
 
 /* lista de Valores con bullets blancos (como en el mock) */
-.mvv .card ul{
+.mvv .card ul {
   margin: 0;
-  padding-left: 18px;               /* usa bullets nativos */
+  padding-left: 18px;
   font-size: clamp(13px, 1.55vw, 16px);
   line-height: 1.7;
-  color: rgba(255,255,255,.95);
+  color: rgba(255, 255, 255, .95);
 }
 
 /* ===== responsive ===== */
-@media (max-width: 1024px){
-  .mvv{ grid-template-columns: repeat(2, minmax(0,1fr)); }
+@media (max-width: 1024px) {
+  .mvv {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
-@media (max-width: 820px){
-  .mvv{ grid-template-columns: 1fr; }
-  .mvv .card:not(:last-child)::after{ display: none; } /* sin separador en 1 col */
-  .mvv .card h3{ text-align: left; }
+
+@media (max-width: 820px) {
+  .mvv {
+    grid-template-columns: 1fr;
+  }
+
+  .mvv .card:not(:last-child)::after {
+    display: none;
+  }
+
+  .mvv .card h3 {
+    text-align: left;
+  }
 }
 
 /* ===================== CTA (si la usas) ===================== */
@@ -792,19 +761,59 @@ ion-content {
   transform: translateY(18px) scale(.98);
   transition: opacity .6s ease, transform .6s ease;
 }
+
 .reveal.is-in {
   opacity: 1;
   transform: none;
 }
+
 .parallax {
   will-change: transform;
   transition: transform .2s linear;
 }
 
-/* ===================== RESPONSIVE ===================== */
-@media (max-width: 980px){
-  .phone-mock{ display: none; } /* ocultar el teléfono en móvil para no tapar */
-  .features-bar__wrap{
+
+
+/* Reservar espacio a la derecha para el teléfono */
+.features-bar__wrap {
+  padding-right: clamp(160px, 24vw, 340px);
+}
+
+/* Teléfono superpuesto: justo ENTRE el fondo y las cartas */
+.phone-mock {
+  position: absolute;
+  right: clamp(12px, 6vw, 80px);
+  top: 130px;
+  margin: 0;
+  transform: rotate(-10deg);
+  filter: drop-shadow(0 26px 48px rgba(0, 0, 0, .45));
+  pointer-events: none;
+  z-index: 3;
+
+  @media (max-width: 1280px) {
+    top: 110px;
+  }
+}
+
+.phone-mock img {
+  display: block;
+  width: clamp(240px, 36vw, 330px);
+  height: auto;
+}
+
+
+
+/* En móvil seguimos ocultándolo para dejar el carrusel */
+@media (max-width: 980px) {
+  .phone-mock {
+    display: flex;
+  }
+
+  .features-bar__wrap {
+    padding-right: 0;
+  }
+
+  .features-bar__wrap {
     display: grid;
     grid-auto-flow: column;
     grid-auto-columns: min(44vw, 190px);
@@ -817,13 +826,21 @@ ion-content {
     mask-image: linear-gradient(to right, transparent 0, #000 10%, #000 90%, transparent 100%);
     -webkit-mask-image: linear-gradient(to right, transparent 0, #000 10%, #000 90%, transparent 100%);
   }
-  .feature-card{ scroll-snap-align: start; scroll-snap-stop: always; }
+
+  .feature-card {
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
 }
 
 @media (max-width: 920px) {
-  .who { grid-template-columns: 1fr; }
+  .who {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 640px) {
-  .kpis { grid-template-columns: repeat(2, 1fr); }
+  .kpis {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
