@@ -61,10 +61,12 @@
           </span>
         </div>
       </div>
-      
+
       <div class="layout-seguros" *ngIf="!cotizacion">
+
         <div class="cotiza">
-          <section class="cotiza__card">
+          <section class="cotiza__card" [ngClass]="{ 'is-step1': currentStep === 1 }">
+
             <header class="cotiza__head">
               <span class="badge">Seguro de auto · Woaw</span>
               <h1>Cotiza tu seguro de auto</h1>
@@ -74,17 +76,28 @@
             <form [formGroup]="form">
 
               <div class="field" *ngIf="currentStep === 1">
-                <label for="marca">Selecciona una marca</label>
+                <div class="marca-picker" role="listbox" aria-label="Selecciona una marca">
+                  <div class="marca-picker__label">Selecciona una marca</div>
 
-                <div class="control control--select">
-                  <ion-select #lista class="sync-pop" formControlName="marca" interface="popover"
-                    [interfaceOptions]="{ cssClass: 'select-popover pop-marca', side: 'bottom', alignment: 'start' }"
-                    placeholder="Elige una marca…" aria-label="Marca" data-key="marca" (ionFocus)="syncPopoverWidths()">
-                    <ion-select-option [value]="null" disabled>Elige una marca…</ion-select-option>
-                    <ion-select-option *ngFor="let m of marcas" [value]="m.id">
-                      {{ m.name | titlecase }}
-                    </ion-select-option>
-                  </ion-select>
+                  <div class="marca-picker__search">
+                    <ion-searchbar placeholder="Buscar marca…" [debounce]="150"
+                      (ionInput)="onSearchBrand($event.detail.value)">
+                    </ion-searchbar>
+                  </div>
+
+                  <div class="marca-picker__grid">
+                    <button type="button" class="marca-picker__card" *ngFor="let b of brandsVM"
+                      [class.is-selected]="isSelected(b.id)" role="option" [attr.aria-selected]="isSelected(b.id)"
+                      (click)="selectBrand(b.id)">
+                      <div class="marca-picker__icon">
+                        <img *ngIf="b.imageUrl; else noimg" [src]="b.imageUrl" [alt]="b.name" loading="lazy" />
+                        <ng-template #noimg>
+                          <span class="marca-picker__fallback">{{ b.name | titlecase }}</span>
+                        </ng-template>
+                      </div>
+                      <div class="marca-picker__name">{{ b.name | titlecase }}</div>
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -257,13 +270,13 @@
                 <button type="button" *ngIf="currentStep !== 1" class="btn-secondary"
                   (click)="ClearRegrasar()">&#x2B05;</button>
                 <button class="btn-primary" type="button" (click)="siguiente()" [disabled]="
-              (currentStep===1 && form.get('marca')?.invalid) ||
-              (currentStep===2 && form.get('modelo')?.invalid) ||
-              (currentStep===3 && form.get('anio')?.invalid)   ||
-              (currentStep===4 && form.get('version')?.invalid)||
-              (currentStep===5 && form.get('nacDia')?.invalid || form.get('nacMes')?.invalid || form.get('nacAnio')?.invalid)                 ||
-              (currentStep===6 && (form.get('cp')?.invalid || form.get('genero')?.invalid || form.get('estadoCivil')?.invalid))
-            ">
+                  (currentStep===1 && form.get('marca')?.invalid) ||
+                  (currentStep===2 && form.get('modelo')?.invalid) ||
+                  (currentStep===3 && form.get('anio')?.invalid)   ||
+                  (currentStep===4 && form.get('version')?.invalid)||
+                  (currentStep===5 && form.get('nacDia')?.invalid || form.get('nacMes')?.invalid || form.get('nacAnio')?.invalid) ||
+                  (currentStep===6 && (form.get('cp')?.invalid || form.get('genero')?.invalid || form.get('estadoCivil')?.invalid))
+                  ">
                   {{ currentStep < 7 ? 'Siguiente ' : 'Cotizar' }} &#x27A1; </button>
               </div>
 
@@ -272,6 +285,7 @@
 
         </div>
       </div>
+
       <div class="cotizacion_carta">
 
         <section class="cotizacion_carta__card">
@@ -386,7 +400,9 @@
         </section>
 
       </div>
+
       <app-dynamic-island [refreshKey]="islandKey"></app-dynamic-island>
+
     </div>
 
     <div class="divicion2">
