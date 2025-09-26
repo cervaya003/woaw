@@ -5,21 +5,27 @@
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
-  <app-acomodo [totalAutos]="vistaActiva === 'todos' ? totalTodos : totalMios" [titulo]="'Renta de autos'"
-    (ordenCambio)="ordenarAutos($event)">
+  <app-acomodo
+    [totalAutos]="vistaActiva === 'todos' ? totalTodos : totalMios"
+    [titulo]="'Renta de autos'"
+    (ordenCambio)="ordenarAutos($event)"
+  >
   </app-acomodo>
 
   <ion-grid>
     <ion-row>
       <!-- ================== COLUMNA IZQUIERDA ================== -->
       <ion-col size="12" size-md="3">
-        <app-menu [filtros]="filtros" [filtrosAplicados]="filtrosAplicados"
-          (mostrarOpciones)="mostrarOpciones($event.event, $event.tipo)" (limpiarFiltros)="resetearFiltros()">
+        <app-menu
+          [filtros]="filtros"
+          [filtrosAplicados]="filtrosAplicados"
+          (mostrarOpciones)="mostrarOpciones($event.event, $event.tipo)"
+          (limpiarFiltros)="resetearFiltros()"
+        >
         </app-menu>
 
         <!-- ===== Filtro de Disponibilidad (EN ESTA PAGE) ===== -->
         <ion-card class="filtro-card">
-
           <ion-card-content>
             <div class="resumen-rango" *ngIf="rangoTexto; else sinRango">
               <ion-chip color="danger">
@@ -27,13 +33,24 @@
                 <ion-label>{{ rangoTexto }}</ion-label>
               </ion-chip>
               <div class="acciones">
-                <ion-button size="small" (click)="openModalFechas()">Cambiar</ion-button>
-                <ion-button size="small" fill="outline" (click)="limpiarFechas()">Quitar</ion-button>
+                <ion-button size="small" (click)="openModalFechas()"
+                  >Cambiar</ion-button
+                >
+                <ion-button
+                  size="small"
+                  fill="outline"
+                  (click)="limpiarFechas()"
+                  >Quitar</ion-button
+                >
               </div>
             </div>
 
             <ng-template #sinRango>
-              <ion-button expand="block" color="danger" (click)="openModalFechas()">
+              <ion-button
+                expand="block"
+                color="danger"
+                (click)="openModalFechas()"
+              >
                 Elegir fechas
               </ion-button>
             </ng-template>
@@ -43,7 +60,11 @@
 
       <!-- ================== COLUMNA DERECHA ================== -->
       <ion-col size="12" size-md="9">
-        <ion-segment [(ngModel)]="vistaActiva" (ionChange)="onSegmentChange()" class="mb-3">
+        <ion-segment
+          [(ngModel)]="vistaActiva"
+          (ionChange)="onSegmentChange()"
+          class="mb-3"
+        >
           <ion-segment-button value="todos">
             <ion-label>Todos ({{ totalTodos }})</ion-label>
           </ion-segment-button>
@@ -54,24 +75,41 @@
 
         <!-- ============= TODOS ============= -->
         <ng-container *ngIf="vistaActiva === 'todos'">
-          <ion-spinner *ngIf="loading" name="crescent" class="loading-spinner"></ion-spinner>
+          <ion-spinner
+            *ngIf="loading"
+            name="crescent"
+            class="loading-spinner"
+          ></ion-spinner>
 
-          <div *ngIf="!loading && (todosPaginados?.length || 0) === 0" class="no-coches">
+          <div
+            *ngIf="!loading && (todosPaginados?.length || 0) === 0"
+            class="no-coches"
+          >
             <ion-icon name="car-outline" class="icono-carro"></ion-icon>
             <h2>No hay coches disponibles</h2>
             <p>Vuelve a intentarlo más tarde.</p>
           </div>
 
-          <div *ngIf="!loading && (todosPaginados?.length || 0) > 0" class="cards-grid">
-            <ion-card *ngFor="let c of todosPaginados; trackBy: trackCar" class="veh-card" (click)="onCardClick(c)"
-              tabindex="0" (keyup.enter)="onCardClick(c)"
-              [attr.aria-label]="(c.marca || '') + ' ' + (c.modelo || '') + (c.anio ? (' ' + c.anio) : '')">
-
+          <div
+            *ngIf="!loading && (todosPaginados?.length || 0) > 0"
+            class="cards-grid"
+          >
+            <ion-card
+              *ngFor="let c of todosPaginados; trackBy: trackCar"
+              class="veh-card"
+              (click)="onCardClick(c)"
+              tabindex="0"
+              (keyup.enter)="onCardClick(c)"
+              [attr.aria-label]="(c.marca || '') + ' ' + (c.modelo || '') + (c.anio ? (' ' + c.anio) : '')"
+            >
               <div class="badge" *ngIf="getEsMio(c)">Mi coche</div>
 
               <div class="img-wrap">
-                <img loading="lazy" [src]="c.imagenPrincipal || '/assets/placeholder-car.webp'"
-                  alt="{{ c.marca }} {{ c.modelo }}" />
+                <img
+                  loading="lazy"
+                  [src]="c.imagenPrincipal || '/assets/placeholder-car.webp'"
+                  alt="{{ c.marca }} {{ c.modelo }}"
+                />
               </div>
 
               <ion-card-content>
@@ -107,19 +145,34 @@
           <div class="contenedor-paginacion" *ngIf="totalPaginasTodos > 1">
             <div class="paginacion-scroll">
               <div class="paginacion">
-                <button class="pagina" (click)="cambiarPagina('todos', paginaTodosActual - 1)"
-                  [disabled]="paginaTodosActual === 1">‹</button>
+                <button
+                  class="pagina"
+                  (click)="cambiarPagina('todos', paginaTodosActual - 1)"
+                  [disabled]="paginaTodosActual === 1"
+                >
+                  ‹
+                </button>
 
                 <ng-container *ngFor="let i of paginasReducidasTodos">
-                  <button *ngIf="esNumero(i)" class="pagina" [class.activa]="paginaTodosActual === i"
-                    [attr.aria-current]="paginaTodosActual === i ? 'page' : null" (click)="cambiarPagina('todos', i)">
+                  <button
+                    *ngIf="esNumero(i)"
+                    class="pagina"
+                    [class.activa]="paginaTodosActual === i"
+                    [attr.aria-current]="paginaTodosActual === i ? 'page' : null"
+                    (click)="cambiarPagina('todos', i)"
+                  >
                     {{ i }}
                   </button>
                   <span *ngIf="!esNumero(i)" class="ellipsis">...</span>
                 </ng-container>
 
-                <button class="pagina" (click)="cambiarPagina('todos', paginaTodosActual + 1)"
-                  [disabled]="paginaTodosActual === totalPaginasTodos">›</button>
+                <button
+                  class="pagina"
+                  (click)="cambiarPagina('todos', paginaTodosActual + 1)"
+                  [disabled]="paginaTodosActual === totalPaginasTodos"
+                >
+                  ›
+                </button>
               </div>
             </div>
           </div>
@@ -134,15 +187,22 @@
           </div>
 
           <div *ngIf="(miosPaginados?.length || 0) > 0" class="cards-grid">
-            <ion-card *ngFor="let c of miosPaginados; trackBy: trackCar" class="veh-card" (click)="onCardClick(c)"
-              tabindex="0" (keyup.enter)="onCardClick(c)"
-              [attr.aria-label]="(c.marca || '') + ' ' + (c.modelo || '') + (c.anio ? (' ' + c.anio) : '')">
-
+            <ion-card
+              *ngFor="let c of miosPaginados; trackBy: trackCar"
+              class="veh-card"
+              (click)="onCardClick(c)"
+              tabindex="0"
+              (keyup.enter)="onCardClick(c)"
+              [attr.aria-label]="(c.marca || '') + ' ' + (c.modelo || '') + (c.anio ? (' ' + c.anio) : '')"
+            >
               <div class="badge" *ngIf="getEsMio(c)">Mi coche</div>
 
               <div class="img-wrap">
-                <img loading="lazy" [src]="c.imagenPrincipal || '/assets/placeholder-car.webp'"
-                  alt="{{ c.marca }} {{ c.modelo }}" />
+                <img
+                  loading="lazy"
+                  [src]="c.imagenPrincipal || '/assets/placeholder-car.webp'"
+                  alt="{{ c.marca }} {{ c.modelo }}"
+                />
               </div>
 
               <ion-card-content>
@@ -178,25 +238,39 @@
           <div class="contenedor-paginacion" *ngIf="totalPaginasMios > 1">
             <div class="paginacion-scroll">
               <div class="paginacion">
-                <button class="pagina" (click)="cambiarPagina('mios', paginaMiosActual - 1)"
-                  [disabled]="paginaMiosActual === 1">‹</button>
+                <button
+                  class="pagina"
+                  (click)="cambiarPagina('mios', paginaMiosActual - 1)"
+                  [disabled]="paginaMiosActual === 1"
+                >
+                  ‹
+                </button>
 
                 <ng-container *ngFor="let i of paginasReducidasMios">
-                  <button *ngIf="esNumero(i)" class="pagina" [class.activa]="paginaMiosActual === i"
-                    [attr.aria-current]="paginaMiosActual === i ? 'page' : null" (click)="cambiarPagina('mios', i)">
+                  <button
+                    *ngIf="esNumero(i)"
+                    class="pagina"
+                    [class.activa]="paginaMiosActual === i"
+                    [attr.aria-current]="paginaMiosActual === i ? 'page' : null"
+                    (click)="cambiarPagina('mios', i)"
+                  >
                     {{ i }}
                   </button>
                   <span *ngIf="!esNumero(i)" class="ellipsis">...</span>
                 </ng-container>
 
-                <button class="pagina" (click)="cambiarPagina('mios', paginaMiosActual + 1)"
-                  [disabled]="paginaMiosActual === totalPaginasMios">›</button>
+                <button
+                  class="pagina"
+                  (click)="cambiarPagina('mios', paginaMiosActual + 1)"
+                  [disabled]="paginaMiosActual === totalPaginasMios"
+                >
+                  ›
+                </button>
               </div>
             </div>
           </div>
         </ng-container>
       </ion-col>
-
     </ion-row>
   </ion-grid>
 
@@ -204,7 +278,13 @@
 </ion-content>
 
 <!-- Modal propio para coches del dueño -->
-<ion-modal [isOpen]="modalOpen" (didDismiss)="onModalDismiss()" class="mio-modal" [backdropDismiss]="true" mode="md">
+<ion-modal
+  [isOpen]="modalOpen"
+  (didDismiss)="onModalDismiss()"
+  class="mio-modal"
+  [backdropDismiss]="true"
+  mode="md"
+>
   <ng-template>
     <div class="mio-modal__box">
       <h2 class="mio-modal__title">¿A dónde quieres ir?</h2>
@@ -212,10 +292,20 @@
 
       <div class="mio-modal__actions">
         <ion-button expand="block" (click)="goToFicha()">Ficha</ion-button>
-        <ion-button expand="block" color="success" (click)="goToDisponibilidad()">Disponibilidad</ion-button>
+        <ion-button
+          expand="block"
+          color="success"
+          (click)="goToDisponibilidad()"
+          >Disponibilidad</ion-button
+        >
       </div>
 
-      <ion-button expand="block" fill="solid" class="mio-modal__cancel" (click)="closeModal()">
+      <ion-button
+        expand="block"
+        fill="solid"
+        class="mio-modal__cancel"
+        (click)="closeModal()"
+      >
         CANCELAR
       </ion-button>
     </div>
@@ -223,7 +313,12 @@
 </ion-modal>
 
 <!-- ===== Modal del calendario (vive en ESTA PAGE) ===== -->
-<ion-modal [isOpen]="modalFechasOpen" (didDismiss)="closeModalFechas()" class="modal-calendario" mode="md">
+<ion-modal
+  [isOpen]="modalFechasOpen"
+  (didDismiss)="closeModalFechas()"
+  class="modal-calendario"
+  mode="md"
+>
   <ng-template>
     <ion-header translucent="true">
       <ion-toolbar>
@@ -240,9 +335,16 @@
       <div class="contenedor-datetime">
         <ion-item class="center-item danger-datetime" lines="none">
           <ion-label class="sr-only">Selecciona fecha(s)</ion-label>
-          <ion-datetime [(ngModel)]="tempFechasSeleccionadas" multiple="true" presentation="date" [min]="minFecha"
-            (ionChange)="onTempRangoChange()" [highlightedDates]="tempHighlightedRange" locale="es-ES"
-            show-default-buttons="false">
+          <ion-datetime
+            [(ngModel)]="tempFechasSeleccionadas"
+            multiple="true"
+            presentation="date"
+            [min]="minFecha"
+            (ionChange)="onTempRangoChange()"
+            [highlightedDates]="tempHighlightedRange"
+            locale="es-ES"
+            show-default-buttons="false"
+          >
           </ion-datetime>
         </ion-item>
       </div>
@@ -251,11 +353,15 @@
     <ion-footer>
       <ion-toolbar>
         <ion-buttons slot="start">
-          <ion-button fill="outline" (click)="limpiarTemp()">Limpiar</ion-button>
+          <ion-button fill="outline" (click)="limpiarTemp()"
+            >Limpiar</ion-button
+          >
         </ion-buttons>
         <ion-buttons slot="end">
           <ion-button (click)="closeModalFechas()">Cancelar</ion-button>
-          <ion-button color="primary" (click)="aplicarRango()">Aplicar</ion-button>
+          <ion-button color="primary" (click)="aplicarRango()"
+            >Aplicar</ion-button
+          >
         </ion-buttons>
       </ion-toolbar>
     </ion-footer>
