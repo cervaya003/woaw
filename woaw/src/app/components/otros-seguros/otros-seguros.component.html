@@ -1,9 +1,17 @@
 <div class="contenedor_otros">
-  <h2 class="titulo">Otras opciones</h2>
+  <h2 class="titulo">Cotiza y realiza el pago de tu seguro</h2>
+
+
+<section class="advertencia">
+  <p>
+    ⚠️ Este cotizador se encuentra en fase de prueba y no tiene validez oficial.  
+    Su uso es únicamente demostrativo para evitar fraudes.
+  </p>
+</section>
 
   <div class="opciones-grid">
     <!-- COTIZACIÓN -->
-    <div class="card motos" [class.card--ok]="cards[0].estatus" [class.card--off]="!cards[0].estatus">
+    <div class="card motos" (click)="redireccion('seguros')" [class.card--ok]="cards[0].estatus" [class.card--off]="!cards[0].estatus">
       <ion-icon [name]="cards[0].icon"></ion-icon>
       <h3>{{ cards[0].nombre }}</h3>
 
@@ -31,7 +39,7 @@
     </div>
 
     <!-- MIS DATOS -->
-    <div class="card camiones" [class.card--ok]="cards[1].estatus" [class.card--off]="!cards[1].estatus">
+    <div class="card camiones"  (click)="redireccion('seguros/persona')" [class.card--ok]="cards[1].estatus" [class.card--off]="!cards[1].estatus">
       <ion-icon [name]="cards[1].icon"></ion-icon>
       <h3>{{ cards[1].nombre }}</h3>
 
@@ -63,40 +71,13 @@
     </div>
 
     <!-- PÓLIZA -->
-    <div class="card plataforma" [class.card--ok]="cards[2].estatus" [class.card--off]="!cards[2].estatus">
+    <div class="card plataforma"  (click)="redireccion('seguros/poliza')" [class.card--ok]="cards[2].estatus" [class.card--off]="!cards[2].estatus">
       <ion-icon [name]="cards[2].icon"></ion-icon>
       <h3>{{ cards[2].nombre }}</h3>
-
       <div class="card__body" *ngIf="polizaVM; else polizaVacia">
-        <div class="kv">
-          <span class="k">RFC</span>
-          <span class="v">{{ polizaVM.rfc }}</span>
-        </div>
-        <div class="kv" *ngIf="polizaVM.vin">
-          <span class="k">VIN</span>
-          <span class="v mono">{{ polizaVM.vin }}</span>
-        </div>
-        <div class="kv" *ngIf="polizaVM.placas">
-          <span class="k">Placas</span>
-          <span class="v">{{ polizaVM.placas }}</span>
-        </div>
-        <div class="kv" *ngIf="polizaVM.color">
-          <span class="k">Color</span>
-          <span class="v">{{ polizaVM.color | titlecase }}</span>
-        </div>
-        <div class="kv" *ngIf="polizaVM.quotationId">
-          <span class="k">ID Cotización</span>
-          <span class="v mono">{{ polizaVM.quotationId }}</span>
-        </div>
-        <div class="kv" *ngIf="polizaVM.planId">
-          <span class="k">Plan ID</span>
-          <span class="v mono">{{ polizaVM.planId }}</span>
-        </div>
-        <div class="kv" *ngIf="polizaVM.inicio">
-          <span class="k">Inicio</span>
-          <span class="v">{{ polizaVM.inicio | date:'dd/MM/yyyy' }}</span>
-        </div>
+        <div class="card__empty">Poliza creada correctamente</div>
       </div>
+     
       <ng-template #polizaVacia>
         <div class="card__empty">Sin póliza configurada.</div>
       </ng-template>

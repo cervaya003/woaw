@@ -548,6 +548,7 @@ ion-content {
     }
 
     @media (max-width: 850px) {
+    max-height: 90vh;
       // box-shadow: 0 8px 24px rgba(0, 0, 0, 0.406);
     }
 
@@ -1272,13 +1273,16 @@ ion-content {
       --size: 26px;
     }
 
-    position: relative;
-    width: var(--size);
-    height: var(--size);
-    border-radius: 50%;
-    display: grid;
-    place-items: center;
-    overflow: hidden;
+    /* ⬇️ Opt-in sin reordenar: propiedades envueltas en & */
+    & {
+      position: relative;
+      width: var(--size);
+      height: var(--size);
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+    }
 
     .ring {
       position: absolute;
@@ -1315,7 +1319,6 @@ ion-content {
     }
   }
 }
-
 @property --ang {
   syntax: '<angle>';
   inherits: false;

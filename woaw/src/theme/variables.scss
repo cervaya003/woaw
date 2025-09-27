@@ -740,12 +740,17 @@ img.oculta {
     min-width: 0;
     overflow: auto;
     min-height: 100svh;
+
+    @media (max-width: 860px) {
+      min-height: 40svh;
+    }
   }
 
   .divicion2 {
     min-width: 0;
     overflow: auto;
     background-color: #000000;
+      min-height: 80svh;
   }
 
   @media (max-width: 860px) {

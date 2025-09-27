@@ -24,7 +24,7 @@
             <h1 *ngIf="!statusBuscar">Mis datos</h1>
             <h1 *ngIf="statusBuscar">Ingresa RFC</h1>
             <div class="search-box">
-              <button *ngIf="!statusBuscar" (click)="buscarSeccion()">Buscar persona</button>
+              <button *ngIf="!statusBuscar" (click)="buscarSeccion()">Buscar por RFC <ion-icon name="search-outline"></ion-icon></button>
               <button *ngIf="statusBuscar" (click)="buscarSeccion()">Cancelar &#x274C;</button>
             </div>
           </div>
@@ -338,11 +338,11 @@
         </section>
       </div>
 
-      <app-dynamic-island [refreshKey]="islandKey"></app-dynamic-island>
+      <!-- <app-dynamic-island [refreshKey]="islandKey"></app-dynamic-island> -->
     </div>
 
     <div class="divicion2">
-      <app-otros-seguros></app-otros-seguros>
+      <app-otros-seguros [refreshKey]="islandKey"></app-otros-seguros>
     </div>
   </div>
 

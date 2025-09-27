@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Router } from '@angular/router';
 
 type Maybe<T> = T | null | undefined;
 
@@ -51,7 +52,7 @@ export class OtrosSegurosComponent implements OnInit, OnChanges {
     inicio?: string;
   }> = null;
 
-  constructor(private cdr: ChangeDetectorRef) { }
+  constructor(private cdr: ChangeDetectorRef, private router: Router) { }
 
   ngOnInit() {
     this.updateFromStorage();
@@ -125,12 +126,12 @@ export class OtrosSegurosComponent implements OnInit, OnChanges {
         const plan = mapTipo(principal?.policy_type?.id);
 
         return {
-          plan,                    // ej. "Plan Comercial Anual"
-          total: undefined,        // la respuesta nueva no trae totales
-          pagos: '—',              // no hay plan de pagos aquí
-          vigencia: { start, end }, // ISO strings; el date pipe los formatea
-          vehiculo: undefined,     // no viene en este payload
-          policyNumbers            // extra opcional si quieres mostrarlo
+          plan,
+          total: undefined,
+          pagos: '—',
+          vigencia: { start, end },
+          vehiculo: undefined,
+          policyNumbers
         };
       }
 
@@ -219,5 +220,10 @@ export class OtrosSegurosComponent implements OnInit, OnChanges {
   formatMXN(n?: number): string {
     if (!n || isNaN(n)) return '—';
     return n.toLocaleString('es-MX', { style: 'currency', currency: 'MXN', maximumFractionDigits: 2 });
+  }
+
+  redireccion(url: string) {
+    if (!url) return;
+    this.router.navigate([`/${url}`]);
   }
 }
