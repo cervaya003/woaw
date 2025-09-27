@@ -278,6 +278,10 @@ const routes: Routes = [
       import("./pages/error/error.module").then((m) => m.ErrorPageModule),
     data: { title: "Página no encontrada | woaw" },
   },
+  {
+    path: 'elige-seguro',
+    loadChildren: () => import('./pages/seguro/elige-seguro/elige-seguro.module').then( m => m.EligeSeguroPageModule)
+  },
 ];
 
 @NgModule({
