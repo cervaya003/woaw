@@ -153,7 +153,7 @@ export class PolizaPage implements OnInit {
     }
     this.mostrarPresouestaPoliza();
 
-    console.log(this.datoscotizacion)
+    // console.log(this.datoscotizacion)
     // const rfc = this.datosUsuario?.person?.rfc;
     const rfc = this.UsuarioRespuesta.response.rfc;
     const id = this.datoscotizacion.id;
@@ -191,7 +191,7 @@ export class PolizaPage implements OnInit {
     };
     this.enviarDatosCrearPersona(payload);
     localStorage.setItem('datosPolizaVin', JSON.stringify(payload));
-    console.log('Payload de la póliza:', payload);
+    // console.log('Payload de la póliza:', payload);
   }
   enviarDatosCrearPersona(payload: any) {
     this.mostrar_spinnet = true;

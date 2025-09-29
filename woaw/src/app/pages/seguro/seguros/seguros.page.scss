@@ -548,7 +548,7 @@ ion-content {
     }
 
     @media (max-width: 850px) {
-    max-height: 90vh;
+      max-height: 90vh;
       // box-shadow: 0 8px 24px rgba(0, 0, 0, 0.406);
     }
 
@@ -886,11 +886,13 @@ ion-content {
     width: 100%;
     margin-top: 0;
     padding: 10px;
+    background: #0f1115;
+    border: 1px solid #232633;
 
     .quote-summary {
       border: 2px dashed var(--line);
       border-radius: 16px;
-      background: #fafafa;
+      background: transparent;
       padding: clamp(5px, 2vw, 10px);
       display: grid;
       gap: 6px;
@@ -907,13 +909,13 @@ ion-content {
         padding: 6px clamp(6px, 1.2vw, 12px);
 
         .k {
-          color: var(--muted);
+          color: #ffffff;
           font-size: clamp(9px, 1.3vw, 13px);
           flex: 0 0 auto;
         }
 
         .v {
-          color: var(--ink);
+          color: #ffffff;
           font-weight: 700;
           font-size: clamp(10px, 1.3vw, 14px);
           text-align: right;
@@ -932,6 +934,8 @@ ion-content {
     margin-top: 0rem;
 
     .plan {
+    background: #0f1115;
+    border: 1px solid #232633;
       width: 100%;
       border-radius: 16px;
       background: transparent;
@@ -965,7 +969,6 @@ ion-content {
             width: 100%;
             padding: 14px 40px 14px 14px;
             border-radius: 14px;
-            border: 1px solid var(--line);
             background: var(--card);
             color: var(--ink);
             font-weight: 600;
@@ -984,10 +987,8 @@ ion-content {
 
         .paybox__pricecard {
           width: min(920px, 100%);
-          border: 1px solid var(--line);
           border-radius: 14px;
-          background: var(--card);
-          box-shadow: 0 8px 20px rgba(0, 0, 0, .05);
+          background: #000;
           padding: 16px;
           display: grid;
           gap: 10px;
@@ -1000,19 +1001,19 @@ ion-content {
             gap: 12px;
 
             .k {
-              color: var(--muted);
+              color: #ffffff;
               font-weight: 700;
               font-size: 14px;
             }
 
             .v {
-              color: var(--ink);
+              color: #bd0000;
               font-weight: 900;
               font-size: clamp(10px, 3.4vw, 18px);
             }
 
             &.is-total .k {
-              color: var(--ink);
+              color: #ffffff;
             }
 
             &.is-total .v {
@@ -1023,7 +1024,7 @@ ion-content {
           .pricecard__divider {
             height: 1px;
             width: 100%;
-            background: var(--line);
+            background: #ffffff;;
             border-radius: 1px;
           }
         }
@@ -1075,22 +1076,23 @@ ion-content {
     padding: 0;
     margin: 0;
     display: grid;
-    gap: 10px;
+    gap: 0px;
+    background: #0f1115;
+    border: 1px solid #232633;
 
     .benefit {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
       padding: 10px 14px;
-      border-radius: 12px;
-      background: #f9fafc98;
-      border: 1px solid rgba(0, 0, 0, .05);
+      border-radius: 0px;
+      background: transparent;
       transition: background .2s ease;
 
       .k {
         font-weight: 600;
         font-size: clamp(10px, 2.4vw, 13px);
-        color: #101828;
+        color: #ffffff;
       }
 
       .v {
@@ -1319,6 +1321,7 @@ ion-content {
     }
   }
 }
+
 @property --ang {
   syntax: '<angle>';
   inherits: false;

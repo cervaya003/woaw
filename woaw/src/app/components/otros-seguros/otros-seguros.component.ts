@@ -69,7 +69,7 @@ export class OtrosSegurosComponent implements OnInit, OnChanges {
     const datosUsuarioRespuesta = localStorage.getItem('UsuarioRespuesta');
     const datosPoliza = localStorage.getItem('datosPolizaVin_Respuesta');
 
-    console.log(datosPoliza)
+    // console.log(datosPoliza)
 
     const cotizacionExiste = this.hasValue(cotizacionRaw);
     const datosUsuariosRespuesta = this.hasValue(datosUsuarioRespuesta);
@@ -186,7 +186,6 @@ export class OtrosSegurosComponent implements OnInit, OnChanges {
   }
 
   private buildPolizaVM(json: string) {
-    // "datosPolizaVin_Respuesta" del ejemplo
     try {
       const data = JSON.parse(json);
       const rfc = data?.rfc || '—';
@@ -204,7 +203,6 @@ export class OtrosSegurosComponent implements OnInit, OnChanges {
   }
 
   private prettyPlan(name: string): string {
-    // ANNUAL | SUBSCRIPTION -> etiquetas amigables
     if (!name) return '—';
     const n = String(name).toUpperCase();
     if (n === 'ANNUAL') return 'Pago anual';
