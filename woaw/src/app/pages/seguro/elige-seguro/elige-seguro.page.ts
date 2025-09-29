@@ -4,7 +4,7 @@ import { Component, OnInit } from '@angular/core';
   selector: 'app-elige-seguro',
   templateUrl: './elige-seguro.page.html',
   styleUrls: ['./elige-seguro.page.scss'],
-  standalone: true
+  standalone: false
 })
 export class EligeSeguroPage implements OnInit {
 

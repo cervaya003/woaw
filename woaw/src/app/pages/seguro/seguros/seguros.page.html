@@ -329,12 +329,12 @@
             </div>
 
             <div class="planes" *ngIf="q.plans?.length">
-              <section class="plan" *ngFor="let p of q.plans">
+              <section class="plan" *ngFor="let p of q.plans; let i = index">
                 <div class="paybox">
 
                   <div class="">
                     <ion-select [(ngModel)]="selectedPaymentByPlan[p.id]"
-                      (ngModelChange)="onSelectPayment(p.id, $event)" interface="popover"
+                      (ngModelChange)="onSelectPayment(p.id, p)" interface="popover"
                       placeholder="Elige un plan de pago..." aria-label="Plan de pago" class="pay-select">
                       <ion-select-option *ngFor="let opt of p.payment_plans; trackBy: trackByPayment" [value]="opt.id">
                         {{ paymentPlanLabel(opt) }} — {{ fmtMoney(opt.total) }}

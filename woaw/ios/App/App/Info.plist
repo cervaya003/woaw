@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-        <string>woaw</string>
+	<string>woaw</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -45,5 +45,13 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Necesitamos la ubicación para funcionamientos de la app.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Necesitamos la camara para tomar imagenes de los coches.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Necesitamos imagenes de los vehiculos.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Guardaremos la imagenes en tu galeria.</string>
 </dict>
 </plist>

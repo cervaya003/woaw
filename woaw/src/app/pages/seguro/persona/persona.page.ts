@@ -78,29 +78,24 @@ export class PersonaPage implements OnInit {
     this.generalService.dispositivo$.subscribe((tipo) => {
       this.esDispositivoMovil = tipo === 'telefono' || tipo === 'tablet';
     });
-    const stored = localStorage.getItem('datosCoche');
-    if (stored) {
-      this.datosCoche = JSON.parse(stored);
-    } else {
-      this.datosCoche = null;
-      this.router.navigate(['/seguros']);
-      // this.generalService.alert(
-      //   'Debes seleccionar un coche antes de continuar con tu registro.',
-      //   'Atención',
-      //   'warning'
-      // );
-    }
-    const cotizacion = localStorage.getItem('cotizacion');
-    if (cotizacion) {
-      this.datoscotizacion = cotizacion;
-    } else {
-      this.router.navigate(['/seguros']);
-      this.generalService.alert(
-        'Debes cotizar un coche antes de continuar con tu registro.',
-        'Atención',
-        'warning'
-      );
-    }
+    // const stored = localStorage.getItem('datosCoche');
+    // if (stored) {
+    //   this.datosCoche = JSON.parse(stored);
+    // } else {
+    //   this.datosCoche = null;
+    //   this.router.navigate(['/seguros']);
+    // }
+    // const cotizacion = localStorage.getItem('cotizacion');
+    // if (cotizacion) {
+    //   this.datoscotizacion = cotizacion;
+    // } else {
+    //   this.router.navigate(['/seguros']);
+    //   this.generalService.alert(
+    //     'Debes cotizar un coche antes de continuar con tu registro.',
+    //     'Atención',
+    //     'warning'
+    //   );
+    // }
 
   }
   toUpperCase(event: any) {

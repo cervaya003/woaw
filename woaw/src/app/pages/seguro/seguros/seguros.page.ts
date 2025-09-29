@@ -54,7 +54,7 @@ export class SegurosPage implements OnInit {
   ];
 
   mostrar_spinnet: boolean = false;
-
+  selectedPlanIndexes = new Set<number>();
   // Selecciones previas
   selectedMarcaId: number | null = null;
   selectedModeloId: number | null = null;
@@ -267,7 +267,7 @@ export class SegurosPage implements OnInit {
     if (this.currentStep === 1) {
       if (this.form.get('marca')?.invalid) return;
       this.selectedMarcaId = Number(this.form.get('marca')?.value);
-      console.log(this.selectedMarcaId)
+      // console.log(this.selectedMarcaId)
       this.obtenerModelos(this.selectedMarcaId);
       if (!this.form.get('modelo')) {
         this.form.addControl('modelo', this.fb.control(null, Validators.required));
@@ -592,6 +592,7 @@ export class SegurosPage implements OnInit {
           } else {
             this.activePlan = null;
           }
+
         }, 2500);
       },
       error: (err) => {
@@ -600,8 +601,22 @@ export class SegurosPage implements OnInit {
       }
     });
   }
-  onSelectPayment(planId: string, paymentId: string) {
-    this.selectedPaymentByPlan[planId] = paymentId;
+  public onSelectPayment(planid: any, plan: any) {
+    const paymentId = this.selectedPaymentByPlan?.[planid];
+    if (!paymentId) {
+      setTimeout(() => this.onSelectPayment(planid, plan), 0);
+      return;
+    }
+    const idx = Array.isArray(plan?.payment_plans)
+      ? plan.payment_plans.findIndex((pp: any) => pp.id === paymentId)
+      : -1;
+
+    if (idx >= 0) {
+      localStorage.setItem('pocicionSelecionada', `${idx}`);
+      console.log(`[${idx}]`, 'payment_plan.id =', paymentId);
+    } else {
+      console.log('payment_plan.id =', paymentId);
+    }
   }
   getSelectedPayment(pl: any) {
     const id = this.selectedPaymentByPlan[pl.id];
@@ -687,6 +702,8 @@ export class SegurosPage implements OnInit {
       restTotal
     };
   }
+
+  // ----- CREAR PERSONA -----
   async confirmarCrearPersona() {
     this.generalService.confirmarAccion(
       '¿Estás seguro de que crear tu póliza?',

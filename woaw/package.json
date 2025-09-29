@@ -28,7 +28,7 @@
     "@capacitor/device": "^7.0.2",
     "@capacitor/geolocation": "^7.1.2",
     "@capacitor/haptics": "7.0.1",
-    "@capacitor/ios": "7.4.3",
+    "@capacitor/ios": "^7.4.3",
     "@capacitor/keyboard": "7.0.1",
     "@capacitor/share": "^7.0.1",
     "@capacitor/status-bar": "7.0.1",
