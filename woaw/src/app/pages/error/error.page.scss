@@ -1,63 +1,59 @@
 .error-page {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  /* opcional: fondo del ion-content */
+  --background: #0b0b0e;
   text-align: center;
+  /* deja el host tranquilo; el truco va en el hijo */
+}
 
-  .error-wrap {
-    display: grid;
-    gap: 20px;
-    justify-items: center;
-    padding: 20px;
-  }
+.error-page .error-wrap {
+  /* 🔥 asegura altura de viewport y centra en móvil y desktop */
+  min-block-size: 100dvh;
+  display: grid;
+  place-content: center;   /* centra vertical + horizontal */
+  justify-items: center;
+  gap: clamp(16px, 4vh, 28px);
+  padding: clamp(12px, 4vw, 28px);
+  width: 100%;
+}
 
-  .logo {
-    width: 160px;
-    margin-bottom: 10px;
-    filter: drop-shadow(0 4px 8px rgba(0,0,0,.4));
-  }
+/* lo demás igual que ya tienes */
+.error-page .logo {
+  width: clamp(120px, 22vw, 180px);
+  margin-bottom: clamp(8px, 2vh, 14px);
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,.4));
+}
 
-  .code {
-    font-size: clamp(64px, 10vw, 120px);
-    font-weight: 900;
-    color: var(--ion-color-primary);
-    margin: 0;
-    line-height: 1;
-    text-shadow: 0 4px 16px rgba(0,0,0,.4);
-  }
+.error-page .headline {
+  font-size: clamp(1.1rem, 3vw, 1.6rem);
+  color: #f0f0f0;
+  margin: 0 0 clamp(10px, 2vh, 14px);
+}
 
-  .headline {
-    font-size: 1.4rem;
-    color: #f0f0f0;
-    margin: 0 0 10px 0;
-  }
+/* Contenedor e imagen centrados */
+.error-page .car {
+  position: relative;   /* referencia para lo absoluto */
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-height: clamp(200px, 50vh, 400px); /* espacio reservado para la imagen */
+}
+.error-page .car img {
+  position: absolute;   
+  top: 50%;             
+  left: 50%;            
+  transform: translate(-50%, -50%);
+  width: clamp(280px, 75vw, 480px); /* 🔥 ahora más grande */
+  height: auto;
+  object-fit: contain;
+}
 
-  .car-box {
-    background: rgba(255,255,255,0.05);
-    padding: 20px;
-    border-radius: 16px;
-    backdrop-filter: blur(8px);
-    box-shadow: 0 8px 24px rgba(0,0,0,.35);
-  }
 
-  .car {
-    width: min(250px, 100vw);
-    object-fit: contain;
-    filter: drop-shadow(0 12px 20px rgb(223, 12, 12));
-  }
-
-  .desc {
-    font-size: 1.1rem;
-    color: #ccc;
-    max-width: 420px;
-  }
-
-.back-btn {
+/* Botón */
+.error-page .back-btn {
   width: min(420px, 90vw);
   font-weight: 800;
   letter-spacing: .3px;
-  border-radius: 12px;
-   color: #dc143c !important;
+  border-radius: clamp(10px, 2vw, 14px);
+  color: #dc143c !important;
   box-shadow: 0 10px 28px rgba(220, 20, 60, .45);
-}
 }

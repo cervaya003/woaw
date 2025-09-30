@@ -111,6 +111,7 @@ ion-content {
       }
     }
   }
+
 }
 
 /* ===================== BARRA DE CARTAS + TELÉFONO ===================== */
@@ -156,109 +157,124 @@ ion-content {
 
  
 /* ===================== CONNECT BAND ===================== */
-.connect-band {
-  background: #fff;
-  position: relative;
-  padding: clamp(18px, 2.6vw, 30px) 0 clamp(26px, 3vw, 36px);
+.connect-band{
+  background:#fff;
+  position:relative;
+  padding:clamp(18px,2.6vw,30px) 0 clamp(26px,3vw,36px);
 
-  /* Vars locales para alinear todo perfectamente */
-  --line-y: clamp(32px, 3.2vw, 40px); /* altura de la línea */
-  --line-h: 3px;
-  --pill-h: 34px;                    /* altura fija de la pastilla */
-  --ring: #ff2121;
+  /* más cerca del h5 */
+  --line-y: clamp(20px, 2vw, 26px);
+  --line-h:2.5px;
+  --pill-h:34px;
+  --ring:#ff2121;
 }
 
-.connect-track {
-  width: 100%;
-  margin: 0 auto;
-  position: relative;
-  display: grid;
-  grid-template-columns: 1fr max-content 1fr;
-  align-items: start;
-  gap: clamp(24px, 6vw, 80px);
-  text-align: center;
+.connect-track{
+  width:100%;
+  margin:0 auto;
+  position:relative;
+  display:grid;
+  grid-template-columns:1fr max-content 1fr;
+  align-items:start;
+  gap:clamp(24px,6vw,80px);
+  text-align:center;
 }
 
-/* Línea roja: FULL-BLEED dentro del contenedor y por detrás de todo */
-.connect-track::before {
-  content: "";
-  position: absolute;
-  left: 0; right: 0;
-  top: var(--line-y);
-  height: var(--line-h);
-  background: var(--ring);
-  z-index: 0;
+/* línea horizontal (más arriba) */
+.connect-track::before{
+  content:"";
+  position:absolute;
+  left:0; right:0;
+  top:var(--line-y);
+  height:var(--line-h);
+  background:var(--ring);
+  z-index:0;
 }
 
-/* Columnas laterales */
-.connect-col { position: relative; z-index: 1; }
+/* columnas */
+.connect-col{ position:relative; z-index:1; }
 
-.connect-col h5 {
-  margin: 0 0 2px;         
-  font-weight: 900;
-  color: var(--ring);
-  font-size: clamp(14px, 1.8vw, 18px);
-  position: relative;
-  top: 4px;                  
-  line-height: 1.2;
+.connect-col h5{
+  margin:0;
+  font-weight:900;
+  color:var(--ring);
+  font-size:clamp(14px,1.8vw,18px);
+  line-height:1.1;
+  position:relative;
+  top:-2px;               /* acerca aún más al trazo */
 }
 
+/* texto: menos aire arriba para pegarse a la línea */
 .connect-col p{
-  margin: 0;
-  padding-top: 20px; 
- padding-inline: clamp(10px, 3vw, 18px);              /* separa los párrafos de la línea */
-  font-size: clamp(12px, 1.6vw, 14px);
-  line-height: 1.55;
-  color: #000000;
-  max-width: 30ch;
-  margin-inline: auto;
+  margin:0;
+  padding-top:clamp(8px,1.4vw,12px);
+  padding-inline:clamp(10px,3vw,18px);
+  font-size:clamp(12px,1.6vw,14px);
+  line-height:1.55;
+  color:#000;
+  max-width:30ch;
+  margin-inline:auto;
 }
 
-/* Centro */
+/* centro */
 .connect-center{
-  position: relative;
-  z-index: 2;                        /* por encima de la línea */
-  display: flex;
-  align-items: center;
-  gap: clamp(10px, 2vw, 18px);
-  /* Coloca la pastilla de modo que su centro coincida con la línea */
-  margin-top: calc(var(--line-y) - (var(--pill-h) / 2));
+  position:relative;
+  z-index:2;
+  display:flex;
+  align-items:center;
+  gap:clamp(10px,2vw,18px);
+  margin-top:calc(var(--line-y) - (var(--pill-h) / 2));
 }
 
-/* Pastilla "CONECTAMOS" */
+/* pastilla */
 .connect-label{
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: var(--pill-h);             /* altura fija para el cálculo anterior */
-  padding: 0 clamp(18px, 2.6vw, 24px);
-  border-radius: 999px;
-  background: var(--ring);
-  color: #fff;
-  font-weight: 900;
-  letter-spacing: .3px;
-  font-size: clamp(12px, 1.6vw, 14px);
-  box-shadow: 0 6px 16px rgba(255, 33, 33, .25);
+  position:relative;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  height:var(--pill-h);
+  padding:0 clamp(18px,2.6vw,24px);
+  border-radius:999px;
+  background:var(--ring);
+  color:#fff;
+  font-weight:900;
+  letter-spacing:.3px;
+  font-size:clamp(12px,1.6vw,14px);
+  box-shadow:0 6px 16px rgba(255,33,33,.25);
+}
+/* Nodos conectores: doble aro concéntrico con líneas más gruesas */
+/* nodos conectores: círculo simple */
+.connect-label {
+  --node-d: clamp(22px, 2.6vw, 26px); /* diámetro */
+  --ring: #ff2121;
+  --space: 28px;                      /* 🔴 antes 42px → ahora más pegado */
+  --ring-w: 3px;                      /* grosor del aro */
 }
 
-/* CÍRCULOS: aro rojo + halo blanco + centro TRANSPARENTE
-   (la línea se ve pasar por el medio) */
 .connect-label::before,
-.connect-label::after{
-  content: "";
-  position: absolute;
-  top: 50%; transform: translateY(-50%); /* centro = línea */
-  width: clamp(16px, 2vw, 18px);
-  height: clamp(16px, 2vw, 18px);
-  border-radius: 50%;
-  border: 3px solid var(--ring);        /* aro rojo */
-  background: transparent;              /* centro hueco -> se ve la línea */
-  box-shadow: 0 0 0 4px #fff;           /* halo blanco exterior */
-  z-index: 2;                            /* sobre la línea, debajo de la pastilla */
+.connect-label::after {
+  content:"";
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  width:var(--node-d);
+  height:var(--node-d);
+  border-radius:50%;
+  z-index:2;
+
+  background: radial-gradient(circle,
+    transparent 45%,
+    var(--ring) 46% 100%
+  );
+
+  box-shadow: 0 0 0 3px #fff;
 }
-.connect-label::before{ left: -34px; }
-.connect-label::after { right: -34px; }
+
+/* posiciones */
+.connect-label::before { left: calc(var(--space) * -1); }
+.connect-label::after  { right: calc(var(--space) * -1); }
+
+
 
 
 
@@ -615,12 +631,14 @@ ion-content {
   align-items: center;   
   text-align: center;   
   padding: clamp(14px, 1.6vw, 20px);
+
 }
 
 .mvv .card p,
 .mvv .card ul {
   text-align: center;    
 }
+
 
 .mvv .card ul {
   padding-left: 0;      
