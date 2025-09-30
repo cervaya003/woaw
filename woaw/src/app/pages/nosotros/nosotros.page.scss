@@ -111,6 +111,7 @@ ion-content {
       }
     }
   }
+
 }
 
 /* ===================== BARRA DE CARTAS + TELÉFONO ===================== */
@@ -272,6 +273,7 @@ ion-content {
 /* posiciones */
 .connect-label::before { left: calc(var(--space) * -1); }
 .connect-label::after  { right: calc(var(--space) * -1); }
+
 
 
 
@@ -629,12 +631,14 @@ ion-content {
   align-items: center;   
   text-align: center;   
   padding: clamp(14px, 1.6vw, 20px);
+
 }
 
 .mvv .card p,
 .mvv .card ul {
   text-align: center;    
 }
+
 
 .mvv .card ul {
   padding-left: 0;      
