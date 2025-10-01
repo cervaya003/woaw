@@ -23,7 +23,7 @@
     display: grid;
     grid-auto-flow: row;
     grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
-    gap: 16px;
+    gap: 6px;
     max-width: 100%;
 
     .card {
@@ -31,8 +31,8 @@
       grid-template-rows: auto auto 1fr;
       justify-items: stretch;
       align-content: start;
-      gap: 8px;
-      padding: 16px 14px 14px;
+      gap: 0px;
+      padding: 8px 6px 6px;
       border-radius: 14px;
       border: 1px solid #2a2a31;
       background: #121216;
@@ -40,11 +40,12 @@
       width: 100%;
       overflow: hidden;
       position: relative;
+      cursor: pointer;
 
       &::after {
         content: "";
         position: absolute;
-        top: 6px;
+        top: 1px;
         right: 6px;
         width: 28px;
         height: 28px;
@@ -61,7 +62,6 @@
 
       &.card--ok {
         border-color: #2ecc71;
-        box-shadow: 0 6px 18px rgba(46, 204, 113, .15);
       }
 
       &.card--ok::after {
@@ -70,7 +70,7 @@
       }
 
       &.card--off {
-        opacity: .9;
+        border-color: #ff3b3b;
       }
 
       &.card--off::after {
@@ -79,9 +79,7 @@
       }
 
       &:hover {
-        transform: translateY(-3px);
-        border-color: #ff2121;
-        box-shadow: 0 8px 20px rgba(255, 33, 33, .15);
+        opacity: .7;
       }
 
       ion-icon {
@@ -93,12 +91,20 @@
 
       h3 {
         margin: 0;
-        font-size: 15px;
+        font-size: 10px;
         font-weight: 900;
         color: #fff;
         letter-spacing: .2px;
         line-height: 1.2;
         justify-self: center;
+      }
+
+      .pasoTex {
+        color: #d5d5da;
+        font-size: 14px;
+        font-weight: 900;
+        margin: 0;
+        padding: p;
       }
 
       .card__body {
