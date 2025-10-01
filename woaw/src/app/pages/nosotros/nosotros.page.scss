@@ -57,7 +57,9 @@ ion-content {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      object-position: 50% 85%;
+
+      object-position: 50% 90%;
+
       filter: contrast(.9) brightness(.6);
     }
   }

@@ -180,19 +180,18 @@ export class CamionesService {
   }
 
   // Actualizar un camión existente
-  actualizarCamion(camionId: string, body: FormData): Observable<any> {
-    return from(this.headersService.obtenerToken()).pipe(
-      switchMap((token) => {
-        const headers = this.headersService.getFormDataHeaders(token);
-        return this.http.put(
-          `${environment.api_key}/camiones/${camionId}`,
-          body,
-          { headers }
-        );
-      }),
-      catchError((error) => this.headersService.handleError(error))
-    );
-  }
+actualizarCamion(camionId: string, body: FormData): Observable<any> {
+  return from(this.headersService.obtenerToken()).pipe(
+    switchMap((token) => {
+      if (!camionId) throw new Error('camionId vacío');
+      const headers = this.headersService.getFormDataHeaders(token);
+      // ✅ ID como segmento de ruta, sin ":id"
+      const url = `${environment.api_key}/camiones/camiones/${encodeURIComponent(camionId)}`;
+      return this.http.put(url, body, { headers });
+    }),
+    catchError((error) => this.headersService.handleError(error))
+  );
+}
 
   // Eliminar un camión
   eliminarCamion(camionId: string): Observable<any> {
