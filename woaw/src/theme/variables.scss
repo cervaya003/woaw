@@ -684,7 +684,7 @@ $color in $tipos-venta {
   position: absolute;
   inset: 0;
   background-color: #eee;
-  color: #db2323;
+  color: #000000;
   font-size: 14px;
   font-weight: 500;
   display: flex;
@@ -750,7 +750,7 @@ img.oculta {
     min-width: 0;
     overflow: auto;
     background-color: #000000;
-      min-height: 80svh;
+    min-height: 80svh;
   }
 
   @media (max-width: 860px) {

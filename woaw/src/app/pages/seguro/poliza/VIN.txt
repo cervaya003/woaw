@@ -1,0 +1,56 @@
+3HGFZ2140LL123456
+1N4AL3AP7HC123789
+5YJSA1CN9DFP43210
+2G1WF52E569123654
+KMHCT4AE0FU123987
+JHMFA16586S012345
+3C6UR5DL8FG987654
+SALSA2BN9RA543210
+WAUZZZ8K8BA123000
+1FTFW1ET5EKF12345
+ZARBA5440H1101234
+4T1BF1FK7FU765432
+
+
+
+ABC12D3
+JKL45MN
+QRO78ZX
+MEX01LP
+VCN56TR
+
+QRO4123
+HGT2901
+JPL8745
+MZC1209
+VNX5568
+
+
+HEBF030830HHGRTLA4
+HEBF030830EC1
+
+
+Brian: RILB020622AD9
+
+
+
+
+{
+    "rfc": "RILB020622AD9",
+    "vehicle": {
+        "vin": "4T1BF1FK7FU765432",
+        "plates": "QRO4123",
+        "color": "gris"
+    },
+    "quotation": {
+        "id": "f252ff76-524c-4fd7-a82f-f01aca3426ac",
+        "plan_id": "8b803972-324e-4f84-a6b2-fee7b036fcbc",
+        "payment_plan_id": "17d8e8fb-6371-40ad-9de4-43401a0e5e58"
+    },
+    "branch_id": "ded09658-50cd-4637-8390-31a8f39fe9a1",
+    "receivers": [],
+    "start_date": "2025-10-02",
+    "use_crabi_checkout": true,
+    "send_mail_to_client": true,
+    "send_whatsapp_to_client": true
+}

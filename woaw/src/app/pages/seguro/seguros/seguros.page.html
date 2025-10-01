@@ -45,13 +45,17 @@
 
 <ion-content [fullscreen]="true">
   <app-spinner *ngIf="mostrar_spinnet"></app-spinner>
-  <div class="fondo-diagonal"></div>
 
-  <div class="split-woaw-seguros" style="--left: 85%; --right: 15%; --gap: 1px;">
+  <div class="fondo-seguros">
+    <!-- <img src="/assets/autos/seg.png" alt=""> -->
+    <span class="fondo-seguros__overlay"></span>
+  </div>
+
+  <div class="split-woaw-seguros" style="--left: 80%; --right: 20%; --gap: 1px;">
 
     <div class="divicion1">
-      
-      <div class="progress">
+
+      <div class="progress" *ngIf="!quote">
         <div class="progress__bar" [style.width.%]="progress()"></div>
         <div class="progress__markers">
           <span *ngFor="let step of steps; let i = index" [style.left.%]="(100 / (steps.length - 1)) * i"
@@ -69,14 +73,13 @@
             <header class="cotiza__head">
               <span class="badge">Seguro de auto · Woaw</span>
               <h1>Cotiza tu seguro de auto</h1>
-              <p>En segundos</p>
             </header>
 
             <form [formGroup]="form">
 
               <div class="field" *ngIf="currentStep === 1">
                 <div class="marca-picker" role="listbox" aria-label="Selecciona una marca">
-                  <div class="marca-picker__label">Selecciona una marca</div>
+                  <!-- <div class="marca-picker__label">Selecciona una marca</div> -->
 
                   <div class="marca-picker__search">
                     <ion-searchbar placeholder="Buscar marca…" [debounce]="150"
@@ -101,7 +104,7 @@
               </div>
 
               <div class="field" *ngIf="currentStep === 2">
-                <label for="modelo">Selecciona el modelo</label>
+                <label for="modelo">Selecciona el modelo <span>*</span> </label>
                 <div class="control control--select">
                   <ion-select #lista class="sync-pop" formControlName="modelo" interface="popover" aria-label="Modelo"
                     [interfaceOptions]="{ cssClass: 'select-popover pop-modelo', side: 'bottom', alignment: 'start' }"
@@ -115,7 +118,7 @@
               </div>
 
               <div class="field" *ngIf="currentStep === 3">
-                <label for="anio">Selecciona el año</label>
+                <label for="anio">Selecciona el año <span>*</span></label>
                 <div class="control control--select">
 
                   <ion-select #lista class="sync-pop" formControlName="anio" interface="popover"
@@ -132,7 +135,7 @@
               </div>
 
               <div class="field" *ngIf="currentStep === 4">
-                <label for="version">Selecciona la versión</label>
+                <label for="version">Selecciona la versión <span>*</span></label>
                 <div class="control control--select">
 
                   <ion-select #lista class="sync-pop" formControlName="version" interface="popover"
@@ -149,7 +152,7 @@
               </div>
 
               <div class="field" *ngIf="currentStep === 5">
-                <label>Fecha de nacimiento</label>
+                <label>Fecha de nacimiento <span>*</span></label>
 
                 <div class="fecha-flex">
                   <div class="control control--select">
@@ -197,13 +200,13 @@
 
               <div class="field" *ngIf="currentStep === 6">
 
-                <label for="cp">Código Postal</label>
+                <label for="cp">Código Postal <span>*</span></label>
                 <div class="control">
                   <input id="cp" type="text" class="form-input" maxlength="5" placeholder="Ej. 76000"
                     formControlName="cp" />
                 </div>
 
-                <label for="genero" style="margin-top:12px;">Género</label>
+                <label for="genero" style="margin-top:12px;">Género <span>*</span></label>
                 <div class="control control--select">
 
                   <ion-select #lista class="sync-pop" formControlName="genero" interface="popover"
@@ -218,7 +221,7 @@
                   </ion-select>
                 </div>
 
-                <label for="estadoCivil" style="margin-top:12px;">Estado civil</label>
+                <label for="estadoCivil" style="margin-top:12px;">Estado civil <span>*</span></label>
                 <div class="control control--select">
                   <ion-select formControlName="estadoCivil" interface="popover" placeholder="Selecciona..."
                     aria-label="Estado civil"
@@ -234,7 +237,7 @@
               </div>
 
               <div class="field" *ngIf="currentStep === 7">
-                <label>Verifica tu información</label>
+                <label>Verifica tu información <span>*</span></label>
 
                 <div class="summary">
                   <div class="summary__row">
@@ -283,122 +286,128 @@
           </section>
 
         </div>
-      </div>
-
-      <div class="cotizacion_carta">
-
-        <section class="cotizacion_carta__card">
-          <ng-container *ngIf="quote as q">
-            <h2>Resultado de tu cotización</h2>
-
-            <div class="msj_success">
-              <div class="circle">
-                <span class="ring"></span>
-                <img src="/assets/img/check.png" alt="check" class="check" />
-              </div>
-            </div>
-
-            <div class="quote-head">
-
-              <div class="quote-summary">
-                <div class="qs__row">
-                  <span class="k">Vehículo</span>
-                  <span class="v">
-                    {{ q.vehicle?.brand?.name | titlecase }}
-                    {{ q.vehicle?.model?.name | titlecase }}
-                    {{ q.vehicle?.year?.name }} ·
-                    {{ q.vehicle?.version?.name | titlecase }}
-                  </span>
-                </div>
-
-                <div class="qs__row">
-                  <span class="k">Ubicación</span>
-                  <span class="v">CP {{ q.region?.postal_code }} · {{ q.region?.state?.name }}</span>
-                </div>
-
-                <div class="qs__row" *ngIf="q.duration">
-                  <span class="k">Duración</span>
-                  <span class="v">{{ q.duration }} meses</span>
-                </div>
-
-                <div class="qs__row" *ngIf="q.coupon">
-                  <span class="k">Cupón</span>
-                  <span class="v">{{ q.coupon }}</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="planes" *ngIf="q.plans?.length">
-              <section class="plan" *ngFor="let p of q.plans; let i = index">
-                <div class="paybox">
-
-                  <div class="">
-                    <ion-select [(ngModel)]="selectedPaymentByPlan[p.id]"
-                      (ngModelChange)="onSelectPayment(p.id, p)" interface="popover"
-                      placeholder="Elige un plan de pago..." aria-label="Plan de pago" class="pay-select">
-                      <ion-select-option *ngFor="let opt of p.payment_plans; trackBy: trackByPayment" [value]="opt.id">
-                        {{ paymentPlanLabel(opt) }} — {{ fmtMoney(opt.total) }}
-                      </ion-select-option>
-                    </ion-select>
-                  </div>
-
-                  <div class="paybox__pricecard" *ngIf="getSelectedPayment(p) as sel">
-                    <ng-container *ngIf="paymentSummary(sel) as s">
-                      <div class="pricecard__row" *ngIf="s.variable">
-                        <span class="k">1er pago</span>
-                        <span class="v">{{ fmtMoney(s.first) }}</span>
-                      </div>
-                      <div class="pricecard__row" *ngIf="s.variable && s.restCount > 0">
-                        <span class="k">{{ s.restCount }} pagos de</span>
-                        <span class="v">{{ fmtMoney(s.rest) }}</span>
-                      </div>
-
-                      <div class="pricecard__row" *ngIf="!s.variable && !s.isOneShot">
-                        <span class="k">{{ s.count }} pagos de</span>
-                        <span class="v">{{ fmtMoney(s.per) }}</span>
-                      </div>
-
-                      <div class="pricecard__row" *ngIf="s.isOneShot">
-                        <span class="k">Pago único</span>
-                        <span class="v">{{ fmtMoney(s.total) }}</span>
-                      </div>
-
-                      <div class="pricecard__divider"></div>
-                      <div class="pricecard__row is-total">
-                        <span class="k">Total a pagar</span>
-                        <span class="v">{{ fmtMoney(s.total) }}</span>
-                      </div>
-                    </ng-container>
-                  </div>
-
-                  <div class="paybox__cta">
-                    <button type="button" class="btn-secondary" (click)="nuevoSeguro()">Cotizar nuevo &#8635;</button>
-                    <button type="button" class="btn-primary" (click)="confirmarCrearPersona()">Continuar
-                      &#x27A1;</button>
-                  </div>
-                </div>
-              </section>
-            </div>
-
-          </ng-container>
-        </section>
-
-        <section class="paybox-info" *ngIf="activePlan && getPlanCoverages(activePlan) as covs">
-          <h4 class="paybox-info__title">Coberturas incluidas</h4>
-          <ul class="benefits">
-            <li class="benefit" *ngFor="let c of covs; trackBy: trackByCov">
-              <span class="k">{{ c.label }}</span>
-              <span class="v">
-                <ng-container *ngIf="c.amountText; else included">{{ c.amountText }}</ng-container>
-                <ng-template #included>Incluida</ng-template>
-                <ng-container *ngIf="c.deductible != null"> · Deducible {{ (c.deductible * 100) | number:'1.0-0'
-                  }}%</ng-container>
-              </span>
-            </li>
-          </ul>
-        </section>
 
       </div>
+
+      <section class="quote-pro" *ngIf="quote as q">
+
+        <!-- Topbar con estado -->
+        <header class="qp-head">
+          <div class="qp-head__title">
+            <h1>Tu cotización está lista</h1>
+            <p>Revisa el detalle y continúa con la contratación.</p>
+          </div>
+          <div class="qp-head__ok" aria-label="Cotización válida">
+            <span class="ring"></span>
+            <img src="/assets/img/check.png" alt="ok">
+          </div>
+        </header>
+
+        <!-- Faja de resumen (chips) -->
+        <section class="qp-badgebar">
+          <span class="chip">
+            {{ q.vehicle?.brand?.name | titlecase }}
+            {{ q.vehicle?.model?.name | titlecase }}
+            {{ q.vehicle?.year?.name }}
+          </span>
+          <span class="chip alt" *ngIf="q.vehicle?.version?.name as ver">{{ ver | titlecase }}</span>
+          <span class="chip">CP {{ q.region?.postal_code }}</span>
+          <span class="chip" *ngIf="q.region?.state?.name">{{ q.region?.state?.name }}</span>
+          <span class="chip alt" *ngIf="q.duration">{{ q.duration }} meses</span>
+          <span class="chip ok" *ngIf="q.coupon">Cupón: {{ q.coupon }}</span>
+        </section>
+
+        <!-- Grid principal -->
+        <section class="qp-grid">
+
+          <div class="qp-left" *ngIf="q.plans?.length">
+
+            <article class="qp-amount" *ngIf="q.plans[0] as p">
+              <header>
+                <h2>Monto estimado</h2>
+                <small>Plan seleccionado</small>
+              </header>
+
+              <div class="price" *ngIf="getSelectedPayment(p) as sel">
+                <ng-container *ngIf="paymentSummary(sel) as s">
+                  <div class="price__total">{{ fmtMoney(s.total) }}</div>
+                  <div class="price__note" *ngIf="s.isOneShot">Pago único</div>
+                  <div class="price__note" *ngIf="!s.isOneShot && s.variable">1er pago {{ fmtMoney(s.first) }} · {{
+                    s.restCount }} pagos de {{ fmtMoney(s.rest) }}</div>
+                  <div class="price__note" *ngIf="!s.isOneShot && !s.variable">{{ s.count }} pagos de {{ fmtMoney(s.per)
+                    }}</div>
+                </ng-container>
+              </div>
+
+              <div class="divider"></div>
+
+              <!-- Selector de plan -->
+              <div class="plan-picker">
+                <label for="paySel">Plan de pago</label>
+                <ion-select id="paySel" class="pay__select" [(ngModel)]="selectedPaymentByPlan[p.id]"
+                  (ionChange)="onSelectPayment(p.id)" interface="popover" placeholder="Elige un plan…"
+                  aria-label="Plan de pago">
+                  <ion-select-option *ngFor="let opt of p.payment_plans; trackBy: trackByPayment" [value]="opt.id">
+                    {{ paymentPlanLabel(opt) }} — {{ fmtMoney(opt.total) }}
+                  </ion-select-option>
+                </ion-select>
+              </div>
+
+              <!-- Desglose compacto -->
+              <ul class="breakdown" *ngIf="getSelectedPayment(p) as sel2">
+                <ng-container *ngIf="paymentSummary(sel2) as s2">
+                  <li>
+                    <span>Subtotal</span><b>{{ fmtMoney(s2.total) }}</b>
+                  </li>
+                  <li class="muted">
+                    <span>Comisión emisión</span><b>Incluida</b>
+                  </li>
+                  <li class="muted">
+                    <span>IVA</span><b>Incluido</b>
+                  </li>
+                </ng-container>
+              </ul>
+            </article>
+
+            <!-- CTA card -->
+            <article class="qp-cta">
+              <button type="button" class="btn ghost" (click)="nuevoSeguro()">Cotizar nuevo ↻</button>
+              <button type="button" class="btn prime" (click)="confirmarCrearPersona()">Continuar ➜</button>
+              <p class="disclaimer">Al continuar aceptas revisar términos de la póliza en el paso siguiente.</p>
+            </article>
+
+          </div>
+
+          <!-- Columna derecha: coberturas -->
+          <aside class="qp-right" *ngIf="activePlan && getPlanCoverages(activePlan) as covs">
+
+            <header class="qp-right__head">
+              <h3>Coberturas incluidas</h3>
+              <span class="tiny-pill">Paquete recomendado</span>
+            </header>
+
+            <ul class="cov-list">
+              <li class="cov-row" *ngFor="let c of covs; trackBy: trackByCov">
+                <div class="left">
+                  <span class="label">{{ c.label }}</span>
+                </div>
+                <div class="right">
+                  <span class="val" *ngIf="c.amountText; else incT">{{ c.amountText }}</span>
+                  <ng-template #incT><span class="val inc">Incluida</span></ng-template>
+                  <span class="ded" *ngIf="c.deductible != null">· Deducible {{ (c.deductible * 100) | number:'1.0-0'
+                    }}%</span>
+                </div>
+              </li>
+            </ul>
+
+            <footer class="qp-right__foot">
+              <!-- <p>Pueden variar según validaciones finales del asegurador.</p> -->
+            </footer>
+          </aside>
+
+        </section>
+
+      </section>
 
       <!-- <app-dynamic-island [refreshKey]="islandKey"></app-dynamic-island> -->
 

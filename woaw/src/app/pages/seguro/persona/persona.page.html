@@ -3,9 +3,13 @@
 
 <ion-content [fullscreen]="true">
   <app-spinner *ngIf="mostrar_spinnet"></app-spinner>
-  <div class="fondo-diagonal"></div>
+  
+  <div class="fondo-seguros">
+    <!-- <img src="/assets/autos/seg.png" alt=""> -->
+    <span class="fondo-seguros__overlay"></span>
+  </div>
 
-  <div class="split-woaw-seguros" style="--left: 85%; --right: 15%; --gap: 1px;">
+  <div class="split-woaw-seguros" style="--left: 80%; --right: 20%; --gap: 1px;">
 
     <div class="divicion1">
       <div class="poliza">
@@ -319,7 +323,7 @@
                 Regresar
               </button>
               <button type="submit" class="btn-primary" *ngIf="datosCoche">Siguiente &#x27A1;</button>
-              <button type="button" class="btn-primary" *ngIf="!datosCoche">&#x2B05; Selecionar coche</button>
+              <button type="button" class="btn-primary" (click)="regresar()" *ngIf="!datosCoche">&#x2B05; Selecionar coche</button>
             </div>
 
             <div class="carta_msj">
