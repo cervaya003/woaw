@@ -23,6 +23,7 @@ export class PolizaPage implements OnInit {
   mostrar_spinnet = false;
   currentStepform: 1 | 2 | 3 | 4 = 1;
   form_poliza: FormGroup;
+  private branchId = 'ded09658-50cd-4637-8390-31a8f39fe9a1';
 
   datosCoche: any = null;
   datosUsuario: any = null;
@@ -31,6 +32,10 @@ export class PolizaPage implements OnInit {
   polizaCreada: boolean = false;
   datosPolizaCreada: any = null;
   email: any = null;
+
+  miPlan: string = '';
+  fmtMoney(v: number | null | undefined) { return v == null ? '—' : (v as number).toLocaleString('es-MX', { style: 'currency', currency: 'MXN' }); }
+  selectedPaymentId: string | null = null;
 
   islandKey = 0;
 
@@ -72,11 +77,12 @@ export class PolizaPage implements OnInit {
         '',
         [
           Validators.required,
-          this.placasMxValidator
+          // this.placasMxValidator
         ]
       ],
       color: ['', Validators.required],
-      correos: this.fb.array([], [this.duplicatedEmailsValidator])
+      correos: this.fb.array([], [this.duplicatedEmailsValidator]),
+      pago: ['', Validators.required],
     });
 
     this.form_poliza.get('vin')!.valueChanges.subscribe(v => {
@@ -87,18 +93,18 @@ export class PolizaPage implements OnInit {
       if (norm !== v) this.form_poliza.get('vin')!.setValue(norm, { emitEvent: false });
     });
 
-    this.form_poliza.get('placas')!.valueChanges.subscribe(v => {
-      const norm = String(v || '')
-        .toUpperCase()
-        .replace(/[^A-Z0-9]/g, '')
-        .slice(0, 7);
-      if (norm !== v) this.form_poliza.get('placas')!.setValue(norm, { emitEvent: false });
-    });
+    // this.form_poliza.get('placas')!.valueChanges.subscribe(v => {
+    //   const norm = String(v || '')
+    //     .toUpperCase()
+    //     .replace(/[^A-Z0-9]/g, '')
+    //     .slice(0, 7);
+    //   if (norm !== v) this.form_poliza.get('placas')!.setValue(norm, { emitEvent: false });
+    // });
   }
 
   ngOnInit() {
-    const nav = this.router.getCurrentNavigation();
     this.mostrarPresouestaPoliza();
+    this.getPosition();
   }
   // ====== Correos dinámicos ======
   get correos(): FormArray<FormControl<string | null>> {
@@ -152,11 +158,11 @@ export class PolizaPage implements OnInit {
       return;
     }
     this.mostrarPresouestaPoliza();
-
-    // console.log(this.datoscotizacion)
-    // const rfc = this.datosUsuario?.person?.rfc;
     const rfc = this.UsuarioRespuesta.response.rfc;
     const id = this.datoscotizacion.id;
+
+    const pos = this.getPosition();
+    const idPlanEspesifico = this.datoscotizacion.plans?.[0].payment_plans?.[pos].id;
     const idPlan = this.datoscotizacion.plans[0]?.id;
 
     // const start_date = new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
@@ -180,20 +186,29 @@ export class PolizaPage implements OnInit {
       },
       quotation: {
         id: id,
-        plan_id: idPlan
+        plan_id: idPlan,
+        payment_plan_id: idPlanEspesifico,
       },
       // preferred_beneficiary: true,
+      branch_id: this.branchId,
       receivers,
       start_date,
       use_crabi_checkout: true,
       send_mail_to_client: true,
       send_whatsapp_to_client: true
     };
-    this.enviarDatosCrearPersona(payload);
-    localStorage.setItem('datosPolizaVin', JSON.stringify(payload));
+
+    this.generalService.confirmarAccion(
+      `${this.miPlan}`,
+      'Crear tu póliza',
+      async () => {
+        localStorage.setItem('datosPolizaVin', JSON.stringify(payload));
+        this.crearPoliza(payload);
+      }
+    );
     // console.log('Payload de la póliza:', payload);
   }
-  enviarDatosCrearPersona(payload: any) {
+  private crearPoliza(payload: any) {
     this.mostrar_spinnet = true;
     this.seguros.crearPoliza(payload).subscribe({
       next: (data) => {
@@ -213,8 +228,13 @@ export class PolizaPage implements OnInit {
       error: (error) => {
         this.mostrar_spinnet = false;
         console.error('Error al crear la póliza:', error);
+
+        let mensaje = error?.error?.error || 'Ocurrió un error al crear la póliza. Intenta nuevamente más tarde.';
+
+        mensaje = mensaje.replace(/\(\d+\/\d+\)/g, '').trim();
+
         this.generalService.alert(
-          'Ocurrió un error al crear la póliza. Intenta nuevamente más tarde.',
+          mensaje,
           'Error',
           'danger'
         );
@@ -246,7 +266,6 @@ export class PolizaPage implements OnInit {
       const cotizacion = localStorage.getItem('cotizacion');
       if (cotizacion) {
         this.datoscotizacion = JSON.parse(cotizacion);
-        // console.log('Cotización cargada:', this.datoscotizacion);
       } else {
         this.datoscotizacion = null;
         this.router.navigate(['/seguros']);
@@ -266,7 +285,7 @@ export class PolizaPage implements OnInit {
         this.datosCoche = null;
         this.router.navigate(['/seguros']);
         this.generalService.alert(
-          'Debes de cotizar un aut antes de continuar.',
+          'Debes de cotizar un auto antes de continuar.',
           'Atención',
           'warning'
         );
@@ -291,6 +310,8 @@ export class PolizaPage implements OnInit {
     }
   }
   realizarPago() {
+    console.log(this.datosPolizaCreada)
+
     if (!this.datosPolizaCreada?.response?.policies?.length) {
       console.error('No hay pólizas en la respuesta');
       return;
@@ -369,6 +390,8 @@ export class PolizaPage implements OnInit {
       '¿Estás seguro en cotizar un nuevo coche?',
       'Salir de proceso',
       async () => {
+        localStorage.removeItem('datosCoche');
+        localStorage.removeItem('cotizacion');
         localStorage.removeItem('datosPolizaVin_Respuesta');
         localStorage.removeItem('datosPolizaVin');
         this.polizaCreada = false;
@@ -401,19 +424,67 @@ export class PolizaPage implements OnInit {
       this.form_poliza.get('placas')?.setValue(norm);
     }
   }
-  private placasMxValidator = (ctrl: AbstractControl) => {
-    const raw = String(ctrl.value || '')
-      .toUpperCase()
-      .replace(/[^A-Z0-9]/g, ''); 
-    if (!raw) return { required: true };
+  // private placasMxValidator = (ctrl: AbstractControl) => {
+  //   const raw = String(ctrl.value || '')
+  //     .toUpperCase()
+  //     .replace(/[^A-Z0-9]/g, '');
+  //   if (!raw) return { required: true };
 
-    const patterns = [
-      /^[A-Z]{3}\d{4}$/,    
-      /^[A-Z]{3}\d{3}[A-Z]$/, 
-      /^[A-Z]{3}\d[A-Z]\d{2}$/ 
-    ];
+  //   const patterns = [
+  //     /^[A-Z]{3}\d{4}$/,
+  //     /^[A-Z]{3}\d{3}[A-Z]$/,
+  //     /^[A-Z]{3}\d[A-Z]\d{2}$/
+  //   ];
 
-    const ok = raw.length === 7 && patterns.some(r => r.test(raw));
-    return ok ? null : { placaFormato: true };
-  };
+  //   const ok = raw.length === 7 && patterns.some(r => r.test(raw));
+  //   return ok ? null : { placaFormato: true };
+  // };
+
+
+  // 1) ÚNICO switch centralizado
+  private formatPaymentLabel(rawName: string, count: number): string {
+    const raw = (rawName ?? '').toString().toUpperCase();
+    switch (raw) {
+      case 'ANNUAL': return 'Pago de contado';
+      case 'SUBSCRIPTION': return count > 1 ? `${count} pagos (suscripción)` : 'Suscripción';
+      case 'FLAT_FEE': return count > 1 ? `${count} pagos fijos` : 'Pago fijo';
+      default: return raw;
+    }
+  }
+  private getPosition(): number {
+    const posStr = localStorage.getItem('posicionSeleccionada');
+    const pos = Number(posStr);
+
+    const plan = this.datoscotizacion?.plans?.[0];
+    const paymentPlan = plan?.payment_plans?.[pos];
+
+    if (paymentPlan) {
+      const label = this.formatPaymentLabel(paymentPlan.name, paymentPlan.payments?.length ?? 1);
+      const total = this.fmtMoney(paymentPlan.total);
+      this.miPlan = `${label} — ${total}`;
+
+      this.selectedPaymentId = paymentPlan.id;
+    }
+
+    return pos;
+  }
+  paymentPlanLabel(pp: any): string {
+    const count = Array.isArray(pp?.payments) ? pp.payments.length : 1;
+    return this.formatPaymentLabel(pp?.name, count);
+  }
+  onSelectPayment(paymentPlanId: string) {
+    const arr = this.datoscotizacion?.plans?.[0]?.payment_plans;
+    if (!arr?.length) return;
+
+    const idx = arr.findIndex((pp: any) => pp.id === paymentPlanId);
+    if (idx >= 0) {
+      localStorage.setItem('posicionSeleccionada', String(idx));
+
+      const pp = arr[idx];
+      const label = this.formatPaymentLabel(pp?.name, Array.isArray(pp?.payments) ? pp.payments.length : 1);
+      this.miPlan = `${label} — ${this.fmtMoney(pp?.total)}`;
+    }
+  }
+
+
 }

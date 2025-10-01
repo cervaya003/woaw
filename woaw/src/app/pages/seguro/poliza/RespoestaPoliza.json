@@ -1,0 +1,40 @@
+{
+    "ok": true,
+    "source": "crabi",
+    "code": 200,
+    "response": {
+        "policies": [
+            {
+                "policy_number": "COXZ-1023111",
+                "policy_id": "d255c60e-dacc-44aa-b2eb-9853bb14a79b",
+                "policy_type": {
+                    "id": "b6bee0c5-15ae-4ad9-8f6e-c7a0ed021103"
+                },
+                "start_date": "2025-10-02T05:59:00Z",
+                "end_date": "2026-10-02T05:59:00Z"
+            },
+            {
+                "policy_number": "CO-1023111",
+                "policy_id": "3329b571-c6fa-4f34-bab2-3513278a118d",
+                "policy_type": {
+                    "id": "a64c55ab-03bb-4774-89e6-ad69d2362966"
+                },
+                "start_date": "2025-10-02T05:59:00Z",
+                "end_date": "2026-10-02T05:59:00Z"
+            }
+        ],
+        "description": "",
+        "vehicle_id": "5aae1b48-aea5-4fb2-a63a-1c3b27461753",
+        "files": [
+            {
+                "name": "invoice",
+                "url": "https://crabi-policy-files-qa.s3.us-east-1.amazonaws.com/CO-1023111/issue_docs/Recibo.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAV5V554BZ2XAV5CYR%2F20251001%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20251001T215032Z&X-Amz-Expires=1800&X-Amz-Signature=ae4c2395bdfb45acf14c2b9fdc8f35fefcb69101f03c18332c0f601436a6fdb7&X-Amz-SignedHeaders=host&response-content-disposition=inline&response-content-type=application%2Fpdf&x-amz-checksum-mode=ENABLED&x-id=GetObject"
+            },
+            {
+                "name": "cover",
+                "url": "https://crabi-policy-files-qa.s3.us-east-1.amazonaws.com/CO-1023111/issue_docs/Poliza.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAV5V554BZ2XAV5CYR%2F20251001%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20251001T215032Z&X-Amz-Expires=1800&X-Amz-Signature=5e0741e1da0d43758f16b9a9a6d2237745fa8e9b319e5cc1e19ba8cdb097a18c&X-Amz-SignedHeaders=host&response-content-disposition=inline&response-content-type=application%2Fpdf&x-amz-checksum-mode=ENABLED&x-id=GetObject"
+            }
+        ]
+    },
+    "status": "success"
+}

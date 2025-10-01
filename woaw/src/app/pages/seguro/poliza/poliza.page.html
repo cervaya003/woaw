@@ -2,34 +2,36 @@
 
 <ion-content [fullscreen]="true">
   <app-spinner *ngIf="mostrar_spinnet"></app-spinner>
+  
+  <div class="fondo-seguros">
+    <!-- <img src="/assets/autos/seg.png" alt=""> -->
+    <span class="fondo-seguros__overlay"></span>
+  </div>
 
-  <div class="fondo-diagonal"></div>
-
-  <div class="split-woaw-seguros" style="--left: 85%; --right: 15%; --gap: 1px;">
+  <div class="split-woaw-seguros" style="--left: 80%; --right: 20%; --gap: 1px;">
 
     <div class="divicion1">
       <div class="poliza">
         <section class="poliza__card">
 
-
           <ng-container *ngIf="!polizaCreada">
             <h1>Crear poliza</h1>
             <form [formGroup]="form_poliza" (ngSubmit)="siguiente()">
+
               <div class="field field-grid">
-                
                 <div>
                   <label for="vin">VIN del auto</label>
                   <div class="control">
-                    <input id="vin" type="text" class="form-input" placeholder="XX17XFSF" 
-                      formControlName="vin" maxlength="17" (input)="onVinInput($event)"/>
+                    <input id="vin" type="text" class="form-input" placeholder="XX17XFSF" formControlName="vin"
+                      maxlength="17" (input)="onVinInput($event)" />
                   </div>
                   <p *ngIf="analizaForm('vin')" class="error">El VIN es obligatorio</p>
                 </div>
                 <div>
                   <label for="placas">Placas del auto</label>
                   <div class="control">
-                    <input id="placas" type="text" class="form-input" placeholder="UQTWRBS" 
-                      formControlName="placas" maxlength="7" (input)="onPlacasInput($event)"/>
+                    <input id="placas" type="text" class="form-input" placeholder="UQTWRBS" formControlName="placas"
+                      maxlength="7" (input)="onPlacasInput($event)" />
                   </div>
                   <p *ngIf="analizaForm('placas')" class="error">Las placas son obligatorias</p>
                 </div>
@@ -48,6 +50,23 @@
                     El color es obligatorio
                   </p>
                 </div>
+
+                <div>
+                  <label for="color">Seleciona tu plan</label>
+                  <div class="control">
+                    <ion-select interface="popover" formControlName="pago" placeholder="Elige un plan de pago..." aria-label="Plan de pago"
+                      class="pay-select" [(ngModel)]="selectedPaymentId"
+                      (ionChange)="onSelectPayment($event.detail.value)">
+
+                      <ion-select-option *ngFor="let opt of datoscotizacion?.plans?.[0]?.payment_plans"
+                        [value]="opt.id">
+                        {{ paymentPlanLabel(opt) }} — {{ fmtMoney(opt.total) }}
+                      </ion-select-option>
+
+                    </ion-select>
+                  </div>
+                </div>
+
               </div>
 
               <!-- Correos dinámicos -->
@@ -140,4 +159,5 @@
     </div>
   </div>
 
+  <app-footer></app-footer>
 </ion-content>

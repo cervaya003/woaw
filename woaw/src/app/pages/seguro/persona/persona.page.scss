@@ -10,34 +10,34 @@
     --fondo2: rgba(176, 176, 176, 0);
 }
 
-.fondo-diagonal {
+.fondo-seguros {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+
     position: fixed;
     inset: 0;
-    background:
-        linear-gradient(120deg, rgba(0, 0, 0, 0.37) 0 100%, var(--fondo2) 0% 100%),
-        url("/assets/autos/seg1.png");
-    background-size: cover;
-    background-position: left;
-    background-repeat: no-repeat;
     z-index: -1;
-    pointer-events: none;
-    opacity: 1;
 
-    @media (max-width: 1220px) {
-        background:
-            linear-gradient(80deg, rgba(0, 0, 0, 0.37) 0 100%, var(--fondo2) 0% 100%),
-            url("/assets/autos/seg1.png");
-        background-size: cover;
-        background-position: left;
+    @media (max-width: 850px) {
+        height: 100%;
     }
 
-    @media (max-width: 820px) {
-        background:
-            linear-gradient(180deg, rgba(0, 0, 0, 0.37) 0 100%, var(--fondo2) 0% 100%),
-            url("/assets/autos/seg1.png");
-        background-size: cover;
-        background-position: left;
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: 50% 100%;
+        display: block;
     }
+
+    .fondo-seguros__overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(120deg, rgba(0, 0, 0, 0) 0 100%, #0b0d12 0 100%);
+        pointer-events: none;
+    }
+
 }
 
 .poliza {
@@ -53,17 +53,16 @@
     }
 
     .poliza__card {
-        background: rgba(215, 215, 215, 0.734);
+        background: rgba(239, 239, 239, 0.177);
         border-radius: 16px;
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.193);
         margin: 16px auto;
         box-sizing: border-box;
         backdrop-filter: blur(4.1px);
         -webkit-backdrop-filter: blur(4.1px);
-        border: 1px solid rgba(215, 215, 215, 0.3);
         overflow: hidden;
         // overflow: visible;
 
-        border-radius: 16px;
         padding: 20px;
         width: 100%;
         max-width: 800px;
@@ -91,11 +90,9 @@
             grid-column: 1 / -1;
         }
 
-        /* asegura mínimo 2 columnas */
         grid-template-columns: repeat(2, 1fr);
 
         @media (min-width: 900px) {
-            /* cuando hay más espacio, máximo 3 columnas */
             grid-template-columns: repeat(3, 1fr);
         }
     }
@@ -116,7 +113,7 @@
     label {
         display: block;
         font-size: 12px;
-        color: #dedede;
+        color: #363636;
         margin-bottom: 8px;
         letter-spacing: .2px;
 
@@ -127,68 +124,6 @@
         }
     }
 
-
-    .control {
-        width: 100%;
-        max-width: 100%;
-        overflow: hidden;
-
-        position: relative;
-        display: flex;
-        align-items: center;
-        border: 1px solid var(--line);
-        border-radius: 12px;
-        padding: 0 10px;
-        background: #fff;
-        transition: box-shadow .2s ease, border-color .2s ease;
-
-        height: clamp(46px, 5vh, 92px);
-
-        &:focus-within {
-            border-color: rgba(52, 165, 4, 0.558);
-        }
-
-        :is(input, select) {
-            flex: 1 1 auto;
-            min-width: 0;
-            width: 100%;
-            height: 44px;
-            line-height: 44px;
-            font-size: clamp(11px, 0.9vw, 14px);
-            color: #ae0000;
-            border: 0;
-            outline: none;
-            background: transparent;
-            padding: 0 34px 0 2px;
-            box-shadow: none;
-            appearance: none;
-        }
-
-        select {
-            cursor: pointer;
-        }
-
-        input::placeholder {
-            font-size: clamp(11px, 0.9vw, 14px);
-            color: #c2c2c2;
-            opacity: .9;
-        }
-
-        select option[disabled] {
-            color: #7c7c7c;
-        }
-
-        &:has(select)::after {
-            content: "▾";
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 14px;
-            color: #7c7c7c;
-            pointer-events: none;
-        }
-    }
 
     .summary {
         display: grid;
@@ -495,8 +430,7 @@ app-dynamic-island {
         width: 100%;
         display: grid;
         gap: 10px;
-        background: #0f1115;
-        border: 1px solid #232633;
+        border: 1px solid #6a6a6a4e;
         border-radius: 14px;
         padding: 16px;
         overflow: hidden;
@@ -507,7 +441,6 @@ app-dynamic-island {
             right: 10px;
             height: 34px;
             padding: 0 14px;
-            border: 1px solid #2a3242;
             border-radius: 999px;
             background: rgb(214, 0, 0);
             color: #e9ecf1;
@@ -549,7 +482,7 @@ app-dynamic-island {
 
             .value {
                 font-size: 10px;
-                color: #e9ecf1;
+                color: #000000;
                 white-space: normal;
                 word-break: break-word;
 
@@ -558,7 +491,7 @@ app-dynamic-island {
                     padding: 4px 10px;
                     border-radius: 999px;
                     background: #151a22;
-                    border: 1px solid #2a3242;
+                    color: #ffffff;
                     font-size: 12px;
                     line-height: 1;
                 }
@@ -580,6 +513,14 @@ app-dynamic-island {
     width: 100%;
     white-space: nowrap;
 
+    h1 {
+        margin: 0;
+        font-size: clamp(22px, 2.6vw, 30px);
+        font-weight: 900;
+        letter-spacing: 0.2px;
+        color: #0b0b0e;
+    }
+
     .search-box {
         display: flex;
         align-items: center;
@@ -587,8 +528,9 @@ app-dynamic-island {
 
         button {
             padding: 10px 14px;
-            background: #cecece;
+            background: transparent;
             border: none;
+            margin: 13px;
             border-radius: 6px;
             border: solid 1px #eb0a0a;
             color: #ff0000;
@@ -623,116 +565,108 @@ app-dynamic-island {
     padding: 12px 20px;
     display: grid;
     place-items: center;
-}
 
-.buscar_persona form {
-    box-sizing: border-box;
 
-    width: 100%;
-    max-width: 980px;
-    margin: 0 auto;
 
-    display: flex;
-    align-items: center;
-    flex-wrap: nowrap;
-    gap: 10px;
+    form {
+        box-sizing: border-box;
 
-    background: rgba(12, 12, 14, .9);
-    border: 1px solid rgba(255, 255, 255, .08);
-    border-radius: 999px;
-    padding: 10px 12px 10px 16px;
-    box-shadow: 0 10px 28px rgba(0, 0, 0, .40);
-    backdrop-filter: blur(6px);
-}
+        width: 100%;
+        max-width: 980px;
+        margin: 0 auto;
 
-.buscar_persona form input {
-    flex: 1 1 0;
-    min-width: 0;
-    max-width: 100%;
+        display: flex;
+        align-items: center;
+        flex-wrap: nowrap;
+        gap: 10px;
 
-    background: transparent;
-    border: 0;
-    outline: 0;
-    color: #f3f4f6;
-    font-size: 15px;
-    line-height: 1;
-    letter-spacing: .6px;
-    text-transform: uppercase;
-    padding: 8px 4px 6px;
-
-    box-shadow: inset 0 -2px 0 rgba(225, 19, 19, 0);
-    transition: box-shadow .15s ease;
-
-    &::placeholder {
-        color: #a8acb3;
-        font-size: 12px;
-        letter-spacing: .4px;
+        background: transparent;
+        border-radius: 999px;
+        border: 1px solid #87878763;
+        padding: 6px 12px 6px 16px;
+        backdrop-filter: blur(6px);
     }
 
-    &:focus {
-        box-shadow: inset 0 -2px 0 #e11313;
-    }
+    form input {
+        flex: 1 1 0;
+        min-width: 0;
+        max-width: 100%;
 
-    &.ng-invalid.ng-touched {
-        box-shadow: inset 0 -2px 0 #c62828;
-    }
-}
+        background: transparent;
+        border: 0;
+        outline: 0;
+        color: #000000;
+        font-size: 15px;
+        line-height: 1;
+        letter-spacing: .6px;
+        text-transform: uppercase;
+        padding: 8px 4px 6px;
 
-.buscar_persona form button {
-    flex: 0 0 112px;
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-
-    appearance: none;
-    border: 0;
-    border-radius: 999px;
-    padding: 10px 18px;
-    font-size: 14px;
-    font-weight: 800;
-    color: #fff;
-    background: #e11313;
-    box-shadow: 0 12px 26px rgba(225, 19, 19, .35);
-    cursor: pointer;
-    transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
-
-    &:hover {
-        transform: translateY(-1px);
-    }
-
-    &:active {
-        transform: translateY(0);
-        filter: brightness(.96);
-    }
-
-    &:disabled {
-        opacity: .6;
-        cursor: not-allowed;
-        box-shadow: none;
-    }
-}
-
-@media (max-width: 520px) {
-    .buscar_persona {
-        padding: 5px 5px;
-    }
-
-    .buscar_persona form {
-        width:100%;
-        padding: 8px 10px 8px 10px;
-    }
-
-    .buscar_persona form input {
-        font-size: 14px;
+        box-shadow: inset 0 -2px 0 rgba(225, 19, 19, 0);
+        transition: box-shadow .15s ease;
 
         &::placeholder {
-            font-size: 11px;
+            color: #bcbcbd;
+            font-size: 12px;
+            letter-spacing: .4px;
+        }
+
+
+    }
+
+    form button {
+        flex: 0 0 112px;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+
+        appearance: none;
+        border: 0;
+        border-radius: 999px;
+        padding: 10px 18px;
+        font-size: 14px;
+        font-weight: 800;
+        color: #fff;
+        background: #e11313;
+        cursor: pointer;
+        transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
+
+        &:hover {
+            transform: translateY(-1px);
+        }
+
+        &:active {
+            transform: translateY(0);
+            filter: brightness(.96);
+        }
+
+        &:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+            box-shadow: none;
         }
     }
 
-    .buscar_persona form button {
-        flex-basis: 98px;
-        padding: 8px 14px;
-        font-size: 13px;
+    @media (max-width: 520px) {
+        padding: 5px 5px;
+
+        form {
+            width: 100%;
+            padding: 8px 10px 8px 10px;
+        }
+
+        form input {
+            font-size: 14px;
+
+            &::placeholder {
+                font-size: 11px;
+            }
+        }
+
+        form button {
+            flex-basis: 98px;
+            padding: 8px 14px;
+            font-size: 13px;
+        }
     }
 }

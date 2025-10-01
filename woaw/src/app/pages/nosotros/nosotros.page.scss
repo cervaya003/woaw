@@ -57,7 +57,9 @@ ion-content {
       width: 100%;
       height: 100%;
       object-fit: cover;
+
       object-position: 50% 90%;
+
       filter: contrast(.9) brightness(.6);
     }
   }
@@ -127,7 +129,7 @@ ion-content {
 .phone-mock {
   position: absolute;
   right: clamp(12px, 6vw, 80px);
-  top: clamp(125px, 8vw, 99px);
+  top: clamp(125px, 20vw, 180px);
   margin: 0;
   transform: rotate(-0.2deg);
   filter: drop-shadow(0 26px 48px rgba(0,0,0,.45));
@@ -135,7 +137,7 @@ ion-content {
 
   img {
     display: block;
-    width: clamp(220px, 36vw, 330px);
+    width: clamp(220px, 36vw, 430px);
     height: auto;
   }
 
@@ -143,7 +145,7 @@ ion-content {
 }
 
 /* Desaparece en móviles */
-@media (max-width: 768px) {
+@media (max-width: 868px) {
   .phone-mock {
     display: none;
   }
