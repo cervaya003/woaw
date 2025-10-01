@@ -820,6 +820,8 @@ export class CamionComponent implements OnInit {
     formData.append("precio", String(this.precio));
     formData.append("moneda", this.moneda);
     formData.append("tipoVenta", this.estadoCamion);
+    formData.append('vehiculo', 'camion');            // 🔴 faltaba
+formData.append('estadoVehiculo', 'disponible');
 
     // Kilometraje para usados/seminuevos
     formData.append("kilometraje", String(this.kilometraje || 0));
