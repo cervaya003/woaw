@@ -67,6 +67,8 @@ interface Rental {
   standalone: false,
 })
 export class RentaFichaPage implements OnInit {
+  private readonly LOGIN_ROUTE = '/login';
+
   loading = true;
   rental: Rental | null = null;
   isLoggedIn = false;
@@ -254,7 +256,7 @@ export class RentaFichaPage implements OnInit {
     let fin = this.asLocalDateOnly(fechas[fechas.length - 1]);
     if (fin < inicio) [inicio, fin] = [fin, inicio];
 
-    const bg = '#4463efff';
+    const bg = 'var(--ion-color-danger)';
     const fg = '#ffffff';
 
     const cursor = new Date(inicio);
@@ -268,7 +270,6 @@ export class RentaFichaPage implements OnInit {
     }
   }
 
-  // (Si decides usar disponibilidad real, mantenlo; para estilizado no es necesario)
   esFechaHabil = (_isoDateString: string) => true;
 
   /* ================== Cálculo de total ================== */

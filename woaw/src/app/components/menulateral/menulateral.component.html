@@ -14,6 +14,7 @@
     <app-spinner *ngIf="mostrar_spinnet"></app-spinner>
     <ion-list>
       <!-- Servicios (para todos) -->
+
       <div
         class="menu-section"
         [class.expanded]="expandedSections.servicios"
@@ -79,6 +80,7 @@
       </div>
 
       <!-- Mis publicaciones (solo roles permitidos) -->
+
       <div
         *ngIf="isPublisher"
         class="menu-section"
@@ -92,6 +94,7 @@
           [name]="expandedSections.publicaciones ? 'chevron-up-outline' : 'chevron-down-outline'"
         ></ion-icon>
       </div>
+
 
       <div
         *ngIf="isPublisher"
@@ -152,6 +155,7 @@
         class="menu-items"
         [class.expanded]="expandedSections.configuracion"
       >
+
 
         <ion-item (click)="abrirModalPerfil()" button lines="none">
           <ion-icon name="person-outline" color="danger"></ion-icon>

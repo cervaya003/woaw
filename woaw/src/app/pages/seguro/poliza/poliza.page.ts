@@ -255,7 +255,7 @@ export class PolizaPage implements OnInit {
 
       this.polizaCreada = true;
       this.datosPolizaCreada = JSON.parse(cotizacionRespuestra);
-      console.log(this.datosPolizaCreada)
+      // console.log(this.datosPolizaCreada)
 
       const cotizacionRespuestrap = localStorage.getItem('datosPolizaVin');
 

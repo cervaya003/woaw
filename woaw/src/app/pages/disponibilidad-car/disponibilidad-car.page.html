@@ -156,7 +156,7 @@
     <!-- Guardar -->
     <ion-row>
       <ion-col size="12">
-        <ion-button expand="block" color="primary" (click)="guardar()"
+        <ion-button expand="block" color="dark" (click)="guardar()"
           [disabled]="!esPropietario || guardando || errores.length > 0 || !hasChanges">
           <ion-spinner *ngIf="guardando" name="crescent" style="margin-inline-end:8px"></ion-spinner>
           Guardar cambios

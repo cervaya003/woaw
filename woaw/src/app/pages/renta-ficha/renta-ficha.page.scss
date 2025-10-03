@@ -12,7 +12,7 @@
     .btn-regresar {
         background: transparent;
         border: 0;
-        color: #fff;
+        color: var(--ion-color-light);
         font-size: 18px;
     }
 
@@ -23,7 +23,7 @@
     }
 
     .titulo-perfil {
-        color: #fff;
+        color: var(--ion-color-light);
         font-weight: 600;
     }
 }
@@ -39,8 +39,8 @@
         width: 36px;
         height: 36px;
         border-radius: 50%;
-        border: 3px solid rgba(0, 0, 0, .1);
-        border-top-color: var(--ion-color-primary);
+        border: 3px solid rgba(255, 255, 255, .12);
+        border-top-color: var(--ion-color-danger);
         animation: spin 1s linear infinite;
         margin-bottom: 10px;
     }
@@ -111,11 +111,11 @@
 .contenedor_imagen_principal {
     border-radius: 12px;
     overflow: hidden;
-    background: #f6f7f8;
+    background: var(--ion-color-step-100, #1e1e1e);
+    /* oscuro suave */
     width: 100%;
     max-width: 100%;
     aspect-ratio: 16 / 9;
-    /* evita tarjetas larguísimas y huecos */
 }
 
 .imagen-principal {
@@ -128,9 +128,9 @@
     width: 100%;
     height: 100%;
     object-fit: contain;
-    /* vemos el auto completo */
     object-position: center;
     display: block;
+    background: var(--ion-color-step-150, #141416);
 }
 
 /* Flechas */
@@ -138,15 +138,22 @@
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    background: rgba(255, 255, 255, .95);
+    background: rgba(0, 0, 0, .65);
+    color: #fff;
     border: 0;
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, .12);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, .35);
     font-size: 20px;
     cursor: pointer;
+    transition: background .2s;
 
+    &:hover {
+        background: rgba(239, 68, 68, .9);
+    }
+
+    /* hover rojo */
     &.izquierda {
         left: 8px;
     }
@@ -173,36 +180,42 @@
         opacity: .7;
         cursor: pointer;
         transition: opacity .2s;
+        background: var(--ion-color-step-100, #1e1e1e);
 
         &:hover {
             opacity: .9;
         }
 
         &.activa {
-            outline: 2px solid var(--ion-color-primary);
+            outline: 2px solid var(--ion-color-danger);
             opacity: 1;
         }
     }
 }
 
 /* ====== Cards ====== */
-.card-info {
+/* Cartas BLANCAS con sombra limpia */
+ion-card,
+.card-info,
+.card-detalle {
     border-radius: 12px;
-    overflow: hidden;
-    background: #fff;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, .06);
+    background: #ffffff;
+    /* blanco */
+    color: #111;
+    /* texto oscuro */
+    box-shadow: 0 10px 28px rgba(0, 0, 0, .18);
+    border: 1px solid rgba(0, 0, 0, .06);
 }
 
 .card-detalle {
     border-radius: 14px;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, .06);
     padding: 14px;
-    background: #fff;
 
     h2 {
         font-size: 20px;
         font-weight: 800;
         margin-bottom: 8px;
+        color: #111;
     }
 }
 
@@ -217,13 +230,16 @@
         justify-content: space-between;
 
         span {
-            color: var(--ion-color-medium);
+            color: #6b7280;
         }
 
+        /* gris medio */
         strong {
             font-size: 18px;
-            color: #e53935;
+            color: var(--ion-color-danger);
         }
+
+        /* rojo */
     }
 }
 
@@ -234,7 +250,8 @@
     margin-bottom: 12px;
 
     ion-icon {
-        opacity: .3;
+        opacity: .4;
+        color: #111;
     }
 
     ion-icon.activa {
@@ -264,27 +281,27 @@
     }
 
     &.medium {
-        background: #607D8B;
+        background: #37474F;
     }
 
     &.primary {
-        background: var(--ion-color-primary);
+        background: var(--ion-color-danger);
     }
+
+    /* reservar en rojo */
 }
 
 .nota-legal {
     margin-top: 10px;
     font-size: 12px;
-    color: var(--ion-color-medium);
+    color: #6b7280;
 
     a {
-        color: var(--ion-color-primary);
+        color: var(--ion-color-danger);
         cursor: pointer;
+        text-decoration: underline;
+        text-underline-offset: 2px;
     }
-}
-
-ion-card {
-    border-radius: 12px;
 }
 
 .meta-list ion-item {
@@ -302,7 +319,7 @@ ion-card {
    =====  SOLO ESTILOS DEL CALENDARIO (renta-ficha)   ======
    ========================================================= */
 
-/* Centrado y padding del contenedor que envuelve al ion-datetime */
+/* Contenedor del ion-datetime */
 .ficha-auto ion-item.center-item {
     width: 100%;
     --padding-start: 0;
@@ -323,29 +340,60 @@ ion-card {
     justify-content: center;
 }
 
-/* Aro/sombra roja suave opcional cuando añadas la clase 'danger-datetime' al ion-item */
-.ficha-auto ion-item.danger-datetime ion-datetime {
-    box-shadow: 0 0 0 2px rgba(239, 68, 68, .15);
-    border-radius: 14px;
+/* Hacemos el calendario BLANCO y primario en ROJO */
+.ficha-auto ion-item.danger-datetime {
+    --background: transparent;
 }
 
-/* Apariencia del calendario */
+.ficha-auto ion-item.danger-datetime ion-datetime {
+    /* superficie blanca del calendario */
+    --background: #ffffff;
+    --background-rgb: 255, 255, 255;
+    --wheel-background: #ffffff;
+
+    /* texto oscuro */
+    --color: #111111;
+    --ion-text-color: #111111;
+
+    /* primario local en rojo (para selección interna del componente) */
+    --ion-color-primary: var(--ion-color-danger);
+    --ion-color-primary-rgb: 239, 68, 68;
+    /* #ef4444 */
+    --ion-color-primary-contrast: #ffffff;
+
+    border-radius: 14px;
+    box-shadow: 0 0 0 2px rgba(239, 68, 68, .15);
+}
+
+/* Fondo de las áreas internas también blanco */
+.ficha-auto ion-datetime ::part(calendar),
+.ficha-auto ion-datetime ::part(calendar-month) {
+    background: #ffffff;
+}
+
 /* Día normal */
 .ficha-auto ion-datetime ::part(calendar-day) {
     border-radius: 6px;
-    /* cuadradito */
     font-weight: 500;
+    color: #111111;
+    /* números oscuros */
 }
 
-/* Día seleccionado (si además lo seleccionas como valor) */
+/* Día seleccionado (valor/extremos) */
 .ficha-auto ion-datetime ::part(calendar-day-active) {
     background: var(--ion-color-danger);
-    color: #fff;
+    /* rojo */
+    color: #ffffff;
     border-radius: 6px;
-    /* que coincida con el highlight */
-    box-shadow: 0 0 0 2px rgba(0, 0, 0, .06);
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, .08);
 }
 
+/* Títulos internos del datetime */
+.ficha-auto ion-datetime ::part(calendar-month-year),
+.ficha-auto ion-datetime ::part(time-header),
+.ficha-auto ion-datetime ::part(title) {
+    color: #111111;
+}
 
 /* (opcional) helper de accesibilidad si ocultas el label visual */
 .sr-only {
