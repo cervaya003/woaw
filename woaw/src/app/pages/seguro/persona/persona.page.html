@@ -3,16 +3,21 @@
 
 <ion-content [fullscreen]="true">
   <app-spinner *ngIf="mostrar_spinnet"></app-spinner>
-  <div class="fondo-diagonal"></div>
 
-  <div class="split-woaw-seguros" style="--left: 85%; --right: 15%; --gap: 1px;">
+  <div class="fondo-seguros">
+    <img src="/assets/autos/seg1.webp" alt="">
+    <span class="fondo-seguros__overlay"></span>
+  </div>
+
+  <div class="split-woaw-seguros" style="--left: 80%; --right: 20%; --gap: 1px;">
 
     <div class="divicion1">
       <div class="poliza">
         <section class="poliza__card">
 
           <!-- Bloques de progreso -->
-          <div class="carta__steps" *ngIf="!statusUserDtos" role="group" aria-label="Progreso de cotización">
+          <div class="carta__steps" *ngIf="!statusUserDtos && !statusBuscar" role="group"
+            aria-label="Progreso de cotización">
             <div class="carta__step" [class.is-active]="currentStepform >= 1" aria-hidden="true"></div>
             <div class="carta__step" [class.is-active]="currentStepform >= 2" aria-hidden="true"></div>
             <div class="carta__step" [class.is-active]="currentStepform >= 3" aria-hidden="true"></div>
@@ -20,15 +25,25 @@
           </div>
 
           <div class="header-row">
-            <h1>Mis datos</h1>
+            <h1 *ngIf="!statusBuscar">Mis datos</h1>
+            <h1 *ngIf="statusBuscar">Ingresa RFC o Email</h1>
             <div class="search-box">
-              <button>Buscar persona</button>
+              <button *ngIf="!statusBuscar" (click)="buscarSeccion()">Buscar por RFC o Email<ion-icon
+                  name="search-outline"></ion-icon></button>
+              <button *ngIf="statusBuscar" (click)="buscarSeccion()">Cancelar &#x274C;</button>
             </div>
           </div>
 
-          <div class="contenedos_info" *ngIf="UsuarioRespuesta && statusUserDtos">
+          <div class="buscar_persona" *ngIf="statusBuscar">
+            <form [formGroup]="buscarForm" (ngSubmit)="onBuscar()">
+              <input type="text" formControlName="valuebuscar" placeholder="Ingresa RFC Gmail" />
+              <button type="submit" [disabled]="buscarForm.invalid">Buscar</button>
+            </form>
+          </div>
+
+          <div class="contenedos_info" *ngIf="UsuarioRespuesta && statusUserDtos && !statusBuscar">
             <div class="info-card">
-              <button type="button" class="edit-btn" aria-label="Editar" (click)="editarUser()">Editar &#x270F;</button>
+              <button type="button" class="edit-btn" aria-label="Editar" (click)="editarUser()">Nuevo &#43;</button>
               <div class="row">
                 <div class="label">Nombre</div>
                 <div class="value">
@@ -70,8 +85,8 @@
                 </div>
               </div>
               <div class="row">
-                <div class="label">CURP</div>
-                <div class="value mono">{{ UsuarioRespuesta.response.curp }}</div>
+                <div class="label">email</div>
+                <div class="value mono">{{ UsuarioRespuesta.response.email }}</div>
               </div>
               <div class="row">
                 <div class="label">RFC</div>
@@ -79,14 +94,14 @@
               </div>
             </div>
             <div class="paybox__cta">
-              <button type="button" class="btn-secondary" (click)="regresar()">&#x2B05;
+              <button type="button" class="btn-secondary" (click)="regresarInicio()">&#x2B05;
                 Regresar
               </button>
               <button type="button" class="btn-primary" (click)="nuevosDatos()">Continuar &#x27A1;</button>
             </div>
           </div>
 
-          <form *ngIf="!statusUserDtos" [formGroup]="form_poliza" (ngSubmit)="siguiente()">
+          <form *ngIf="!statusUserDtos && !statusBuscar" [formGroup]="form_poliza" (ngSubmit)="siguiente()">
 
             <!-- SECCION FORMULARIO 1  -->
             <div class="field_persona" *ngIf="currentStepform === 1">
@@ -138,8 +153,50 @@
               </table>
             </ng-container>
 
+
             <!-- SECCION FORMULARIO 2  -->
             <div class="field field-grid" *ngIf="currentStepform === 2">
+              <div>
+                <label for="telefono">Teléfono<span>*</span></label>
+                <div class="control">
+                  <input id="telefono" type="number" class="form-input" placeholder="Ej. 4412654387"
+                    formControlName="telefono" />
+                </div>
+                <p *ngIf="analizaForm('telefono')" class="error">Ingresa tu número</p>
+              </div>
+              <div>
+                <label for="calle">calle<span>*</span></label>
+                <div class="control">
+                  <input id="calle" type="text" class="form-input" placeholder="Av. bulevares"
+                    formControlName="calle" />
+                </div>
+                <p *ngIf="analizaForm('calle')" class="error">Ingresa tu calle</p>
+              </div>
+              <div>
+                <label for="ext">Num. Exterior<span>*</span></label>
+                <div class="control">
+                  <input id="ext" type="text" class="form-input" placeholder="Ext" formControlName="ext" />
+                </div>
+                <p *ngIf="analizaForm('int')" class="error">Ingresa tu número exterior</p>
+              </div>
+              <div>
+                <label for="int">Num. Interior<span>*</span></label>
+                <div class="control">
+                  <input id="int" type="text" class="form-input" placeholder="Int" formControlName="int" />
+                </div>
+                <p *ngIf="analizaForm('int')" class="error">Ingresa tu número interior</p>
+              </div>
+              <div>
+                <label for="col">Colonia<span>*</span></label>
+                <div class="control">
+                  <input id="col" type="text" class="form-input" placeholder="Colonia" formControlName="col" />
+                </div>
+                <p *ngIf="analizaForm('col')" class="error">Ingresa tu Colonia</p>
+              </div>
+            </div>
+            <!-- SECCION FORMULARIO 3  -->
+            <div class="field field-grid" *ngIf="currentStepform === 3">
+
               <div>
                 <label *ngIf="tipoPersonaSeleccionada === 'fisica'" for="nombre">Nombre completo <span>*</span></label>
                 <label *ngIf="tipoPersonaSeleccionada === 'moral'" for="nombre">Nombre de la
@@ -198,7 +255,6 @@
                 </div>
                 <p *ngIf="analizaForm('folio')" class="error">Ingresa tu folio mercantil</p>
               </div>
-
               <div *ngIf="tipoPersonaSeleccionada === 'moral'">
                 <label for="nmRepLegal">Nombre representante legal<span>*</span></label>
                 <div class="control">
@@ -206,49 +262,6 @@
                     formControlName="nmRepLegal" (input)="toUpper('nmRepLegal')" />
                 </div>
                 <p *ngIf="analizaForm('nmRepLegal')" class="error">Ingresa tu folio mercantil</p>
-              </div>
-
-            </div>
-
-            <!-- SECCION FORMULARIO 3  -->
-            <div class="field field-grid" *ngIf="currentStepform === 3">
-
-              <div>
-                <label for="telefono">Teléfono<span>*</span></label>
-                <div class="control">
-                  <input id="telefono" type="number" class="form-input" placeholder="Ej. 4412654387"
-                    formControlName="telefono" />
-                </div>
-                <p *ngIf="analizaForm('telefono')" class="error">Ingresa tu número</p>
-              </div>
-              <div>
-                <label for="calle">calle<span>*</span></label>
-                <div class="control">
-                  <input id="calle" type="text" class="form-input" placeholder="Av. bulevares"
-                    formControlName="calle" />
-                </div>
-                <p *ngIf="analizaForm('calle')" class="error">Ingresa tu calle</p>
-              </div>
-              <div>
-                <label for="int">Num. Interior<span>*</span></label>
-                <div class="control">
-                  <input id="int" type="text" class="form-input" placeholder="Int" formControlName="int" />
-                </div>
-                <p *ngIf="analizaForm('int')" class="error">Ingresa tu número interior</p>
-              </div>
-              <div>
-                <label for="ext">Num. Exterior<span>*</span></label>
-                <div class="control">
-                  <input id="ext" type="text" class="form-input" placeholder="Ext" formControlName="ext" />
-                </div>
-                <p *ngIf="analizaForm('int')" class="error">Ingresa tu número exterior</p>
-              </div>
-              <div>
-                <label for="col">Colonia<span>*</span></label>
-                <div class="control">
-                  <input id="col" type="text" class="form-input" placeholder="Colonia" formControlName="col" />
-                </div>
-                <p *ngIf="analizaForm('col')" class="error">Ingresa tu Colonia</p>
               </div>
 
             </div>
@@ -308,7 +321,8 @@
                 Regresar
               </button>
               <button type="submit" class="btn-primary" *ngIf="datosCoche">Siguiente &#x27A1;</button>
-              <button type="button" class="btn-primary" *ngIf="!datosCoche">&#x2B05; Selecionar coche</button>
+              <button type="button" class="btn-primary" (click)="regresar()" *ngIf="!datosCoche">&#x2B05; Selecionar
+                coche</button>
             </div>
 
             <div class="carta_msj">
@@ -327,11 +341,11 @@
         </section>
       </div>
 
-      <app-dynamic-island [refreshKey]="islandKey"></app-dynamic-island>
+      <!-- <app-dynamic-island [refreshKey]="islandKey"></app-dynamic-island> -->
     </div>
 
     <div class="divicion2">
-      <app-otros-seguros></app-otros-seguros>
+      <app-otros-seguros [refreshKey]="islandKey"></app-otros-seguros>
     </div>
   </div>
 

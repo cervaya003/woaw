@@ -46,7 +46,9 @@
         </div>
 
         <!-- Banner de sólo lectura -->
+
         <ion-item class="solo-lectura" lines="none" *ngIf="soloLectura">
+
           <ion-icon name="eye-outline" slot="start"></ion-icon>
           <ion-label>
             Vista de sólo lectura
@@ -85,7 +87,7 @@
           </ion-textarea>
         </div>
 
-        <!-- Fotos guardadas -->
+
         <div class="bloque">
           <div class="bloque-head">
             <div class="titulo">Fotos guardadas</div>
@@ -100,6 +102,7 @@
           <div class="grid-preview" *ngIf="existingUrls?.length">
             <div class="preview-item" *ngFor="let url of existingUrls; let i = index; trackBy: trackByUrl">
               <ion-img [src]="url" alt="foto guardada"></ion-img>
+
             </div>
           </div>
         </div>
@@ -110,6 +113,7 @@
             <div class="titulo">Agregar fotos</div>
             <div class="hint">Hasta 12 imágenes</div>
           </div>
+
 
           <div class="uploader">
             <input #fileInput type="file" accept="image/*" capture="environment" multiple hidden
@@ -124,6 +128,7 @@
               <ion-icon slot="start" name="camera-outline"></ion-icon>
               Tomar foto
             </ion-button>
+
 
             <span class="uploader-info" *ngIf="files?.length">{{ files.length }} seleccionadas</span>
             <span class="uploader-info" *ngIf="!files?.length">Sin archivos seleccionados</span>
@@ -148,12 +153,14 @@
 
       <!-- Acciones -->
       <div class="ck-actions">
+
         <ion-button *ngIf="soloLectura" expand="block" fill="clear" (click)="continuar()">
+
           VOLVER
         </ion-button>
 
         <ng-container *ngIf="!soloLectura">
-          <!-- Eliminado el botón de SUBIR SOLO FOTOS NUEVAS -->
+
           <ion-button color="success" expand="block" [disabled]="loading.finalizar || loading.fotos || loading.booking"
             (click)="guardarYFinalizar()">
             <ion-spinner *ngIf="loading.finalizar" name="dots"></ion-spinner>
@@ -165,4 +172,4 @@
       </div>
     </ion-card>
   </ng-container>
-</ion-content>
+

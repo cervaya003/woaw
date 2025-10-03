@@ -63,6 +63,7 @@
             <div class="valor">{{ combustible }}%</div>
           </div>
           <ion-range min="0" max="100" step="1" [(ngModel)]="combustible" [pin]="true" [snaps]="true" [ticks]="false"
+
             [disabled]="soloLectura" aria-label="Nivel de combustible" class="ck-range">
 
             <ion-icon size="small" slot="start" name="ellipse-outline"></ion-icon>
@@ -98,6 +99,7 @@
             <div class="preview-item" *ngFor="let url of existingUrls; let i = index; trackBy: trackByUrl">
               <ion-img [src]="url" alt="foto guardada"></ion-img>
 
+
               <ion-button *ngIf="!soloLectura" fill="clear" size="small" class="btn-del"
                 (click)="quitarFotoExistente(i)" aria-label="Eliminar foto guardada">
                 <ion-icon name="trash-outline"></ion-icon>
@@ -105,6 +107,7 @@
             </div>
           </div>
         </div>
+
 
         <div class="bloque" *ngIf="!soloLectura">
           <div class="bloque-head">
@@ -149,13 +152,16 @@
         </div>
       </ion-card-content>
 
+
       <div class="ck-actions">
+
         <ion-button *ngIf="soloLectura" expand="block" fill="solid" (click)="continuar()">
           VOLVER
         </ion-button>
 
         <ng-container *ngIf="!soloLectura">
           <ion-button expand="block" fill="solid" size="default"
+
             [disabled]="loading.booking || loading.guardar || loading.fotos || !!fileError || !hayCambios"
             (click)="guardarYSalir()">
             <ion-spinner *ngIf="loading.guardar || loading.fotos" name="dots"></ion-spinner>

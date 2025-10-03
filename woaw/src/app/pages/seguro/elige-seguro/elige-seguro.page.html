@@ -1,0 +1,35 @@
+<app-navbar></app-navbar>
+
+<ion-content [fullscreen]="true">
+
+  <div class="hero">
+    <img src="/assets/autos/seg1.webp" alt="Seguro de autos" />
+    <h1 class="hero__title">Encuentra y cotiza tu seguro</h1>
+  </div>
+
+  <section class="categorias">
+    <div class="categorias__grid">
+      <a class="cat-card autos" href="/seguros">
+        <ion-icon name="car-sport-outline"></ion-icon>
+        <span>Autos</span>
+      </a>
+
+      <a class="cat-card camiones">
+        <ion-icon name="bus-outline"></ion-icon>
+        <span>Camiones</span>
+      </a>
+
+      <a class="cat-card motos">
+        <ion-icon name="bicycle-outline"></ion-icon>
+        <span>Motos</span>
+      </a>
+
+      <a class="cat-card servicios">
+        <ion-icon name="shield-checkmark-outline"></ion-icon>
+        <span>Servicios RT</span>
+      </a>
+    </div>
+  </section>
+
+  <app-footer></app-footer>
+</ion-content>

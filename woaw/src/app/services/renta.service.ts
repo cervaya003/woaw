@@ -5,22 +5,18 @@ import { Observable, from, EMPTY, concat } from 'rxjs';
 import { switchMap, catchError, map, tap, take, throwIfEmpty } from 'rxjs/operators';
 import { HeadersService } from './headers.service';
 
-export interface RentaFiltro {
-  // Filtros compatibles con el backend nuevo:
+export interface RentaFiltro { 
   estadoRenta?: 'disponible' | 'rentado' | 'inactivo';
   ciudad?: string;
   estado?: string;
   marca?: string;
   modelo?: string;
   minPasajeros?: number;
-  maxPrecio?: number;
-  // Compatibilidad UI previa:
-  precioMin?: number; // (IGNORADO por el backend)
-  precioMax?: number; // se mapea a maxPrecio
-  // rango de fechas (ambos obligatorios si se usan)
-  fechaInicio?: string; // YYYY-MM-DD o ISO
-  fechaFin?: string;    // YYYY-MM-DD o ISO
-  // extras de UI:
+  maxPrecio?: number; 
+  precioMin?: number;  
+  precioMax?: number;   
+  fechaInicio?: string;  
+  fechaFin?: string;   
   page?: number;
   limit?: number;
   sort?: string;
@@ -28,8 +24,11 @@ export interface RentaFiltro {
 }
 
 export interface ListarCochesResp {
+  data: any[];
+  autos: any[];
   contador: number;
   rentals: any[];
+    estado?: string;
 }
 
 @Injectable({ providedIn: 'root' })

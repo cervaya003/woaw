@@ -1,3 +1,4 @@
+
 .perfil-header {
     display: flex;
     align-items: center;
@@ -13,6 +14,7 @@
 ion-toolbar[color="dark"] {
     --color: var(--ion-color-light);
 }
+
 
 .ck-card {
     margin: 12px;
@@ -37,6 +39,7 @@ ion-toolbar[color="dark"] {
             font-size: 14px;
             opacity: 0.9;
         }
+
     }
 
     .fecha {
@@ -68,12 +71,14 @@ ion-toolbar[color="dark"] {
         --background: #f8fafc;
         --color: #0f172a;
         border: 1px solid #e5e7eb;
+
     }
 }
 
 .ck-body {
     .bloque {
         margin-bottom: 16px;
+
     }
 
     .bloque-head {
@@ -185,10 +190,12 @@ ion-toolbar[color="dark"] {
         margin-top: 10px;
     }
 
+
     .preview-item {
         position: relative;
         border-radius: 8px;
         overflow: hidden;
+
         background: #f3f4f6;
         /* claro */
         aspect-ratio: 1 / 1;
@@ -212,6 +219,7 @@ ion-toolbar[color="dark"] {
             --padding-top: 2px;
             --padding-bottom: 2px;
             --border-radius: 999px;
+
             --background: rgba(255, 255, 255, .85);
             --ripple-color: transparent;
             min-width: 28px;
@@ -222,12 +230,15 @@ ion-toolbar[color="dark"] {
 
             ion-icon {
                 font-size: 18px;
+
                 color: var(--ion-color-danger);
             }
         }
 
         .btn-del:focus-visible {
+
             outline: 2px solid var(--ion-color-danger);
+
             outline-offset: 2px;
             border-radius: 999px;
         }
@@ -277,12 +288,12 @@ ion-toolbar[color="dark"] {
         --color: var(--ion-color-danger);
     }
 
+
     ion-button+ion-button {
         margin-top: 0;
     }
 }
 
-/* Responsive */
 @media (min-width: 640px) {
     .ck-body .grid-preview {
         grid-template-columns: repeat(4, 1fr);

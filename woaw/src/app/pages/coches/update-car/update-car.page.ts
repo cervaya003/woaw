@@ -20,17 +20,14 @@ import { filter } from "rxjs/operators";
 })
 export class UpdateCarPage implements OnInit {
   auto: any = null;
-
   urlsImagenes: string[] = [];
   imagenes: File[] = [];
   urlsImagenesExistentes: string[] = [];
   precioMoto: number | null = null;
-
   esDispositivoMovil: boolean = false;
   descripcionExpandida: boolean = false;
   ActualizaImgen: boolean = false;
   ubicacionSeleccionada: [string, string, number, number] | null = null;
-
   versionSeleccionada: { nombre: string; precio: number } | null = null;
   versiones: { nombre: string; precio: number }[] = [];
   especificacionesAuto: any[] = [];
@@ -857,8 +854,6 @@ export class UpdateCarPage implements OnInit {
     // Imagen principal puede ser File (nueva) o string (URL existente)
     if (this.imagenPrincipal_sinFondo instanceof File) {
       formData.append("imagenPrincipal", this.imagenPrincipal_sinFondo);
-      // También súbela como parte de la galería
-      formData.append("imagenes", this.imagenPrincipal_sinFondo);
     } else if (
       typeof this.imagenPrincipal_sinFondo === "string" &&
       this.imagenPrincipal_sinFondo.trim()
@@ -998,9 +993,10 @@ export class UpdateCarPage implements OnInit {
       ? this.auto.placas
       : "";
     const descripcion = (this.auto?.descripcion ?? "").toString();
-
-    // Campos específicos de camiones
-    const tipoCamion = (this.auto?.tipoCamion ?? "").toString();
+    const tipoCamion = (this.auto?.tipoCamion ?? "").toString().trim();
+    const capacidadCarga = this.auto?.capacidadCarga ?? "";
+    const tipoCabina = (this.auto?.tipoCabina ?? "").toString().trim();
+    const combustible = (this.auto?.combustible ?? "").toString().trim();
 
     formData.append("kilometraje", String(km));
     formData.append("color", color);
@@ -1008,7 +1004,9 @@ export class UpdateCarPage implements OnInit {
     formData.append("placas", placas);
     formData.append("descripcion", descripcion);
     formData.append("tipoCamion", tipoCamion);
-
+    formData.append("capacidadCarga", String(capacidadCarga));
+    formData.append("tipoCabina", tipoCabina);
+    formData.append("combustible", combustible);
     return formData;
   }
 
@@ -1197,6 +1195,9 @@ export class UpdateCarPage implements OnInit {
     if (isEmpty(this.auto?.descripcion)) clears.push("descripcion");
     if (isEmpty(this.auto?.tipoCamion)) clears.push("tipoCamion");
     if (isEmpty(this.auto?.color)) clears.push("color");
+    if (isEmpty(this.auto?.capacidadCarga)) clears.push("capacidadCarga");
+    if (isEmpty(this.auto?.tipoCabina)) clears.push("tipoCabina");
+    if (isEmpty(this.auto?.combustible)) clears.push("combustible");
 
     return clears;
   }
@@ -1249,7 +1250,7 @@ export class UpdateCarPage implements OnInit {
       },
     });
   }
-
+  /*********enviar Datos ***************************************/
   enviarDatos_camiones(id: string, formData: FormData) {
     this.camionesService.actualizarCamion(id, formData).subscribe({
       next: async (res: any) => {
@@ -1271,6 +1272,7 @@ export class UpdateCarPage implements OnInit {
       },
     });
   }
+
   // ------
 
   eliminarImagen_visual(imgUrl: string) {
@@ -1329,12 +1331,13 @@ export class UpdateCarPage implements OnInit {
       this.precioMoto = this.auto.precio ?? null;
     }
 
-if (this.tipo_veiculo === "camiones") {
-  if (this.versionesOriginales) {
-    this.auto.version = JSON.parse(JSON.stringify(this.versionesOriginales));
-  }
-}
-
+    if (this.tipo_veiculo === "camiones") {
+      if (this.versionesOriginales) {
+        this.auto.version = JSON.parse(
+          JSON.stringify(this.versionesOriginales)
+        );
+      }
+    }
 
     this.loteSeleccionado = null;
     this.ubicacionesLoteSeleccionado = [];

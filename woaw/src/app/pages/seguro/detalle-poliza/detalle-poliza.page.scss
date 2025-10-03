@@ -1,0 +1,146 @@
+/* ====== Detalle de Póliza (líneas debajo del texto) ====== */
+.detalle-poliza {
+    width: 100%;
+    max-width: 980px;
+    margin: 0 auto;
+    padding: clamp(16px, 3vw, 28px);
+    display: grid;
+    gap: clamp(20px, 3vw, 28px);
+
+    .detalle__head {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+
+        h1 {
+            margin: 0;
+            font-size: clamp(22px, 4vw, 32px);
+            font-weight: 900;
+            color: #0b0b0e;
+        }
+
+        .plan-pill {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            background: linear-gradient(90deg, #ff2121, #c90f0f);
+        }
+    }
+
+    .detalle__info {
+        background: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 14px;
+        box-shadow: 0 10px 24px rgba(11, 13, 18, 0.06);
+        padding: clamp(18px, 3vw, 24px);
+        display: grid;
+        gap: 18px;
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            padding-bottom: 6px;
+
+            .label {
+                font-size: 15px;
+                font-weight: 600;
+                color: #111;
+            }
+
+            .value {
+                font-size: 16px;
+                font-weight: 700;
+                color: #000;
+                text-align: right;
+            }
+        }
+    }
+
+    /* ====== Botones grandes y centrados ====== */
+    .acciones-poliza {
+        display: flex;
+        justify-content: center;
+        margin-top: 10px;
+
+        .detalle__acciones {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+
+            .btn {
+                min-width: 150px;
+                height: 90px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                border-radius: 14px;
+                font-size: 15px;
+                font-weight: 700;
+                cursor: pointer;
+                box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+                transition: all .2s ease;
+
+                ion-icon {
+                    font-size: 28px;
+                }
+
+                &.dark {
+                    background: #0b0b0e;
+                    color: #fff;
+
+                    &:hover {
+                        background: #1a1a1e;
+                    }
+                }
+
+                &.gray {
+                    background: #f4f4f4;
+                    color: #1f2937;
+
+                    &:hover {
+                        background: #e6e6e6;
+                    }
+                }
+
+                &.red {
+                    background: #ff2121;
+                    color: #fff;
+
+                    &:hover {
+                        background: #d90f0f;
+                    }
+                }
+            }
+        }
+    }
+
+    @media (max-width: 720px) {
+        .detalle__info .row {
+            flex-direction: column;
+            align-items: flex-start;
+
+            .value {
+                text-align: left;
+                margin-top: 4px;
+            }
+        }
+
+        .acciones-poliza .detalle__acciones {
+            flex-direction: column;
+            align-items: stretch;
+
+            .btn {
+                width: 100%;
+                height: 85px;
+            }
+        }
+    }
+}

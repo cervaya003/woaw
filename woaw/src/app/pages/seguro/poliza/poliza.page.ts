@@ -24,6 +24,9 @@ export class PolizaPage implements OnInit {
   currentStepform: 1 | 2 | 3 | 4 = 1;
   form_poliza: FormGroup;
 
+  private branchId = 'ded09658-50cd-4637-8390-31a8f39fe9a1';
+  placasEnTramite: boolean = false;
+
   datosCoche: any = null;
   datosUsuario: any = null;
   datoscotizacion: any = null;
@@ -31,6 +34,10 @@ export class PolizaPage implements OnInit {
   polizaCreada: boolean = false;
   datosPolizaCreada: any = null;
   email: any = null;
+
+  miPlan: string = '';
+  fmtMoney(v: number | null | undefined) { return v == null ? '—' : (v as number).toLocaleString('es-MX', { style: 'currency', currency: 'MXN' }); }
+  selectedPaymentId: string | null = null;
 
   islandKey = 0;
 
@@ -61,16 +68,45 @@ export class PolizaPage implements OnInit {
     private location: Location
   ) {
     this.form_poliza = this.fb.group({
-      vin: ['', Validators.required],
-      placas: ['', Validators.required],
+      vin: [
+        '',
+        [
+          Validators.required,
+          Validators.pattern(/^[A-HJ-NPR-Z0-9]{17}$/)
+        ]
+      ],
+      placas: [
+        '',
+        [
+          Validators.required,
+          // this.placasMxValidator
+        ]
+      ],
       color: ['', Validators.required],
-      correos: this.fb.array([], [this.duplicatedEmailsValidator])
+      correos: this.fb.array([], [this.duplicatedEmailsValidator]),
+      pago: ['', Validators.required],
     });
+
+    this.form_poliza.get('vin')!.valueChanges.subscribe(v => {
+      const norm = String(v || '')
+        .toUpperCase()
+        .replace(/[^A-HJ-NPR-Z0-9]/g, '')
+        .slice(0, 17);
+      if (norm !== v) this.form_poliza.get('vin')!.setValue(norm, { emitEvent: false });
+    });
+
+    // this.form_poliza.get('placas')!.valueChanges.subscribe(v => {
+    //   const norm = String(v || '')
+    //     .toUpperCase()
+    //     .replace(/[^A-Z0-9]/g, '')
+    //     .slice(0, 7);
+    //   if (norm !== v) this.form_poliza.get('placas')!.setValue(norm, { emitEvent: false });
+    // });
   }
 
   ngOnInit() {
-    const nav = this.router.getCurrentNavigation();
     this.mostrarPresouestaPoliza();
+    this.getPosition();
   }
   // ====== Correos dinámicos ======
   get correos(): FormArray<FormControl<string | null>> {
@@ -113,12 +149,6 @@ export class PolizaPage implements OnInit {
     return 'Revisa este correo.';
   }
   // ====== Utilidades existentes ======
-  toUpper(ctrlName: string) {
-    const c = this.form_poliza.get(ctrlName);
-    if (!c) return;
-    const v = (c.value ?? '').toString().toUpperCase();
-    if (v !== c.value) c.setValue(v, { emitEvent: false });
-  }
   analizaForm(campo: string): boolean {
     const control = this.form_poliza.get(campo);
     return !!(control && control.invalid && (control.dirty || control.touched));
@@ -130,10 +160,11 @@ export class PolizaPage implements OnInit {
       return;
     }
     this.mostrarPresouestaPoliza();
-
-    console.log(this.datoscotizacion)
-    const rfc = this.datosUsuario?.person?.rfc;
+    const rfc = this.UsuarioRespuesta.response.rfc;
     const id = this.datoscotizacion.id;
+
+    const pos = this.getPosition();
+    const idPlanEspesifico = this.datoscotizacion.plans?.[0].payment_plans?.[pos].id;
     const idPlan = this.datoscotizacion.plans[0]?.id;
 
     // const start_date = new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
@@ -157,20 +188,29 @@ export class PolizaPage implements OnInit {
       },
       quotation: {
         id: id,
-        plan_id: idPlan
+        plan_id: idPlan,
+        payment_plan_id: idPlanEspesifico,
       },
       // preferred_beneficiary: true,
+      branch_id: this.branchId,
       receivers,
       start_date,
       use_crabi_checkout: true,
       send_mail_to_client: true,
       send_whatsapp_to_client: true
     };
-    this.enviarDatosCrearPersona(payload);
-    localStorage.setItem('datosPolizaVin', JSON.stringify(payload));
-    console.log('Payload de la póliza:', payload);
+
+    this.generalService.confirmarAccion(
+      `${this.miPlan}`,
+      'Crear tu póliza',
+      async () => {
+        localStorage.setItem('datosPolizaVin', JSON.stringify(payload));
+        this.crearPoliza(payload);
+      }
+    );
+    // console.log('Payload de la póliza:', payload);
   }
-  enviarDatosCrearPersona(payload: any) {
+  private crearPoliza(payload: any) {
     this.mostrar_spinnet = true;
     this.seguros.crearPoliza(payload).subscribe({
       next: (data) => {
@@ -190,8 +230,13 @@ export class PolizaPage implements OnInit {
       error: (error) => {
         this.mostrar_spinnet = false;
         console.error('Error al crear la póliza:', error);
+
+        let mensaje = error?.error?.error || 'Ocurrió un error al crear la póliza. Intenta nuevamente más tarde.';
+
+        mensaje = mensaje.replace(/\(\d+\/\d+\)/g, '').trim();
+
         this.generalService.alert(
-          'Ocurrió un error al crear la póliza. Intenta nuevamente más tarde.',
+          mensaje,
           'Error',
           'danger'
         );
@@ -202,10 +247,10 @@ export class PolizaPage implements OnInit {
     const cotizacionRespuestra = localStorage.getItem('datosPolizaVin_Respuesta');
     if (cotizacionRespuestra) {
 
-      const storedPersona = localStorage.getItem('datosUsuario');
+      const storedPersona = localStorage.getItem('UsuarioRespuesta');
       if (storedPersona) {
         let datos = JSON.parse(storedPersona);
-        this.email = datos.person.email;
+        this.email = datos.response.email;
       }
 
       this.polizaCreada = true;
@@ -223,7 +268,6 @@ export class PolizaPage implements OnInit {
       const cotizacion = localStorage.getItem('cotizacion');
       if (cotizacion) {
         this.datoscotizacion = JSON.parse(cotizacion);
-        // console.log('Cotización cargada:', this.datoscotizacion);
       } else {
         this.datoscotizacion = null;
         this.router.navigate(['/seguros']);
@@ -243,7 +287,7 @@ export class PolizaPage implements OnInit {
         this.datosCoche = null;
         this.router.navigate(['/seguros']);
         this.generalService.alert(
-          'Debes de cotizar un aut antes de continuar.',
+          'Debes de cotizar un auto antes de continuar.',
           'Atención',
           'warning'
         );
@@ -254,7 +298,6 @@ export class PolizaPage implements OnInit {
       const storedPersonaRespuesta = localStorage.getItem('UsuarioRespuesta');
       if (storedPersonaRespuesta) {
         this.UsuarioRespuesta = JSON.parse(storedPersonaRespuesta);
-        // console.log('DATOS - PERSONALES RESPUESTA ', this.UsuarioRespuesta);
       } else {
         this.UsuarioRespuesta = null;
         this.router.navigate(['/seguros/persona']);
@@ -266,24 +309,11 @@ export class PolizaPage implements OnInit {
         return;
       }
 
-      // === datosUsuario ===
-      const storedPersona = localStorage.getItem('datosUsuario');
-      if (storedPersona) {
-        this.datosUsuario = JSON.parse(storedPersona);
-        // console.log('DATOS - PERSONALES ', this.datosUsuario);
-      } else {
-        this.datosUsuario = null;
-        this.router.navigate(['/seguros/persona']);
-        this.generalService.alert(
-          'Debes de llenar tus datos personales.',
-          'Atención',
-          'warning'
-        );
-        return;
-      }
     }
   }
   realizarPago() {
+    console.log(this.datosPolizaCreada)
+
     if (!this.datosPolizaCreada?.response?.policies?.length) {
       console.error('No hay pólizas en la respuesta');
       return;
@@ -362,6 +392,8 @@ export class PolizaPage implements OnInit {
       '¿Estás seguro en cotizar un nuevo coche?',
       'Salir de proceso',
       async () => {
+        localStorage.removeItem('datosCoche');
+        localStorage.removeItem('cotizacion');
         localStorage.removeItem('datosPolizaVin_Respuesta');
         localStorage.removeItem('datosPolizaVin');
         this.polizaCreada = false;
@@ -374,4 +406,135 @@ export class PolizaPage implements OnInit {
     this.islandKey++;
     this.router.navigate(['/seguros/persona']);
   }
+  onVinInput(ev: Event) {
+    const el = ev.target as HTMLInputElement;
+    const norm = (el.value || '')
+      .toUpperCase()
+      .replace(/[^A-HJ-NPR-Z0-9]/g, '')
+      .slice(0, 17);
+    if (norm !== el.value) {
+      this.form_poliza.get('vin')?.setValue(norm);
+    }
+  }
+  public togglePlacasTramite() {
+    const ctrl = this.form_poliza.get('placas');
+    if (!ctrl) return;
+
+    if (this.placasEnTramite) {
+      ctrl.setValue('En trámite', { emitEvent: false });
+      ctrl.clearValidators();
+      ctrl.updateValueAndValidity({ emitEvent: false });
+    } else {
+      ctrl.setValue('', { emitEvent: false });
+      ctrl.setValidators([Validators.required/*, tu patrón si aplica */]);
+      ctrl.updateValueAndValidity({ emitEvent: false });
+    }
+  }
+  public onPlacasInput(ev: Event) {
+    if (this.placasEnTramite) return;
+    const el = ev.target as HTMLInputElement;
+    const norm = (el.value || '')
+      .toUpperCase()
+      .replace(/[^A-Z0-9]/g, '')
+      .slice(0, 7);
+    if (norm !== el.value) {
+      this.form_poliza.get('placas')?.setValue(norm, { emitEvent: false });
+    }
+  }
+  // private placasMxValidator = (ctrl: AbstractControl) => {
+  //   const raw = String(ctrl.value || '')
+  //     .toUpperCase()
+  //     .replace(/[^A-Z0-9]/g, '');
+  //   if (!raw) return { required: true };
+
+  //   const patterns = [
+  //     /^[A-Z]{3}\d{4}$/,
+  //     /^[A-Z]{3}\d{3}[A-Z]$/,
+  //     /^[A-Z]{3}\d[A-Z]\d{2}$/
+  //   ];
+
+  //   const ok = raw.length === 7 && patterns.some(r => r.test(raw));
+  //   return ok ? null : { placaFormato: true };
+  // };
+
+
+  // 1) ÚNICO switch centralizado
+  private formatPaymentLabel(rawName: string, count: number): string {
+    const raw = (rawName ?? '').toString().toUpperCase();
+    switch (raw) {
+      case 'ANNUAL': return 'Pago de contado';
+      case 'SUBSCRIPTION': return count > 1 ? `${count} pagos (suscripción)` : 'Suscripción';
+      case 'FLAT_FEE': return count > 1 ? `${count} pagos fijos` : 'Pago fijo';
+      default: return raw;
+    }
+  }
+  private getPosition(): number {
+    const posStr = localStorage.getItem('posicionSeleccionada');
+    const pos = Number(posStr);
+
+    const plan = this.datoscotizacion?.plans?.[0];
+    const paymentPlan = plan?.payment_plans?.[pos];
+
+    if (paymentPlan) {
+      const label = this.formatPaymentLabel(paymentPlan.name, paymentPlan.payments?.length ?? 1);
+      const total = this.fmtMoney(paymentPlan.total);
+      this.miPlan = `${label} — ${total}`;
+
+      this.selectedPaymentId = paymentPlan.id;
+    }
+
+    return pos;
+  }
+  paymentPlanLabel(pp: any): string {
+    const count = Array.isArray(pp?.payments) ? pp.payments.length : 1;
+    return this.formatPaymentLabel(pp?.name, count);
+  }
+  onSelectPayment(paymentPlanId: string) {
+    const arr = this.datoscotizacion?.plans?.[0]?.payment_plans;
+    if (!arr?.length) return;
+
+    const idx = arr.findIndex((pp: any) => pp.id === paymentPlanId);
+    if (idx >= 0) {
+      localStorage.setItem('posicionSeleccionada', String(idx));
+
+      const pp = arr[idx];
+      const label = this.formatPaymentLabel(pp?.name, Array.isArray(pp?.payments) ? pp.payments.length : 1);
+      this.miPlan = `${label} — ${this.fmtMoney(pp?.total)}`;
+    }
+  }
+
+
+
+
+  // === GETTERS derivados DIRECTAMENTE de datosPolizaCreada ===
+  get policyCO() {
+    const policies = this.datosPolizaCreada?.response?.policies || [];
+    return policies.find((p: any) => typeof p?.policy_number === 'string' && p.policy_number.startsWith('CO-')) || null;
+  }
+
+  get folioCO(): string | null {
+    return this.policyCO?.policy_number ?? null;
+  }
+
+  get inicioVigencia(): string | null {
+    const s = this.policyCO?.start_date ? new Date(this.policyCO.start_date) : null;
+    return s ? s.toLocaleDateString() : null;
+  }
+
+  get finVigencia(): string | null {
+    const e = this.policyCO?.end_date ? new Date(this.policyCO.end_date) : null;
+    return e ? e.toLocaleDateString() : null;
+  }
+
+  get invoiceUrl(): string | null {
+    const files = this.datosPolizaCreada?.response?.files || [];
+    return files.find((f: any) => f?.name === 'invoice')?.url ?? null;
+  }
+
+  get coverUrl(): string | null {
+    const files = this.datosPolizaCreada?.response?.files || [];
+    return files.find((f: any) => f?.name === 'cover')?.url ?? null;
+  }
+
+
 }

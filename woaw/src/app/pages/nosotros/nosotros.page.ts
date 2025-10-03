@@ -23,6 +23,16 @@ export class NosotrosPage implements AfterViewInit {
     { titulo: '2025 · Escala', desc: 'Módulos: autos, motos, camiones, seguros y arrendamiento.' }
   ];
 
+
+cardsNosotros = [
+  { img: '/assets/nosotros/carrito.png', title: 'Compra' },
+  { img: '/assets/nosotros/precio.png', title: 'Vende' },
+  { img: '/assets/nosotros/monedas.png', title: 'Financia' },
+  { img: '/assets/nosotros/llaves.png', title: 'Renta' },
+  { img: '/assets/nosotros/seguro.png', title: 'Arrienda' },
+  { img: '/assets/nosotros/auto.png', title: 'Asegura' },
+];
+
   private io?: IntersectionObserver;
 
   ngAfterViewInit(): void {

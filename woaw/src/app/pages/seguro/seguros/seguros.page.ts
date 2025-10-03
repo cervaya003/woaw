@@ -54,7 +54,7 @@ export class SegurosPage implements OnInit {
   ];
 
   mostrar_spinnet: boolean = false;
-
+  selectedPlanIndexes = new Set<number>();
   // Selecciones previas
   selectedMarcaId: number | null = null;
   selectedModeloId: number | null = null;
@@ -122,11 +122,10 @@ export class SegurosPage implements OnInit {
     this.buildAniosNacimiento();
     this.cargaimagen();
   }
-  verificaStorage() {
+  private verificaStorage() {
     const raw = localStorage.getItem('cotizacion');
 
     if (!raw) {
-      this.router.navigate(['/seguros']);
       this.getMarcas_cohes();
       this.obtenerMarcas();
       return;
@@ -136,14 +135,19 @@ export class SegurosPage implements OnInit {
     this.cotizacion = !!this.quote;
 
     if (this.quote?.plans?.length) {
+      this.selectedPaymentByPlan = {};
       this.quote.plans.forEach((pl: any) => {
-        const first = pl?.payment_plans?.[0]?.id;
-        if (first) this.selectedPaymentByPlan[pl.id] = first;
+        const firstId = pl?.payment_plans?.[0]?.id ?? null;
+        if (firstId) this.selectedPaymentByPlan[pl.id] = firstId;
       });
-      this.activePlan = this.quote.plans[0];
+
+      this.activePlan = this.quote.plans[0] ?? null;
+
+      if (this.activePlan) this.onSelectPayment(this.activePlan.id);
     } else {
       this.activePlan = null;
     }
+
   }
   async cargaimagen() {
     this.imgenPrincipal = '/assets/autos/seguro.webp';
@@ -162,6 +166,7 @@ export class SegurosPage implements OnInit {
     this.aniosNacimiento = [];
     for (let y = maxYear; y >= minYear; y--) this.aniosNacimiento.push(y);
   }
+
   // ---------- Validadores ----------
   private fechaNacimientoValida = (): ((ctrl: AbstractControl) => ValidationErrors | null) => {
     return (ctrl: AbstractControl): ValidationErrors | null => {
@@ -181,6 +186,7 @@ export class SegurosPage implements OnInit {
       return null;
     };
   };
+
   // ---------- Data ----------
   private obtenerMarcas(): void {
     this.seguros.getMarcas().subscribe({
@@ -224,6 +230,7 @@ export class SegurosPage implements OnInit {
       error: (error) => console.error('Error al obtener modelos:', error),
     });
   }
+
   // ---------- Helpers para crear controles por paso ----------
   private ensurePaso4() {
     if (!this.form.get('version')) {
@@ -260,6 +267,7 @@ export class SegurosPage implements OnInit {
     //   this.form.addControl('duracion', this.fb.control(null, Validators.required));
     // }
   }
+
   // ---------- Flow ----------
   // submit del form 
   siguiente() {
@@ -267,7 +275,7 @@ export class SegurosPage implements OnInit {
     if (this.currentStep === 1) {
       if (this.form.get('marca')?.invalid) return;
       this.selectedMarcaId = Number(this.form.get('marca')?.value);
-      console.log(this.selectedMarcaId)
+      // console.log(this.selectedMarcaId)
       this.obtenerModelos(this.selectedMarcaId);
       if (!this.form.get('modelo')) {
         this.form.addControl('modelo', this.fb.control(null, Validators.required));
@@ -466,6 +474,7 @@ export class SegurosPage implements OnInit {
     const pad = (n: number) => String(n).padStart(2, '0');
     return d && m && y ? `${pad(Number(d))}/${pad(Number(m))}/${y}` : '-';
   }
+
   // ---------- Progreso ----------
   progress(): number {
     const total = this.steps.length;        // 7
@@ -526,7 +535,6 @@ export class SegurosPage implements OnInit {
       birthdate
     };
     localStorage.setItem('datosCoche', JSON.stringify(datosCoche));
-
     return dto;
   }
   nuevoSeguro() {
@@ -534,7 +542,8 @@ export class SegurosPage implements OnInit {
       '¿Estás seguro en cotizar un nuevo coche?',
       'Cotizar nuevo coche',
       async () => {
-        this.verificaStorage();
+        this.getMarcas_cohes();
+        this.obtenerMarcas();
         localStorage.removeItem('datosCoche');
         localStorage.removeItem('cotizacion');
         localStorage.removeItem('datosPolizaVin_Respuesta');
@@ -566,6 +575,7 @@ export class SegurosPage implements OnInit {
       }
     );
   }
+
   // ---------- COTIZACION ----------
   private HacerCotizacion(data: any) {
     this.mostrar_spinnet = true;
@@ -573,25 +583,29 @@ export class SegurosPage implements OnInit {
       next: (resp) => {
         setTimeout(() => {
           this.mostrar_spinnet = false;
-          this.quote = resp?.response ?? null;
+          this.quote = resp.response;
           this.cotizacion = !!this.quote;
 
+          localStorage.removeItem('cotizacion');
           if (this.quote) {
             localStorage.setItem('cotizacion', JSON.stringify(this.quote));
             this.islandKey++;
-          } else {
-            localStorage.removeItem('cotizacion');
           }
 
-          if (this.quote?.plans?.length) {
+          if (this.quote.plans.length) {
+            this.selectedPaymentByPlan = {};
             this.quote.plans.forEach((pl: any) => {
-              const first = pl?.payment_plans?.[0]?.id;
-              if (first) this.selectedPaymentByPlan[pl.id] = first;
+              const firstId = pl?.payment_plans?.[0]?.id ?? null;
+              if (firstId) this.selectedPaymentByPlan[pl.id] = firstId;
             });
-            this.activePlan = this.quote.plans[0];
+
+            this.activePlan = this.quote.plans[0] ?? null;
+
+            if (this.activePlan) this.onSelectPayment(this.activePlan.id);
           } else {
             this.activePlan = null;
           }
+
         }, 2500);
       },
       error: (err) => {
@@ -600,8 +614,20 @@ export class SegurosPage implements OnInit {
       }
     });
   }
-  onSelectPayment(planId: string, paymentId: string) {
-    this.selectedPaymentByPlan[planId] = paymentId;
+  public onSelectPayment(planId: string) {
+    if (!this.quote?.plans?.length) return;
+
+    const plan = this.quote.plans.find((pl: any) => pl.id === planId);
+    if (!plan || !Array.isArray(plan.payment_plans) || !plan.payment_plans.length) return;
+
+    const chosenId = this.selectedPaymentByPlan?.[planId] ?? plan.payment_plans[0].id;
+
+    const idx = plan.payment_plans.findIndex((pp: any) => pp.id === chosenId);
+    if (idx === -1) return;
+
+    this.selectedPaymentByPlan[planId] = chosenId;
+    localStorage.setItem('posicionSeleccionada', String(idx));
+    // console.log(`[${idx}] payment_plan.id =`, chosenId);
   }
   getSelectedPayment(pl: any) {
     const id = this.selectedPaymentByPlan[pl.id];
@@ -661,11 +687,13 @@ export class SegurosPage implements OnInit {
   planInfo(pp: any) {
     const payments = Array.isArray(pp?.payments) ? pp.payments : [];
     const count = payments.length || 1;
+
     const subtotal = Number(pp?.subtotal ?? 0);
     const taxes = Number(pp?.taxes ?? 0);
     const total = Number(pp?.total ?? 0);
     const fee = Number(pp?.fee ?? 0);
     const expedition_rights = Number(pp?.expedition_rights ?? 0);
+    const net_premium = Number(pp?.net_premium ?? 0);
 
     let firstTotal = payments[0]?.total ?? total;
     let restTotal: number | null = null;
@@ -681,20 +709,17 @@ export class SegurosPage implements OnInit {
     return {
       planLabel: this.paymentPlanLabel(pp),
       count,
+      net_premium,
       subtotal, taxes, total, fee, expedition_rights,
       variable,
       firstTotal: Number(firstTotal),
       restTotal
     };
   }
+
+  // ----- CREAR PERSONA -----
   async confirmarCrearPersona() {
-    this.generalService.confirmarAccion(
-      '¿Estás seguro de que crear tu póliza?',
-      'Crear tu póliza',
-      async () => {
-        await this.CrearPersona();
-      }
-    );
+    await this.CrearPersona();
   }
   async CrearPersona() {
     const stored = localStorage.getItem('datosCoche');
@@ -858,6 +883,7 @@ export class SegurosPage implements OnInit {
     // inicial visible
     this.brandsVM = [...this.brandsVMFull];
   }
+
   // BUSCADOR -----
   isSelected(id: number): boolean {
     return this.form.get('marca')?.value === id;

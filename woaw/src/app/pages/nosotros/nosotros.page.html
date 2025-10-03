@@ -12,33 +12,88 @@
 
 <app-navbar></app-navbar>
 
-<ion-content
-  [fullscreen]="true"
-  scrollEvents="true"
-  (ionScroll)="onScroll($event)"
->
+<ion-content [fullscreen]="true" scrollEvents="true" (ionScroll)="onScroll($event)">
+
   <!-- HERO -->
   <section class="hero" #hero>
-    <div class="hero__bg" aria-hidden="true"></div>
+
+    <div class="hero__bg" aria-hidden="true">
+
+      <img src="/assets/nosotros/fondoP.webp" alt="Fondo" fetchpriority="high" decoding="sync" />
+
+    </div>
+
     <div class="hero__glow" aria-hidden="true"></div>
     <div class="hero__content reveal">
-      <h1>WO<span>AW</span></h1>
+      <!-- <h1>WO<span>AW</span></h1>  -->
       <p>
-        Una plataforma digital que transforma la experiencia de compra y venta
-        de autos nuevos, seminuevos y usados en México.
+
+        La plataforma digital que transforma la experiencia de compra - venta de
+        autos nuevos, seminuevos y usados en México.
+
       </p>
-      <!-- <div class="hero__pills">
-        <span class="pill">Web · Mobile</span>
-        <span class="pill">Ionic + Angular</span>
-        <span class="pill">Node + Mongo</span>
-      </div> -->
     </div>
   </section>
 
+
+
+  <!-- CARTAS CON IMÁGENES -->
+  <section class="cards-row">
+    <div class="cards-row__wrap">
+      <article class="card-img" *ngFor="let c of cardsNosotros">
+        <figure class="thumb">
+          <img [src]="c.img" [alt]="c.title" />
+        </figure>
+        <h4>{{ c.title }}</h4>
+      </article>
+
+      <!-- <section>
+        <figure class="phone-mock" aria-hidden="true">
+          <picture>
+            <source srcset="/assets/nosotros/iphone.png" type="image/webp" />
+            <img src="/assets/nosotros/iphone.webp" alt="" loading="lazy" />
+          </picture>
+          <div id="features-end-sentinel" aria-hidden="true"></div>
+        </figure>
+      </section> -->
+
+    </div>
+  </section>
+
+
+  <!-- CONECTOR COMPRADOR / CONECTAMOS / VENDEDOR -->
+  <section class="connect-band" aria-label="Conectamos compradores y vendedores">
+    <div class="connect-track">
+      <article class="connect-col">
+        <h5>Comprador</h5>
+        <p>
+          Puedes buscar, comparar filtrar,<br>
+          cotizar, financiar y agendar citas<br>
+          en la agencia o lote.
+        </p>
+      </article>
+
+      <div class="connect-center" role="group" aria-label="Conectamos">
+        <span class="connect-label">CONECTAMOS</span>
+      </div>
+
+      <article class="connect-col">
+        <h5>Vendedor</h5>
+        <p>
+          Visibilidad digital para tus autos sin<br>
+          costo, clientes listos para comprar y<br>
+          respaldo de financiamiento.
+        </p>
+      </article>
+    </div>
+  </section>
+
+
+
+
   <!-- MISIÓN / VISIÓN / VALORES -->
   <section class="mvv">
-    <article class="card reveal">
-      <ion-icon name="flag-outline" aria-hidden="true"></ion-icon>
+    <article class="card reveal " color="danger">
       <h3>Misión</h3>
       <p>
         <strong>Conectar personas con su próximo auto</strong>, simplificando la
@@ -52,12 +107,10 @@
     </article>
 
     <article class="card reveal">
-      <ion-icon name="sparkles-outline" aria-hidden="true"></ion-icon>
       <h3>Visión</h3>
       <p>
-        <strong
-          >Ser la plataforma líder en México en intermediación de autos</strong
-        >, reconocida por revolucionar la forma de comprar y vender con un
+        <strong>Ser la plataforma líder en México en intermediación de autos</strong>, reconocida por revolucionar la
+        forma de comprar y vender con un
         modelo digital centrado en la comodidad del usuario siendo accesible,
         justa y transparente en el proceso. Queremos que cada persona pueda
         <strong>adquirir o vender un auto con tranquilidad</strong>, con
@@ -66,7 +119,6 @@
     </article>
 
     <article class="card reveal">
-      <ion-icon name="shield-checkmark-outline" aria-hidden="true"></ion-icon>
       <h3>Valores</h3>
       <ul>
         <li>Innovación</li>
@@ -79,29 +131,36 @@
     </article>
   </section>
 
-  <!-- LÍNEA DE TIEMPO -->
-  <section class="timeline reveal">
-    <h2>Nuestra ruta</h2>
-    <div class="track">
-      <div
-        class="hit"
-        *ngFor="let h of historia; let i = index"
-        [style.--i]="i"
-      >
-        <span class="dot"></span>
-        <h4>{{ h.titulo }}</h4>
-        <p>{{ h.desc }}</p>
-      </div>
+
+
+  <section class="intro-woaw">
+    <p>
+      <strong>WOAW</strong> es la plataforma digital que
+      <span class="resaltar">transforma la experiencia automotriz en México</span>,
+      integrando <span class="resaltar">compra, venta, renta y arrendamiento.</span>
+    </p>
+
+    <div class="intro-woaw__actions">
+      <a href="/menu-vehiculos/autos" class="btn-rojo">Encuentra tu auto</a>
+
+      <a href="/new-car" class="btn-rojo">Publica tu inventario</a>
     </div>
   </section>
 
+
+
+  <!-- LÍNEA DE TIEMPO -->
+
+  <section></section>
+
+
   <!-- KPIs -->
-  <section class="kpis">
+  <!-- <section class="kpis">
     <div class="kpi reveal" *ngFor="let k of kpiList">
       <div class="kpi__num" [attr.data-target]="k.valor">0</div>
       <div class="kpi__label">{{ k.label }}</div>
     </div>
-  </section>
+  </section> -->
 
   <!-- CTA -->
   <!-- <section class="cta reveal">

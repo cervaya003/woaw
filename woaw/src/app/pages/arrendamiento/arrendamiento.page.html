@@ -1,48 +1,66 @@
 <app-navbar></app-navbar>
 
 <ion-content [fullscreen]="true" #contenidoScroll>
-
   <!-- Imagen de fondo -->
-  <img [src]="imgenPrincipal" alt="Fondo arrendamiento" class="fondo-arrendamiento" />
+ <img
+  src="/assets/autos/publicidad/arrendamiento.webp"
+  alt="Fondo arrendamiento"
+  class="fondo-arrendamiento"
+/>
 
   <section class="contenedor_primero" *ngIf="!selecionaVehiculo">
     <div class="columna-izquierda">
       <h2>Arrendamiento Puro</h2>
-      <p>Elige la opción que más se adapte a tu negocio o estilo de vida.
-        Con Wo-Aw puedes arrendar fácilmente un coche o un camión, sin complicaciones.</p>
+      <p>
+        Elige la opción que más se adapte a tu negocio o estilo de vida. Con
+        Wo-Aw puedes arrendar fácilmente un coche o un camión, sin
+        complicaciones.
+      </p>
     </div>
 
     <div class="columna-derecha">
-      <div class="card-opcion">
-        <img class="img_coche" [src]="imgenArre1" alt="Coche">
-        <h3>Coches</h3>
-        <p>Vehículos ideales para uso personal o corporativo.</p>
-        <button class="btn-card" (click)="cambiarTipo('coches')">Arrendar coche</button>
-      </div>
+     <div class="card-opcion">
+  <img class="img_coche" src="/assets/autos/arre1.webp" alt="Coche" />
+  <h3>Coches</h3>
+  <p>Vehículos ideales para uso personal o corporativo.</p>
+  <button class="btn-card" (click)="cambiarTipo('coches')">
+    Arrendar coche
+  </button>
+</div>
 
-      <div class="card-opcion">
-        <img class="img_camion" [src]="imgenArre2" alt="Camión">
-        <h3>Camiones</h3>
-        <p>Soluciones de transporte para empresas y logística.</p>
-        <button class="btn-card" (click)="cambiarTipo('camiones')">Arrendar camión</button>
-      </div>
+<div class="card-opcion">
+  <img class="img_camion" src="/assets/autos/arre2.webp" alt="Camión" />
+  <h3>Camiones</h3>
+  <p>Soluciones de transporte para empresas y logística.</p>
+  <button class="btn-card" (click)="cambiarTipo('camiones')">
+    Arrendar camión
+  </button>
+</div>
+
     </div>
   </section>
 
-  <br>
+  <br />
 
   <section class="contenedor_arrendamiento" *ngIf="selecionaVehiculo">
     <div id="top-seccion-arrendamiento-marcas" class="contenedor-arrendamiento">
-
       <p class="titulo_seccion">{{ tipoSeleccionado }}</p>
 
       <div class="encabezado-arrendamiento">
         <!-- Botón regresar -->
-        <button class="btn-regresar" *ngIf="!mostrarModelos" (click)="regresarAntes()">
+        <button
+          class="btn-regresar"
+          *ngIf="!mostrarModelos"
+          (click)="regresarAntes()"
+        >
           <ion-icon name="arrow-back-outline"></ion-icon>
           Regresar
         </button>
-        <button class="btn-regresar" *ngIf="mostrarModelos" (click)="regresar()">
+        <button
+          class="btn-regresar"
+          *ngIf="mostrarModelos"
+          (click)="regresar()"
+        >
           <ion-icon name="arrow-back-outline"></ion-icon>
           Regresar
         </button>
@@ -53,14 +71,23 @@
         <img *ngIf="tipoSeleccionado == 'camiones' && !mostrarModelos" class="img_camion2" src="assets/autos/arre2.png"
           alt="Camión" /> -->
 
-        <img *ngIf="mostrarModelos" class="img_logo" [src]="marcaSeleccionada?.imageUrl"
-          [alt]="marcaSeleccionada?.nombre" loading="lazy" />
+        <img
+          *ngIf="mostrarModelos"
+          class="img_logo"
+          [src]="marcaSeleccionada?.imageUrl"
+          [alt]="marcaSeleccionada?.nombre"
+          loading="lazy"
+        />
 
         <!-- Buscador -->
         <div class="buscador" *ngIf="!mostrarModelos">
           <ion-icon name="search-outline"></ion-icon>
-          <input type="text" placeholder="Buscar marca..." [(ngModel)]="terminoBusqueda"
-            (ngModelChange)="onBuscar($event)" />
+          <input
+            type="text"
+            placeholder="Buscar marca..."
+            [(ngModel)]="terminoBusqueda"
+            (ngModelChange)="onBuscar($event)"
+          />
         </div>
       </div>
 
@@ -69,18 +96,34 @@
         <div class="contenedor-marcas">
           <ng-container *ngIf="tipoSeleccionado === 'coches'">
             <ng-container *ngFor="let marca of filteredOpciones">
-              <div class="marca-card" *ngIf="marca.imagenValida"
-                [class.seleccionado]="marca.key === marcaSeleccionada?.key" (click)="seleccionarMarca(marca)">
-                <img [src]="marca.imageUrl" [alt]="marca.nombre" (error)="marca.imagenValida = false" />
+              <div
+                class="marca-card"
+                *ngIf="marca.imagenValida"
+                [class.seleccionado]="marca.key === marcaSeleccionada?.key"
+                (click)="seleccionarMarca(marca)"
+              >
+                <img
+                  [src]="marca.imageUrl"
+                  [alt]="marca.nombre"
+                  (error)="marca.imagenValida = false"
+                />
               </div>
             </ng-container>
           </ng-container>
 
           <ng-container *ngIf="tipoSeleccionado === 'camiones'">
             <ng-container *ngFor="let marca of filteredOpcionesCamiones">
-              <div class="marca-card" *ngIf="marca.imagenValida"
-                [class.seleccionado]="marca._id === marcaSeleccionada?._id" (click)="seleccionarMarca(marca)">
-                <img [src]="marca.imageUrl" [alt]="marca.nombre" (error)="marca.imagenValida = false" />
+              <div
+                class="marca-card"
+                *ngIf="marca.imagenValida"
+                [class.seleccionado]="marca._id === marcaSeleccionada?._id"
+                (click)="seleccionarMarca(marca)"
+              >
+                <img
+                  [src]="marca.imageUrl"
+                  [alt]="marca.nombre"
+                  (error)="marca.imagenValida = false"
+                />
               </div>
             </ng-container>
           </ng-container>
@@ -88,17 +131,37 @@
 
         <div class="contenedor-arrendar-grid">
           <div class="info-coche" *ngIf="marcaSeleccionada">
-            <img [src]="marcaSeleccionada.imageUrl" [alt]="marcaSeleccionada.nombre" class="logo-marca" />
+            <img
+              [src]="marcaSeleccionada.imageUrl"
+              [alt]="marcaSeleccionada.nombre"
+              class="logo-marca"
+            />
             <h4 class="nombre-marca">{{ marcaSeleccionada.nombre }}</h4>
           </div>
 
-          <div class="cta-arrendar" *ngIf="marcaSeleccionada" (click)="confirmarArrendamiento()">
+          <div
+            class="cta-arrendar"
+            *ngIf="marcaSeleccionada"
+            (click)="confirmarArrendamiento()"
+          >
             <span class="texto-arrendar">Secciona <strong>Modelo</strong></span>
-            <ion-icon name="arrow-forward-circle-outline" class="icono-flecha"></ion-icon>
+            <ion-icon
+              name="arrow-forward-circle-outline"
+              class="icono-flecha"
+            ></ion-icon>
           </div>
-          <div class="cta-arrendar" *ngIf="!marcaSeleccionada" (click)="selecionaMarca()">
-            <span class="texto-arrendar">Secciona una <strong>Marca</strong></span>
-            <ion-icon name="arrow-up-circle-outline" class="icono-flecha-arriba"></ion-icon>
+          <div
+            class="cta-arrendar"
+            *ngIf="!marcaSeleccionada"
+            (click)="selecionaMarca()"
+          >
+            <span class="texto-arrendar"
+              >Secciona una <strong>Marca</strong></span
+            >
+            <ion-icon
+              name="arrow-up-circle-outline"
+              class="icono-flecha-arriba"
+            ></ion-icon>
           </div>
         </div>
       </ng-container>
@@ -106,46 +169,72 @@
       <ng-container *ngIf="mostrarModelos">
         <!-- Sección de selección de modelo -->
         <div class="contenedor-modelos">
-
           <!-- <div class="encabezado-modelos">
             <img [src]="marcaSeleccionada?.imageUrl" [alt]="marcaSeleccionada?.nombre" loading="lazy" />
             <p>Completa el formulario</p>
           </div> -->
 
           <!-- FORMULARIO NUEVO  -->
-          <form [formGroup]="formArrendamiento" (ngSubmit)="enviarSolicitud('Email')">
+          <form
+            [formGroup]="formArrendamiento"
+            (ngSubmit)="enviarSolicitud('Email')"
+          >
             <ion-grid>
               <ion-row>
                 <ion-col size="12" size-md="3">
-                  <label class="wo-label">Nombre completo: <strong>*</strong></label>
+                  <label class="wo-label"
+                    >Nombre completo: <strong>*</strong></label
+                  >
                   <div class="wo-control">
-                    <ion-input formControlName="nombre" placeholder="Ej. Juan Pérez"></ion-input>
+                    <ion-input
+                      formControlName="nombre"
+                      placeholder="Ej. Juan Pérez"
+                    ></ion-input>
                   </div>
                 </ion-col>
 
                 <ion-col size="12" size-md="3">
-                  <label class="wo-label">Correo electrónico: <strong>*</strong></label>
+                  <label class="wo-label"
+                    >Correo electrónico: <strong>*</strong></label
+                  >
                   <div class="wo-control">
-                    <ion-input type="email" formControlName="correo" placeholder="Ej. juan@mail.com"></ion-input>
+                    <ion-input
+                      type="email"
+                      formControlName="correo"
+                      placeholder="Ej. juan@mail.com"
+                    ></ion-input>
                   </div>
                 </ion-col>
 
                 <ion-col size="12" size-md="3">
-                  <label class="wo-label">Tipo de persona: <strong>*</strong></label>
+                  <label class="wo-label"
+                    >Tipo de persona: <strong>*</strong></label
+                  >
                   <div class="wo-control">
-                    <ion-select formControlName="tipoPersona" interface="popover" placeholder="Selecciona">
-                      <ion-select-option value="Persona Física Actividad Empresarial">Persona Física Actividad
-                        Empresarial</ion-select-option>
-                      <ion-select-option value="Moral">Persona Moral</ion-select-option>
+                    <ion-select
+                      formControlName="tipoPersona"
+                      interface="popover"
+                      placeholder="Selecciona"
+                    >
+                      <ion-select-option
+                        value="Persona Física Actividad Empresarial"
+                        >Persona Física Actividad Empresarial</ion-select-option
+                      >
+                      <ion-select-option value="Moral"
+                        >Persona Moral</ion-select-option
+                      >
                     </ion-select>
                   </div>
                 </ion-col>
 
-
                 <ion-col size="12" size-md="3">
                   <label class="wo-label">Plazo: <strong>*</strong></label>
                   <div class="wo-control">
-                    <ion-select formControlName="plazo" interface="popover" placeholder="Selecciona plazo">
+                    <ion-select
+                      formControlName="plazo"
+                      interface="popover"
+                      placeholder="Selecciona plazo"
+                    >
                       <ion-select-option value="12">12 meses</ion-select-option>
                       <ion-select-option value="24">24 meses</ion-select-option>
                       <ion-select-option value="36">36 meses</ion-select-option>
@@ -153,14 +242,23 @@
                     </ion-select>
                   </div>
                 </ion-col>
-
               </ion-row>
 
               <ion-col size="12" size-md="6">
-                <ion-label class="wo-label">Modelos: <strong>*</strong></ion-label>
-                <ion-select placeholder="Selecciona modelos" multiple="true" interface="popover"
-                  [value]="modelosSeleccionados" (ionChange)="onModelosChange($event)">
-                  <ion-select-option *ngFor="let modelo of modelos" [value]="modelo">
+                <ion-label class="wo-label"
+                  >Modelos: <strong>*</strong></ion-label
+                >
+                <ion-select
+                  placeholder="Selecciona modelos"
+                  multiple="true"
+                  interface="popover"
+                  [value]="modelosSeleccionados"
+                  (ionChange)="onModelosChange($event)"
+                >
+                  <ion-select-option
+                    *ngFor="let modelo of modelos"
+                    [value]="modelo"
+                  >
                     {{ modelo.modelo }}
                   </ion-select-option>
                 </ion-select>
@@ -171,7 +269,9 @@
                   <ion-col size="12">
                     <ion-card class="tabla-versiones">
                       <ion-card-header>
-                        <ion-card-title>Modelos seleccionados y versiones</ion-card-title>
+                        <ion-card-title
+                          >Modelos seleccionados y versiones</ion-card-title
+                        >
                       </ion-card-header>
                       <ion-card-content>
                         <ion-grid class="grid-compacta">
@@ -180,7 +280,10 @@
                             <ion-col size="8"><strong>Versión</strong></ion-col>
                           </ion-row>
 
-                          <ion-row *ngFor="let item of modelosConVersiones; let i = index" class="fila-version">
+                          <ion-row
+                            *ngFor="let item of modelosConVersiones; let i = index"
+                            class="fila-version"
+                          >
                             <!-- Modelo -->
                             <ion-col size="4" class="ellipsis">
                               {{ item.modelo.modelo }}
@@ -189,11 +292,18 @@
                             <!-- Select versiones -->
                             <ion-col size="8">
                               <div class="wo-control wo-compact">
-                                <ion-select [name]="'version-' + i" multiple="true" interface="popover"
+                                <ion-select
+                                  [name]="'version-' + i"
+                                  multiple="true"
+                                  interface="popover"
                                   placeholder="Selecciona versión"
                                   [(ngModel)]="modelosConVersiones[i].versionSeleccionada"
-                                  [ngModelOptions]="{ standalone: true }">
-                                  <ion-select-option *ngFor="let version of item.versiones" [value]="version">
+                                  [ngModelOptions]="{ standalone: true }"
+                                >
+                                  <ion-select-option
+                                    *ngFor="let version of item.versiones"
+                                    [value]="version"
+                                  >
                                     {{ version }}
                                   </ion-select-option>
                                 </ion-select>
@@ -215,23 +325,22 @@
                 </button>
 
                 <!-- Botón verde (WhatsApp) -->
-                <button type="button" class="button-native custom-btn success" (click)="enviarSolicitud('Wh')">
+                <button
+                  type="button"
+                  class="button-native custom-btn success"
+                  (click)="enviarSolicitud('Wh')"
+                >
                   <ion-icon name="logo-whatsapp" slot="start"></ion-icon>
                   WhatsApp
                 </button>
               </ion-row>
-
-
             </ion-grid>
           </form>
-
         </div>
       </ng-container>
-
     </div>
     <div #infoArrendamiento></div>
   </section>
-
 
   <section class="grid-arrendamiento despues_de_imagen">
     <ion-grid>
@@ -241,9 +350,10 @@
           <div class="tarjeta-arr">
             <h5><ion-icon name="car-sport-outline"></ion-icon> ¿Qué es?</h5>
             <p>
-              El arrendamiento puro te permite utilizar un auto nuevo pagando una renta mensual,
-              sin adquirir deuda ni comprometer tu flujo de efectivo. Ideal para empresas y profesionistas con
-              beneficios fiscales.
+              El arrendamiento puro te permite utilizar un auto nuevo pagando
+              una renta mensual, sin adquirir deuda ni comprometer tu flujo de
+              efectivo. Ideal para empresas y profesionistas con beneficios
+              fiscales.
             </p>
           </div>
         </ion-col>
@@ -253,12 +363,29 @@
           <div class="tarjeta-arr">
             <h5><ion-icon name="thumbs-up-outline"></ion-icon> Beneficios</h5>
             <ul>
-              <li><ion-icon name="checkmark-circle-outline"></ion-icon> 100% deducible en impuestos</li>
-              <li><ion-icon name="cash-outline"></ion-icon> Inversión inicial baja</li>
-              <li><ion-icon name="wallet-outline"></ion-icon> Financiación completa del vehículo</li>
-              <li><ion-icon name="close-circle-outline"></ion-icon> No se registra como deuda</li>
-              <li><ion-icon name="locate-outline"></ion-icon> Incluye GPS de monitoreo</li>
-              <li><ion-icon name="calendar-outline"></ion-icon> Plazos de 12 a 60 meses</li>
+              <li>
+                <ion-icon name="checkmark-circle-outline"></ion-icon> 100%
+                deducible en impuestos
+              </li>
+              <li>
+                <ion-icon name="cash-outline"></ion-icon> Inversión inicial baja
+              </li>
+              <li>
+                <ion-icon name="wallet-outline"></ion-icon> Financiación
+                completa del vehículo
+              </li>
+              <li>
+                <ion-icon name="close-circle-outline"></ion-icon> No se registra
+                como deuda
+              </li>
+              <li>
+                <ion-icon name="locate-outline"></ion-icon> Incluye GPS de
+                monitoreo
+              </li>
+              <li>
+                <ion-icon name="calendar-outline"></ion-icon> Plazos de 12 a 60
+                meses
+              </li>
             </ul>
           </div>
         </ion-col>
@@ -266,13 +393,28 @@
         <!-- Requisitos -->
         <ion-col size="12" size-md="4">
           <div class="tarjeta-arr">
-            <h5><ion-icon name="document-text-outline"></ion-icon> Requisitos</h5>
+            <h5>
+              <ion-icon name="document-text-outline"></ion-icon> Requisitos
+            </h5>
             <ul>
-              <li><ion-icon name="document-outline"></ion-icon> Llenar solicitud</li>
-              <li><ion-icon name="business-outline"></ion-icon> RFC y constancia de situación fiscal</li>
-              <li><ion-icon name="card-outline"></ion-icon> Identificación oficial</li>
-              <li><ion-icon name="home-outline"></ion-icon> Comprobante de domicilio</li>
-              <li><ion-icon name="bar-chart-outline"></ion-icon> Opinión positiva del SAT</li>
+              <li>
+                <ion-icon name="document-outline"></ion-icon> Llenar solicitud
+              </li>
+              <li>
+                <ion-icon name="business-outline"></ion-icon> RFC y constancia
+                de situación fiscal
+              </li>
+              <li>
+                <ion-icon name="card-outline"></ion-icon> Identificación oficial
+              </li>
+              <li>
+                <ion-icon name="home-outline"></ion-icon> Comprobante de
+                domicilio
+              </li>
+              <li>
+                <ion-icon name="bar-chart-outline"></ion-icon> Opinión positiva
+                del SAT
+              </li>
             </ul>
           </div>
         </ion-col>

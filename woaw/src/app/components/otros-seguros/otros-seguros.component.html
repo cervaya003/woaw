@@ -1,14 +1,104 @@
 <div class="contenedor_otros">
-  <h2 class="titulo">Otras opciones</h2>
+  <!-- <h2 class="titulo">Cotiza y realiza el pago de tu seguro</h2> -->
+
+  <div class="logos-wrapper">
+    <a href="https://www.crabi.com/" target="_blank">
+      <img src="/assets/icon/crabi.png" alt="Logo Crabi" class="logo" />
+    </a>
+    <span class="slash"></span>
+    <a href="https://wo-aw.com/" target="_blank">
+      <img src="/assets/icon/logo4.png" alt="Logo Woaw" class="logo" />
+    </a>
+  </div>
+
+  <!-- <section class="advertencia">
+    <p>
+      ⚠️ Este cotizador se encuentra en fase de prueba y no tiene validez oficial.
+      Su uso es únicamente demostrativo para evitar fraudes.
+    </p>
+  </section> -->
+
   <div class="opciones-grid">
-    <div class="card motos">
-      <h3>Motos</h3>
+
+    <!-- COTIZACIÓN -->
+    <div class="card motos" (click)="redireccion('seguros')" [class.card--ok]="cards[0].estatus"
+      [class.card--off]="!cards[0].estatus">
+      <h1 class="pasoTex">Paso 1°</h1>
+      <ion-icon [name]="cards[0].icon"></ion-icon>
+      <h3>{{ cards[0].nombre }}</h3>
+
+      <div class="card__body" *ngIf="cotizacionVM; else cotizacionVacia">
+        <div class="kv">
+          <span class="k">Plan</span>
+          <span class="v">{{ cotizacionVM.plan }}</span>
+        </div>
+        <div class="kv">
+          <span class="k">Total</span>
+          <span class="v">{{ formatMXN(cotizacionVM.total) }}</span>
+        </div>
+        <div class="kv">
+          <span class="k">Pago</span>
+          <span class="v pill">{{ cotizacionVM.pagos }}</span>
+        </div>
+        <div class="kv">
+          <span class="k">Vehículo</span>
+          <span class="v">{{ cotizacionVM.vehiculo }}</span>
+        </div>
+      </div>
+      <ng-template #cotizacionVacia>
+        <div class="card__empty">Sin cotización guardada.</div>
+      </ng-template>
     </div>
-    <div class="card camiones">
-      <h3>Camiones</h3>
+
+    <!-- MIS DATOS -->
+    <div class="card" (click)="redireccion('seguros/persona')" [class.card--ok]="cards[1].estatus"
+      [class.card--off]="!cards[1].estatus">
+      <h1 class="pasoTex">Paso 2°</h1>
+      <ion-icon [name]="cards[1].icon"></ion-icon>
+      <h3>{{ cards[1].nombre }}</h3>
+
+      <div class="card__body" *ngIf="usuarioVM; else usuarioVacio">
+        <div class="kv">
+          <span class="k">Nombre</span>
+          <span class="v">{{ usuarioVM.nombre }}</span>
+        </div>
+        <div class="kv">
+          <span class="k">RFC</span>
+          <span class="v">{{ usuarioVM.rfc }}</span>
+        </div>
+        <div class="kv" *ngIf="usuarioVM.email">
+          <span class="k">Correo</span>
+          <span class="v">{{ usuarioVM.email }}</span>
+        </div>
+        <div class="kv" *ngIf="usuarioVM.phone">
+          <span class="k">Teléfono</span>
+          <span class="v">{{ usuarioVM.phone }}</span>
+        </div>
+        <div class="kv" *ngIf="usuarioVM.direccion">
+          <span class="k">Dirección</span>
+          <span class="v">{{ usuarioVM.direccion }}</span>
+        </div>
+      </div>
+      <ng-template #usuarioVacio>
+        <div class="card__empty">Sin datos de usuario.</div>
+      </ng-template>
     </div>
-    <div class="card plataforma">
-      <h3>Plataforma RT</h3>
+
+    <!-- PÓLIZA -->
+    <div class="card" (click)="redireccion('seguros/poliza')" [class.card--ok]="cards[2].estatus"
+      [class.card--off]="!cards[2].estatus">
+      <h1 class="pasoTex">Paso 3°</h1>
+      <ion-icon [name]="cards[2].icon"></ion-icon>
+      <h3>{{ cards[2].nombre }}</h3>
+      <div class="card__body" *ngIf="polizaVM; else polizaVacia">
+        <div class="card__empty">Poliza creada correctamente</div>
+      </div>
+
+      <ng-template #polizaVacia>
+        <div class="card__empty">Sin póliza configurada.</div>
+      </ng-template>
     </div>
+
+
   </div>
 </div>
