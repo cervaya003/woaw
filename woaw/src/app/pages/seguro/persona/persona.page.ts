@@ -59,14 +59,13 @@ export class PersonaPage implements OnInit {
     });
 
     this.buscarForm = this.fb.group({
-      rfc: [
+      valuebuscar: [
         '',
         {
           validators: [
             Validators.required,
-            Validators.minLength(12),
-            Validators.maxLength(13),
-            Validators.pattern(/^[A-ZÑ&]{3,4}\d{6}[A-Z0-9]{3}$/),
+            Validators.minLength(5),
+            Validators.maxLength(30)
           ],
           updateOn: 'change'
         }
@@ -98,59 +97,80 @@ export class PersonaPage implements OnInit {
     }
 
   }
-  toUpperCase(event: any) {
-    const value = event.target.value.toUpperCase();
-    this.buscarForm.get('rfc')?.setValue(value, { emitEvent: false });
-  }
-onBuscar() {
-  if (this.buscarForm.valid) {
-    const rfc = this.buscarForm.value.rfc;
-    console.log('Buscando RFC:', rfc);
-
-    this.mostrar_spinnet = true;
-    this.seguros.buscarPersona(rfc).subscribe({
-      next: (data: any) => {
-        this.mostrar_spinnet = false;
-        this.islandKey++;
-
-        if (data?.found === false) {
-          this.generalService.alert(
-            `El RFC ${rfc} no fue encontrado en Crabi.`,
-            'No existe',
-            'danger'
-          );
-          return;
-        }
-
-        localStorage.setItem('UsuarioRespuesta', JSON.stringify(data));
-        this.statusBuscar = false;
-        this.detectaUsuario();
-      },
-      error: (error) => {
-        this.mostrar_spinnet = false;
-        console.error('Error al obtener persona:', error);
+  onBuscar(status: boolean = true, val: string = ''): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      if (this.buscarForm.invalid && status) {
         this.generalService.alert(
-          'Ocurrió un error al consultar Crabi. Intenta nuevamente más tarde.',
-          'Error',
+          `Ingresa tu RFC o Email`,
+          'Ingresa tus datos',
           'danger'
         );
+        return resolve(false);
       }
+
+      let value: string = status ? this.buscarForm.value.valuebuscar : val;
+
+      this.mostrar_spinnet = true;
+      this.seguros.buscarPersona(value).subscribe({
+        next: (data: any) => {
+          this.mostrar_spinnet = false;
+          this.islandKey++;
+
+          if (data?.found === false) {
+            if (status) {
+              this.generalService.alert(
+                `${value} no fue encontrado`,
+                'No existe',
+                'danger'
+              );
+            }
+            return resolve(false);
+          }
+
+          localStorage.setItem('UsuarioRespuesta', JSON.stringify(data));
+          this.statusBuscar = false;
+          this.detectaUsuario();
+          this.generalService.alert(
+            `${value} fue encontrado correctamente`,
+            'Usuario localizado',
+            'success'
+          );
+          this.form_poliza.reset();
+          return resolve(true);
+        },
+        error: (error) => {
+          this.mostrar_spinnet = false;
+          console.error('Error al obtener persona:', error);
+          this.generalService.alert(
+            'Ocurrió un error al consultar Crabi. Intenta nuevamente más tarde.',
+            'Error',
+            'danger'
+          );
+          return reject(error);
+        }
+      });
     });
   }
-}
   buscarSeccion() {
     this.statusBuscar = !this.statusBuscar;
   }
   detectaUsuario() {
-    const storedPersona = localStorage.getItem('UsuarioRespuesta');
-    if (storedPersona) {
+    this.islandKey++;
+    if (this.bustasUserBoleano()) {
       this.statusUserDtos = true;
-      this.UsuarioRespuesta = JSON.parse(storedPersona);
+      const storedPersona = localStorage.getItem('UsuarioRespuesta');
+      if (storedPersona) {
+        this.UsuarioRespuesta = JSON.parse(storedPersona);
+      }
     } else {
       this.UsuarioRespuesta = null;
       this.statusUserDtos = false;
       return;
     }
+  }
+  bustasUserBoleano(): boolean {
+    const storedPersona = localStorage.getItem('UsuarioRespuesta');
+    return !!(storedPersona && storedPersona.trim() !== '');
   }
   nuevosDatos() {
     this.mostrar_spinnet = true;
@@ -162,15 +182,22 @@ onBuscar() {
   editarUser() {
     this.statusUserDtos = false;
   }
-  siguiente() {
+  async siguiente() {
     if (this.form_poliza.invalid) {
       this.form_poliza.markAllAsTouched();
       return;
     }
     if (this.currentStepform === 1) {
-      this.currentStepform = 2;
       const tipo = this.form_poliza.get('tipoPersona')?.value;
       this.tipoPersonaSeleccionada = tipo;
+      this.currentStepform = 2;
+      this.form_poliza.addControl('telefono', this.fb.control('', [Validators.required, Validators.pattern(/^\d{10}$/)]));
+      this.form_poliza.addControl('calle', this.fb.control('', [Validators.required, Validators.minLength(4)]));
+      this.form_poliza.addControl('int', this.fb.control('', [Validators.required, Validators.minLength(1)]));
+      this.form_poliza.addControl('ext', this.fb.control('', [Validators.required, Validators.minLength(1)]));
+      this.form_poliza.addControl('col', this.fb.control('', [Validators.required, Validators.minLength(5)]));
+    } else if (this.currentStepform === 2) {
+      this.currentStepform = 3;
       // siempre se creaen estos 
       this.form_poliza.addControl('nombre', this.fb.control('', [Validators.required, Validators.minLength(4)]));
       this.form_poliza.addControl('email', this.fb.control('', [Validators.required, Validators.email]));
@@ -186,21 +213,43 @@ onBuscar() {
         this.form_poliza.addControl('folio', this.fb.control('', [Validators.required, Validators.minLength(5)]));
         this.form_poliza.addControl('nmRepLegal', this.fb.control('', [Validators.required, Validators.minLength(5)]));
       }
-    } else if (this.currentStepform === 2) {
-      this.currentStepform = 3;
-      this.form_poliza.addControl('telefono', this.fb.control('', [Validators.required, Validators.pattern(/^\d{10}$/)]));
-      this.form_poliza.addControl('calle', this.fb.control('', [Validators.required, Validators.minLength(4)]));
-      this.form_poliza.addControl('int', this.fb.control('', [Validators.required, Validators.minLength(1)]));
-      this.form_poliza.addControl('ext', this.fb.control('', [Validators.required, Validators.minLength(1)]));
-      this.form_poliza.addControl('col', this.fb.control('', [Validators.required, Validators.minLength(5)]));
     } else if (this.currentStepform === 3) {
-      this.obtenerPaises();
-      this.obtenerEstados();
-      this.obtenerActEconomicas();
-      this.currentStepform = 4;
-      this.form_poliza.addControl('pais', this.fb.control({ value: 1, disabled: true }, Validators.required));
-      this.form_poliza.addControl('estado', this.fb.control('', [Validators.required]));
-      this.form_poliza.addControl('actE', this.fb.control('', [Validators.required]));
+      const email = String(this.form_poliza.value.email || '').trim();
+      const rfc = String(this.form_poliza.value.rfc || '').trim();
+
+      try {
+        let existeEmail = true;
+        let existeRFC = true;
+
+        if (email) {
+          existeEmail = await this.onBuscar(false, email);
+        }
+
+        if (!existeEmail && rfc) {
+          existeRFC = await this.onBuscar(false, rfc);
+        }
+
+        if (!existeEmail && !existeRFC) {
+          this.obtenerPaises();
+          this.obtenerEstados();
+          this.obtenerActEconomicas();
+          this.currentStepform = 4;
+          this.form_poliza.addControl('pais', this.fb.control({ value: 1, disabled: true }, Validators.required));
+          this.form_poliza.addControl('estado', this.fb.control('', [Validators.required]));
+          this.form_poliza.addControl('actE', this.fb.control('', [Validators.required]));
+        } else {
+          return;
+        }
+      } catch (e) {
+        this.generalService.alert(
+          'Ocurrió un error al consultar. Intenta nuevamente.',
+          'Error',
+          'danger'
+        );
+        console.error(e);
+        return;
+      }
+
     } else if (this.currentStepform === 4) {
       this.generalService.confirmarAccion(
         '¿Autorizas enviar tu datos par acrear tu registro?',
@@ -216,23 +265,25 @@ onBuscar() {
     return !!(control && control.invalid && (control.dirty || control.touched));
   }
   regresar() {
-    this.detectaUsuario();
     let controlesAEliminar: string[] = [];
     if (this.currentStepform === 1) {
-      this.islandKey++;
-      // this.location.back();
-      this.router.navigate(['/seguros']);
+      if (this.bustasUserBoleano()) {
+        this.statusUserDtos = true;
+      } else {
+        this.islandKey++;
+        this.router.navigate(['/seguros']);
+      }
     } else if (this.currentStepform === 2) {
-      this.tipoPersonaSeleccionada = null;
       this.currentStepform = 1;
+      controlesAEliminar = [
+        'telefono', 'calle', 'int', 'ext', 'col'
+      ];
+    } else if (this.currentStepform === 3) {
+      this.tipoPersonaSeleccionada = null;
+      this.currentStepform = 2;
       controlesAEliminar = [
         'nombre', 'email', 'rfc',
         'apellidoP', 'apellidoM', 'curp', 'folio', 'nmRepLegal'
-      ];
-    } else if (this.currentStepform === 3) {
-      this.currentStepform = 2;
-      controlesAEliminar = [
-        'telefono', 'calle', 'int', 'ext', 'col'
       ];
     } else if (this.currentStepform === 4) {
       this.currentStepform = 3;
@@ -243,6 +294,11 @@ onBuscar() {
     controlesAEliminar.forEach(c => {
       if (this.form_poliza.contains(c)) this.form_poliza.removeControl(c);
     });
+  }
+  regresarInicio() {
+    this.detectaUsuario();
+    this.islandKey++;
+    this.router.navigate(['/seguros']);
   }
   toUpper(ctrlName: string) {
     const c = this.form_poliza.get(ctrlName);

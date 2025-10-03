@@ -1,6 +1,15 @@
 <div class="contenedor_otros">
   <!-- <h2 class="titulo">Cotiza y realiza el pago de tu seguro</h2> -->
 
+  <div class="logos-wrapper">
+    <a href="https://www.crabi.com/" target="_blank">
+      <img src="/assets/icon/crabi.png" alt="Logo Crabi" class="logo" />
+    </a>
+    <span class="slash"></span>
+    <a href="https://wo-aw.com/" target="_blank">
+      <img src="/assets/icon/logo4.png" alt="Logo Woaw" class="logo" />
+    </a>
+  </div>
 
   <!-- <section class="advertencia">
     <p>
@@ -10,6 +19,7 @@
   </section> -->
 
   <div class="opciones-grid">
+
     <!-- COTIZACIÓN -->
     <div class="card motos" (click)="redireccion('seguros')" [class.card--ok]="cards[0].estatus"
       [class.card--off]="!cards[0].estatus">
@@ -88,5 +98,7 @@
         <div class="card__empty">Sin póliza configurada.</div>
       </ng-template>
     </div>
+
+
   </div>
 </div>

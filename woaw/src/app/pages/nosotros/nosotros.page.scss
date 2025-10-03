@@ -41,7 +41,7 @@ ion-content {
   align-items: end;
   justify-items: start;
   overflow: hidden;
-  
+
   isolation: isolate;
   z-index: 0;
   padding-bottom: clamp(16px, 6vh, 56px);
@@ -90,7 +90,9 @@ ion-content {
       font-weight: 900;
       color: #fff;
 
-      span { color: #ff0000; }
+      span {
+        color: #ff0000;
+      }
     }
 
     p {
@@ -125,164 +127,165 @@ ion-content {
 }
 
 /* ===================== BARRA DE CARTAS + TELÉFONO ===================== */
- 
+
 .phone-mock {
-  position: absolute;
-  right: clamp(12px, 6vw, 80px);
-  top: clamp(125px, 20vw, 180px);
-  margin: 0;
+  position: flex;
   transform: rotate(-0.2deg);
-  filter: drop-shadow(0 26px 48px rgba(0,0,0,.45));
   z-index: 3;
+
+  @media (max-width: 868px) {
+    display: none;
+  }
 
   img {
     display: block;
-    width: clamp(220px, 36vw, 430px);
+    width: 200px;
+    height: 300px;
     height: auto;
   }
 
-  transition: opacity .25s ease, transform .25s ease;
-}
+  transition: opacity .25s ease,
+  transform .25s ease;
 
-/* Desaparece en móviles */
-@media (max-width: 868px) {
-  .phone-mock {
-    display: none;
+  #features-end-sentinel {
+    display: block;
+    height: 1px;
+    width: 100%;
   }
 }
 
-/* Estado oculto */
-.phone-mock.is-hidden {
-  opacity: 0;
-  transform: translateY(6px) rotate(-0.2deg);
-}
-
-#features-end-sentinel {
-  display: block;
-  height: 1px;
-  width: 100%;
-}
-/*****estoy ocultando el cel cuando se ve en dispisitivo movil****/
 
 
- 
 /* ===================== CONNECT BAND ===================== */
-.connect-band{
-  background:#fff;
-  position:relative;
-  padding:clamp(18px,2.6vw,30px) 0 clamp(26px,3vw,36px);
+.connect-band {
+  background: #fff;
+  position: relative;
+  padding: clamp(18px, 2.6vw, 30px) 0 clamp(26px, 3vw, 36px);
 
   /* más cerca del h5 */
   --line-y: clamp(20px, 2vw, 26px);
-  --line-h:2.5px;
-  --pill-h:34px;
-  --ring:#ff2121;
+  --line-h: 2.5px;
+  --pill-h: 34px;
+  --ring: #ff2121;
 }
 
-.connect-track{
-  width:100%;
-  margin:0 auto;
-  position:relative;
-  display:grid;
-  grid-template-columns:1fr max-content 1fr;
-  align-items:start;
-  gap:clamp(24px,6vw,80px);
-  text-align:center;
+.connect-track {
+  width: 100%;
+  margin: 0 auto;
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr max-content 1fr;
+  align-items: start;
+  gap: clamp(24px, 6vw, 80px);
+  text-align: center;
 }
 
 /* línea horizontal (más arriba) */
-.connect-track::before{
-  content:"";
-  position:absolute;
-  left:0; right:0;
-  top:var(--line-y);
-  height:var(--line-h);
-  background:var(--ring);
-  z-index:0;
+.connect-track::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: var(--line-y);
+  height: var(--line-h);
+  background: var(--ring);
+  z-index: 0;
 }
 
 /* columnas */
-.connect-col{ position:relative; z-index:1; }
+.connect-col {
+  position: relative;
+  z-index: 1;
+}
 
-.connect-col h5{
-  margin:0;
-  font-weight:900;
-  color:var(--ring);
-  font-size:clamp(14px,1.8vw,18px);
-  line-height:1.1;
-  position:relative;
-  top:-2px;               /* acerca aún más al trazo */
+.connect-col h5 {
+  margin: 0;
+  font-weight: 900;
+  color: var(--ring);
+  font-size: clamp(14px, 1.8vw, 18px);
+  line-height: 1.1;
+  position: relative;
+  top: -2px;
+  /* acerca aún más al trazo */
 }
 
 /* texto: menos aire arriba para pegarse a la línea */
-.connect-col p{
-  margin:0;
-  padding-top:clamp(8px,1.4vw,12px);
-  padding-inline:clamp(10px,3vw,18px);
-  font-size:clamp(12px,1.6vw,14px);
-  line-height:1.55;
-  color:#000;
-  max-width:30ch;
-  margin-inline:auto;
+.connect-col p {
+  margin: 0;
+  padding-top: clamp(8px, 1.4vw, 12px);
+  padding-inline: clamp(10px, 3vw, 18px);
+  font-size: clamp(12px, 1.6vw, 14px);
+  line-height: 1.55;
+  color: #000;
+  max-width: 30ch;
+  margin-inline: auto;
 }
 
 /* centro */
-.connect-center{
-  position:relative;
-  z-index:2;
-  display:flex;
-  align-items:center;
-  gap:clamp(10px,2vw,18px);
-  margin-top:calc(var(--line-y) - (var(--pill-h) / 2));
+.connect-center {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: clamp(10px, 2vw, 18px);
+  margin-top: calc(var(--line-y) - (var(--pill-h) / 2));
 }
 
 /* pastilla */
-.connect-label{
-  position:relative;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  height:var(--pill-h);
-  padding:0 clamp(18px,2.6vw,24px);
-  border-radius:999px;
-  background:var(--ring);
-  color:#fff;
-  font-weight:900;
-  letter-spacing:.3px;
-  font-size:clamp(12px,1.6vw,14px);
-  box-shadow:0 6px 16px rgba(255,33,33,.25);
+.connect-label {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--pill-h);
+  padding: 0 clamp(18px, 2.6vw, 24px);
+  border-radius: 999px;
+  background: var(--ring);
+  color: #fff;
+  font-weight: 900;
+  letter-spacing: .3px;
+  font-size: clamp(12px, 1.6vw, 14px);
+  box-shadow: 0 6px 16px rgba(255, 33, 33, .25);
 }
+
 /* Nodos conectores: doble aro concéntrico con líneas más gruesas */
 /* nodos conectores: círculo simple */
 .connect-label {
-  --node-d: clamp(22px, 2.6vw, 26px); /* diámetro */
+  --node-d: clamp(22px, 2.6vw, 26px);
+  /* diámetro */
   --ring: #ff2121;
-  --space: 28px;                      /* 🔴 antes 42px → ahora más pegado */
-  --ring-w: 3px;                      /* grosor del aro */
+  --space: 28px;
+  /* 🔴 antes 42px → ahora más pegado */
+  --ring-w: 3px;
+  /* grosor del aro */
 }
 
 .connect-label::before,
 .connect-label::after {
-  content:"";
-  position:absolute;
-  top:50%;
-  transform:translateY(-50%);
-  width:var(--node-d);
-  height:var(--node-d);
-  border-radius:50%;
-  z-index:2;
+  content: "";
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: var(--node-d);
+  height: var(--node-d);
+  border-radius: 50%;
+  z-index: 2;
 
   background: radial-gradient(circle,
-    transparent 45%,
-    var(--ring) 46% 100%
-  );
+      transparent 45%,
+      var(--ring) 46% 100%);
 
   box-shadow: 0 0 0 3px #fff;
 }
 
 /* posiciones */
-.connect-label::before { left: calc(var(--space) * -1); }
-.connect-label::after  { right: calc(var(--space) * -1); }
+.connect-label::before {
+  left: calc(var(--space) * -1);
+}
+
+.connect-label::after {
+  right: calc(var(--space) * -1);
+}
 
 
 
@@ -356,7 +359,9 @@ ion-content {
       line-height: 1.55;
     }
 
-    .kpi__spacer { margin-top: auto; }
+    .kpi__spacer {
+      margin-top: auto;
+    }
 
     &.is-accent {
       border-color: rgba(224, 20, 20, .55);
@@ -384,7 +389,9 @@ ion-content {
       color: #fff;
     }
 
-    p { color: var(--muted); }
+    p {
+      color: var(--muted);
+    }
   }
 
   .poster {
@@ -512,20 +519,22 @@ ion-content {
 /* pegado a la izquierda y SIN expandirse */
 .cards-row .cards-row__wrap {
   width: min(1100px, 94vw);
-  margin: 0;                      /* quita centrado */
+  margin: 0;
+  /* quita centrado */
   padding-inline: clamp(8px, 3vw, 20px);
   display: grid;
   /* auto-fill evita que las tarjetas se estiren; max-content mantiene su ancho */
   grid-template-columns: repeat(auto-fill, minmax(clamp(88px, 24vw, 128px), max-content));
   gap: clamp(8px, 2.4vw, 16px);
   align-items: start;
-  justify-items: start;           /* alinea tarjetas a la izquierda */
+  justify-items: start;
+  /* alinea tarjetas a la izquierda */
 }
 
 /* títulos/íconos como en móvil, sin centrado extra */
 .cards-row .card-img {
   display: grid;
-  justify-items: center;          
+  justify-items: center;
   gap: clamp(4px, 1.4vw, 8px);
   background: transparent;
   border: 0;
@@ -539,10 +548,10 @@ ion-content {
   height: clamp(44px, 16vw, 64px);
   border-radius: 12px;
   background:
-    radial-gradient(140% 100% at 0% 0%, rgba(255,255,255,.04), transparent 60%),
+    radial-gradient(140% 100% at 0% 0%, rgba(255, 255, 255, .04), transparent 60%),
     #0d0d11;
-  border: 1px solid rgba(0,0,0,.12);
-  box-shadow: 0 4px 10px rgba(0,0,0,.18), inset 0 0 0 1px rgba(255,255,255,.05);
+  border: 1px solid rgba(0, 0, 0, .12);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, .18), inset 0 0 0 1px rgba(255, 255, 255, .05);
   display: grid;
   place-items: center;
   overflow: hidden;
@@ -597,7 +606,8 @@ ion-content {
   top: 0;
   height: 100%;
   width: 100vw;
-  background: url('/assets/nosotros/fondo.png') center 90% / cover no-repeat; /* ⬅️ bajada */
+  background: url('/assets/nosotros/fondo.png') center 90% / cover no-repeat;
+  /* ⬅️ bajada */
   filter: brightness(.35) contrast(.95);
   z-index: -2;
 }
@@ -638,29 +648,31 @@ ion-content {
 .mvv .card {
   display: flex;
   flex-direction: column;
-  align-items: center;   
-  text-align: center;   
+  align-items: center;
+  text-align: center;
   padding: clamp(14px, 1.6vw, 20px);
 
 }
 
 .mvv .card p,
 .mvv .card ul {
-  text-align: center;    
+  text-align: center;
 }
 
 
 .mvv .card ul {
-  padding-left: 0;      
-  list-style-position: inside;  
+  padding-left: 0;
+  list-style-position: inside;
 }
+
 /* párrafos blancos con buen leading y texto justificado */
 .mvv .card p {
   margin: 0;
   font-size: clamp(13px, 1.55vw, 16px);
   line-height: 1.7;
   color: rgba(255, 255, 255, .95);
-  text-align: justify;   /* 🔴 justificado */
+  text-align: justify;
+  /* 🔴 justificado */
   text-wrap: pretty;
 }
 
@@ -672,24 +684,26 @@ ion-content {
 /* lista de Valores con bullets blancos */
 .mvv .card ul {
   margin: 0;
-  padding-left: 0; 
+  padding-left: 0;
   font-size: clamp(13px, 1.55vw, 16px);
   line-height: 1.7;
   color: rgba(255, 255, 255, .95);
   text-align: left;
   list-style-position: inside;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);  
-  gap: 12px;  
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
 }
 
 
 .mvv .card:last-child {
-  align-self: start;   
-  margin-top: -25px;   
+  align-self: start;
+  margin-top: -25px;
 }
+
 .mvv .card ul li::marker {
-  color: #fff; /* bullets blancos */
+  color: #fff;
+  /* bullets blancos */
 }
 
 
@@ -738,7 +752,7 @@ ion-content {
 
 .intro-woaw {
   text-align: center;
-    background: #ffffff; 
+  background: #ffffff;
   max-width: 100%;
   margin: 0 auto;
   padding: clamp(20px, 5vw, 40px) 16px;
@@ -763,8 +777,9 @@ ion-content {
   margin-top: 20px;
   flex-wrap: wrap;
 }
+
 .btn-rojo {
-  display: inline-block;       
+  display: inline-block;
   background: #ff2121ce;
   color: #fff;
   font-weight: 600;
@@ -773,8 +788,9 @@ ion-content {
   padding: 12px 24px;
   cursor: pointer;
   transition: background 0.25s ease;
-  text-decoration: none;      
+  text-decoration: none;
 }
+
 .btn-rojo:hover {
   background: #d80f0f;
 }

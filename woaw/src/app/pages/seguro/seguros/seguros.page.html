@@ -47,7 +47,7 @@
   <app-spinner *ngIf="mostrar_spinnet"></app-spinner>
 
   <div class="fondo-seguros">
-    <!-- <img src="/assets/autos/seg.png" alt=""> -->
+    <img src="/assets/autos/seg1.webp" alt="">
     <span class="fondo-seguros__overlay"></span>
   </div>
 
@@ -354,16 +354,25 @@
               </div>
 
               <!-- Desglose compacto -->
-              <ul class="breakdown" *ngIf="getSelectedPayment(p) as sel2">
-                <ng-container *ngIf="paymentSummary(sel2) as s2">
+              <ul class="breakdown" *ngIf="getSelectedPayment(p) as pay">
+                <ng-container *ngIf="planInfo(pay) as i">
                   <li>
-                    <span>Subtotal</span><b>{{ fmtMoney(s2.total) }}</b>
+                    <span>Prima neta</span><b>{{ fmtMoney(i.net_premium) }}</b>
+                  </li>
+                  <li>
+                    <span>Derechos (expedición)</span><b>{{ fmtMoney(i.expedition_rights) }}</b>
+                  </li>
+                  <li *ngIf="i.fee">
+                    <span>Comisión / recargos</span><b>{{ fmtMoney(i.fee) }}</b>
                   </li>
                   <li class="muted">
-                    <span>Comisión emisión</span><b>Incluida</b>
+                    <span>Subtotal</span><b>{{ fmtMoney(i.subtotal) }}</b>
                   </li>
                   <li class="muted">
-                    <span>IVA</span><b>Incluido</b>
+                    <span>IVA</span><b>{{ fmtMoney(i.taxes) }}</b>
+                  </li>
+                  <li class="strong">
+                    <span>Total</span><b>{{ fmtMoney(i.total) }}</b>
                   </li>
                 </ng-container>
               </ul>
@@ -373,12 +382,10 @@
             <article class="qp-cta">
               <button type="button" class="btn ghost" (click)="nuevoSeguro()">Cotizar nuevo ↻</button>
               <button type="button" class="btn prime" (click)="confirmarCrearPersona()">Continuar ➜</button>
-              <p class="disclaimer">Al continuar aceptas revisar términos de la póliza en el paso siguiente.</p>
             </article>
 
           </div>
 
-          <!-- Columna derecha: coberturas -->
           <aside class="qp-right" *ngIf="activePlan && getPlanCoverages(activePlan) as covs">
 
             <header class="qp-right__head">
@@ -399,10 +406,6 @@
                 </div>
               </li>
             </ul>
-
-            <footer class="qp-right__foot">
-              <!-- <p>Pueden variar según validaciones finales del asegurador.</p> -->
-            </footer>
           </aside>
 
         </section>

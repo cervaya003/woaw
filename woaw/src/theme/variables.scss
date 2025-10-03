@@ -763,3 +763,38 @@ img.oculta {
     }
   }
 }
+
+
+
+
+
+
+.fondo-seguros {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+
+  @media (max-width: 850px) {
+    height: 100%;
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 100%;
+    display: block;
+    opacity: 0.9;
+  }
+
+  .fondo-seguros__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(120deg, rgba(255, 255, 255, 0.801)  40%, #0000001d 40% 80%);
+    pointer-events: none;
+  }
+}

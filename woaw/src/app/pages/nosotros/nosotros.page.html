@@ -13,7 +13,7 @@
 <app-navbar></app-navbar>
 
 <ion-content [fullscreen]="true" scrollEvents="true" (ionScroll)="onScroll($event)">
-  
+
   <!-- HERO -->
   <section class="hero" #hero>
 
@@ -37,16 +37,6 @@
 
 
 
-  <section>
-    <figure class="phone-mock" aria-hidden="true">
-      <picture>
-        <source srcset="/assets/nosotros/iphone.png" type="image/webp" />
-        <img src="/assets/nosotros/iphone.webp" alt="" loading="lazy" />
-      </picture>
-      <div id="features-end-sentinel" aria-hidden="true"></div>
-    </figure>
-  </section>
-
   <!-- CARTAS CON IMÁGENES -->
   <section class="cards-row">
     <div class="cards-row__wrap">
@@ -56,6 +46,17 @@
         </figure>
         <h4>{{ c.title }}</h4>
       </article>
+
+      <!-- <section>
+        <figure class="phone-mock" aria-hidden="true">
+          <picture>
+            <source srcset="/assets/nosotros/iphone.png" type="image/webp" />
+            <img src="/assets/nosotros/iphone.webp" alt="" loading="lazy" />
+          </picture>
+          <div id="features-end-sentinel" aria-hidden="true"></div>
+        </figure>
+      </section> -->
+
     </div>
   </section>
 

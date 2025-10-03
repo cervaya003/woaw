@@ -23,7 +23,9 @@ export class PolizaPage implements OnInit {
   mostrar_spinnet = false;
   currentStepform: 1 | 2 | 3 | 4 = 1;
   form_poliza: FormGroup;
+
   private branchId = 'ded09658-50cd-4637-8390-31a8f39fe9a1';
+  placasEnTramite: boolean = false;
 
   datosCoche: any = null;
   datosUsuario: any = null;
@@ -253,7 +255,7 @@ export class PolizaPage implements OnInit {
 
       this.polizaCreada = true;
       this.datosPolizaCreada = JSON.parse(cotizacionRespuestra);
-      // console.log(this.datosPolizaCreada)
+      console.log(this.datosPolizaCreada)
 
       const cotizacionRespuestrap = localStorage.getItem('datosPolizaVin');
 
@@ -414,14 +416,29 @@ export class PolizaPage implements OnInit {
       this.form_poliza.get('vin')?.setValue(norm);
     }
   }
-  onPlacasInput(ev: Event) {
+  public togglePlacasTramite() {
+    const ctrl = this.form_poliza.get('placas');
+    if (!ctrl) return;
+
+    if (this.placasEnTramite) {
+      ctrl.setValue('En trámite', { emitEvent: false });
+      ctrl.clearValidators();
+      ctrl.updateValueAndValidity({ emitEvent: false });
+    } else {
+      ctrl.setValue('', { emitEvent: false });
+      ctrl.setValidators([Validators.required/*, tu patrón si aplica */]);
+      ctrl.updateValueAndValidity({ emitEvent: false });
+    }
+  }
+  public onPlacasInput(ev: Event) {
+    if (this.placasEnTramite) return;
     const el = ev.target as HTMLInputElement;
     const norm = (el.value || '')
       .toUpperCase()
       .replace(/[^A-Z0-9]/g, '')
       .slice(0, 7);
     if (norm !== el.value) {
-      this.form_poliza.get('placas')?.setValue(norm);
+      this.form_poliza.get('placas')?.setValue(norm, { emitEvent: false });
     }
   }
   // private placasMxValidator = (ctrl: AbstractControl) => {
@@ -484,6 +501,39 @@ export class PolizaPage implements OnInit {
       const label = this.formatPaymentLabel(pp?.name, Array.isArray(pp?.payments) ? pp.payments.length : 1);
       this.miPlan = `${label} — ${this.fmtMoney(pp?.total)}`;
     }
+  }
+
+
+
+
+  // === GETTERS derivados DIRECTAMENTE de datosPolizaCreada ===
+  get policyCO() {
+    const policies = this.datosPolizaCreada?.response?.policies || [];
+    return policies.find((p: any) => typeof p?.policy_number === 'string' && p.policy_number.startsWith('CO-')) || null;
+  }
+
+  get folioCO(): string | null {
+    return this.policyCO?.policy_number ?? null;
+  }
+
+  get inicioVigencia(): string | null {
+    const s = this.policyCO?.start_date ? new Date(this.policyCO.start_date) : null;
+    return s ? s.toLocaleDateString() : null;
+  }
+
+  get finVigencia(): string | null {
+    const e = this.policyCO?.end_date ? new Date(this.policyCO.end_date) : null;
+    return e ? e.toLocaleDateString() : null;
+  }
+
+  get invoiceUrl(): string | null {
+    const files = this.datosPolizaCreada?.response?.files || [];
+    return files.find((f: any) => f?.name === 'invoice')?.url ?? null;
+  }
+
+  get coverUrl(): string | null {
+    const files = this.datosPolizaCreada?.response?.files || [];
+    return files.find((f: any) => f?.name === 'cover')?.url ?? null;
   }
 
 

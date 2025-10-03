@@ -542,7 +542,8 @@ export class SegurosPage implements OnInit {
       '¿Estás seguro en cotizar un nuevo coche?',
       'Cotizar nuevo coche',
       async () => {
-        this.verificaStorage();
+        this.getMarcas_cohes();
+        this.obtenerMarcas();
         localStorage.removeItem('datosCoche');
         localStorage.removeItem('cotizacion');
         localStorage.removeItem('datosPolizaVin_Respuesta');
@@ -686,11 +687,13 @@ export class SegurosPage implements OnInit {
   planInfo(pp: any) {
     const payments = Array.isArray(pp?.payments) ? pp.payments : [];
     const count = payments.length || 1;
+
     const subtotal = Number(pp?.subtotal ?? 0);
     const taxes = Number(pp?.taxes ?? 0);
     const total = Number(pp?.total ?? 0);
     const fee = Number(pp?.fee ?? 0);
     const expedition_rights = Number(pp?.expedition_rights ?? 0);
+    const net_premium = Number(pp?.net_premium ?? 0);
 
     let firstTotal = payments[0]?.total ?? total;
     let restTotal: number | null = null;
@@ -706,6 +709,7 @@ export class SegurosPage implements OnInit {
     return {
       planLabel: this.paymentPlanLabel(pp),
       count,
+      net_premium,
       subtotal, taxes, total, fee, expedition_rights,
       variable,
       firstTotal: Number(firstTotal),
