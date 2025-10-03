@@ -1,11 +1,16 @@
 <ion-header>
   <ion-toolbar color="dark">
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/"></ion-back-button>
+      <div class="perfil-header">
+        <ion-back-button defaultHref="/"></ion-back-button>
+        <img src="/assets/icon/logo4.png" alt="WOAW" class="logo" />
+      </div>
     </ion-buttons>
+
     <ion-title>Check-In</ion-title>
   </ion-toolbar>
 </ion-header>
+
 
 <ion-content [fullscreen]="true">
   <ng-container *ngIf="booking as b">
@@ -15,11 +20,10 @@
           <span class="codigo">Reserva <b>#{{ b.codigo || b._id }}</b></span>
           <ion-badge [color]="(b.estatus || 'primary')">{{ b.estatus }}</ion-badge>
         </div>
+
         <ion-card-subtitle class="fecha">
           {{ b.fechaInicio | date:'medium' }} → {{ b.fechaFin | date:'medium' }}
         </ion-card-subtitle>
-
-
         <div class="auto" *ngIf="getRentalCar(b) as rc">
           <ion-chip *ngIf="rc?.marca || rc?.modelo" outline>
             <ion-icon name="car-outline"></ion-icon>
@@ -36,7 +40,7 @@
         </div>
 
         <!-- Banner de sólo lectura -->
-        <ion-item color="light" lines="none" *ngIf="soloLectura" style="margin-top:8px; border-radius:10px;">
+        <ion-item color="light" lines="none" *ngIf="soloLectura" class="solo-lectura">
           <ion-icon name="eye-outline" slot="start"></ion-icon>
           <ion-label>
             Vista de sólo lectura
@@ -59,7 +63,6 @@
             <div class="valor">{{ combustible }}%</div>
           </div>
           <ion-range min="0" max="100" step="1" [(ngModel)]="combustible" [pin]="true" [snaps]="true" [ticks]="false"
-
             [disabled]="soloLectura" aria-label="Nivel de combustible" class="ck-range">
 
             <ion-icon size="small" slot="start" name="ellipse-outline"></ion-icon>
@@ -95,7 +98,6 @@
             <div class="preview-item" *ngFor="let url of existingUrls; let i = index; trackBy: trackByUrl">
               <ion-img [src]="url" alt="foto guardada"></ion-img>
 
-              <!-- Botón quitar sólo si NO es soloLectura -->
               <ion-button *ngIf="!soloLectura" fill="clear" size="small" class="btn-del"
                 (click)="quitarFotoExistente(i)" aria-label="Eliminar foto guardada">
                 <ion-icon name="trash-outline"></ion-icon>
@@ -104,7 +106,6 @@
           </div>
         </div>
 
-        <!-- Agregar fotos (oculto en soloLectura) -->
         <div class="bloque" *ngIf="!soloLectura">
           <div class="bloque-head">
             <div class="titulo">Agregar fotos</div>
@@ -148,16 +149,13 @@
         </div>
       </ion-card-content>
 
-      <!-- Acciones -->
       <div class="ck-actions">
-        <!-- Si es soloLectura: sólo botón de volver -->
         <ion-button *ngIf="soloLectura" expand="block" fill="solid" (click)="continuar()">
           VOLVER
         </ion-button>
 
-        <!-- Si NO es soloLectura: botones de guardar/subir -->
         <ng-container *ngIf="!soloLectura">
-          <ion-button expand="block" size="default"
+          <ion-button expand="block" fill="solid" size="default"
             [disabled]="loading.booking || loading.guardar || loading.fotos || !!fileError || !hayCambios"
             (click)="guardarYSalir()">
             <ion-spinner *ngIf="loading.guardar || loading.fotos" name="dots"></ion-spinner>

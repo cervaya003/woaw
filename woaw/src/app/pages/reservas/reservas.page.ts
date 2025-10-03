@@ -1,10 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import {
-  AlertController,
-  LoadingController,
-  ToastController,
-} from '@ionic/angular';
+import { AlertController, LoadingController, ToastController } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { RentaService } from '../../services/renta.service';
 import { ReservaService, CreateBookingResponse } from '../../services/reserva.service';
@@ -16,22 +12,21 @@ function toYMDLocal(d = new Date()): string {
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, '0');
   const day = String(d.getDate()).padStart(2, '0');
-  return `${y}-${m}-${day}`; // yyyy-mm-dd (local)
+  return `${y}-${m}-${day}`;
 }
 
 function parseYMDLocal(s: string): Date {
   const [y, m, d] = (s || '').slice(0, 10).split('-').map(Number);
-  return new Date(y, (m - 1), d); // fecha local 00:00
+  return new Date(y, (m - 1), d);
 }
 
 function startOfDayLocal(d: Date): Date {
   return new Date(d.getFullYear(), d.getMonth(), d.getDate());
 }
 
-/** ✅ NUEVO: de 'YYYY-MM-DD' (local) a ISO con mediodía en UTC */
 function ymdToUtcNoonISO(ymd: string): string {
   const [y, m, d] = ymd.slice(0, 10).split('-').map(Number);
-  const dt = new Date(Date.UTC(y, (m - 1), d, 12, 0, 0)); // 12:00Z para evitar “día anterior” en MX
+  const dt = new Date(Date.UTC(y, (m - 1), d, 12, 0, 0)); // 12:00Z para evitar “día anterior”
   return dt.toISOString();
 }
 
@@ -73,10 +68,14 @@ export class ReservasPage implements OnInit {
 
   // Fechas ocupadas (YYYY-MM-DD)
   ocupadasISO = new Set<string>();
-  // Valor del ion-datetime (arreglo de YYYY-MM-DD)
+  // Endpoints que pasamos a ion-datetime
   rangeValue: string[] = [];
-  // Rango resaltado
+  // Rango resaltado (relleno rojo)
   highlightedRange: Array<{ date: string; textColor?: string; backgroundColor?: string }> = [];
+
+  /** Para detectar el “doble evento” de ion-datetime */
+  private prevRendered = new Set<string>();
+  private suppressDupUntil = 0;
 
   constructor(
     private route: ActivatedRoute,
@@ -99,6 +98,7 @@ export class ReservasPage implements OnInit {
     if (qp.get('fin')) this.form.patchValue({ fechaFin: qp.get('fin') });
 
     this.syncRangeFromForm();
+    this.prevRendered = new Set(this.rangeValue);
     this.buildHighlightedRange();
     this.loadCar();
 
@@ -114,7 +114,7 @@ export class ReservasPage implements OnInit {
     this.form = this.fb.group(
       {
         fechaInicio: [null, [Validators.required, minHoy]],
-        fechaFin: [null], // no required (permite 1 solo día)
+        fechaFin: [null], // 1 día permitido
         notasCliente: [''],
       },
       { validators: [rangoFechas] }
@@ -154,12 +154,12 @@ export class ReservasPage implements OnInit {
 
   // ====== Cálculos ======
   get minStart(): string {
-    return toYMDLocal(new Date()); // hoy (local) como min
+    return toYMDLocal(new Date());
   }
 
   isDateEnabled = (isoDateString: string): boolean => {
     try {
-      const ymd = (isoDateString || '').slice(0, 10); // tratar como YYYY-MM-DD
+      const ymd = (isoDateString || '').slice(0, 10);
       return !this.ocupadasISO.has(ymd);
     } catch {
       return true;
@@ -170,7 +170,7 @@ export class ReservasPage implements OnInit {
   private diffDaysInclusiveLocal(i: Date, f: Date): number {
     const si = startOfDayLocal(i).getTime();
     const sf = startOfDayLocal(f).getTime();
-    const excl = Math.ceil((sf - si) / 86_400_000);
+    const excl = Math.ceil((sf - si) / 86400000);
     return Math.max(1, excl + 1);
   }
 
@@ -179,12 +179,12 @@ export class ReservasPage implements OnInit {
 
     const inicio = this.form.get('fechaInicio')?.value as string | null;
     const fin = this.form.get('fechaFin')?.value as string | null;
-    const finUsado = fin || inicio; // 1 día si no hay fin
+    const finUsado = fin || inicio;
 
     if (inicio) {
       const i = parseYMDLocal(inicio);
       const f = parseYMDLocal(finUsado || inicio);
-      this.dias = this.diffDaysInclusiveLocal(i, f); // inclusivo
+      this.dias = this.diffDaysInclusiveLocal(i, f);
     } else {
       this.dias = 1;
     }
@@ -225,32 +225,127 @@ export class ReservasPage implements OnInit {
   private syncRangeFromForm() {
     const ini = this.form.get('fechaInicio')?.value;
     const fin = this.form.get('fechaFin')?.value;
-    this.rangeValue = [ini, fin].filter(Boolean) as string[];
+    this.rangeValue = [ini, fin].filter(Boolean) as string[]; // endpoints
   }
 
   onRangeChange(ev: CustomEvent) {
-    this.applyPicked(ev?.detail?.value as any);
+    this.handlePick(ev?.detail?.value);
   }
+
+  // Si tu HTML todavía tiene (ionValueChange), lo soportamos sin duplicar
   onRangeValueChange(ev: any) {
-    const value = Array.isArray(ev) ? ev : (ev?.detail?.value ?? ev);
-    this.applyPicked(value);
+    this.handlePick(Array.isArray(ev) ? ev : (ev?.detail?.value ?? ev));
   }
 
-  private applyPicked(val: string[] | string | null | undefined) {
-    const arr = Array.isArray(val) ? val : (val ? [val] : []);
-    const picked = [...new Set(arr)]
-      .slice(0, 2)
-      .sort((a, b) => +parseYMDLocal(a) - +parseYMDLocal(b));
+  /** Normaliza arreglo a YYYY-MM-DD únicos (en orden) */
+  private normalizeMulti(val: string[] | string | null | undefined): string[] {
+    const raw = Array.isArray(val) ? val : (val ? [val] : []);
+    const out: string[] = [];
+    for (const s of raw) {
+      const ymd = String(s).slice(0, 10);
+      if (!out.includes(ymd)) out.push(ymd);
+    }
+    return out;
+  }
 
-    if (picked.length === 0) {
-      this.form.patchValue({ fechaInicio: null, fechaFin: null });
-    } else if (picked.length === 1) {
-      this.form.patchValue({ fechaInicio: picked[0], fechaFin: null });
+  private sameSet(a: string[], b: string[]): boolean {
+    if (a.length !== b.length) return false;
+    const A = new Set(a), B = new Set(b);
+    for (const x of A) if (!B.has(x)) return false;
+    return true;
+  }
+
+  private handlePick(val: string[] | string | null | undefined) {
+    const now = Date.now();
+    if (now < this.suppressDupUntil) return; // anti-doble evento
+
+    const arr = this.normalizeMulti(val);
+
+    // Si llega exactamente lo que ya mostramos, no reproceses
+    if (this.sameSet(arr, this.rangeValue)) return;
+
+    const newSet = new Set(arr);
+
+    // Detectar si fue toggle on/off y cuál fue la última fecha tocada
+    let lastTouched: string | null = null;
+    let isRemoval = false;
+
+    for (const d of newSet) {
+      if (!this.prevRendered.has(d)) { lastTouched = d; isRemoval = false; break; }
+    }
+    if (!lastTouched) {
+      for (const d of this.prevRendered) {
+        if (!newSet.has(d)) { lastTouched = d; isRemoval = true; break; }
+      }
+    }
+    if (!lastTouched && arr.length) lastTouched = arr[arr.length - 1];
+
+    this.applyTouchedInteractive(lastTouched, isRemoval, arr);
+
+    // Actualiza “pintado” y bloquea duplicados por un instante
+    this.prevRendered = new Set(this.rangeValue);
+    this.suppressDupUntil = Date.now() + 60;
+  }
+
+  /**
+   * Interactivo:
+   * - 1er tap => día único.
+   * - 2º tap => rango (ordena si hace falta).
+   * - Con inicio+fin:
+   *    * Tap < inicio => mueve inicio.
+   *    * Tap > fin    => mueve fin.
+   *    * Tap dentro   => mueve el BORDE MÁS CERCANO (no colapsa).
+   */
+  private applyTouchedInteractive(last: string | null, isRemoval: boolean, arrNow: string[]) {
+    if (!last) return;
+
+    const curStart = this.form.get('fechaInicio')?.value as string | null;
+    const curEnd   = this.form.get('fechaFin')?.value as string | null;
+
+    let newStart: string | null = curStart ?? null;
+    let newEnd:   string | null = curEnd ?? null;
+
+    if (isRemoval) {
+      const arr = [...arrNow].sort();
+      if (arr.length === 0) { newStart = null; newEnd = null; }
+      else if (arr.length === 1) { newStart = arr[0]; newEnd = null; }
+      else { newStart = arr[0]; newEnd = arr[arr.length - 1]; }
     } else {
-      this.form.patchValue({ fechaInicio: picked[0], fechaFin: picked[1] });
+      if (!curStart) {
+        newStart = last; newEnd = null;
+      } else if (curStart && !curEnd) {
+        const s = parseYMDLocal(curStart);
+        const L = parseYMDLocal(last);
+        if (+L < +s) { newStart = last; newEnd = curStart; }
+        else { newStart = curStart; newEnd = last; }
+      } else {
+        const s = parseYMDLocal(curStart!);
+        const e = parseYMDLocal(curEnd!);
+        const L = parseYMDLocal(last);
+
+        if (+L < +s) {
+          newStart = last;              // extiende/recorta por la izquierda
+        } else if (+L > +e) {
+          newEnd = last;                // extiende/recorta por la derecha
+        } else {
+          // Dentro del rango -> mover el borde más cercano
+          const distS = Math.abs(+L - +s);
+          const distE = Math.abs(+e - +L);
+          if (distS <= distE) newStart = last;
+          else newEnd = last;
+        }
+      }
     }
 
-    this.form.updateValueAndValidity();
+    // Normalizar si hay ambos
+    if (newStart && newEnd) {
+      const si = parseYMDLocal(newStart);
+      const ei = parseYMDLocal(newEnd);
+      if (+ei < +si) { const tmp = newStart; newStart = newEnd; newEnd = tmp; }
+    }
+
+    // Aplicar y refrescar sin loops
+    this.form.patchValue({ fechaInicio: newStart, fechaFin: newEnd ?? null }, { emitEvent: false });
     this.syncRangeFromForm();
     this.validarMinDiasYDisponibilidad();
     this.buildHighlightedRange();
@@ -268,7 +363,8 @@ export class ReservasPage implements OnInit {
     let f = parseYMDLocal(fin0!);
     if (f < i) [i, f] = [f, i];
 
-    const bg = '#4744efff';  // azul
+    // ROJO (tema)
+    const bg = '#e11d2f';
     const fg = '#ffffff';
 
     const cur = new Date(i);
@@ -312,14 +408,13 @@ export class ReservasPage implements OnInit {
     const loading = await this.loadingCtrl.create({ message: 'Creando reserva...' });
     await loading.present();
 
-    // ✅ Enviar al backend con hora fija 12:00Z para que NO se recorra un día
     const fechaInicioISO = ymdToUtcNoonISO(fechaInicio);
     const fechaFinISO = ymdToUtcNoonISO(fechaFin!);
 
     this.reservaService.createBookingV2({
       rentalCar: this.coche._id,
-      fechaInicio: fechaInicioISO,   // ISO 12:00Z
-      fechaFin: fechaFinISO,         // ISO 12:00Z
+      fechaInicio: fechaInicioISO,
+      fechaFin: fechaFinISO,
       items: [],
       moneda: this.coche?.precio?.moneda ?? 'MXN',
       notasCliente,
@@ -360,7 +455,7 @@ export class ReservasPage implements OnInit {
     const f = parseYMDLocal(fin!);
     const hoy = parseYMDLocal(toYMDLocal(new Date()));
 
-    const inicioOk = i.getTime() >= hoy.getTime();   // hoy permitido
+    const inicioOk = i.getTime() >= hoy.getTime();
     const rangoOk = f.getTime() >= i.getTime();
     const extraOk = !this.form.hasError('minDias') && !this.form.hasError('rangoOcupado');
 

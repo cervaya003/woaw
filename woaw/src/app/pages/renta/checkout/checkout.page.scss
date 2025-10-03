@@ -1,7 +1,37 @@
+/* Header compacto con logo */
+.perfil-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    .btn-regresar {
+        background: transparent;
+        border: 0;
+        color: var(--ion-color-light);
+        font-size: 18px;
+    }
+
+    .logo {
+        width: 28px;
+        height: 28px;
+        object-fit: contain;
+    }
+
+    .titulo-perfil {
+        color: var(--ion-color-light);
+        font-weight: 700;
+    }
+}
+
+/* Tarjeta blanca con acentos rojos */
 .ck-card {
     margin: 12px;
     border-radius: 14px;
     overflow: hidden;
+    background: #fff;
+    color: #111;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, .12);
+    border: 1px solid rgba(0, 0, 0, .06);
 }
 
 .ck-header {
@@ -14,13 +44,13 @@
 
         .codigo {
             font-size: 14px;
-            opacity: 0.9;
+            opacity: .9;
         }
     }
 
     .fecha {
         font-size: 12px;
-        opacity: 0.75;
+        color: #6b7280;
     }
 
     .auto {
@@ -28,6 +58,25 @@
         display: flex;
         flex-wrap: wrap;
         gap: 8px;
+
+        ion-chip[outline] {
+            --background: #fff;
+            --color: #111;
+            --border-color: #e5e7eb;
+        }
+
+        ion-chip[outline] ion-icon {
+            color: var(--ion-color-danger);
+        }
+    }
+
+    /* banner solo lectura */
+    .solo-lectura {
+        margin-top: 8px;
+        border-radius: 10px;
+        --background: #f8fafc;
+        --color: #0f172a;
+        border: 1px solid #e5e7eb;
     }
 }
 
@@ -45,9 +94,9 @@
 
         .titulo {
             position: relative;
-            font-weight: 700;
+            font-weight: 800;
             font-size: 16px;
-            padding-inline-start: 6px;
+            padding-inline-start: 8px;
 
             &::before {
                 content: "";
@@ -57,48 +106,61 @@
                 bottom: 2px;
                 width: 3px;
                 border-radius: 2px;
-                background: var(--ion-color-primary);
-                opacity: .8;
+                background: var(--ion-color-danger);
+                /* acento rojo */
+                opacity: .9;
             }
         }
 
         .valor {
-            font-weight: 600;
+            font-weight: 700;
             font-size: 14px;
-            opacity: 0.9;
+            color: #111;
             margin-inline-start: auto;
         }
 
         .hint {
             font-size: 12px;
-            opacity: 0.7;
+            color: #6b7280;
             margin-inline-start: auto;
             white-space: nowrap;
         }
     }
 
+    /* Range rojo */
     .ck-range {
-        --bar-background-active: var(--ion-color-primary);
-        --knob-background: var(--ion-color-primary);
+        --bar-background: #e5e7eb;
+        --bar-background-active: var(--ion-color-danger);
+        --knob-background: var(--ion-color-danger);
+        --pin-background: var(--ion-color-danger);
+        --pin-color: #fff;
     }
 
+    /* Textarea clara */
     .ck-textarea {
-        border: 1px solid var(--ion-color-step-150, #2a2a2a);
+        border: 1px solid #e5e7eb;
         border-radius: 10px;
         padding: 6px;
         --padding-start: 8px;
         --padding-end: 8px;
+        --background: #fff;
+        --color: #111;
     }
 
+    /* Uploader */
     .uploader {
         display: flex;
         align-items: center;
         flex-wrap: wrap;
         gap: 8px;
 
+        ion-button {
+            --border-radius: 10px;
+        }
+
         .uploader-info {
             font-size: 12px;
-            opacity: 0.8;
+            color: #6b7280;
         }
     }
 
@@ -111,18 +173,19 @@
         font-size: 14px;
     }
 
+    /* Previews de fotos */
     .grid-preview {
         display: grid;
+        grid-template-columns: repeat(3, 1fr);
         gap: 8px;
         margin-top: 10px;
-        grid-template-columns: repeat(3, 1fr);
     }
 
     .preview-item {
         position: relative;
         border-radius: 8px;
         overflow: hidden;
-        background: var(--ion-color-step-100, #1c1c1c);
+        background: #f3f4f6;
         aspect-ratio: 1 / 1;
 
         ion-img {
@@ -144,7 +207,7 @@
             --padding-top: 2px;
             --padding-bottom: 2px;
             --border-radius: 999px;
-            --background: transparent;
+            --background: rgba(255, 255, 255, .85);
             --ripple-color: transparent;
             min-width: 28px;
             min-height: 28px;
@@ -154,17 +217,19 @@
 
             ion-icon {
                 font-size: 18px;
+                color: var(--ion-color-danger);
             }
         }
 
         .btn-del:focus-visible {
-            outline: 2px solid var(--ion-color-primary);
+            outline: 2px solid var(--ion-color-danger);
             outline-offset: 2px;
             border-radius: 999px;
         }
     }
 }
 
+/* Barra de acciones pegada */
 .ck-actions {
     position: sticky;
     bottom: 0;
@@ -173,15 +238,33 @@
     gap: 8px;
     padding: 12px;
     padding-bottom: calc(12px + env(safe-area-inset-bottom));
-    background: color-mix(in oklab, var(--ion-background-color), transparent 10%);
+    background: rgba(255, 255, 255, .92);
     backdrop-filter: blur(6px);
-    border-top: 1px solid var(--ion-color-step-150, #2a2a2a);
+    border-top: 1px solid #e5e7eb;
+    box-shadow: 0 -6px 18px rgba(0, 0, 0, .08);
+
+    ion-button {
+        --border-radius: 10px;
+    }
+
+    /* Botón “Guardar y finalizar” (success) queda verde por semántica) */
+    ion-button[color="success"][expand="block"] {
+        --background: var(--ion-color-success);
+        --color: #fff;
+    }
+
+    /* Botón VOLVER (clear) en rojo suave */
+    ion-button[fill="clear"][expand="block"] {
+        --background: var(--ion-color-danger);
+        --color: #fff;
+    }
 
     ion-button+ion-button {
         margin-top: 0;
     }
 }
 
+/* Responsive */
 @media (min-width: 640px) {
     .ck-body .grid-preview {
         grid-template-columns: repeat(4, 1fr);
