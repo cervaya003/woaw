@@ -172,8 +172,11 @@ const routes: Routes = [
         data: { title: "seguros | woaw" },
       },
       {
-        path: 'seguros/persona',
-        loadChildren: () => import('./pages/seguro/persona/persona.module').then(m => m.PersonaPageModule)
+        path: "seguros/persona",
+        loadChildren: () =>
+          import("./pages/seguro/persona/persona.module").then(
+            (m) => m.PersonaPageModule
+          ),
       },
       {
         path: "lote-edit/:id",
@@ -233,48 +236,93 @@ const routes: Routes = [
           ),
       },
       {
-        path: 'conocenos',
-        loadChildren: () => import('./pages/nosotros/nosotros.module').then(m => m.NosotrosPageModule)
+        path: "conocenos",
+        loadChildren: () =>
+          import("./pages/nosotros/nosotros.module").then(
+            (m) => m.NosotrosPageModule
+          ),
       },
       {
-        path: 'disponibilidad-car/:id',
-        loadChildren: () => import('./pages/disponibilidad-car/disponibilidad-car.module').then(m => m.DisponibilidadCarPageModule)
+        path: "disponibilidad-car/:id",
+        loadChildren: () =>
+          import("./pages/disponibilidad-car/disponibilidad-car.module").then(
+            (m) => m.DisponibilidadCarPageModule
+          ),
       },
       {
-        path: 'edit-renta/:id',
-        loadChildren: () => import('./pages/edit-renta/edit-renta.module').then(m => m.EditRentaPageModule)
+        path: "edit-renta/:id",
+        loadChildren: () =>
+          import("./pages/edit-renta/edit-renta.module").then(
+            (m) => m.EditRentaPageModule
+          ),
       },
       {
-        path: 'reservas/:id',
-        loadChildren: () => import('./pages/reservas/reservas.module').then(m => m.ReservasPageModule)
+        path: "reservas/:id",
+        loadChildren: () =>
+          import("./pages/reservas/reservas.module").then(
+            (m) => m.ReservasPageModule
+          ),
       },
       {
-        path: 'renta-ciudades',
-        loadChildren: () => import('./pages/renta-ciudades/renta-ciudades.module').then(m => m.RentaCiudadesPageModule)
+        path: "renta-ciudades",
+        loadChildren: () =>
+          import("./pages/renta-ciudades/renta-ciudades.module").then(
+            (m) => m.RentaCiudadesPageModule
+          ),
       },
 
       {
-        path: 'checkin/:id',
-        loadChildren: () => import('./pages/renta/checkin/checkin.module').then(m => m.CheckInPageModule)
+        path: "checkin/:id",
+        loadChildren: () =>
+          import("./pages/renta/checkin/checkin.module").then(
+            (m) => m.CheckInPageModule
+          ),
       },
       {
-        path: 'checkout/:id',
-        loadChildren: () => import('./pages/renta/checkout/checkout.module').then(m => m.CheckoutPageModule)
+        path: "checkout/:id",
+        loadChildren: () =>
+          import("./pages/renta/checkout/checkout.module").then(
+            (m) => m.CheckoutPageModule
+          ),
       },
       {
-        path: 'mis-reservas',
-        loadChildren: () => import('./pages/renta/mis-reservas/mis-reservas.module').then(m => m.MisReservasPageModule)
+        path: "mis-reservas",
+        loadChildren: () =>
+          import("./pages/renta/mis-reservas/mis-reservas.module").then(
+            (m) => m.MisReservasPageModule
+          ),
       },
 
       {
-        path: 'seguros/poliza',
-        loadChildren: () => import('./pages/seguro/poliza/poliza.module').then(m => m.PolizaPageModule)
+        path: "seguros/poliza",
+        loadChildren: () =>
+          import("./pages/seguro/poliza/poliza.module").then(
+            (m) => m.PolizaPageModule
+          ),
       },
       {
-        path: 'seguros-disponibles',
-        loadChildren: () => import('./pages/seguro/elige-seguro/elige-seguro.module').then(m => m.EligeSeguroPageModule)
+        path: "seguros-disponibles",
+        loadChildren: () =>
+          import("./pages/seguro/elige-seguro/elige-seguro.module").then(
+            (m) => m.EligeSeguroPageModule
+          ),
       },
-      // ----- 
+
+      {
+        path: "seguros/ver-polizas",
+        loadChildren: () =>
+          import("./pages/seguro/ver-polizas/ver-polizas.module").then(
+            (m) => m.VerPolizasPageModule
+          ),
+      },
+      {
+        path: "seguros/detalle-poliza",
+        loadChildren: () =>
+          import("./pages/seguro/detalle-poliza/detalle-poliza.module").then(
+            (m) => m.DetallePolizaPageModule
+          ),
+      },
+      // -----
     ],
   },
   {
@@ -291,4 +339,4 @@ const routes: Routes = [
   ],
   exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

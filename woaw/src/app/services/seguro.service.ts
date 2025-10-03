@@ -68,11 +68,20 @@ export class SeguroService {
       }),
       catchError((error) => this.headersService.handleError(error))
     );
-    // const url = `${environment.api_key}/crabi/policy`;
-    // return this.http.post(url, dto, {
-    //   headers: { 'Content-Type': 'application/json' }
-    // });
   }
+
+   getPolizas(): Observable<any> {
+     return from(this.headersService.obtenerToken()).pipe(
+      switchMap((token) => {
+        const headers = this.headersService.getJsonHeaders(token);
+        return this.http.get(`${environment.api_key}/crabi/mypolicies`, { headers });
+      }),
+      catchError((error) => this.headersService.handleError(error))
+    );
+  }
+
+// 
+
   pagoPoliza(id: string): Observable<any> {
     return this.http.get(`${environment.api_key}/crabi/checkout/${id}`);
   }

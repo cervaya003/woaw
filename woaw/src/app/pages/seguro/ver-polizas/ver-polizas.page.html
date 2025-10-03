@@ -1,0 +1,92 @@
+<app-navbar></app-navbar>
+
+<ion-content [fullscreen]="true">
+  <section class="polizas-section">
+    <ion-header collapse="condense">
+      <ion-toolbar>
+        <ion-title size="large">verPolizas</ion-title>
+      </ion-toolbar>
+    </ion-header>
+
+    <header class="cotiza__head">
+      <h1>Pólizas</h1>
+    </header>
+
+    <div class="logos-wrapper">
+      <a href="https://www.crabi.com/" target="_blank">
+        <img src="/assets/icon/crabi1.png" alt="Logo Crabi" class="logo" />
+      </a>
+      <span class="slash"></span>
+      <a href="https://wo-aw.com/" target="_blank">
+        <img src="/assets/icon/logo2.png" alt="Logo Woaw" class="logo" />
+      </a>
+    </div>
+
+    <!-- 🧮 CONTADOR -->
+    <section class="stats-section" aria-label="Resumen de pólizas">
+      <div class="stat">
+        <span class="label">Total de pólizas: {{ totalPolizas }}</span>
+      </div>
+      <ng-template #dash><div class="num">—</div></ng-template>
+    </section>
+    <!-- /CONTADOR -->
+
+    <div class="cards-wrap" *ngIf="!cargando && polizas.length; else estado">
+      <div class="poliza-card" *ngFor="let p of polizas; trackBy: trackById">
+        <span (click)="detallesPoliza(p)">
+          <header class="card-head">
+            <h3 class="folio">{{ folioOf(p) }}</h3>
+            <span class="plan tiny-pill">{{ planOf(p) }}</span>
+          </header>
+
+          <div class="kv">
+            <div class="row">
+              <span class="label">Vigencia</span>
+              <span
+                class="value"
+                *ngIf="vigenciaInicioOf(p) || vigenciaFinOf(p); else sinVig"
+              >
+                <ng-container *ngIf="vigenciaInicioOf(p) as vi">
+                  {{ vi | date:"d 'de' MMMM 'de' y" }}
+                </ng-container>
+                <ng-container *ngIf="vigenciaInicioOf(p) && vigenciaFinOf(p)">
+                  –
+                </ng-container>
+                <ng-container *ngIf="vigenciaFinOf(p) as vf">
+                  {{ vf | date:"d 'de' MMMM 'de' y" }}
+                </ng-container>
+              </span>
+              <ng-template #sinVig>—</ng-template>
+            </div>
+
+            <div class="row">
+              <span class="label">VIN/Auto</span>
+              <span class="value">{{ vehiculoOf(p) }}</span>
+            </div>
+
+            <div class="row">
+              <span class="label">RFC</span>
+              <span class="value value--mono">{{ rfcOf(p) }}</span>
+            </div>
+
+            <div class="row">
+              <span class="label">Placa</span>
+              <span class="value"
+                ><span class="placa-pill">{{ placasOf(p) }}</span></span
+              >
+            </div>
+          </div>
+        </span>
+      </div>
+    </div>
+
+    <ng-template #estado>
+      <div class="state">
+        <ion-spinner name="crescent" *ngIf="cargando"></ion-spinner>
+        <p *ngIf="!cargando">No hay pólizas.</p>
+      </div>
+    </ng-template>
+  </section>
+
+  <app-footer></app-footer>
+</ion-content>

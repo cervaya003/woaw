@@ -1,0 +1,109 @@
+<app-navbar></app-navbar>
+
+<ion-content [fullscreen]="true">
+  <ng-container *ngIf="!cargando; else cargandoTpl">
+    <section
+      class="detalle-poliza"
+      *ngIf="polizaUI as poliza; else sinDatosTpl"
+    >
+      <header class="detalle__head">
+        <h1>Póliza #{{ poliza.folio }}</h1>
+        <span class="plan-pill">{{ poliza.plan || 'Plan estándar' }}</span>
+      </header>
+
+      <div class="detalle__info">
+        <div class="row">
+          <span class="label">Vigencia:</span>
+          <span class="value">
+            <ng-container *ngIf="poliza.vigenciaInicio; else sinIni">
+              {{ poliza.vigenciaInicio | date:'d/MMM/yyyy' }}
+            </ng-container>
+            -
+            <ng-container *ngIf="poliza.vigenciaFin; else sinFin">
+              {{ poliza.vigenciaFin | date:'d/MMM/yyyy' }}
+            </ng-container>
+          </span>
+          <ng-template #sinIni>—</ng-template>
+          <ng-template #sinFin>—</ng-template>
+        </div>
+
+        <div class="row">
+          <span class="label">Vehículo:</span>
+          <span class="value">{{ poliza.vehiculo || '—' }}</span>
+        </div>
+
+        <div class="row">
+          <span class="label">RFC:</span>
+          <span class="value">{{ poliza.rfc || '—' }}</span>
+        </div>
+
+        <div class="row">
+          <span class="label">Placas:</span>
+          <span class="value">{{ poliza.placas || '—' }}</span>
+        </div>
+      </div>
+
+      <!-- Botones solo visuales -->
+      <section class="acciones-poliza">
+        <div class="detalle__acciones">
+          <button class="btn dark">
+            <ion-icon name="document-text-outline"></ion-icon>
+            Póliza
+          </button>
+
+          <button class="btn gray">
+            <ion-icon name="receipt-outline"></ion-icon>
+            Comprobante
+          </button>
+
+          <button class="btn red">
+            <ion-icon name="card-outline"></ion-icon>
+            Pago
+          </button>
+        </div>
+      </section>
+    </section>
+  </ng-container>
+
+  <!-- Estado cargando -->
+  <ng-template #cargandoTpl>
+    <section class="detalle-poliza">
+      <header class="detalle__head">
+        <h1>Cargando póliza…</h1>
+        <span class="plan-pill">…</span>
+      </header>
+      <div class="detalle__info">
+        <div class="row">
+          <span class="label">Vigencia:</span><span class="value">—</span>
+        </div>
+        <div class="row">
+          <span class="label">Vehículo:</span><span class="value">—</span>
+        </div>
+        <div class="row">
+          <span class="label">RFC:</span><span class="value">—</span>
+        </div>
+        <div class="row">
+          <span class="label">Placas:</span><span class="value">—</span>
+        </div>
+      </div>
+    </section>
+  </ng-template>
+
+  <!-- Estado sin datos -->
+  <ng-template #sinDatosTpl>
+    <section class="detalle-poliza">
+      <header class="detalle__head">
+        <h1>Póliza</h1>
+        <span class="plan-pill">—</span>
+      </header>
+      <div class="detalle__info">
+        <div class="row">
+          <span class="label">Estado:</span>
+          <span class="value">No se encontró información de la póliza.</span>
+        </div>
+      </div>
+    </section>
+  </ng-template>
+
+  <app-footer></app-footer>
+</ion-content>
