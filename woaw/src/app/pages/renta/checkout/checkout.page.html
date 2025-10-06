@@ -1,9 +1,20 @@
 <ion-header>
   <ion-toolbar color="dark">
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/"></ion-back-button>
+      <div class="perfil-header">
+        <button class="btn-regresar" (click)="volver()" aria-label="Regresar">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+        </button>
+        <img src="/assets/icon/logo4.png" alt="WOAW" class="logo" />
+        <span class="titulo-perfil">Check-Out</span>
+      </div>
     </ion-buttons>
-    <ion-title>Check-Out</ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button (click)="cerrar()" aria-label="Cerrar">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -35,7 +46,9 @@
         </div>
 
         <!-- Banner de sólo lectura -->
-        <ion-item color="light" lines="none" *ngIf="soloLectura" style="margin-top:8px; border-radius:10px;">
+
+        <ion-item class="solo-lectura" lines="none" *ngIf="soloLectura">
+
           <ion-icon name="eye-outline" slot="start"></ion-icon>
           <ion-label>
             Vista de sólo lectura
@@ -74,7 +87,7 @@
           </ion-textarea>
         </div>
 
-        <!-- Fotos guardadas (Checkout) -->
+
         <div class="bloque">
           <div class="bloque-head">
             <div class="titulo">Fotos guardadas</div>
@@ -89,7 +102,7 @@
           <div class="grid-preview" *ngIf="existingUrls?.length">
             <div class="preview-item" *ngFor="let url of existingUrls; let i = index; trackBy: trackByUrl">
               <ion-img [src]="url" alt="foto guardada"></ion-img>
-              <!-- En checkout NO se permite eliminar existentes (limitación del endpoint) -->
+
             </div>
           </div>
         </div>
@@ -101,19 +114,21 @@
             <div class="hint">Hasta 12 imágenes</div>
           </div>
 
+
           <div class="uploader">
             <input #fileInput type="file" accept="image/*" capture="environment" multiple hidden
               (change)="onFiles($event)" />
 
-            <ion-button size="small" (click)="abrirSelectorFotos(fileInput)">
+            <ion-button size="small" color="danger" (click)="abrirSelectorFotos(fileInput)">
               <ion-icon slot="start" name="image-outline"></ion-icon>
               Elegir archivos
             </ion-button>
 
-            <ion-button size="small" (click)="tomarFotoCapacitor()">
+            <ion-button size="small" color="dark" (click)="tomarFotoCapacitor()">
               <ion-icon slot="start" name="camera-outline"></ion-icon>
               Tomar foto
             </ion-button>
+
 
             <span class="uploader-info" *ngIf="files?.length">{{ files.length }} seleccionadas</span>
             <span class="uploader-info" *ngIf="!files?.length">Sin archivos seleccionados</span>
@@ -138,16 +153,13 @@
 
       <!-- Acciones -->
       <div class="ck-actions">
-        <ion-button *ngIf="soloLectura" expand="block" fill="solid" (click)="continuar()">
+
+        <ion-button *ngIf="soloLectura" expand="block" fill="clear" (click)="continuar()">
+
           VOLVER
         </ion-button>
 
         <ng-container *ngIf="!soloLectura">
-          <ion-button expand="block" fill="outline" [disabled]="loading.fotos || files.length === 0 || !!fileError"
-            (click)="subirFotos()">
-            <ion-spinner *ngIf="loading.fotos" name="dots"></ion-spinner>
-            <span *ngIf="!loading.fotos">SUBIR SOLO FOTOS NUEVAS</span>
-          </ion-button>
 
           <ion-button color="success" expand="block" [disabled]="loading.finalizar || loading.fotos || loading.booking"
             (click)="guardarYFinalizar()">
@@ -160,5 +172,4 @@
       </div>
     </ion-card>
   </ng-container>
-</ion-content>
 

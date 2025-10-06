@@ -60,7 +60,12 @@ export class CheckOutPage implements OnInit, OnDestroy {
       }
     });
   }
-
+  volver() {
+    try { if (window.history.length > 2) return history.back(); } catch { }
+    this.router.navigate(['/mis-reservas']);
+  }
+  cerrar() { this.volver(); }
+  
   ionViewWillEnter() {
     if (this.id) this.cargar();
   }

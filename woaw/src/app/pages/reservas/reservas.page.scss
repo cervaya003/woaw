@@ -2,10 +2,74 @@
     --borde: #e5e7eb;
     --bg: #fff;
     --ok: #10b981;
+    /* compat */
     --borde-suave: #e5e7eb;
     --bg-claro: #ffffff;
+
+    /* ====== Tema Negro & Rojo (page-scope) ====== */
+    --negro: #0f0f10;
+    --negro-2: #161718;
+    --rojo: #e11d2f;
+    /* rojo principal */
+    --rojo-600: #c81628;
+    /* hover */
+    --rojo-700: #a31221;
+    /* pressed */
+
+    /* Mapear tokens Ionic a esta página */
+    --ion-color-primary: var(--rojo);
+    --ion-color-primary-contrast: #fff;
+    --ion-color-danger: var(--rojo);
+    --ion-color-dark: var(--negro);
 }
 
+/* Toolbar negro */
+ion-header ion-toolbar[color="dark"] {
+    --background: var(--negro);
+    --color: #fff;
+    --border-width: 0 0 1px 0;
+    --border-color: rgba(255, 255, 255, .08);
+}
+
+/* Header compacto con logo */
+.perfil-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+    /* elipsis del título */
+
+    .btn-regresar {
+        background: transparent;
+        border: 0;
+        color: #fff;
+        font-size: 18px;
+        display: grid;
+        place-items: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+    }
+
+    .btn-regresar:hover {
+        background: rgba(255, 255, 255, .08);
+    }
+
+    .logo {
+        width: 28px;
+        height: 28px;
+        object-fit: contain;
+    }
+
+    .titulo-perfil {
+        color: #fff;
+        font-weight: 700;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: clamp(160px, 40vw, 520px);
+    }
+}
 
 /* ======= HERO ======= */
 .hero {
@@ -19,6 +83,7 @@
         margin: 0;
         font-weight: 800;
         font-size: 22px;
+        color: var(--negro);
     }
 
     .chips {
@@ -27,22 +92,23 @@
         gap: 8px;
         margin-top: 6px;
         flex-wrap: wrap;
-    }
 
-    .hero-media {
-        width: 100%;
-        max-width: 620px;
-        margin: 0 auto;
-        border: 1px solid var(--borde);
-        border-radius: 12px;
-        overflow: hidden;
-        background: var(--bg);
+        ion-badge[color="primary"],
+        ion-badge[color="danger"] {
+            --background: var(--rojo) !important;
+            --color: #fff !important;
+        }
 
-        img {
-            width: 100%;
-            height: auto;
-            object-fit: contain;
-            display: block;
+        ion-badge[color="medium"],
+        ion-badge[color="dark"] {
+            --background: var(--negro) !important;
+            --color: #fff !important;
+        }
+
+        ion-badge[color="tertiary"] {
+            --background: rgba(225, 29, 47, .12);
+            --color: var(--rojo);
+            border: 1px solid rgba(225, 29, 47, .22);
         }
     }
 }
@@ -53,6 +119,61 @@
     }
 }
 
+/* ======= GRID: calendario (izq) | media (der) ======= */
+.grid-cal-img {
+    display: grid;
+    grid-template-columns: 1fr;
+    /* móvil apilado */
+    gap: 16px;
+    margin: 0 12px 12px;
+}
+
+/* Dentro del grid, usa sólo el gap para espaciar (sin márgenes propios) */
+.grid-cal-img ion-card {
+    margin: 0;
+}
+
+@media (min-width: 768px) {
+    .grid-cal-img {
+        grid-template-columns: 1fr 1fr;
+        /* dos columnas iguales */
+        align-items: start;
+        /* evita “estirar” la imagen */
+    }
+
+    /* Si mueves el Resumen FUERA de .col-media y le pones esta clase, ocupará ambas columnas */
+    .grid-cal-img .card-resumen {
+        grid-column: 1 / -1;
+    }
+}
+
+/* Columna derecha (título+chips+imagen+resumen si lo dejas dentro) */
+.col-media {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    /* separación consistente vertical */
+    min-height: 100%;
+}
+
+/* Imagen: card centrada y SIN height 100% */
+.grid-cal-img .card-media {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.grid-cal-img .card-media img {
+    width: 100%;
+    height: auto;
+    /* evita crecer por altura del contenedor */
+    max-height: clamp(260px, 60vh, 560px);
+    /* límite visual */
+    object-fit: contain;
+    /* no recorta */
+    display: block;
+}
+
 /* ======= CARDS Y FORM ======= */
 ion-card {
     margin: 12px;
@@ -60,6 +181,7 @@ ion-card {
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 4px 14px rgba(0, 0, 0, .04);
+    background: #fff;
 }
 
 ion-card-header {
@@ -68,6 +190,7 @@ ion-card-header {
 
 ion-card-title {
     font-weight: 800;
+    color: var(--negro);
 }
 
 ion-card-subtitle {
@@ -90,7 +213,7 @@ ion-textarea {
 
 ion-textarea {
     --min-height: 80px;
-    --highlight-color-focused: var(--ok);
+    --highlight-color-focused: var(--rojo);
 }
 
 ion-note[color="danger"] {
@@ -108,8 +231,9 @@ ion-note[color="danger"] {
     gap: 8px;
 }
 
-/* Contenedor del calendario */
-ion-item.center-item {
+/* Contenedor del calendario (acepta .danger-datetime y compat con .center-item) */
+ion-item.danger-datetime,
+ion-item.center-item.danger-datetime {
     width: auto;
     --padding-start: 0;
     --padding-end: 0;
@@ -118,14 +242,17 @@ ion-item.center-item {
     display: block;
 }
 
-ion-item.center-item .input-wrapper {
+ion-item.danger-datetime .input-wrapper,
+ion-item.center-item.danger-datetime .input-wrapper {
     width: 100%;
     display: flex;
     justify-content: center;
 }
 
-ion-item.center-item ion-datetime {
-    max-width: 720px;
+/* Calendario full width */
+ion-item.danger-datetime ion-datetime,
+ion-item.center-item.danger-datetime ion-datetime {
+    max-width: none;
     width: 100%;
     margin: 0 auto;
     border: 1px solid var(--borde-suave);
@@ -136,53 +263,73 @@ ion-item.center-item ion-datetime {
     padding-bottom: 6px;
 }
 
-/* aro rojo suave */
+/* aro rojo suave (cuando hay error/invalid) */
+ion-item.danger-datetime ion-datetime,
 ion-item.center-item.danger-datetime ion-datetime {
-    box-shadow: 0 0 0 2px rgba(239, 68, 68, .12), 0 6px 18px rgba(0, 0, 0, .06);
+
+    &.ion-invalid,
+    &.datetime-error {
+        box-shadow: 0 0 0 2px rgba(239, 68, 68, .12), 0 6px 18px rgba(0, 0, 0, .06);
+    }
 }
 
 /* Cabecera del mes */
-ion-item.center-item ion-datetime::part(calendar-month-year) {
+ion-item.danger-datetime ion-datetime::part(calendar-month-year),
+ion-item.center-item.danger-datetime ion-datetime::part(calendar-month-year) {
     padding: 8px 10px;
 }
 
 /* Celdas -> barra continua */
-ion-item.center-item ion-datetime::part(calendar-day) {
+ion-item.danger-datetime ion-datetime::part(calendar-day),
+ion-item.center-item.danger-datetime ion-datetime::part(calendar-day) {
     border-radius: 6px;
-    /* cuadradito suave */
     padding: 0;
-    /* sin aire entre días */
     transition: box-shadow .15s ease;
 }
 
-ion-item.center-item ion-datetime::part(calendar-day):hover {
+ion-item.danger-datetime ion-datetime::part(calendar-day):hover,
+ion-item.center-item.danger-datetime ion-datetime::part(calendar-day):hover {
     box-shadow: inset 0 0 0 2px rgba(0, 0, 0, .06);
 }
 
-/* Día seleccionado */
-ion-item.center-item ion-datetime::part(calendar-day-active) {
+/* Día seleccionado (activo) en rojo */
+ion-item.danger-datetime ion-datetime::part(calendar-day-active),
+ion-item.center-item.danger-datetime ion-datetime::part(calendar-day-active) {
     border-radius: 6px;
-    box-shadow: 0 0 0 2px rgba(0, 0, 0, .08);
+    background: var(--rojo) !important;
+    color: #fff !important;
+    box-shadow: 0 0 0 2px rgba(225, 29, 47, .18);
 }
 
-/* Hoy marcado */
-ion-item.center-item ion-datetime::part(calendar-day-today) {
-    outline: 2px solid rgba(16, 185, 129, .25);
+/* Rango en rojo tenue */
+ion-item.danger-datetime ion-datetime::part(calendar-day-in-range),
+ion-item.center-item.danger-datetime ion-datetime::part(calendar-day-in-range) {
+    background: rgba(225, 29, 47, .10);
+}
+
+/* Inicio/fin del rango */
+ion-item.danger-datetime ion-datetime::part(calendar-day-start),
+ion-item.danger-datetime ion-datetime::part(calendar-day-end),
+ion-item.center-item.danger-datetime ion-datetime::part(calendar-day-start),
+ion-item.center-item.danger-datetime ion-datetime::part(calendar-day-end) {
+    background: var(--rojo);
+    color: #fff;
+    box-shadow: 0 0 0 2px rgba(225, 29, 47, .24);
+}
+
+/* Hoy marcado (borde rojo) */
+ion-item.danger-datetime ion-datetime::part(calendar-day-today),
+ion-item.center-item.danger-datetime ion-datetime::part(calendar-day-today) {
+    outline: 2px solid rgba(225, 29, 47, .35);
     outline-offset: 1px;
     border-radius: 6px;
 }
 
 /* Deshabilitados */
-ion-item.center-item ion-datetime::part(calendar-day-disabled) {
+ion-item.danger-datetime ion-datetime::part(calendar-day-disabled),
+ion-item.center-item.danger-datetime ion-datetime::part(calendar-day-disabled) {
     opacity: .35;
     filter: grayscale(.2);
-}
-
-/* Responsive */
-@media (min-width: 1200px) {
-    ion-item.center-item ion-datetime {
-        max-width: 820px;
-    }
 }
 
 /* ======= RESUMEN ======= */
@@ -194,21 +341,25 @@ ion-item.center-item ion-datetime::part(calendar-day-disabled) {
 
     .val {
         font-weight: 700;
+        color: var(--negro);
     }
 
     .total {
-        color: var(--ok);
+        color: var(--rojo);
         font-size: 18px;
+        font-weight: 800;
     }
 }
 
-/* ======= ACTION BAR ======= */
+/* ======= ACTION BAR (sin fondo negro) ======= */
 .action-bar ion-toolbar {
-    --background: var(--ion-background-color, #fff);
+    --background: transparent;
+    /* fuera el fondo negro */
     --border-color: var(--borde);
     --border-style: solid;
     --border-width: 1px 0 0 0;
-    box-shadow: 0 -4px 12px rgba(0, 0, 0, .06);
+    box-shadow: none;
+    --color: var(--negro);
 }
 
 .action-bar .bar {
@@ -216,36 +367,46 @@ ion-item.center-item ion-datetime::part(calendar-day-disabled) {
     justify-content: space-between;
     align-items: center;
     gap: 12px;
-    padding: 6px 8px;
+    padding: 10px 12px;
 }
 
 .precio .monto {
     font-weight: 800;
     font-size: 18px;
+    color: var(--negro);
 }
 
 .precio .nota {
     font-size: 12px;
-    opacity: .8;
+    opacity: .75;
     margin-top: -2px;
+    color: var(--negro);
 }
 
+/* Botón reservar en rojo (fuerte) */
 .action-bar ion-button {
     min-width: 150px;
+    --background: var(--rojo) !important;
+    --background-hover: var(--rojo-600) !important;
+    --background-activated: var(--rojo-700) !important;
+    --color: #fff !important;
+    --border-radius: 10px;
+    --box-shadow: 0 6px 14px rgba(225, 29, 47, .25);
 }
 
+/* Label bajo el calendario (si lo usas) */
 ion-item.center-item ion-label {
     margin-bottom: 6px;
     font-weight: 600;
     color: var(--ion-color-medium);
 }
 
-/* FOCUS */
+/* ======= FOCUS (accesible) ======= */
 ion-item:focus-within {
-    outline: 2px solid rgba(16, 185, 129, .25);
+    outline: 2px solid rgba(225, 29, 47, .35);
     border-radius: 10px;
 }
 
 ion-button:focus-visible {
-    box-shadow: 0 0 0 3px rgba(16, 185, 129, .25);
+    box-shadow: 0 0 0 3px rgba(225, 29, 47, .35);
 }

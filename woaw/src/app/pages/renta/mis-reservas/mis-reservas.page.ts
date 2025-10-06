@@ -3,7 +3,8 @@ import { Router } from '@angular/router';
 import { ReservaService, RentalBooking } from '../../../services/reserva.service';
 import { finalize, timeout, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
-import { ToastController } from '@ionic/angular';
+import { ModalController, ToastController } from '@ionic/angular';
+import { DetalleReservaModalComponent } from '../../../components/detalle-reserva-modal/detalle-reserva-modal.component';
 
 @Component({
   selector: 'app-mis-reservas',
@@ -39,7 +40,8 @@ export class MisReservasPage implements OnInit {
     private reservas: ReservaService,
     private router: Router,
     private cdr: ChangeDetectorRef,
-    private toast: ToastController
+    private toast: ToastController,
+    private modalCtrl: ModalController
   ) { }
 
   ngOnInit(): void {
@@ -397,8 +399,34 @@ export class MisReservasPage implements OnInit {
     this.openDetalle(b);
   }
 
-  openDetalle(b: RentalBooking): void {
-    console.log('Detalle de reserva:', b);
+  async openDetalle(b: RentalBooking): Promise<void> {
+    const modal = await this.modalCtrl.create({
+      component: DetalleReservaModalComponent,
+      componentProps: {
+        booking: b,
+        viewerOnly: !this.soyPropietarioDeAuto(b)
+      },
+      canDismiss: true,
+      showBackdrop: true,
+      breakpoints: [0, 0.6, 0.92],
+      initialBreakpoint: 0.92
+    });
+
+    await modal.present();
+
+    // Recibir booking actualizada (si el modal hace acciones y la devuelve)
+    const { data } = await modal.onWillDismiss();
+    if (data?.updated) {
+      const updated: RentalBooking = data.updated;
+      const patch = (x: RentalBooking) => x._id === updated._id ? updated : x;
+
+      this.ownerAll = this.ownerAll.map(patch);
+      this.myAll = this.myAll.map(patch);
+      this.mergedAll = this.mergedAll.map(patch);
+      this.datos = this.datos.map(patch);
+
+      this.cdr.markForCheck();
+    }
   }
 
   acceptPending(b: RentalBooking) {

@@ -1,0 +1,164 @@
+<ion-header translucent="true">
+  <ion-toolbar color="light">
+    <ion-title>
+      <div class="title-line">
+        <span>Reserva #{{ data?.codigo || data?._id || '—' }}</span>
+        <ion-badge *ngIf="data?.estatus" [color]="badgeColor(data?.estatus)">{{ data?.estatus }}</ion-badge>
+      </div>
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()" fill="clear" aria-label="Cerrar">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <!-- Loader general -->
+  <ion-list *ngIf="loading">
+    <ion-item *ngFor="let i of [1,2,3,4]">
+      <ion-skeleton-text animated style="width:100%; height:62px;"></ion-skeleton-text>
+    </ion-item>
+  </ion-list>
+
+  <ng-container *ngIf="!loading && data">
+    <!-- Fechas -->
+    <section class="eyebrow">
+      <ion-icon name="calendar-outline"></ion-icon>
+      <div class="dates">
+        <b>{{ data.fechaInicio | date:'medium' }}</b>
+        <span> → </span>
+        <b>{{ data.fechaFin | date:'medium' }}</b>
+      </div>
+      <ion-chip size="small" color="dark" outline> {{ dias() }} día(s) </ion-chip>
+    </section>
+
+    <!-- Resumen -->
+    <ion-card class="ck-card">
+      <ion-card-header>
+        <ion-card-title>Resumen</ion-card-title>
+        <ion-card-subtitle *ngIf="car">
+          {{ marcaModelo() }}
+        </ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="grid">
+          <div class="cell">
+            <small>Moneda</small>
+            <div class="row"><ion-icon name="card-outline"></ion-icon>{{ currency() }}</div>
+          </div>
+          <div class="cell">
+            <small>Total</small>
+            <div class="row strong">
+              <ion-icon name="cash-outline"></ion-icon>{{ data.total | currency:currency():'symbol-narrow' }}
+            </div>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Usuario / Propietario -->
+    <ion-accordion-group>
+      <ion-accordion value="personas">
+        <ion-item slot="header" color="light">
+          <ion-label>Personas</ion-label>
+        </ion-item>
+        <div slot="content" class="pad">
+          <div class="two">
+            <ion-card>
+              <ion-card-header><ion-card-title>Cliente</ion-card-title></ion-card-header>
+              <ion-card-content>
+                <div>{{ data?.usuario?.nombre || data?.usuario?.email || 'Cliente' }}</div>
+              </ion-card-content>
+            </ion-card>
+            <ion-card>
+              <ion-card-header><ion-card-title>Propietario</ion-card-title></ion-card-header>
+              <ion-card-content>
+                <div>{{ ownerNombre() }}</div>
+              </ion-card-content>
+            </ion-card>
+          </div>
+        </div>
+      </ion-accordion>
+
+      <!-- Operativo -->
+      <ion-accordion value="operativo">
+        <ion-item slot="header" color="light">
+          <ion-label>Operativo (Check-In / Check-Out)</ion-label>
+        </ion-item>
+        <div slot="content" class="pad">
+          <div class="two">
+            <ion-card>
+              <ion-card-header><ion-card-title>Check-In</ion-card-title></ion-card-header>
+              <ion-card-content>
+                <div><b>Fecha:</b> {{ data?.checkIn?.fecha || '—' }}</div>
+                <div><b>Combustible:</b>
+                  {{ (data?.checkIn?.combustible !== undefined && data?.checkIn?.combustible !== null) ?
+                  data?.checkIn?.combustible : '—' }}
+                </div>
+                <!-- siempre pintamos la línea de notas, aunque venga vacía -->
+                <div><b>Notas:</b> {{ (data?.checkIn?.notas ?? '') || '—' }}</div>
+              </ion-card-content>
+            </ion-card>
+            <ion-card>
+              <ion-card-header><ion-card-title>Check-Out</ion-card-title></ion-card-header>
+              <ion-card-content>
+                <div><b>Fecha:</b> {{ data?.checkOut?.fecha || '—' }}</div>
+                <div><b>Combustible:</b>
+                  {{ (data?.checkOut?.combustible !== undefined && data?.checkOut?.combustible !== null) ?
+                  data?.checkOut?.combustible : '—' }}
+                </div>
+                <div><b>Notas:</b> {{ (data?.checkOut?.notas ?? '') || '—' }}</div>
+              </ion-card-content>
+            </ion-card>
+          </div>
+        </div>
+      </ion-accordion>
+
+      <!-- Notas de la reserva (cliente / operador)
+      <ion-accordion value="notas">
+        <ion-item slot="header" color="light">
+          <ion-label>Notas de la reserva</ion-label>
+        </ion-item>
+        <div slot="content" class="pad">
+          <div class="two">
+            <ion-card>
+              <ion-card-header><ion-card-title>Notas del cliente</ion-card-title></ion-card-header>
+              <ion-card-content>
+                <div>{{ (data?.notasCliente ?? '') || '—' }}</div>
+              </ion-card-content>
+            </ion-card>
+            <ion-card>
+              <ion-card-header><ion-card-title>Notas del operador</ion-card-title></ion-card-header>
+              <ion-card-content>
+                <div>{{ (data?.notasOperador ?? '') || '—' }}</div>
+              </ion-card-content>
+            </ion-card>
+          </div>
+        </div>
+      </ion-accordion>
+ 
+      <ion-accordion value="items">
+        <ion-item slot="header" color="light">
+          <ion-label>Conceptos</ion-label>
+        </ion-item>
+        <div slot="content" class="pad">
+          <ion-list *ngIf="data?.items?.length; else noItems">
+            <ion-item *ngFor="let it of data.items">
+              <ion-label>
+                <b>{{ it.concepto }}</b>
+                <p>{{ it.cantidad }} × {{ it.precioUnitario | currency:currency():'symbol-narrow' }}</p>
+              </ion-label>
+              <ion-note slot="end">{{ it.subtotal | currency:currency():'symbol-narrow' }}</ion-note>
+            </ion-item>
+          </ion-list>
+          <ng-template #noItems>
+            <ion-item lines="none"><ion-label>No hay conceptos.</ion-label></ion-item>
+          </ng-template>
+        </div>
+      </ion-accordion> -->
+      
+    </ion-accordion-group>
+  </ng-container>
+</ion-content>

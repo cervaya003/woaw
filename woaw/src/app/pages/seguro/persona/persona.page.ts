@@ -265,6 +265,7 @@ export class PersonaPage implements OnInit {
     return !!(control && control.invalid && (control.dirty || control.touched));
   }
   regresar() {
+    this.detectaUsuario();
     let controlesAEliminar: string[] = [];
     if (this.currentStepform === 1) {
       if (this.bustasUserBoleano()) {

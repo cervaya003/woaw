@@ -1,23 +1,41 @@
 <app-navbar></app-navbar>
 
-<ion-content [fullscreen]="true">
+<ion-content [fullscreen]="true" class="mis-reservas">
   <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
-  
+  <div class="page-head">
+    <h1>Mis reservas</h1>
+    <p class="sub">
+      Historial y acciones rápidas. <span *ngIf="!loading">Total: {{ datos?.length || 0 }}</span>
+    </p>
+    <div class="quick-chips">
+      <ion-chip color="danger" outline="true">
+        <ion-icon name="alert-circle-outline"></ion-icon>
+        <ion-label>Pendientes: {{ pendingOwner?.length || 0 }}</ion-label>
+      </ion-chip>
+      <ion-chip color="success" outline="true" *ngIf="!loading && datos?.length">
+        <ion-icon name="checkmark-circle-outline"></ion-icon>
+        <ion-label>Registradas</ion-label>
+      </ion-chip>
+    </div>
+  </div>
+
   <ion-list *ngIf="loading">
     <ion-item *ngFor="let i of [1,2,3,4]">
       <ion-skeleton-text animated style="width:100%; height:86px;"></ion-skeleton-text>
     </ion-item>
   </ion-list>
 
-  <ion-card *ngIf="loadingPending || pendingOwner.length > 0" style="margin: 12px;">
+  <h2 class="section-title" *ngIf="loadingPending || pendingOwner.length > 0">Solicitudes de reserva</h2>
+  <ion-card *ngIf="loadingPending || pendingOwner.length > 0" class="section-card">
     <ion-card-header>
       <ion-card-title>Solicitudes de reserva (tus coches)</ion-card-title>
       <ion-card-subtitle *ngIf="!loadingPending">
         {{ pendingOwner.length }} pendiente(s)
       </ion-card-subtitle>
     </ion-card-header>
+
     <ion-card-content>
       <ion-list *ngIf="loadingPending">
         <ion-item *ngFor="let s of [1,2,3]">
@@ -33,11 +51,9 @@
       <ion-list *ngIf="!loadingPending && pendingOwner.length > 0">
         <ion-item *ngFor="let b of pendingOwner" lines="full">
           <ion-label>
-            <h3>
+            <h3 class="truncate">
               {{ displayUsuario(b?.usuario) }}
-              <ion-note color="medium">
-                • {{ b?.moneda || 'MXN' }} {{ b?.total | number:'1.0-0' }}
-              </ion-note>
+              <ion-note color="medium"> • {{ b?.moneda || 'MXN' }} {{ b?.total | number:'1.0-0' }}</ion-note>
             </h3>
             <p>
               {{ b?.fechaInicio | date:'mediumDate' }} → {{ b?.fechaFin | date:'mediumDate' }}
@@ -49,7 +65,7 @@
             </p>
           </ion-label>
 
-          <div slot="end" class="actions" style="display:flex; gap:8px;">
+          <div slot="end" class="actions">
             <ion-button size="small" color="success" (click)="acceptPending(b)" [disabled]="actingIds.has(b._id)">
               <ion-spinner *ngIf="actingIds.has(b._id) && actingAction==='accept'" name="crescent"></ion-spinner>
               <span *ngIf="!(actingIds.has(b._id) && actingAction==='accept')">Aceptar</span>
@@ -65,75 +81,64 @@
       </ion-list>
     </ion-card-content>
   </ion-card>
+
   <div *ngIf="!loading && datos.length === 0" class="vacio">
     <ion-icon name="car-outline"></ion-icon>
     <p>No hay reservas registradas.</p>
   </div>
 
+  <h2 class="section-title" *ngIf="!loading && datos.length">Tus reservas</h2>
   <ion-list *ngIf="!loading && datos.length">
-    <ion-card *ngFor="let b of datos; trackBy: trackByBooking">
+    <ion-card class="booking-card" *ngFor="let b of datos; trackBy: trackByBooking" [attr.data-status]="b.estatus">
       <ion-card-header>
         <div class="header-line">
-          <ion-card-title class="truncate">
-            Reserva #{{ b.codigo || b._id }}
-          </ion-card-title>
+          <ion-card-title class="truncate">Reserva #{{ b.codigo || b._id }}</ion-card-title>
           <ion-badge [color]="colorEstatus(b.estatus)">{{ b.estatus }}</ion-badge>
         </div>
-        <ion-card-subtitle>
+        <ion-card-subtitle class="dates">
+          <ion-icon name="calendar-outline"></ion-icon>
           {{ b.fechaInicio | date:'medium' }} → {{ b.fechaFin | date:'medium' }}
         </ion-card-subtitle>
       </ion-card-header>
 
       <ion-card-content>
-        <div class="grid">
-          <div>
+        <div class="meta-grid">
+          <div class="cell">
             <small>Moneda</small>
-            <div>{{ b.moneda || 'MXN' }}</div>
+            <div class="row"><ion-icon name="card-outline"></ion-icon><span>{{ b.moneda || 'MXN' }}</span></div>
           </div>
-          <div>
+          <div class="cell">
             <small>Total</small>
-            <div>{{ b.total | currency:(b.moneda || 'MXN'):'symbol-narrow' }}</div>
+            <div class="row strong"><ion-icon name="cash-outline"></ion-icon>
+              <span>{{ b.total | currency:(b.moneda || 'MXN'):'symbol-narrow' }}</span>
+            </div>
           </div>
         </div>
 
-        <div class="acciones" style="display:flex; gap:8px; flex-wrap:wrap;">
-          <!-- ====== Iniciar renta (solo dueño, hoy, aceptada y con check-in) ====== -->
+        <div class="acciones">
           <ion-button *ngIf="puedeIniciar(b)" color="warning" (click)="iniciarRenta(b)"
             [disabled]="actingIds.has(b._id)">
             <ion-spinner *ngIf="actingIds.has(b._id) && actingAction==='start'" name="crescent"></ion-spinner>
             <span *ngIf="!(actingIds.has(b._id) && actingAction==='start')">Iniciar renta</span>
           </ion-button>
-
-          <!-- Aviso si es hoy pero falta check-in (solo para dueño) -->
           <ion-note color="danger"
             *ngIf="soyPropietarioDeAuto(b) && b.estatus==='aceptada' && esHoy(b.fechaInicio) && !tieneCheckIn(b)">
             Falta realizar el Check-In para iniciar.
           </ion-note>
 
-          <!-- ====== Finalizar renta (solo dueño, en_curso) → ahora solo navega a Checkout ====== -->
           <ion-button *ngIf="puedeFinalizar(b)" color="success" (click)="irCheckout(b)">
             Finalizar renta
           </ion-button>
 
-          <!-- Acción principal según rol/estatus -->
-          <ion-button fill="solid" (click)="irAccion(b)">
-            <!-- Propietario -->
+          <ion-button color="danger" fill="solid" (click)="irAccion(b)">
             <ng-container *ngIf="soyPropietarioDeAuto(b); else noOwner">
-              <ng-container *ngIf="b.estatus === 'aceptada'">
-                Ir a Check-In
-              </ng-container>
-              <ng-container *ngIf="b.estatus === 'en_curso'">
-                Ver Check-In
-              </ng-container>
-              <ng-container *ngIf="b.estatus === 'finalizada'">
-                Ir a Check-Out
-              </ng-container>
+              <ng-container *ngIf="b.estatus === 'aceptada'">Ir a Check-In</ng-container>
+              <ng-container *ngIf="b.estatus === 'en_curso'">Ver Check-In</ng-container>
+              <ng-container *ngIf="b.estatus === 'finalizada'">Ir a Check-Out</ng-container>
               <ng-container *ngIf="b.estatus !== 'aceptada' && b.estatus !== 'en_curso' && b.estatus !== 'finalizada'">
                 Ver detalle
               </ng-container>
             </ng-container>
-
-
             <ng-template #noOwner>
               <ng-container *ngIf="esSolicitante(b); else soloDetalle">
                 <ng-container *ngIf="b.estatus === 'finalizada'">Ver Check-Out</ng-container>
@@ -141,21 +146,17 @@
               </ng-container>
               <ng-template #soloDetalle>Ver detalle</ng-template>
             </ng-template>
-
           </ion-button>
 
-          <ion-button fill="outline" (click)="openDetalle(b)">
-            Detalle
-          </ion-button>
+          <ion-button color="medium" fill="outline" (click)="openDetalle(b)">Detalle</ion-button>
         </div>
       </ion-card-content>
     </ion-card>
   </ion-list>
 
+  <h2 class="section-title" *ngIf="hasMore && !loading">Más resultados</h2>
   <ion-infinite-scroll *ngIf="hasMore" threshold="100px" (ionInfinite)="cargarMas($event)">
-    <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Cargando más...">
-    </ion-infinite-scroll-content>
+    <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Cargando más..."></ion-infinite-scroll-content>
   </ion-infinite-scroll>
-
   <app-footer></app-footer>
 </ion-content>
