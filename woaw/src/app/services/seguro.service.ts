@@ -19,6 +19,7 @@ export interface CotizacionDTO {
   providedIn: 'root'
 })
 export class SeguroService {
+  private UsoCredenciales: 'prueba' | 'produccion' = 'prueba';
 
   constructor(
     private http: HttpClient,
@@ -61,7 +62,7 @@ export class SeguroService {
     });
   }
   crearPoliza(dto: any): Observable<any> {
-     return from(this.headersService.obtenerToken()).pipe(
+    return from(this.headersService.obtenerToken()).pipe(
       switchMap((token) => {
         const headers = this.headersService.getJsonHeaders(token);
         return this.http.post(`${environment.api_key}/crabi/policy`, dto, { headers });
@@ -69,9 +70,8 @@ export class SeguroService {
       catchError((error) => this.headersService.handleError(error))
     );
   }
-
-   getPolizas(): Observable<any> {
-     return from(this.headersService.obtenerToken()).pipe(
+  getPolizas(): Observable<any> {
+    return from(this.headersService.obtenerToken()).pipe(
       switchMap((token) => {
         const headers = this.headersService.getJsonHeaders(token);
         return this.http.get(`${environment.api_key}/crabi/mypolicies`, { headers });
@@ -79,18 +79,15 @@ export class SeguroService {
       catchError((error) => this.headersService.handleError(error))
     );
   }
-
-// 
-
   pagoPoliza(id: string): Observable<any> {
     return this.http.get(`${environment.api_key}/crabi/checkout/${id}`);
   }
   buscarPersona(value: string): Observable<any> {
     return this.http.post(
-      `${environment.api_key}/crabi/person`, 
-      { value: value },                      
+      `${environment.api_key}/crabi/person`,
+      { value: value },
       {
-        headers: { 'Content-Type': 'application/json' } 
+        headers: { 'Content-Type': 'application/json' }
       }
     );
   }

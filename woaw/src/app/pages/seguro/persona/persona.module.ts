@@ -16,7 +16,7 @@ import { AcomodoComponent } from '../../../components/filtos/acomodo/acomodo.com
 import { FooterComponent } from '../../../components/footer/footer.component';
 import { SpinnerComponent } from '../../../components/spinner/spinner.component';
 import { DynamicIslandComponent } from '../../../components/dynamic-island/dynamic-island.component';
-import { OtrosSegurosComponent } from '../../../components/otros-seguros/otros-seguros.component';
+import { OtrosSegurosComponent } from '../../../components/seguros/otros-seguros/otros-seguros.component';
 
 @NgModule({
   imports: [
