@@ -26,6 +26,7 @@ export class VerPolizasPage implements OnInit {
   polizas: any[] = [];
   cargando = false;
   totalPolizas = 0;
+i: any;
 
   constructor(
     private generalService: GeneralService,
