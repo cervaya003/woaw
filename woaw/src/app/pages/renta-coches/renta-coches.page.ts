@@ -461,17 +461,18 @@ export class RentaCochesPage implements OnInit, OnDestroy {
 
     // ---- asigna listas filtradas y pagina (sin disponibilidad)
     if (this.vistaActiva === "todos") {
-      this.todosFiltrados = lista;
-      this.totalTodos = this.todosFiltrados.length;
-      this.calcularPaginacion("todos");
-    } else {
-      this.miosFiltrados = lista;
-      this.totalMios = this.miosFiltrados.length;
-      this.calcularPaginacion("mios");
+
+      if (this.vistaActiva === 'todos') {
+        this.todosFiltrados = lista;
+        this.totalTodos = this.todosFiltrados.length;
+        this.calcularPaginacion("todos");
+      } else {
+        this.miosFiltrados = lista;
+        this.totalMios = this.miosFiltrados.length;
+        this.calcularPaginacion("mios");
+      }
     }
   }
-
-
   // ======= DISPONIBILIDAD: integración con ReservaService =======
 
   private fetchUnavailableCarIdsForRange(desde: string, hasta?: string) {
