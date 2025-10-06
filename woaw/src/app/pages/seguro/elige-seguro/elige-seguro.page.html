@@ -3,30 +3,52 @@
 <ion-content [fullscreen]="true">
 
   <div class="hero">
-    <img src="/assets/autos/seg1.webp" alt="Seguro de autos" />
-    <h1 class="hero__title">Encuentra y cotiza tu seguro</h1>
-  </div>
+    <img src="/assets/autos/seg1.webp" class="cabecera" alt="Seguro de autos" />
 
+    <div class="hero__overlay">
+      <div class="hero__content">
+        <h1 class="hero__title">Encuentra y cotiza tu seguro</h1>
+        <img src="/assets/icon/logo4.png" alt="Logo WOAW" class="logo_woaw" loading="lazy" />
+      </div>
+    </div>
+  </div>
+  
   <section class="categorias">
     <div class="categorias__grid">
       <a class="cat-card autos" href="/seguros">
-        <ion-icon name="car-sport-outline"></ion-icon>
-        <span>Autos</span>
+        <div class="icon-wrap">
+          <img src="/assets/img/icon-coche.png" alt="Autos" class="cat-img" />
+        </div>
+        <h3>Autos</h3>
+        <p class="desc">Protege tu vehículo particular con las mejores coberturas del mercado.</p>
+        <button class="cta">Cotizar ahora</button>
       </a>
 
       <a class="cat-card camiones">
-        <ion-icon name="bus-outline"></ion-icon>
-        <span>Camiones</span>
+        <div class="icon-wrap">
+          <img src="/assets/img/icon-camion.png" alt="Camiones" class="cat-img" />
+        </div>
+        <h3>Camiones</h3>
+        <p class="desc">Seguro especializado para flotillas, carga pesada y transporte comercial.</p>
+        <button class="cta">Ver opciones</button>
       </a>
 
       <a class="cat-card motos">
-        <ion-icon name="bicycle-outline"></ion-icon>
-        <span>Motos</span>
+        <div class="icon-wrap">
+          <img src="/assets/img/icon-moto.png" alt="Motos" class="cat-img" />
+        </div>
+        <h3>Motos</h3>
+        <p class="desc">Coberturas rápidas y flexibles para motocicletas urbanas o deportivas.</p>
+        <button class="cta">Cotizar</button>
       </a>
 
       <a class="cat-card servicios">
-        <ion-icon name="shield-checkmark-outline"></ion-icon>
-        <span>Servicios RT</span>
+        <div class="icon-wrap">
+          <img src="/assets/img/icon-coche-rt.png" alt="Servicios RT" class="cat-img" />
+        </div>
+        <h3>Servicios RT</h3>
+        <p class="desc">Soluciones de aseguramiento para autos de plataforma como Uber o Didi.</p>
+        <button class="cta">Más información</button>
       </a>
     </div>
   </section>

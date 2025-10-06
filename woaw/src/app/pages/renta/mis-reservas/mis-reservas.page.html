@@ -7,12 +7,12 @@
   <div class="page-head">
     <h1>Mis reservas</h1>
     <p class="sub">
-      Historial y acciones rápidas. <span *ngIf="!loading">Total: {{ datos?.length || 0 }}</span>
+      Historial y acciones rápidas. <span *ngIf="!loading">Total: {{ datos.length || 0 }}</span>
     </p>
     <div class="quick-chips">
       <ion-chip color="danger" outline="true">
         <ion-icon name="alert-circle-outline"></ion-icon>
-        <ion-label>Pendientes: {{ pendingOwner?.length || 0 }}</ion-label>
+        <ion-label>Pendientes: {{ pendingOwner.length || 0 }}</ion-label>
       </ion-chip>
       <ion-chip color="success" outline="true" *ngIf="!loading && datos?.length">
         <ion-icon name="checkmark-circle-outline"></ion-icon>

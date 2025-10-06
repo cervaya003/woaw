@@ -129,8 +129,9 @@ export class DetallePolizaPage implements OnInit {
   // Helpers útiles en la vista del detalle
   get archivos(): Array<{ name: string; url: string }> {
     const files = this.polizaRaw?.response?.files;
-    if (Array.isArray(files)) return files;
-    // Backups planos por conveniencia
+ 
+    if (Array.isArray(files)) return files; 
+ 
     const f: Array<{ name: string; url: string }> = [];
     if (this.polizaRaw?.cover_pdf_url)
       f.push({ name: "cover", url: this.polizaRaw.cover_pdf_url });
