@@ -365,8 +365,7 @@ export class RentaCochesPage implements OnInit, OnDestroy {
   }
 
   aplicarFiltros() {
-    const base =
-      this.vistaActiva === "todos" ? this.todosStorage : this.miosStorage;
+    const base = this.vistaActiva === "todos" ? this.todosStorage : this.miosStorage;
     let lista = [...base];
 
     const { precio, anio, marca, disponibilidad } = this.filtrosAplicados;
@@ -380,7 +379,9 @@ export class RentaCochesPage implements OnInit, OnDestroy {
     }
 
     // ---- año
-    if (anio) lista = lista.filter((c) => Number(c?.anio) === Number(anio));
+    if (anio) {
+      lista = lista.filter((c) => Number(c?.anio) === Number(anio));
+    }
 
     // ---- marca (si no existe en la lista actual, dejamos 0 resultados)
     if (marca) {
@@ -397,7 +398,6 @@ export class RentaCochesPage implements OnInit, OnDestroy {
           lista = lista.filter((c) => this.normStr(c?.marca) === mf);
         }
       }
-
     }
 
     // ---- disponibilidad (asincrono con backend)
@@ -438,9 +438,7 @@ export class RentaCochesPage implements OnInit, OnDestroy {
             );
             const from = this.dayStart(desde);
             const to = this.dayEnd(hasta || desde);
-            const filtrada = lista.filter((c) =>
-              this.isCarAvailableLocal(c, from, to)
-            );
+            const filtrada = lista.filter((c) => this.isCarAvailableLocal(c, from, to));
 
             if (this.vistaActiva === "todos") {
               this.todosFiltrados = filtrada;
@@ -457,10 +455,11 @@ export class RentaCochesPage implements OnInit, OnDestroy {
           },
         });
 
-        return;
+        return; // importante: no sigas, el update lo hace el subscribe
       }
     }
 
+    // ---- asigna listas filtradas y pagina (sin disponibilidad)
     if (this.vistaActiva === "todos") {
 
       if (this.vistaActiva === 'todos') {
