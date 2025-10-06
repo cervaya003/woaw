@@ -166,7 +166,7 @@ export class RentaCochesPage implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.lastPopover?.dismiss().catch(() => {});
+    this.lastPopover?.dismiss().catch(() => { });
     this.lastPopover = null;
     this.routerSub?.unsubscribe?.();
     this.estadoSub?.unsubscribe();
@@ -205,12 +205,12 @@ export class RentaCochesPage implements OnInit, OnDestroy {
           const items = (Array.isArray(res?.rentals)
             ? res.rentals
             : Array.isArray(res?.autos)
-            ? res.autos
-            : Array.isArray(res?.data)
-            ? res.data
-            : Array.isArray(res as any)
-            ? (res as any)
-            : []) as any[];
+              ? res.autos
+              : Array.isArray(res?.data)
+                ? res.data
+                : Array.isArray(res as any)
+                  ? (res as any)
+                  : []) as any[];
 
           this.todosStorage = (items || []).filter(
             (x: any) => (x?.estadoRenta ?? "disponible") !== "inactivo"
@@ -305,8 +305,8 @@ export class RentaCochesPage implements OnInit, OnDestroy {
           ? [...this.todosFiltrados]
           : [...this.todosStorage]
         : this.miosFiltrados.length
-        ? [...this.miosFiltrados]
-        : [...this.miosStorage];
+          ? [...this.miosFiltrados]
+          : [...this.miosStorage];
 
     if (c === "precioAsc") {
       base.sort((a, b) => this.precioPorDia(a) - this.precioPorDia(b));
@@ -328,7 +328,7 @@ export class RentaCochesPage implements OnInit, OnDestroy {
   }
 
   async mostrarOpciones(ev: Event, tipo: string) {
-    await this.lastPopover?.dismiss().catch(() => {});
+    await this.lastPopover?.dismiss().catch(() => { });
     this.lastPopover = await this.popoverCtrl.create({
       component: ListComponent,
       event: ev,
@@ -365,8 +365,7 @@ export class RentaCochesPage implements OnInit, OnDestroy {
   }
 
   aplicarFiltros() {
-    const base =
-      this.vistaActiva === "todos" ? this.todosStorage : this.miosStorage;
+    const base = this.vistaActiva === "todos" ? this.todosStorage : this.miosStorage;
     let lista = [...base];
 
     const { precio, anio, marca, disponibilidad } = this.filtrosAplicados;
@@ -380,7 +379,9 @@ export class RentaCochesPage implements OnInit, OnDestroy {
     }
 
     // ---- año
-    if (anio) lista = lista.filter((c) => Number(c?.anio) === Number(anio));
+    if (anio) {
+      lista = lista.filter((c) => Number(c?.anio) === Number(anio));
+    }
 
     // ---- marca (si no existe en la lista actual, dejamos 0 resultados)
     if (marca) {
@@ -397,7 +398,6 @@ export class RentaCochesPage implements OnInit, OnDestroy {
           lista = lista.filter((c) => this.normStr(c?.marca) === mf);
         }
       }
-
     }
 
     // ---- disponibilidad (asincrono con backend)
@@ -438,9 +438,7 @@ export class RentaCochesPage implements OnInit, OnDestroy {
             );
             const from = this.dayStart(desde);
             const to = this.dayEnd(hasta || desde);
-            const filtrada = lista.filter((c) =>
-              this.isCarAvailableLocal(c, from, to)
-            );
+            const filtrada = lista.filter((c) => this.isCarAvailableLocal(c, from, to));
 
             if (this.vistaActiva === "todos") {
               this.todosFiltrados = filtrada;
@@ -457,13 +455,12 @@ export class RentaCochesPage implements OnInit, OnDestroy {
           },
         });
 
-        return;
+        return; // importante: no sigas, el update lo hace el subscribe
       }
     }
 
+    // ---- asigna listas filtradas y pagina (sin disponibilidad)
     if (this.vistaActiva === "todos") {
-
-    if (this.vistaActiva === 'todos') {
       this.todosFiltrados = lista;
       this.totalTodos = this.todosFiltrados.length;
       this.calcularPaginacion("todos");
@@ -473,6 +470,7 @@ export class RentaCochesPage implements OnInit, OnDestroy {
       this.calcularPaginacion("mios");
     }
   }
+
 
   // ======= DISPONIBILIDAD: integración con ReservaService =======
 
