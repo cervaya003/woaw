@@ -166,7 +166,7 @@ export class RentaCochesPage implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.lastPopover?.dismiss().catch(() => {});
+    this.lastPopover?.dismiss().catch(() => { });
     this.lastPopover = null;
     this.routerSub?.unsubscribe?.();
     this.estadoSub?.unsubscribe();
@@ -205,12 +205,12 @@ export class RentaCochesPage implements OnInit, OnDestroy {
           const items = (Array.isArray(res?.rentals)
             ? res.rentals
             : Array.isArray(res?.autos)
-            ? res.autos
-            : Array.isArray(res?.data)
-            ? res.data
-            : Array.isArray(res as any)
-            ? (res as any)
-            : []) as any[];
+              ? res.autos
+              : Array.isArray(res?.data)
+                ? res.data
+                : Array.isArray(res as any)
+                  ? (res as any)
+                  : []) as any[];
 
           this.todosStorage = (items || []).filter(
             (x: any) => (x?.estadoRenta ?? "disponible") !== "inactivo"
@@ -305,8 +305,8 @@ export class RentaCochesPage implements OnInit, OnDestroy {
           ? [...this.todosFiltrados]
           : [...this.todosStorage]
         : this.miosFiltrados.length
-        ? [...this.miosFiltrados]
-        : [...this.miosStorage];
+          ? [...this.miosFiltrados]
+          : [...this.miosStorage];
 
     if (c === "precioAsc") {
       base.sort((a, b) => this.precioPorDia(a) - this.precioPorDia(b));
@@ -328,7 +328,7 @@ export class RentaCochesPage implements OnInit, OnDestroy {
   }
 
   async mostrarOpciones(ev: Event, tipo: string) {
-    await this.lastPopover?.dismiss().catch(() => {});
+    await this.lastPopover?.dismiss().catch(() => { });
     this.lastPopover = await this.popoverCtrl.create({
       component: ListComponent,
       event: ev,
@@ -463,17 +463,17 @@ export class RentaCochesPage implements OnInit, OnDestroy {
 
     if (this.vistaActiva === "todos") {
 
-    if (this.vistaActiva === 'todos') {
-      this.todosFiltrados = lista;
-      this.totalTodos = this.todosFiltrados.length;
-      this.calcularPaginacion("todos");
-    } else {
-      this.miosFiltrados = lista;
-      this.totalMios = this.miosFiltrados.length;
-      this.calcularPaginacion("mios");
+      if (this.vistaActiva === 'todos') {
+        this.todosFiltrados = lista;
+        this.totalTodos = this.todosFiltrados.length;
+        this.calcularPaginacion("todos");
+      } else {
+        this.miosFiltrados = lista;
+        this.totalMios = this.miosFiltrados.length;
+        this.calcularPaginacion("mios");
+      }
     }
   }
-
   // ======= DISPONIBILIDAD: integración con ReservaService =======
 
   private fetchUnavailableCarIdsForRange(desde: string, hasta?: string) {
