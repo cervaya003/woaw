@@ -144,6 +144,9 @@
         color: #464649;
       }
     }
+
+  
+
   }
 
   /* 🔥 Línea degradada estilo automotriz en la parte baja de CADA ficha */
@@ -164,6 +167,20 @@
     pointer-events: none;
   }
 }
+   .card-footer {
+  text-align: left;
+  margin-top: 10px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  padding-top: 6px;
+
+  .numero-ficha {
+    font-size: 12px;
+    color: #0b4af7;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+}
+
 
 
 .state {
