@@ -1,0 +1,19 @@
+<div class="contenedor_otros">
+
+  <div class="logos-wrapper">
+    <a href="https://www.crabi.com/" target="_blank">
+      <img src="/assets/icon/crabi2.png" alt="Logo Crabi" class="logo" />
+    </a>
+    <span class="slash"></span>
+    <a href="https://wo-aw.com/" target="_blank">
+      <img src="/assets/icon/logo4.png" alt="Logo Woaw" class="logo" />
+    </a>
+    <h2 *ngIf="tipoDispocitivo === 'telefono'" (click)="abrirModalPasos()">
+      Pasos
+      <ion-icon name="chevron-down-outline"></ion-icon>
+    </h2>
+  </div>
+
+  <app-pasos *ngIf="tipoDispocitivo === 'computadora'  || tipoDispocitivo === 'tablet'"></app-pasos>
+
+</div>

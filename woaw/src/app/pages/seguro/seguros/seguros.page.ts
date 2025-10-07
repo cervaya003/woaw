@@ -72,6 +72,8 @@ export class SegurosPage implements OnInit {
   ];
   duracionOpts: number[] = [12, 24, 36, 48, 60];
 
+  public tipoDispocitivo: 'computadora' | 'telefono' | 'tablet' = 'computadora';
+
   // Paso 5: fecha de nacimiento
   dias: number[] = Array.from({ length: 31 }, (_, i) => i + 1);
   meses = [
@@ -118,6 +120,9 @@ export class SegurosPage implements OnInit {
     this.verificaStorage();
     this.generalService.tokenExistente$.subscribe((estado) => {
       this.isLoggedIn = estado;
+    });
+    this.generalService.dispositivo$.subscribe((tipo) => {
+      this.tipoDispocitivo = tipo;
     });
     this.buildAniosNacimiento();
     this.cargaimagen();
@@ -542,6 +547,7 @@ export class SegurosPage implements OnInit {
       '¿Estás seguro en cotizar un nuevo coche?',
       'Cotizar nuevo coche',
       async () => {
+        this.islandKey++;
         this.getMarcas_cohes();
         this.obtenerMarcas();
         localStorage.removeItem('datosCoche');
@@ -571,7 +577,6 @@ export class SegurosPage implements OnInit {
         this.form.setErrors(null);
 
         try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch { }
-        this.islandKey++;
       }
     );
   }

@@ -44,8 +44,8 @@ i: any;
     this.seguroService.getPolizas().subscribe({
       next: (res) => {
         const items: any[] = Array.isArray(res?.items) ? res.items : [];
-        this.polizas = items; // ← crudo
-        this.totalPolizas = items.length; // contador
+        this.polizas = items;
+        this.totalPolizas = items.length;
         this.cargando = false;
         console.log(res);
       },

@@ -299,6 +299,8 @@ const routes: Routes = [
           import("./pages/seguro/poliza/poliza.module").then(
             (m) => m.PolizaPageModule
           ),
+        data: { title: "Crear Poliza | WOAW" },
+        canActivate: [AuthGuard],
       },
       {
         path: "seguros-disponibles",
@@ -306,6 +308,7 @@ const routes: Routes = [
           import("./pages/seguro/elige-seguro/elige-seguro.module").then(
             (m) => m.EligeSeguroPageModule
           ),
+        data: { title: "Seguros de autos" },
       },
 
       {
