@@ -47,6 +47,7 @@ i: any;
         this.polizas = items; // ← crudo
         this.totalPolizas = items.length; // contador
         this.cargando = false;
+        console.log(res);
       },
       error: (error) => {
         this.cargando = false;
