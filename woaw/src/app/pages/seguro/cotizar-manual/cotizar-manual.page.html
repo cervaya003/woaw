@@ -1,0 +1,179 @@
+<app-navbar></app-navbar>
+
+<ion-content [fullscreen]="true">
+  <app-spinner *ngIf="mostrar_spinnet"></app-spinner>
+
+  <div class="fondo-seguros">
+    <img src="/assets/autos/seg1.webp" alt="">
+    <span class="fondo-seguros__overlay"></span>
+  </div>
+
+  <section class="carta_manual_cotizar">
+    <div class="carta_manual_cotizar__contenido">
+      <div class="header_manual_cotizar">
+        <button (click)="atras()">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+        </button>
+        <h1 class="titulo_manual_cotizar">Cotiza tu {{tipo}}</h1>
+      </div>
+
+      <form [formGroup]="form">
+
+        <div class="titulo-auto">
+          <h3 *ngIf="marcador === 1">Ingresa los datos de tu auto</h3>
+          <h3 *ngIf="marcador === 2">Ingresa tus datos</h3>
+          <h3 *ngIf="marcador === 3">Corrobora tus datos</h3>
+          <div class="linea_horizontal"></div>
+        </div>
+
+        <ion-grid>
+          <ion-row>
+
+            <ng-content *ngIf="marcador === 1">
+              <ion-col size="12" size-md="6" class="col-field">
+                <div class="field">
+                  <label for="marca">Ingresa la marca <span>*</span></label>
+                  <div class="control">
+                    <input id="marca" type="text" class="form-input" maxlength="25" placeholder="Marca del auto"
+                      formControlName="marca" />
+                  </div>
+                </div>
+              </ion-col>
+
+              <ion-col size="12" size-md="6" class="col-field">
+                <div class="field">
+                  <label for="modelo">Ingresa el modelo <span>*</span></label>
+                  <div class="control">
+                    <input id="modelo" type="text" class="form-input" maxlength="25" placeholder="Modelo del auto"
+                      formControlName="modelo" />
+                  </div>
+                </div>
+              </ion-col>
+
+              <ion-col size="12" size-md="6" class="col-field">
+                <div class="field">
+                  <label for="version">Versión <span>*</span></label>
+                  <div class="control">
+                    <input id="version" type="text" class="form-input" maxlength="25" placeholder="Versión del auto"
+                      formControlName="version" />
+                  </div>
+                </div>
+              </ion-col>
+
+              <ion-col size="12" size-md="6" class="col-field">
+                <div class="field">
+                  <label for="anio">Seleccionar año <span>*</span></label>
+                  <div class="control control--select">
+                    <ion-select #lista formControlName="anio" interface="popover" placeholder="Selecciona..."
+                      aria-label="Seleccionar año"
+                      [interfaceOptions]="{ cssClass: 'select-popover pop-anio', side: 'bottom', alignment: 'start' }"
+                      data-key="anio" (ionFocus)="syncPopoverWidths()">
+                      <ion-select-option [value]="null" disabled>Selecciona...</ion-select-option>
+                      <ion-select-option *ngFor="let y of anios" [value]="y">{{ y }}</ion-select-option>
+                    </ion-select>
+                  </div>
+                </div>
+              </ion-col>
+
+            </ng-content>
+
+            <ng-content *ngIf="marcador === 2">
+
+              <ion-col size="12" size-md="4" class="col-field">
+                <div class="field">
+                  <label for="nombre">Nombre Completo<span>*</span></label>
+                  <div class="control">
+                    <input id="nombre" type="text" class="form-input" maxlength="50" placeholder="Nombre completo"
+                      formControlName="nombre" />
+                  </div>
+                </div>
+              </ion-col>
+
+              <ion-col size="12" size-md="4" class="col-field">
+                <div class="field">
+                  <label for="correo">Correo electrónico <span>*</span></label>
+                  <div class="control">
+                    <input id="correo" type="email" class="form-input" maxlength="80" placeholder="correo@ejemplo.com"
+                      formControlName="correo" />
+                  </div>
+                </div>
+              </ion-col>
+
+              <ion-col size="12" size-md="4" class="col-field">
+                <div class="field">
+                  <label for="estadoCivil">Estado civil <span>*</span></label>
+                  <div class="control control--select">
+                    <ion-select formControlName="estadoCivil" interface="popover" placeholder="Selecciona..."
+                      aria-label="Seleccionar estado civil"
+                      [interfaceOptions]="{ cssClass: 'select-popover pop-estado', side: 'bottom', alignment: 'start' }"
+                      data-key="estadoCivil" (ionFocus)="syncPopoverWidths()">
+                      <ion-select-option [value]="null" disabled>Selecciona...</ion-select-option>
+                      <ion-select-option value="soltero">Soltero(a)</ion-select-option>
+                      <ion-select-option value="casado">Casado(a)</ion-select-option>
+                      <ion-select-option value="divorciado">Divorciado(a)</ion-select-option>
+                    </ion-select>
+                  </div>
+                </div>
+              </ion-col>
+
+              <ion-col size="12" size-md="4" class="col-field">
+                <div class="field">
+                  <label for="fechaNacimiento">Fecha de nacimiento <span>*</span></label>
+                  <div class="control">
+                    <input id="fechaNacimiento" type="date" class="form-input" formControlName="fechaNacimiento" />
+                  </div>
+                </div>
+              </ion-col>
+
+              <ion-col size="12" size-md="4" class="col-field">
+                <div class="field">
+                  <label for="codigoPostal">Código postal <span>*</span></label>
+                  <div class="control">
+                    <input id="codigoPostal" type="text" class="form-input" maxlength="5" placeholder="Ej. 76000"
+                      formControlName="codigoPostal" />
+                  </div>
+                </div>
+              </ion-col>
+            </ng-content>
+
+          </ion-row>
+        </ion-grid>
+
+        <div class="mis_datos" *ngIf="marcador   === 3">
+          <div class="mis_datos__list">
+            <div class="mis_datos__row" *ngFor="let r of resumen">
+              <div class="mis_datos__label">{{ r.label }}</div>
+              <div class="mis_datos__value">{{ r.value || '—' }}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="paybox__cta">
+          <button type="button" *ngIf="marcador != 1" class="btn-secondary" (click)="regresar()">
+            <ion-icon name="arrow-back-outline"></ion-icon>
+            <span *ngIf="marcador != 3">Regresar</span>
+          </button>
+
+          <button class="btn-primary" *ngIf="marcador != 3" type="button" [disabled]="form.invalid" (click)="siguiente()">
+            Siguiente
+            <ion-icon name="arrow-forward-outline"></ion-icon>
+          </button>
+
+          <button class="btn-primary" *ngIf="marcador == 3" type="button" (click)="enviarDatos('correo')">
+            <ion-icon name="mail-outline"></ion-icon>
+            Correo
+          </button>
+
+          <button class="btn-primary" *ngIf="marcador == 3" type="button" (click)="enviarDatos('whatsapp')">
+            <ion-icon name="logo-whatsapp"></ion-icon>
+            Whatsapp
+          </button>
+        </div>
+
+      </form>
+
+    </div>
+  </section>
+
+  <app-footer></app-footer>
+</ion-content>

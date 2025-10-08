@@ -325,6 +325,10 @@ const routes: Routes = [
             (m) => m.DetallePolizaPageModule
           ),
       },
+      {
+        path: 'seguros/cotizar-manual',
+        loadChildren: () => import('./pages/seguro/cotizar-manual/cotizar-manual.module').then(m => m.CotizarManualPageModule)
+      },
       // -----
     ],
   },
@@ -333,7 +337,7 @@ const routes: Routes = [
     loadChildren: () =>
       import("./pages/error/error.module").then((m) => m.ErrorPageModule),
     data: { title: "Página no encontrada | woaw" },
-  },
+  }
 ];
 
 @NgModule({
@@ -342,4 +346,4 @@ const routes: Routes = [
   ],
   exports: [RouterModule],
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }

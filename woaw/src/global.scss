@@ -328,7 +328,7 @@ app-tabs {
 
 
 ion-popover.select-popover {
-  margin-top: 18px;
+  margin-top: 10px;
   --width: auto;
   --max-width: none;
   --backdrop-opacity: .12;
@@ -421,7 +421,7 @@ ion-popover.select-popover[class*="pop-"] {
   }
 
   input::placeholder {
-    font-size: clamp(11px, 0.9vw, 14px);
+    font-size: clamp(14px, 0.9vw, 16px);
     color: #c2c2c2;
     opacity: .9;
   }
@@ -464,7 +464,7 @@ ion-popover.select-popover[class*="pop-"] {
     --min-height: 56px;
     --padding-start: 4px;
     --padding-end: 0px;
-    font-size: clamp(9px, 1vw, 12px);
+    font-size: clamp(12px, 1vw, 12px);
     font-weight:400;
   }
 
