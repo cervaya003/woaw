@@ -2,8 +2,8 @@
   <ion-toolbar color="light">
     <ion-title>
       <div class="title-line">
-        <span>Reserva #{{ data?.codigo || data?._id || '—' }}</span>
-        <ion-badge *ngIf="data?.estatus" [color]="badgeColor(data?.estatus)">{{ data?.estatus }}</ion-badge>
+        <span>Reserva #{{ data.codigo || data._id || '—' }}</span>
+        <ion-badge *ngIf="data?.estatus" [color]="badgeColor(data.estatus)">{{ data.estatus }}</ion-badge>
       </div>
     </ion-title>
     <ion-buttons slot="end">
@@ -69,7 +69,7 @@
             <ion-card>
               <ion-card-header><ion-card-title>Cliente</ion-card-title></ion-card-header>
               <ion-card-content>
-                <div>{{ data?.usuario?.nombre || data?.usuario?.email || 'Cliente' }}</div>
+                <div>{{ data.usuario.nombre || data.usuario.email || 'Cliente' }}</div>
               </ion-card-content>
             </ion-card>
             <ion-card>
@@ -92,24 +92,24 @@
             <ion-card>
               <ion-card-header><ion-card-title>Check-In</ion-card-title></ion-card-header>
               <ion-card-content>
-                <div><b>Fecha:</b> {{ data?.checkIn?.fecha || '—' }}</div>
+                <div><b>Fecha:</b> {{ data.checkIn?.fecha || '—' }}</div>
                 <div><b>Combustible:</b>
-                  {{ (data?.checkIn?.combustible !== undefined && data?.checkIn?.combustible !== null) ?
-                  data?.checkIn?.combustible : '—' }}
+                  {{ (data.checkIn?.combustible !== undefined && data.checkIn?.combustible !== null) ?
+                  data.checkIn?.combustible : '—' }}
                 </div>
                 <!-- siempre pintamos la línea de notas, aunque venga vacía -->
-                <div><b>Notas:</b> {{ (data?.checkIn?.notas ?? '') || '—' }}</div>
+                <div><b>Notas:</b> {{ (data.checkIn?.notas ?? '') || '—' }}</div>
               </ion-card-content>
             </ion-card>
             <ion-card>
               <ion-card-header><ion-card-title>Check-Out</ion-card-title></ion-card-header>
               <ion-card-content>
-                <div><b>Fecha:</b> {{ data?.checkOut?.fecha || '—' }}</div>
+                <div><b>Fecha:</b> {{ data.checkOut?.fecha || '—' }}</div>
                 <div><b>Combustible:</b>
-                  {{ (data?.checkOut?.combustible !== undefined && data?.checkOut?.combustible !== null) ?
-                  data?.checkOut?.combustible : '—' }}
+                  {{ (data.checkOut?.combustible !== undefined && data.checkOut?.combustible !== null) ?
+                  data.checkOut?.combustible : '—' }}
                 </div>
-                <div><b>Notas:</b> {{ (data?.checkOut?.notas ?? '') || '—' }}</div>
+                <div><b>Notas:</b> {{ (data.checkOut?.notas ?? '') || '—' }}</div>
               </ion-card-content>
             </ion-card>
           </div>
