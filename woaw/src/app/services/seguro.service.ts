@@ -152,4 +152,13 @@ export class SeguroService {
       }
     );
   }
+  cotizaManual(datos: any): Observable<any> {
+    return from(this.headersService.obtenerToken()).pipe(
+      switchMap((token) => {
+        const headers = this.headersService.getJsonHeaders(token);
+        return this.http.post(`${environment.api_key}/crabi/seguros`, datos, { headers });
+      }),
+      catchError((error) => this.headersService.handleError(error))
+    );
+  }
 }

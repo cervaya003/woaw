@@ -341,6 +341,7 @@ export class PolizaPage implements OnInit {
       id = policyId;
     } else {
       console.warn("No se encontró policy_id ni por policy_type.id ni por 'CO-'.");
+      return;
     }
 
     this.mostrar_spinnet = true;
@@ -491,8 +492,15 @@ export class PolizaPage implements OnInit {
     return pos;
   }
   paymentPlanLabel(pp: any): string {
+    const raw = (pp?.name ?? '').toString().toUpperCase();
     const count = Array.isArray(pp?.payments) ? pp.payments.length : 1;
-    return this.formatPaymentLabel(pp?.name, count);
+    switch (raw) {
+      case 'ANNUAL': return 'Pago de contado';
+      case 'SUBSCRIPTION': return count > 1 ? `${count} pagos (suscripción)` : 'Suscripción';
+      case 'FLAT_FEE': return count > 1 ? `${count} pagos fijos` : 'Pago fijo';
+      case 'MSI': return count > 1 ? `${count} pagos Meses sin intereses` : 'Pago fijo';
+      default: return raw;
+    }
   }
   onSelectPayment(paymentPlanId: string) {
     const arr = this.datoscotizacion?.plans?.[0]?.payment_plans;
