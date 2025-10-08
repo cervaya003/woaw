@@ -34,6 +34,12 @@ i: any;
     private Router: Router
   ) {}
 
+
+
+  redirigir(ruta: string) {
+    this.Router.navigate([ruta]);
+  }
+
   ngOnInit() {
     this.getPolizas();
   }

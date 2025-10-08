@@ -288,3 +288,34 @@
     }
   }
 }
+
+
+
+.cta-section {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 6px 8px; /* mucho más corto y ajustado */
+  margin: 0; /* elimina espacio externo */
+
+  .btn-regresar {
+    --padding-start: 0;
+    --padding-end: 0;
+    --background: transparent;
+    --box-shadow: none;
+    --ripple-color: transparent;
+    height: 56px;
+    width: 56px;
+    min-width: 0;
+    margin: 0;
+    transition: transform .25s ease, filter .25s ease;
+
+    ion-icon {
+      font-size: 46px;
+      color: #ff2121; 
+      transition: transform .25s ease, color .25s ease;
+    }
+  }
+}
+
+

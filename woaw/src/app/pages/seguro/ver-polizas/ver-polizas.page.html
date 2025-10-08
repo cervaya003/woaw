@@ -1,6 +1,13 @@
 <app-navbar></app-navbar>
 
 <ion-content [fullscreen]="true">
+
+<section class="cta-section">
+  <ion-button fill="clear" class="btn-regresar" (click)="redirigir('/home')">
+    <ion-icon name="arrow-back-outline"></ion-icon>
+  </ion-button>
+</section>
+
   <section class="polizas-section">
     <ion-header collapse="condense">
       <ion-toolbar>

@@ -48,6 +48,8 @@ type PolizaRaw = {
   standalone: false,
 })
 export class DetallePolizaPage implements OnInit {
+  
+ 
   polizaRaw: any = null;
   polizaUI: PolizaUI | null = null;
   cargando = true;
@@ -55,6 +57,9 @@ export class DetallePolizaPage implements OnInit {
 
   constructor(private router: Router, private seguroService: SeguroService) {}
 
+  redirigir(ruta: string) {
+    this.router.navigate([ruta]);
+  }
   ngOnInit(): void {
     const nav = history.state || {};
     if (nav.polizaRaw) {

@@ -22,6 +22,9 @@ import { SpinnerComponent } from "../../components/spinner/spinner.component";
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class NavbarComponent implements OnInit {
+onClear() {
+throw new Error('Method not implemented.');
+}
   esDispositivoMovil: boolean = false;
   mostrar_spinnet: boolean = false;
   estaEnHome: boolean = false;
