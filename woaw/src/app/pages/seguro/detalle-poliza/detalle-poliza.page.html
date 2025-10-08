@@ -46,19 +46,19 @@
       <!-- Botones solo visuales -->
       <section class="acciones-poliza">
         <div class="detalle__acciones">
-          <button class="btn dark">
+          <button
+            class="btn dark"
+            title="Descargar póliza y comprobante"
+            [disabled]="descargando"
+            (click)="descargarPolizaYComprobante()"
+          >
             <ion-icon name="document-text-outline"></ion-icon>
-            Póliza
+            Póliza y Comprobante
           </button>
 
-          <button class="btn gray">
-            <ion-icon name="receipt-outline"></ion-icon>
-            Comprobante
-          </button>
-
-          <button class="btn red">
+          <button class="btn red" (click)="PagoPoliza()" title="Realizar Pagó">
             <ion-icon name="card-outline"></ion-icon>
-            Pago
+            Pagó
           </button>
         </div>
       </section>

@@ -47,6 +47,7 @@ i: any;
         this.polizas = items;
         this.totalPolizas = items.length;
         this.cargando = false;
+        console.log(res);
       },
       error: (error) => {
         this.cargando = false;

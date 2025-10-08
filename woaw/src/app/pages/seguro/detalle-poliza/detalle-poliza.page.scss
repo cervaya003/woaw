@@ -75,14 +75,18 @@
 
             .btn {
                 min-width: 120px;
-                height: 80px;
+
+                height: 90px;
+
                 display: flex;
                 flex-direction: column;
                 align-items: center;
                 justify-content: center;
                 gap: 12px;
                 border-radius: 14px;
-                font-size: 14px;
+
+                font-size: 10px;
+
                 font-weight: 700;
                 cursor: pointer;
                 box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
@@ -177,6 +181,73 @@
   }
   .btn ion-icon { font-size: 14px; }
 }
+
+
+
+}
+
+    /* ===== MÓVIL: 3 botones chicos en una sola fila, sin estirarse ===== */
+    @media (max-width: 720px) {
+        .acciones-poliza {
+            width: 100%;
+            padding: 0 8px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .detalle__acciones {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            /* no permite salto */
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+            max-width: 100%;
+        }
+
+        .btn {
+            flex: 1 1 auto;
+            width: auto;
+            min-width: 0;
+            height: 65px;
+            margin: 0;
+            padding: 4px;
+            border-radius: 8px;
+            font-size: 7px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+
+        .btn ion-icon {
+            font-size: 16px;
+            margin-bottom: 2px;
+            line-height: 1;
+        }
+    }
+
+    /* Extra angosto (≤360px) */
+    @media (max-width: 360px) {
+        .detalle__acciones {
+            gap: 4px;
+        }
+
+        .btn {
+            flex: 0 0 58px;
+            width: 58px;
+            height: 44px;
+            font-size: 8.5px;
+            padding: 3px;
+        }
+
+        .btn ion-icon {
+            font-size: 14px;
+        }
+    }
 
 
 

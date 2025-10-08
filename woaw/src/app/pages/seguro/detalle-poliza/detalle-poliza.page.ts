@@ -1,6 +1,8 @@
 import { Component, OnInit } from "@angular/core";
 import { Router } from "@angular/router";
 import { SeguroService } from "../../../services/seguro.service";
+import { of } from "rxjs";
+import { catchError } from "rxjs/operators";
 
 interface PolizaUI {
   _id: string;
@@ -14,6 +16,31 @@ interface PolizaUI {
   plan: string;
 }
 
+type Policy = {
+  policy_number?: string;
+  policy_id?: string;
+  policy_type_id?: string;
+  start_date?: string;
+  end_date?: string;
+};
+
+type FileItem = {
+  name?: string;
+  url?: string;
+  bucket?: string;
+  key?: string;
+};
+
+type PolizaRaw = {
+  response?: {
+    policies?: Policy[];
+    files?: FileItem[];
+  };
+  policy_numbers?: string[];
+  policy_ids?: string[];
+  main_policy_id?: string;
+};
+
 @Component({
   selector: "app-detalle-poliza",
   templateUrl: "./detalle-poliza.page.html",
@@ -21,9 +48,10 @@ interface PolizaUI {
   standalone: false,
 })
 export class DetallePolizaPage implements OnInit {
-  polizaRaw: any = null; // TODO el objeto completo
+  polizaRaw: any = null;
   polizaUI: PolizaUI | null = null;
   cargando = true;
+  descargando = false;
 
   constructor(private router: Router, private seguroService: SeguroService) {}
 
@@ -37,17 +65,12 @@ export class DetallePolizaPage implements OnInit {
     }
   }
 
-  private tryGetIdFromUrl(): string | null {
-    // Si tu ruta es algo como /seguros/detalle-poliza/:id, usa ActivatedRoute y saca el param.
-    return null;
-  }
-
-  // ——— MISMA normalización que ya tienes ———
+  // ——— Conversión visual ———
   private toUI(item: any): PolizaUI {
     const resp = item?.response ?? {};
     const req = item?.request ?? {};
-
     const policies: any[] = Array.isArray(resp?.policies) ? resp.policies : [];
+
     const policyCO = policies.find((p) =>
       String(p?.policy_number ?? "")
         .toUpperCase()
@@ -55,12 +78,8 @@ export class DetallePolizaPage implements OnInit {
     );
     const policy = policyCO ?? policies[0] ?? null;
 
-    const policyNumbers: string[] = Array.isArray(item?.policy_numbers)
-      ? item.policy_numbers
-      : [];
     const folio =
       (policy?.policy_number ??
-        policyNumbers.find((n) => String(n).toUpperCase().startsWith("CO-")) ??
         item?.main_policy_number ??
         resp?.policyNumber ??
         resp?.number ??
@@ -69,6 +88,7 @@ export class DetallePolizaPage implements OnInit {
     const iniRaw =
       policy?.start_date ?? req?.start_date ?? req?.startDate ?? null;
     const finRaw = policy?.end_date ?? req?.end_date ?? req?.endDate ?? null;
+
     const vigenciaInicio = iniRaw ? new Date(iniRaw) : null;
     const vigenciaFin = finRaw ? new Date(finRaw) : null;
 
@@ -84,20 +104,17 @@ export class DetallePolizaPage implements OnInit {
       v?.year,
       v?.version,
     ].filter(Boolean);
+
     const vehiculo = vehiculoParts.length
       ? vehiculoParts.join(" ").trim()
-      : v?.vin
-      ? `${v.vin}`
-      : "";
+      : v?.vin || "";
 
-    const placas = v?.plates ?? v?.plate ?? req?.plates ?? req?.plate ?? "";
-
+    const placas = v?.plates ?? v?.plate ?? "";
     const rfc =
       resp?.holder?.rfc ??
       resp?.insured?.rfc ??
       resp?.customer?.rfc ??
       req?.rfc ??
-      req?.holder?.rfc ??
       "";
 
     const rfcPlacas = [rfc, placas].filter(Boolean).join(" - ");
@@ -105,12 +122,8 @@ export class DetallePolizaPage implements OnInit {
     const plan =
       resp?.policy?.plan?.name ??
       resp?.planName ??
-      resp?.plan ??
       resp?.product?.name ??
       resp?.product ??
-      resp?.package ??
-      req?.plan ??
-      req?.planName ??
       "";
 
     return {
@@ -126,23 +139,67 @@ export class DetallePolizaPage implements OnInit {
     };
   }
 
-  // Helpers útiles en la vista del detalle
-  get archivos(): Array<{ name: string; url: string }> {
-    const files = this.polizaRaw?.response?.files;
- 
-    if (Array.isArray(files)) return files; 
- 
-    const f: Array<{ name: string; url: string }> = [];
-    if (this.polizaRaw?.cover_pdf_url)
-      f.push({ name: "cover", url: this.polizaRaw.cover_pdf_url });
-    if (this.polizaRaw?.invoice_pdf_url)
-      f.push({ name: "invoice", url: this.polizaRaw.invoice_pdf_url });
-    return f;
-  }
-
+  // ——— Helpers ———
   get policies(): any[] {
     return Array.isArray(this.polizaRaw?.response?.policies)
       ? this.polizaRaw.response.policies
       : [];
+  }
+
+  get archivos(): FileItem[] {
+    const files = this.polizaRaw?.response?.files;
+    return Array.isArray(files) ? files : [];
+  }
+
+  private resolvePolicyIdFromRawCO(): string | null {
+    const raw = this.polizaRaw as PolizaRaw;
+    const policies = raw?.response?.policies ?? [];
+    const norm = (s?: string) =>
+      typeof s === "string" ? s.trim().toUpperCase() : "";
+
+    const matchCO = policies.find((p) =>
+      norm(p.policy_number).startsWith("CO-")
+    );
+    if (matchCO?.policy_id) return matchCO.policy_id;
+
+    return raw?.main_policy_id ?? null;
+  }
+
+  public descargarPolizaYComprobante(): void {
+    this.descargando = true;
+
+    const policyId = this.resolvePolicyIdFromRawCO();
+    if (!policyId) {
+      console.warn("No se pudo resolver policy_id (CO-).");
+      this.descargando = false;
+      return;
+    }
+
+    this.seguroService.getPolizayRecibo(policyId).subscribe({
+      next: (res: any[]) => {
+        console.log(res);
+      },
+
+      error: () => {},
+    });
+  }
+
+  public PagoPoliza() {
+    this.descargando = true;
+
+    const policyId = this.resolvePolicyIdFromRawCO();
+    if (!policyId) {
+      console.warn("No se pudo resolver policy_id (CO-).");
+      this.descargando = false;
+      return;
+    }
+
+    this.seguroService.getPagoPoliza(policyId).subscribe({
+      next: (res: any[]) => {
+        console.log(res);
+      },
+
+      error: () => {},
+    });
   }
 }
