@@ -48,7 +48,6 @@ type PolizaRaw = {
   standalone: false,
 })
 export class DetallePolizaPage implements OnInit {
-  
  
   polizaRaw: any = null;
   polizaUI: PolizaUI | null = null;
