@@ -125,67 +125,8 @@
             }
         }
     }
-/* ======== MÓVIL (≤720px): tres botones compactos y alineados en fila ======== */
-/* ===== MÓVIL: 3 botones chicos en una sola fila, sin estirarse ===== */
-@media (max-width: 720px) {
-  .acciones-poliza {
-    width: 100%;
-    padding: 0 8px;
-    display: flex;
-    justify-content: center;
-  }
 
-  .detalle__acciones {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;        /* no permite salto */
-    justify-content: center;
-    align-items: center;
-    gap: 6px;
-    max-width: 100%;
-  }
-
-  .btn {
-    /* clave: NO se estiran y NO heredan min-width grande */
-    flex: 0 0 64px;           /* no-grow, no-shrink, base 64px */
-    width: 64px;              /* ancho fijo compacto */
-    min-width: 0 !important;  /* anula min-width previos */
-    height: 48px;
-    margin: 0;                /* por si había márgenes */
-    padding: 4px;
-    border-radius: 8px;
-    font-size: 9px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-  }
-
-  .btn ion-icon {
-    font-size: 16px;
-    margin-bottom: 2px;
-    line-height: 1;
-  }
-}
-
-/* Extra angosto (≤360px) */
-@media (max-width: 360px) {
-  .detalle__acciones { gap: 4px; }
-  .btn {
-    flex: 0 0 58px;
-    width: 98px;
-    height: 44px;
-    font-size: 8.5px;
-    padding: 3px;
-  }
-  .btn ion-icon { font-size: 14px; }
-}
-
-
-
-}
-
+    /* ======== MÓVIL (≤720px): tres botones compactos y alineados en fila ======== */
     /* ===== MÓVIL: 3 botones chicos en una sola fila, sin estirarse ===== */
     @media (max-width: 720px) {
         .acciones-poliza {
@@ -207,21 +148,25 @@
         }
 
         .btn {
-            flex: 1 1 auto;
-            width: auto;
-            min-width: 0;
-            height: 65px;
+            /* clave: NO se estiran y NO heredan min-width grande */
+            flex: 0 0 64px;
+            /* no-grow, no-shrink, base 64px */
+            width: 64px;
+            /* ancho fijo compacto */
+            min-width: 0 !important;
+            /* anula min-width previos */
+            height: 48px;
             margin: 0;
+            /* por si había márgenes */
             padding: 4px;
             border-radius: 8px;
-            font-size: 7px;
+            font-size: 9px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             text-align: center;
         }
-
 
         .btn ion-icon {
             font-size: 16px;
@@ -238,7 +183,7 @@
 
         .btn {
             flex: 0 0 58px;
-            width: 58px;
+            width: 98px;
             height: 44px;
             font-size: 8.5px;
             padding: 3px;
@@ -252,4 +197,98 @@
 
 
 }
+
+/* ===== MÓVIL: 3 botones chicos en una sola fila, sin estirarse ===== */
+@media (max-width: 720px) {
+    .acciones-poliza {
+        width: 100%;
+        padding: 0 8px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .detalle__acciones {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        /* no permite salto */
+        justify-content: center;
+        align-items: center;
+        gap: 6px;
+        max-width: 100%;
+    }
+
+    .btn {
+        flex: 1 1 auto;
+        width: auto;
+        min-width: 0;
+        height: 65px;
+        margin: 0;
+        padding: 4px;
+        border-radius: 8px;
+        font-size: 7px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+
+
+    .btn ion-icon {
+        font-size: 16px;
+        margin-bottom: 2px;
+        line-height: 1;
+    }
+}
+
+/* Extra angosto (≤360px) */
+@media (max-width: 360px) {
+ 
+    .detalle__acciones {
+        gap: 4px;
+    }
+
+    .btn {
+        flex: 0 0 58px;
+        width: 58px;
+        height: 44px;
+        font-size: 8.5px;
+        padding: 3px;
+    }
+ 
+
+    .btn ion-icon {
+        font-size: 14px;
+    }
+}
+.cta-section {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 6px 8px;
+  margin: 0;
+
+  .btn-regresar {
+    --padding-start: 0;
+    --padding-end: 0;
+    --background: transparent;
+    --box-shadow: none;
+    --ripple-color: transparent;
+    height: 56px;   /* ⬆️ círculo más grande */
+    width: 56px;    /* ⬆️ mantiene proporción */
+    min-width: 0;
+    margin: 0;
+    transition: transform .25s ease, filter .25s ease;
+
+    ion-icon {
+      font-size: 46px;  /* ⬆️ icono más grande y centrado */
+      color: #ff2121; 
+      transition: transform .25s ease, color .25s ease;
+    }
+ 
+  }
+}
+
+ 
 
