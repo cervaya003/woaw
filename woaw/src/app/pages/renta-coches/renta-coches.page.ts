@@ -1,4 +1,3 @@
-
 import {
   Component,
   OnInit,
@@ -26,7 +25,6 @@ import { ActivatedRoute } from "@angular/router";
 import { finalize } from "rxjs/operators";
 import { distinctUntilChanged } from "rxjs/operators";
 
-
 type NumOrDots = number | string;
 type Segmento = "todos" | "mios";
 
@@ -48,6 +46,8 @@ export class RentaCochesPage implements OnInit, OnDestroy {
   private currentUserId: string | null = null;
   private estadoQP: string | null = null;
   private estadoSub?: Subscription;
+  private routerSub?: any;
+
   vistaActiva: Segmento = "todos";
 
   todosStorage: any[] = [];
@@ -66,7 +66,10 @@ export class RentaCochesPage implements OnInit, OnDestroy {
 
   loading = false;
   error: string | null = null;
-  readonly itemsPorPagina = 12;
+
+  // ⬇️ Fijo en 8 (igual que motos)
+  readonly itemsPorPagina = 8;
+
   ordenActual: "precioAsc" | "precioDesc" | "recientes" | "" = "";
 
   // Filtros activos (sin color)
@@ -113,7 +116,6 @@ export class RentaCochesPage implements OnInit, OnDestroy {
   // ====== Disponibilidad (API) ======
   dispoLoading = false;
   private dispoReqId = 0;
-  private routerSub?: any;
 
   constructor(
     private rentaService: RentaService,
@@ -144,7 +146,7 @@ export class RentaCochesPage implements OnInit, OnDestroy {
     this.route.queryParamMap
       .pipe(
         map((q) => (q.get("estado") || "").trim() || null),
-        distinctUntilChanged() // evita disparos si el valor no cambia
+        distinctUntilChanged()
       )
       .subscribe((estado) => {
         this.estadoQP = estado;
@@ -166,7 +168,7 @@ export class RentaCochesPage implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.lastPopover?.dismiss().catch(() => {});
+    this.lastPopover?.dismiss().catch(() => { });
     this.lastPopover = null;
     this.routerSub?.unsubscribe?.();
     this.estadoSub?.unsubscribe();
@@ -205,12 +207,12 @@ export class RentaCochesPage implements OnInit, OnDestroy {
           const items = (Array.isArray(res?.rentals)
             ? res.rentals
             : Array.isArray(res?.autos)
-            ? res.autos
-            : Array.isArray(res?.data)
-            ? res.data
-            : Array.isArray(res as any)
-            ? (res as any)
-            : []) as any[];
+              ? res.autos
+              : Array.isArray(res?.data)
+                ? res.data
+                : Array.isArray(res as any)
+                  ? (res as any)
+                  : []) as any[];
 
           this.todosStorage = (items || []).filter(
             (x: any) => (x?.estadoRenta ?? "disponible") !== "inactivo"
@@ -305,8 +307,8 @@ export class RentaCochesPage implements OnInit, OnDestroy {
           ? [...this.todosFiltrados]
           : [...this.todosStorage]
         : this.miosFiltrados.length
-        ? [...this.miosFiltrados]
-        : [...this.miosStorage];
+          ? [...this.miosFiltrados]
+          : [...this.miosStorage];
 
     if (c === "precioAsc") {
       base.sort((a, b) => this.precioPorDia(a) - this.precioPorDia(b));
@@ -328,7 +330,7 @@ export class RentaCochesPage implements OnInit, OnDestroy {
   }
 
   async mostrarOpciones(ev: Event, tipo: string) {
-    await this.lastPopover?.dismiss().catch(() => {});
+    await this.lastPopover?.dismiss().catch(() => { });
     this.lastPopover = await this.popoverCtrl.create({
       component: ListComponent,
       event: ev,
@@ -380,7 +382,9 @@ export class RentaCochesPage implements OnInit, OnDestroy {
     }
 
     // ---- año
-    if (anio) lista = lista.filter((c) => Number(c?.anio) === Number(anio));
+    if (anio) {
+      lista = lista.filter((c) => Number(c?.anio) === Number(anio));
+    }
 
     // ---- marca (si no existe en la lista actual, dejamos 0 resultados)
     if (marca) {
@@ -397,7 +401,6 @@ export class RentaCochesPage implements OnInit, OnDestroy {
           lista = lista.filter((c) => this.normStr(c?.marca) === mf);
         }
       }
-
     }
 
     // ---- disponibilidad (asincrono con backend)
@@ -457,24 +460,25 @@ export class RentaCochesPage implements OnInit, OnDestroy {
           },
         });
 
-        return;
+        return; // importante: no sigas, el update lo hace el subscribe
       }
     }
 
+    // ---- asigna listas filtradas y pagina (sin disponibilidad)
     if (this.vistaActiva === "todos") {
-
       this.todosFiltrados = lista;
       this.totalTodos = this.todosFiltrados.length;
+      this.paginaTodosActual = 1;
       this.calcularPaginacion("todos");
     } else {
       this.miosFiltrados = lista;
       this.totalMios = this.miosFiltrados.length;
+      this.paginaMiosActual = 1;
       this.calcularPaginacion("mios");
     }
   }
 
   // ======= DISPONIBILIDAD: integración con ReservaService =======
-
   private fetchUnavailableCarIdsForRange(desde: string, hasta?: string) {
     const from = this.dayStart(desde);
     const to = this.dayEnd(hasta || desde);
@@ -571,11 +575,9 @@ export class RentaCochesPage implements OnInit, OnDestroy {
     return true;
   }
 
-  // ====== Paginación ======
+  // ====== Paginación (fija en 8 por página) ======
   calcularPaginacion(seg: Segmento) {
-    // ⬇️ SIEMPRE usar la lista filtrada (aunque esté vacía)
     const base = seg === "todos" ? this.todosFiltrados : this.miosFiltrados;
-
     const totalPag = Math.max(1, Math.ceil(base.length / this.itemsPorPagina));
 
     if (seg === "todos") {
@@ -588,12 +590,11 @@ export class RentaCochesPage implements OnInit, OnDestroy {
   }
 
   mostrarPagina(seg: Segmento, pagina: number) {
-    // ⬇️ SIEMPRE usar la lista filtrada (aunque esté vacía)
     const base = seg === "todos" ? this.todosFiltrados : this.miosFiltrados;
-
     const totalPag =
       seg === "todos" ? this.totalPaginasTodos : this.totalPaginasMios;
     const pagSan = Math.min(Math.max(1, pagina), totalPag);
+
     const inicio = (pagSan - 1) * this.itemsPorPagina;
     const fin = inicio + this.itemsPorPagina;
     const slice = base.slice(inicio, fin);
@@ -687,7 +688,8 @@ export class RentaCochesPage implements OnInit, OnDestroy {
 
   // ====== Refresher ======
   refrescar(ev: CustomEvent) {
-    const done = () => (ev.target as HTMLIonRefresherElement).complete();
+    const done = () =>
+      (ev.target as HTMLIonRefresherElement).complete();
     if (this.vistaActiva === "mios" && this.isLoggedIn) {
       this.cargarMios();
       setTimeout(done, 300);
@@ -740,7 +742,6 @@ export class RentaCochesPage implements OnInit, OnDestroy {
   }
 
   // ============ MODAL DE FECHAS ============
-
   openModalFechas() {
     this.tempFechasSeleccionadas = [...this.fechasSeleccionadas];
     this.tempBuildHighlightedRange();
@@ -793,7 +794,6 @@ export class RentaCochesPage implements OnInit, OnDestroy {
     this.tempBuildHighlightedRange();
   }
 
-  // ====== utils de fechas para UI ======
   private toLocalISODate(d = new Date()): string {
     const y = d.getFullYear();
     const m = String(d.getMonth() + 1).padStart(2, "0");

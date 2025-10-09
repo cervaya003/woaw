@@ -1,0 +1,74 @@
+{
+    "_id": "68ddad99962cd1e43c098c40",
+    "user": "6824f7bdf87bbd9cf6b0ccd0",
+    "request": {
+        "rfc": "RILB020622AD9",
+        "vehicle": {
+            "vin": "KMHCT4AE0FU123987",
+            "plates": "HGT2901",
+            "color": "gris"
+        },
+        "quotation": {
+            "id": "65e1954d-5140-4226-b1f9-cedac7f7003a",
+            "plan_id": "5934d1e1-18c7-4760-9997-bf8d39d3e2e4",
+            "payment_plan_id": "906398c1-c4d9-49c5-94b9-ca2d261cc30a"
+        },
+        "start_date": "2025-10-02",
+        "receivers": [],
+        "use_crabi_checkout": true,
+        "send_mail_to_client": true,
+        "send_whatsapp_to_client": true,
+        "branch_id": "ded09658-50cd-4637-8390-31a8f39fe9a1"
+    },
+    "response": {
+        "code": 200,
+        "status": "success",
+        "vehicle_id": "82ace4de-fdf2-48cf-b5af-98e95ea6bff0",
+        "description": "",
+        "policies": [
+            {
+                "policy_number": "COXZ-1023121",
+                "policy_id": "e6a6c3d1-7ae7-4ce4-9cab-e1f8c11c6041",
+                "policy_type_id": "b6bee0c5-15ae-4ad9-8f6e-c7a0ed021103",
+                "start_date": "2025-10-02T05:59:00.000Z",
+                "end_date": "2026-10-02T05:59:00.000Z"
+            },
+            {
+                "policy_number": "CO-1023121",
+                "policy_id": "274ca259-c0a1-40fa-ae08-a844fd1bd8db",
+                "policy_type_id": "a64c55ab-03bb-4774-89e6-ad69d2362966",
+                "start_date": "2025-10-02T05:59:00.000Z",
+                "end_date": "2026-10-02T05:59:00.000Z"
+            }
+        ],
+        "files": [
+            {
+                "name": "invoice",
+                "url": "https://crabi-policy-files-qa.s3.us-east-1.amazonaws.com/CO-1023121/issue_docs/Recibo.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAV5V554BZ2XAV5CYR%2F20251001%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20251001T223920Z&X-Amz-Expires=1800&X-Amz-Signature=2b1ddf80e7425094e1c5383c039a2a23b7ab85dd7e8bd8e1c5de6644a7f22f06&X-Amz-SignedHeaders=host&response-content-disposition=inline&response-content-type=application%2Fpdf&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+                "bucket": "crabi-policy-files-qa",
+                "key": "CO-1023121/issue_docs/Recibo.pdf"
+            },
+            {
+                "name": "cover",
+                "url": "https://crabi-policy-files-qa.s3.us-east-1.amazonaws.com/CO-1023121/issue_docs/Poliza.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAV5V554BZ2XAV5CYR%2F20251001%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20251001T223920Z&X-Amz-Expires=1800&X-Amz-Signature=a02583027a698601b89389e6e96000395492a6bfdefb367a178a52bd53142804&X-Amz-SignedHeaders=host&response-content-disposition=inline&response-content-type=application%2Fpdf&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+                "bucket": "crabi-policy-files-qa",
+                "key": "CO-1023121/issue_docs/Poliza.pdf"
+            }
+        ]
+    },
+    "policy_numbers": [
+        "COXZ-1023121",
+        "CO-1023121"
+    ],
+    "policy_ids": [
+        "e6a6c3d1-7ae7-4ce4-9cab-e1f8c11c6041",
+        "274ca259-c0a1-40fa-ae08-a844fd1bd8db"
+    ],
+    "main_policy_number": "COXZ-1023121",
+    "main_policy_id": "e6a6c3d1-7ae7-4ce4-9cab-e1f8c11c6041",
+    "cover_pdf_url": "https://crabi-policy-files-qa.s3.us-east-1.amazonaws.com/CO-1023121/issue_docs/Poliza.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAV5V554BZ2XAV5CYR%2F20251001%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20251001T223920Z&X-Amz-Expires=1800&X-Amz-Signature=a02583027a698601b89389e6e96000395492a6bfdefb367a178a52bd53142804&X-Amz-SignedHeaders=host&response-content-disposition=inline&response-content-type=application%2Fpdf&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+    "invoice_pdf_url": "https://crabi-policy-files-qa.s3.us-east-1.amazonaws.com/CO-1023121/issue_docs/Recibo.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=AKIAV5V554BZ2XAV5CYR%2F20251001%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20251001T223920Z&X-Amz-Expires=1800&X-Amz-Signature=2b1ddf80e7425094e1c5383c039a2a23b7ab85dd7e8bd8e1c5de6644a7f22f06&X-Amz-SignedHeaders=host&response-content-disposition=inline&response-content-type=application%2Fpdf&x-amz-checksum-mode=ENABLED&x-id=GetObject",
+    "createdAt": "2025-10-01T22:39:21.856Z",
+    "updatedAt": "2025-10-01T22:39:21.856Z",
+    "__v": 0
+}

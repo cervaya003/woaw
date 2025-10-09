@@ -1,0 +1,309 @@
+/* ====== Paleta / tokens locales del componente ====== */
+:host {
+    --brand-red: #e11d48;
+    /* rojo principal */
+    --brand-red-700: #be123c;
+    --ink: #0f172a;
+    /* casi negro */
+    --ink-2: #111827;
+    --muted: #6b7280;
+    --muted-2: #9ca3af;
+    --surface: #ffffff;
+    --surface-2: #f8fafc;
+    --border: rgba(17, 24, 39, .10);
+    --shadow: 0 10px 28px rgba(0, 0, 0, .12);
+
+    /* Badges por estatus */
+    --status-pendiente-bg: #111827;
+    --status-pendiente-fg: #ffffff;
+
+    --status-aceptada-bg: #059669;
+    --status-aceptada-fg: #ffffff;
+
+    --status-en-curso-bg: #f59e0b;
+    --status-en-curso-fg: #111827;
+
+    --status-finalizada-bg: #16a34a;
+    --status-finalizada-fg: #ffffff;
+
+    --status-cancelada-bg: #334155;
+    --status-cancelada-fg: #e5e7eb;
+}
+
+/* ====== Toolbar / header ====== */
+ion-toolbar[color="light"] {
+    --background: var(--surface);
+    --color: var(--ink);
+    border-bottom: 1px solid var(--border);
+}
+
+.title-line {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 800;
+    color: var(--ink);
+}
+
+/* Badge de estatus con estética propia */
+.title-line ion-badge {
+    --padding-start: 8px;
+    --padding-end: 8px;
+    --padding-top: 2px;
+    --padding-bottom: 2px;
+    --border-radius: 999px;
+    text-transform: capitalize;
+    font-weight: 700;
+    letter-spacing: .2px;
+    border: 1px solid rgba(0, 0, 0, .08);
+}
+
+/* Mapear colores por estatus (usando [color] del badge) */
+.title-line ion-badge[color="medium"] {
+    --background: var(--status-pendiente-bg);
+    --color: var(--status-pendiente-fg);
+}
+
+.title-line ion-badge[color="primary"] {
+    --background: var(--status-aceptada-bg);
+    --color: var(--status-aceptada-fg);
+}
+
+.title-line ion-badge[color="warning"] {
+    --background: var(--status-en-curso-bg);
+    --color: var(--status-en-curso-fg);
+}
+
+.title-line ion-badge[color="success"] {
+    --background: var(--status-finalizada-bg);
+    --color: var(--status-finalizada-fg);
+}
+
+.title-line ion-badge[color="danger"] {
+    --background: var(--status-cancelada-bg);
+    --color: var(--status-cancelada-fg);
+}
+
+/* ====== Eyebrow (fechas) ====== */
+.eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    margin: 10px 12px 6px;
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--brand-red);
+    border-radius: 12px;
+    background: var(--surface-2);
+    color: var(--ink);
+
+    ion-icon {
+        color: var(--brand-red);
+        font-size: 18px;
+    }
+
+    .dates {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-weight: 700;
+    }
+
+    ion-chip {
+        margin-left: auto;
+        --color: var(--ink);
+        --border-color: rgba(0, 0, 0, .18);
+        --border-width: 1px;
+        --background: #fff;
+        font-weight: 700;
+    }
+}
+
+/* ====== Card de resumen ====== */
+.ck-card {
+    margin: 12px;
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    background: var(--surface);
+
+    ion-card-title {
+        font-weight: 800;
+        color: var(--ink);
+    }
+
+    ion-card-subtitle {
+        color: var(--muted);
+        font-weight: 600;
+    }
+}
+
+/* ====== Grid de datos (resumen) ====== */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px 12px;
+}
+
+.cell small {
+    display: block;
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.row {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 700;
+    color: var(--ink);
+
+    ion-icon {
+        color: var(--brand-red);
+    }
+}
+
+.row.strong {
+    font-weight: 800;
+}
+
+/* ====== Acordiones ====== */
+ion-accordion-group {
+    margin: 10px 12px;
+}
+
+ion-accordion {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--surface);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+    margin-bottom: 10px;
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+}
+
+ion-accordion>ion-item[slot="header"] {
+    --background: linear-gradient(0deg, rgba(225, 29, 72, 0.06), rgba(225, 29, 72, 0.06));
+    --color: var(--ink);
+    --border-color: transparent;
+    --padding-start: 12px;
+    --padding-end: 12px;
+    --inner-padding-end: 8px;
+
+    ion-label {
+        font-weight: 800;
+        letter-spacing: .2px;
+    }
+}
+
+.pad {
+    padding: 10px 12px 12px;
+    background: var(--surface);
+}
+
+/* ====== “Two-up” cards (Cliente/Propietario/Check blocks) ====== */
+.two {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.two ion-card {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, .08);
+
+    ion-card-header {
+        border-bottom: 1px dashed rgba(0, 0, 0, .08);
+
+        ion-card-title {
+            font-weight: 800;
+            color: var(--ink-2);
+        }
+    }
+
+    ion-card-content {
+        color: var(--ink);
+
+        div+div {
+            margin-top: 6px;
+        }
+
+        b {
+            color: var(--ink-2);
+        }
+    }
+}
+
+/* Etiqueta “Propietario” en rojo si quieres remarcarla */
+ion-card-title::after {
+    content: "";
+    display: inline-block;
+    width: 22px;
+    height: 3px;
+    background: var(--brand-red);
+    border-radius: 3px;
+    margin-left: 8px;
+    margin-bottom: 2px;
+}
+
+/* ====== Lista de items ====== */
+ion-list {
+    background: transparent;
+}
+
+ion-item {
+    --background: var(--surface);
+    --color: var(--ink);
+    --padding-start: 10px;
+    --inner-padding-end: 10px;
+    --min-height: 48px;
+    border-bottom: 1px solid rgba(0, 0, 0, .04);
+
+    ion-label b {
+        color: var(--ink-2);
+        font-weight: 800;
+    }
+
+    ion-label p {
+        color: var(--muted);
+        font-weight: 600;
+    }
+
+    ion-note {
+        font-weight: 800;
+        color: var(--ink);
+    }
+}
+
+/* Skeletons */
+ion-skeleton-text {
+    border-radius: 12px;
+}
+
+/* Viewer only */
+ion-item[lines="none"] ion-icon[name="eye-outline"] {
+    color: var(--brand-red);
+}
+
+/* ====== Responsive ====== */
+@media (max-width: 520px) {
+    .two {
+        grid-template-columns: 1fr;
+    }
+
+    .grid {
+        grid-template-columns: 1fr;
+    }
+
+    .eyebrow {
+        flex-wrap: wrap;
+    }
+
+    .eyebrow ion-chip {
+        margin-left: 0;
+    }
+}

@@ -2,9 +2,11 @@
 
 <ion-content [fullscreen]="true">
   <app-spinner *ngIf="mostrar_spinnet"></app-spinner>
-  
+  <app-otros-seguros [refreshKey]="islandKey" *ngIf="tipoDispocitivo === 'telefono'"></app-otros-seguros>
+
+
   <div class="fondo-seguros">
-    <!-- <img src="/assets/autos/seg.png" alt=""> -->
+    <img src="/assets/autos/seg1.webp" alt="">
     <span class="fondo-seguros__overlay"></span>
   </div>
 
@@ -15,29 +17,52 @@
         <section class="poliza__card">
 
           <ng-container *ngIf="!polizaCreada">
-            <h1>Crear poliza</h1>
+            <div class="header">
+              <h1>Crear póliza</h1>
+            </div>
+
             <form [formGroup]="form_poliza" (ngSubmit)="siguiente()">
 
               <div class="field field-grid">
+                <!-- VIN -->
                 <div>
-                  <label for="vin">VIN del auto</label>
+                  <label for="vin">
+                    <ion-icon name="car-sport-outline"></ion-icon>
+                    VIN del auto
+                  </label>
                   <div class="control">
                     <input id="vin" type="text" class="form-input" placeholder="XX17XFSF" formControlName="vin"
                       maxlength="17" (input)="onVinInput($event)" />
                   </div>
                   <p *ngIf="analizaForm('vin')" class="error">El VIN es obligatorio</p>
                 </div>
+
+                <!-- Placas -->
                 <div>
-                  <label for="placas">Placas del auto</label>
+                  <label for="placas">
+                    <ion-icon name="card-outline"></ion-icon>
+                    Placas del auto
+                  </label>
+                  <div class="toggle-container">
+                    <ion-toggle [(ngModel)]="placasEnTramite" [ngModelOptions]="{ standalone: true }"
+                      (ionChange)="togglePlacasTramite()">
+                    </ion-toggle>
+                    <span>Placas en trámite</span>
+                  </div>
+
                   <div class="control">
                     <input id="placas" type="text" class="form-input" placeholder="UQTWRBS" formControlName="placas"
-                      maxlength="7" (input)="onPlacasInput($event)" />
+                      maxlength="7" [readonly]="placasEnTramite" (input)="onPlacasInput($event)" />
                   </div>
                   <p *ngIf="analizaForm('placas')" class="error">Las placas son obligatorias</p>
                 </div>
 
+                <!-- Color -->
                 <div>
-                  <label for="color">Color del auto</label>
+                  <label for="color">
+                    <ion-icon name="color-palette-outline"></ion-icon>
+                    Color del auto
+                  </label>
                   <div class="control">
                     <select id="color" class="form-input" formControlName="color">
                       <option value="" disabled selected>Selecciona un color</option>
@@ -51,11 +76,15 @@
                   </p>
                 </div>
 
+                <!-- Plan de pago -->
                 <div>
-                  <label for="color">Seleciona tu plan</label>
+                  <label for="pago">
+                    <ion-icon name="wallet-outline"></ion-icon>
+                    Selecciona tu plan
+                  </label>
                   <div class="control">
-                    <ion-select interface="popover" formControlName="pago" placeholder="Elige un plan de pago..." aria-label="Plan de pago"
-                      class="pay-select" [(ngModel)]="selectedPaymentId"
+                    <ion-select interface="popover" formControlName="pago" placeholder="Elige un plan de pago..."
+                      aria-label="Plan de pago" class="pay-select" [(ngModel)]="selectedPaymentId"
                       (ionChange)="onSelectPayment($event.detail.value)">
 
                       <ion-select-option *ngFor="let opt of datoscotizacion?.plans?.[0]?.payment_plans"
@@ -66,26 +95,25 @@
                     </ion-select>
                   </div>
                 </div>
-
               </div>
 
               <!-- Correos dinámicos -->
-              <div class="field">
-                <label>Correos de contacto (opcional)</label>
+              <div class="field field-grid">
+                <label>
+                  <ion-icon name="mail-outline"></ion-icon>
+                  Correos de contacto (opcional)
+                </label>
 
-                <div formArrayName="correos" class="correos-wrap">
+                <div formArrayName="correos">
                   <div class="correo-item" *ngFor="let ctrl of correos.controls; let i = index;">
-
                     <div class="control">
                       <input class="form-input" type="email" [formControlName]="i" placeholder="correo@ejemplo.com"
                         inputmode="email" autocomplete="email" (input)="normalizeCorreo(i)" />
                     </div>
-
                     <button type="button" class="btn-ghost danger" (click)="removeCorreo(i)"
                       aria-label="Eliminar correo">
-                      Eliminar
+                      <ion-icon name="trash"></ion-icon>
                     </button>
-
                     <p *ngIf="ctrl.invalid && (ctrl.dirty || ctrl.touched)" class="error">
                       {{ getCorreoError(ctrl.errors) }}
                     </p>
@@ -94,24 +122,24 @@
 
                 <div class="correos-actions">
                   <button type="button" class="btn-outline" (click)="addCorreo()" [disabled]="!canAddCorreo">
-                    Agregar correo
-                    <small *ngIf="correos.length>0">({{correos.length}}/2)</small>
+                    <ion-icon name="add-circle-outline"></ion-icon>
+                    Agregar correo <small *ngIf="correos.length>0">({{correos.length}}/2)</small>
                   </button>
                 </div>
 
                 <p *ngIf="correos.hasError('duplicated') && (correos.dirty || correos.touched)" class="error">
                   No repitas el mismo correo.
                 </p>
-
               </div>
 
-
+              <!-- CTA -->
               <div class="paybox__cta">
                 <button type="button" class="btn-secondary" (click)="regresarPage()">
-                  &#x2B05; Regresar
+                  <ion-icon name="arrow-back-outline"></ion-icon>
+                  Regresar
                 </button>
                 <button type="submit" class="btn-primary">
-                  Siguiente &#x27A1;
+                  Siguiente <ion-icon name="arrow-forward-outline"></ion-icon>
                 </button>
               </div>
 
@@ -120,32 +148,64 @@
 
           <ng-container *ngIf="polizaCreada && datosPolizaCreada as d">
             <section class="poliza_creada">
+              <ion-grid class="poliza-grid">
+                <ion-row class="ion-align-items-stretch">
 
-              <div class="poliza__hero">
+                  <!-- IZQUIERDA (más grande) -->
+                  <ion-col size="12" sizeMd="7">
+                    <div class="poliza__hero">
+                      <div class="poliza__msg">
+                        <ion-icon name="checkmark-circle"></ion-icon>
+                        <h2>Póliza creada.</h2>
+                        <p>
+                          Hemos enviado la información de tu póliza a tu correo electrónico
+                          <strong>{{ email }}📧</strong>.
+                          <br /><br />
+                          Revisa tu bandeja de entrada para descargar tus documentos digitales.
+                        </p>
+                      </div>
 
-                <div class="poliza__msg">
+                      <button class="bt_paga" (click)="realizarPago()">
+                        <ion-icon name="cash-outline"></ion-icon>
+                        Realizar pago
+                      </button>
 
-                  <ion-icon name="checkmark-circle"></ion-icon>
-                  <h2>Póliza creada correctamente</h2>
+                      <button class="bt_regresar_r" (click)="regresar()">
+                        &#x2B05; Realizar nueva cotizacón
+                      </button>
+                    </div>
+                  </ion-col>
 
-                  <p>
-                    Hemos enviado la información de tu póliza a tu correo electrónico <strong>{{ this.email
-                      }}📧.</strong>
-                    <br><br>
-                    Revisa tu bandeja de entrada para descargar tus documentos digitales.
-                  </p>
-                </div>
+                  <!-- DERECHA (compacta) -->
+                  <ion-col size="12" sizeMd="5">
+                    <div class="poliza__sidecard">
+                      <div class="folio">
+                        <span>Folio</span>
+                        <strong>{{ folioCO || '—' }}</strong>
+                      </div>
 
-                <button class="bt_paga" (click)="realizarPago()">
-                  <ion-icon name="cash-outline"></ion-icon>
-                  Realizar pago
-                </button>
-                <button class="bt_regresar_r" (click)="regresar()">
-                  &#x2B05;
-                  Realizar nueva cotizacón
-                </button>
-              </div>
+                      <ul class="vigencia" *ngIf="inicioVigencia || finVigencia">
+                        <li *ngIf="inicioVigencia"><b>Inicio:</b> {{ inicioVigencia }}</li>
+                        <li *ngIf="finVigencia"><b>Fin:</b> {{ finVigencia }}</li>
+                      </ul>
 
+                      <div class="files-actions">
+                        <a *ngIf="invoiceUrl" class="bt_pdf" [href]="invoiceUrl" target="_blank" rel="noopener"
+                          download>
+                          <ion-icon name="document-text-outline"></ion-icon>
+                          Descargar Recibo (PDF)
+                        </a>
+
+                        <a *ngIf="coverUrl" class="bt_pdf" [href]="coverUrl" target="_blank" rel="noopener" download>
+                          <ion-icon name="document-outline"></ion-icon>
+                          Descargar Póliza (PDF)
+                        </a>
+                      </div>
+                    </div>
+                  </ion-col>
+
+                </ion-row>
+              </ion-grid>
             </section>
           </ng-container>
 

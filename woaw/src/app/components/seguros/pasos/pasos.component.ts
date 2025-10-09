@@ -4,6 +4,10 @@ import { IonicModule } from '@ionic/angular';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { Router } from '@angular/router';
+import { GeneralService } from "../../../services/general.service";
+import { AppRoutingModule } from "src/app/app-routing.module";
+import { ModalController } from '@ionic/angular';
+
 
 type Maybe<T> = T | null | undefined;
 
@@ -17,16 +21,17 @@ interface CotizacionVM {
 }
 
 @Component({
-  selector: 'app-otros-seguros',
-  templateUrl: './otros-seguros.component.html',
-  styleUrls: ['./otros-seguros.component.scss'],
+  selector: 'app-pasos',
+  templateUrl: './pasos.component.html',
+  styleUrls: ['./pasos.component.scss'],
   standalone: true,
   imports: [IonicModule, CommonModule, ReactiveFormsModule],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class OtrosSegurosComponent implements OnInit, OnChanges {
+export class PasosComponent implements OnInit {
   @Input() refreshKey = 0;
   cotizacionVM: Maybe<CotizacionVM> = null;
+  tipoDispocitivo: 'computadora' | 'telefono' | 'tablet' = 'computadora';
 
   cards = [
     { nombre: 'Cotización', estatus: false, icon: 'calculator-outline', key: 'cotizacion' },
@@ -39,7 +44,7 @@ export class OtrosSegurosComponent implements OnInit, OnChanges {
     rfc: string;
     email?: string;
     phone?: string;
-    direccion?: string; // "Olmo 033, Alamos, 76148, Qro"
+    direccion?: string;
   }> = null;
 
   polizaVM: Maybe<{
@@ -52,9 +57,15 @@ export class OtrosSegurosComponent implements OnInit, OnChanges {
     inicio?: string;
   }> = null;
 
-  constructor(private cdr: ChangeDetectorRef, private router: Router) { }
+  constructor(
+    private cdr: ChangeDetectorRef, private router: Router,
+    public generalService: GeneralService, private modalCtrl: ModalController,
+  ) { }
 
   ngOnInit() {
+    this.generalService.dispositivo$.subscribe((tipo) => {
+      this.tipoDispocitivo = tipo;
+    });
     this.updateFromStorage();
   }
 
@@ -222,6 +233,10 @@ export class OtrosSegurosComponent implements OnInit, OnChanges {
 
   redireccion(url: string) {
     if (!url) return;
+    this.modalCtrl.dismiss();
     this.router.navigate([`/${url}`]);
+  }
+  cerrarModal() {
+    this.modalCtrl.dismiss();
   }
 }

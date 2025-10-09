@@ -12,29 +12,36 @@
 
 <app-navbar></app-navbar>
 
-<ion-content [fullscreen]="true" scrollEvents="true" (ionScroll)="onScroll($event)">
-  
+<ion-content
+  [fullscreen]="true"
+  scrollEvents="true"
+  (ionScroll)="onScroll($event)"
+>
+  <section class="logo">
+    <div class="img">
+      <img src="assets/icon/logo4.png" alt="Logo Woaw" />
+    </div>
+  </section>
+
   <!-- HERO -->
   <section class="hero" #hero>
-
     <div class="hero__bg" aria-hidden="true">
+ 
 
       <img src="/assets/nosotros/fondoP.webp" alt="Fondo" fetchpriority="high" decoding="sync" />
-
+ 
     </div>
 
     <div class="hero__glow" aria-hidden="true"></div>
     <div class="hero__content reveal">
       <!-- <h1>WO<span>AW</span></h1>  -->
       <p>
-
         La plataforma digital que transforma la experiencia de compra - venta de
         autos nuevos, seminuevos y usados en México.
-
       </p>
     </div>
   </section>
-
+ 
 
 
   <section>
@@ -46,7 +53,7 @@
       <div id="features-end-sentinel" aria-hidden="true"></div>
     </figure>
   </section>
-
+ 
   <!-- CARTAS CON IMÁGENES -->
   <section class="cards-row">
     <div class="cards-row__wrap">
@@ -56,18 +63,38 @@
         </figure>
         <h4>{{ c.title }}</h4>
       </article>
+
+ 
+      <!-- <section>
+ 
+   <!-- <section>
+ 
+
+        <figure class="phone-mock" aria-hidden="true">
+          <picture>
+            <source srcset="/assets/nosotros/iphone.png" type="image/webp" />
+            <img src="/assets/nosotros/iphone.webp" alt="" loading="lazy" />
+          </picture>
+          <div id="features-end-sentinel" aria-hidden="true"></div>
+        </figure>
+
+ 
+      </section>-->
+ 
     </div>
   </section>
 
-
   <!-- CONECTOR COMPRADOR / CONECTAMOS / VENDEDOR -->
-  <section class="connect-band" aria-label="Conectamos compradores y vendedores">
+  <section
+    class="connect-band"
+    aria-label="Conectamos compradores y vendedores"
+  >
     <div class="connect-track">
       <article class="connect-col">
-        <h5>Comprador</h5>
+        <h5>COMPRADOR</h5>
         <p>
-          Puedes buscar, comparar filtrar,<br>
-          cotizar, financiar y agendar citas<br>
+          Puedes buscar, comparar filtrar,<br />
+          cotizar, financiar y agendar citas<br />
           en la agencia o lote.
         </p>
       </article>
@@ -77,22 +104,19 @@
       </div>
 
       <article class="connect-col">
-        <h5>Vendedor</h5>
+        <h5>VENDEDOR</h5>
         <p>
-          Visibilidad digital para tus autos sin<br>
-          costo, clientes listos para comprar y<br>
+          Visibilidad digital para tus autos sin<br />
+          costo, clientes listos para comprar y<br />
           respaldo de financiamiento.
         </p>
       </article>
     </div>
   </section>
 
-
-
-
   <!-- MISIÓN / VISIÓN / VALORES -->
   <section class="mvv">
-    <article class="card reveal " color="danger">
+    <article class="card reveal" color="danger">
       <h3>Misión</h3>
       <p>
         <strong>Conectar personas con su próximo auto</strong>, simplificando la
@@ -108,8 +132,9 @@
     <article class="card reveal">
       <h3>Visión</h3>
       <p>
-        <strong>Ser la plataforma líder en México en intermediación de autos</strong>, reconocida por revolucionar la
-        forma de comprar y vender con un
+        <strong
+          >Ser la plataforma líder en México en intermediación de autos</strong
+        >, reconocida por revolucionar la forma de comprar y vender con un
         modelo digital centrado en la comodidad del usuario siendo accesible,
         justa y transparente en el proceso. Queremos que cada persona pueda
         <strong>adquirir o vender un auto con tranquilidad</strong>, con
@@ -130,13 +155,13 @@
     </article>
   </section>
 
-
-
   <section class="intro-woaw">
     <p>
       <strong>WOAW</strong> es la plataforma digital que
-      <span class="resaltar">transforma la experiencia automotriz en México</span>,
-      integrando <span class="resaltar">compra, venta, renta y arrendamiento.</span>
+      <span class="resaltar"
+        >transforma la experiencia automotriz en México</span
+      >, integrando
+      <span class="resaltar">compra, venta, renta y arrendamiento.</span>
     </p>
 
     <div class="intro-woaw__actions">
@@ -146,12 +171,9 @@
     </div>
   </section>
 
-
-
   <!-- LÍNEA DE TIEMPO -->
 
   <section></section>
-
 
   <!-- KPIs -->
   <!-- <section class="kpis">

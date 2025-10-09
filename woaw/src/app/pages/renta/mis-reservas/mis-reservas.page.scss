@@ -1,3 +1,87 @@
+.mis-reservas {
+  --text-dark: #111;
+  --text-muted: #6b7280;
+
+  /* medidas para centrar SOLO el bloque del título */
+  --page-head-max: 1100px;
+  /* ancho máximo del título */
+  --page-head-gutter: 16px;
+  /* separación lateral */
+}
+
+/* Page head */
+.page-head {
+  padding: 12px;
+  padding-top: 4px;
+
+  /* CENTRADO REAL del bloque del título
+     (le damos ancho menor al contenedor y lo centramos) */
+  width: min(var(--page-head-max), calc(100% - (var(--page-head-gutter) * 2)));
+  margin-inline: auto;
+  padding-inline: var(--page-head-gutter);
+
+  /* ⬇️ NUEVO: centrado visual del contenido */
+  text-align: center;
+
+  h1 {
+    margin: 0 0 4px 0;
+    font-weight: 800;
+    font-size: 22px;
+    color: var(--text-dark);
+    position: relative;
+  }
+
+  h1::after {
+    content: "";
+    display: block;
+    width: 72px;
+    height: 3px;
+    background: var(--ion-color-danger);
+    border-radius: 3px;
+    margin-top: 6px;
+
+    /* ⬇️ NUEVO: centra la rayita */
+    margin-inline: auto;
+  }
+
+  .sub {
+    margin: 4px 0 8px;
+    color: var(--text-muted);
+  }
+
+  .quick-chips {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+
+    /* ⬇️ NUEVO: centra los chips */
+    justify-content: center;
+  }
+}
+
+/* Section title */
+.section-title {
+  margin: 14px 12px 8px;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: .02em;
+  color: var(--text-dark);
+  position: relative;
+  text-transform: uppercase;
+}
+
+.section-title::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -6px;
+  width: 90px;
+  height: 2px;
+  background: var(--ion-color-danger);
+  border-radius: 2px;
+}
+
+/* Estado vacío */
 .vacio {
   text-align: center;
   margin-top: 60px;
@@ -11,77 +95,143 @@
 
   p {
     font-size: 16px;
-    font-weight: 500;
+    font-weight: 600;
+    color: var(--text-dark);
   }
 }
 
-/* Tarjetas */
-ion-card {
+/* Tarjetas generales */
+.section-card,
+ion-card.booking-card {
   margin: 12px;
   border-radius: 14px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  background: #fff;
+  color: var(--text-dark);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, .12);
+  border: 1px solid rgba(0, 0, 0, .06);
+}
 
-  ion-card-header {
-    padding-bottom: 4px;
+/* Card de reserva con acento lateral por estatus */
+ion-card.booking-card {
+  position: relative;
+  overflow: hidden;
+}
 
-    .header-line {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+ion-card.booking-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: var(--ion-color-danger);
+}
 
-    ion-card-title {
-      font-size: 16px;
-      font-weight: 600;
-      flex: 1;
-      margin-right: 8px;
-    }
+ion-card.booking-card[data-status="en_curso"]::before {
+  background: var(--ion-color-warning);
+}
 
-    ion-badge {
-      text-transform: capitalize;
-      font-size: 12px;
-      padding: 4px 8px;
-      border-radius: 8px;
-    }
+ion-card.booking-card[data-status="aceptada"]::before {
+  background: var(--ion-color-success);
+}
 
-    ion-card-subtitle {
-      font-size: 13px;
-      color: var(--ion-color-medium);
-    }
+ion-card.booking-card[data-status="cancelada"]::before,
+ion-card.booking-card[data-status="rechazada"]::before {
+  background: var(--ion-color-medium);
+}
+
+ion-card-header {
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(0, 0, 0, .06);
+
+  .header-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
   }
 
-  ion-card-content {
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 8px;
-      margin: 10px 0;
-
-      small {
-        display: block;
-        font-size: 12px;
-        color: var(--ion-color-medium);
-      }
-
-      div {
-        font-size: 14px;
-        font-weight: 500;
-      }
-    }
-
-    .acciones {
-      display: flex;
-      justify-content: flex-end;
-      gap: 8px;
-      margin-top: 12px;
-
-      ion-button {
-        --border-radius: 10px;
-        font-size: 14px;
-        font-weight: 500;
-      }
-    }
+  ion-card-title {
+    font-size: 16px;
+    font-weight: 800;
+    flex: 1;
+    margin-right: 8px;
+    color: var(--text-dark);
   }
+
+  ion-badge {
+    text-transform: capitalize;
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 8px;
+  }
+
+  ion-card-subtitle {
+    font-size: 13px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  ion-card-subtitle ion-icon {
+    color: var(--ion-color-danger);
+  }
+}
+
+/* Meta info dentro de la card */
+.meta-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px 12px;
+  margin: 12px 0 6px;
+}
+
+.meta-grid .cell small {
+  display: block;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.meta-grid .row {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.meta-grid .row ion-icon {
+  color: var(--ion-color-danger);
+}
+
+.meta-grid .row.strong span {
+  font-weight: 800;
+}
+
+/* Botonera */
+.acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+  align-items: center;
+}
+
+.acciones ion-button {
+  --border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.acciones ion-button[color="danger"][fill="solid"] {
+  --background: var(--ion-color-danger);
+  --color: #fff;
+}
+
+.acciones ion-button[color="medium"][fill="outline"] {
+  --border-color: #cbd5e1;
+  --color: #334155;
 }
 
 /* Loader */

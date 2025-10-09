@@ -1,6 +1,8 @@
 <app-spinner *ngIf="mostrar_spinnet"></app-spinner>
 <ion-header [translucent]="true">
+  
   <ion-toolbar class="custom-toolbar" color="dark">
+    
     <ion-buttons slot="start">
       <div class="logo_content">
         <img src="/assets/icon/logo4.png" loading="lazy" alt="WOAW" class="logo" (click)="redirecion_logo()" />
@@ -75,7 +77,6 @@
           Seguros de autos
         </ion-button>
 
-
          <ion-button
           fill="clear"
           [ngClass]="{ 'activo': isActive('conocenos') }"
@@ -132,8 +133,8 @@
         </span>
       </ion-button>
 
-      <ion-button fill="clear" class="stack" [ngClass]="{ 'activo': isActive('seguros') }"
-        (click)="redirecion('seguros')" *ngIf="!mostrarBuscador && esDispositivoMovil">
+      <ion-button fill="clear" class="stack" [ngClass]="{ 'activo': isActive('seguros-disponibles') }"
+        (click)="redirecion('seguros-disponibles')" *ngIf="!mostrarBuscador && esDispositivoMovil">
         <span class="vcol">
           <ion-icon name="shield-checkmark-outline"></ion-icon>
           <span class="label">Seguros</span>
@@ -157,3 +158,6 @@
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
+
+
+ 

@@ -11,6 +11,9 @@ import { SeguroService } from '../../../services/seguro.service';
 import { Location } from '@angular/common';
 import { IonContent } from '@ionic/angular';
 import { ViewChild } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
+import { take } from 'rxjs/operators';
+
 
 import { MotosService } from '../../../services/motos.service';
 @Component({
@@ -20,7 +23,6 @@ import { MotosService } from '../../../services/motos.service';
   standalone: false
 })
 export class PersonaPage implements OnInit {
-  esDispositivoMovil: boolean = false;
   form_poliza: FormGroup;
   currentStepform: 1 | 2 | 3 | 4 = 1;
   datosCoche: any = null;
@@ -31,7 +33,11 @@ export class PersonaPage implements OnInit {
   tipoPersonaSeleccionada: string | null = null;
   mostrarMasOpciones: boolean = false;
 
+  public tipoDispocitivo: 'computadora' | 'telefono' | 'tablet' = 'computadora';
+
   buscarForm!: FormGroup;
+
+  public isLoggedIn: boolean = false;
 
   paises: any[] = [];
   estados: any[] = [];
@@ -59,14 +65,13 @@ export class PersonaPage implements OnInit {
     });
 
     this.buscarForm = this.fb.group({
-      rfc: [
+      valuebuscar: [
         '',
         {
           validators: [
             Validators.required,
-            Validators.minLength(12),
-            Validators.maxLength(13),
-            Validators.pattern(/^[A-ZÑ&]{3,4}\d{6}[A-Z0-9]{3}$/),
+            Validators.minLength(5),
+            Validators.maxLength(30)
           ],
           updateOn: 'change'
         }
@@ -75,9 +80,11 @@ export class PersonaPage implements OnInit {
   }
   ngOnInit() {
     this.detectaUsuario();
+    
     this.generalService.dispositivo$.subscribe((tipo) => {
-      this.esDispositivoMovil = tipo === 'telefono' || tipo === 'tablet';
+      this.tipoDispocitivo = tipo;
     });
+    
     const stored = localStorage.getItem('datosCoche');
     if (stored) {
       this.datosCoche = JSON.parse(stored);
@@ -96,81 +103,121 @@ export class PersonaPage implements OnInit {
       //   'warning'
       // );
     }
-
   }
-  toUpperCase(event: any) {
-    const value = event.target.value.toUpperCase();
-    this.buscarForm.get('rfc')?.setValue(value, { emitEvent: false });
-  }
-onBuscar() {
-  if (this.buscarForm.valid) {
-    const rfc = this.buscarForm.value.rfc;
-    console.log('Buscando RFC:', rfc);
-
-    this.mostrar_spinnet = true;
-    this.seguros.buscarPersona(rfc).subscribe({
-      next: (data: any) => {
-        this.mostrar_spinnet = false;
-        this.islandKey++;
-
-        if (data?.found === false) {
-          this.generalService.alert(
-            `El RFC ${rfc} no fue encontrado en Crabi.`,
-            'No existe',
-            'danger'
-          );
-          return;
-        }
-
-        localStorage.setItem('UsuarioRespuesta', JSON.stringify(data));
-        this.statusBuscar = false;
-        this.detectaUsuario();
-      },
-      error: (error) => {
-        this.mostrar_spinnet = false;
-        console.error('Error al obtener persona:', error);
+  onBuscar(status: boolean = true, val: string = ''): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+      if (this.buscarForm.invalid && status) {
         this.generalService.alert(
-          'Ocurrió un error al consultar Crabi. Intenta nuevamente más tarde.',
-          'Error',
+          `Ingresa tu RFC o Email`,
+          'Ingresa tus datos',
           'danger'
         );
+        return resolve(false);
       }
+
+      let value: string = status ? this.buscarForm.value.valuebuscar : val;
+
+      this.mostrar_spinnet = true;
+      this.seguros.buscarPersona(value).subscribe({
+        next: (data: any) => {
+          this.mostrar_spinnet = false;
+          this.islandKey++;
+
+          if (data?.found === false) {
+            if (status) {
+              this.generalService.alert(
+                `${value} no fue encontrado`,
+                'No existe',
+                'danger'
+              );
+            }
+            return resolve(false);
+          }
+
+          localStorage.setItem('UsuarioRespuesta', JSON.stringify(data));
+          this.statusBuscar = false;
+          this.detectaUsuario();
+          this.generalService.alert(
+            `${value} fue encontrado correctamente`,
+            'Usuario localizado',
+            'success'
+          );
+          this.form_poliza.reset();
+          return resolve(true);
+        },
+        error: (error) => {
+          this.mostrar_spinnet = false;
+          console.error('Error al obtener persona:', error);
+          this.generalService.alert(
+            'Ocurrió un error al consultar Crabi. Intenta nuevamente más tarde.',
+            'Error',
+            'danger'
+          );
+          return reject(error);
+        }
+      });
     });
   }
-}
   buscarSeccion() {
     this.statusBuscar = !this.statusBuscar;
   }
   detectaUsuario() {
-    const storedPersona = localStorage.getItem('UsuarioRespuesta');
-    if (storedPersona) {
+    this.islandKey++;
+    if (this.bustasUserBoleano()) {
       this.statusUserDtos = true;
-      this.UsuarioRespuesta = JSON.parse(storedPersona);
+      const storedPersona = localStorage.getItem('UsuarioRespuesta');
+      if (storedPersona) {
+        this.UsuarioRespuesta = JSON.parse(storedPersona);
+      }
     } else {
       this.UsuarioRespuesta = null;
       this.statusUserDtos = false;
       return;
     }
   }
-  nuevosDatos() {
+  bustasUserBoleano(): boolean {
+    const storedPersona = localStorage.getItem('UsuarioRespuesta');
+    return !!(storedPersona && storedPersona.trim() !== '');
+  }
+  async nuevosDatos() {
     this.mostrar_spinnet = true;
-    setTimeout(() => {
+
+    setTimeout(async () => {
       this.mostrar_spinnet = false;
-      this.router.navigate(['/seguros/poliza']);
+
+      const autorizado = await this.verificarAuth();
+
+      if (autorizado) {
+        this.router.navigate(['/seguros/poliza']);
+      } else {
+        this.generalService.alert(
+          `Para crear tu póliza, es necesario que inicies sesión.`,
+          'Regístrate o inicia sesión',
+          'danger'
+        );
+        this.router.navigate(['/inicio']);
+      }
     }, 1500);
   }
   editarUser() {
     this.statusUserDtos = false;
   }
-  siguiente() {
+  async siguiente() {
     if (this.form_poliza.invalid) {
       this.form_poliza.markAllAsTouched();
       return;
     }
     if (this.currentStepform === 1) {
-      this.currentStepform = 2;
       const tipo = this.form_poliza.get('tipoPersona')?.value;
       this.tipoPersonaSeleccionada = tipo;
+      this.currentStepform = 2;
+      this.form_poliza.addControl('telefono', this.fb.control('', [Validators.required, Validators.pattern(/^\d{10}$/)]));
+      this.form_poliza.addControl('calle', this.fb.control('', [Validators.required, Validators.minLength(4)]));
+      this.form_poliza.addControl('int', this.fb.control('', [Validators.required, Validators.minLength(1)]));
+      this.form_poliza.addControl('ext', this.fb.control('', [Validators.required, Validators.minLength(1)]));
+      this.form_poliza.addControl('col', this.fb.control('', [Validators.required, Validators.minLength(5)]));
+    } else if (this.currentStepform === 2) {
+      this.currentStepform = 3;
       // siempre se creaen estos 
       this.form_poliza.addControl('nombre', this.fb.control('', [Validators.required, Validators.minLength(4)]));
       this.form_poliza.addControl('email', this.fb.control('', [Validators.required, Validators.email]));
@@ -186,21 +233,43 @@ onBuscar() {
         this.form_poliza.addControl('folio', this.fb.control('', [Validators.required, Validators.minLength(5)]));
         this.form_poliza.addControl('nmRepLegal', this.fb.control('', [Validators.required, Validators.minLength(5)]));
       }
-    } else if (this.currentStepform === 2) {
-      this.currentStepform = 3;
-      this.form_poliza.addControl('telefono', this.fb.control('', [Validators.required, Validators.pattern(/^\d{10}$/)]));
-      this.form_poliza.addControl('calle', this.fb.control('', [Validators.required, Validators.minLength(4)]));
-      this.form_poliza.addControl('int', this.fb.control('', [Validators.required, Validators.minLength(1)]));
-      this.form_poliza.addControl('ext', this.fb.control('', [Validators.required, Validators.minLength(1)]));
-      this.form_poliza.addControl('col', this.fb.control('', [Validators.required, Validators.minLength(5)]));
     } else if (this.currentStepform === 3) {
-      this.obtenerPaises();
-      this.obtenerEstados();
-      this.obtenerActEconomicas();
-      this.currentStepform = 4;
-      this.form_poliza.addControl('pais', this.fb.control({ value: 1, disabled: true }, Validators.required));
-      this.form_poliza.addControl('estado', this.fb.control('', [Validators.required]));
-      this.form_poliza.addControl('actE', this.fb.control('', [Validators.required]));
+      const email = String(this.form_poliza.value.email || '').trim();
+      const rfc = String(this.form_poliza.value.rfc || '').trim();
+
+      try {
+        let existeEmail = true;
+        let existeRFC = true;
+
+        if (email) {
+          existeEmail = await this.onBuscar(false, email);
+        }
+
+        if (!existeEmail && rfc) {
+          existeRFC = await this.onBuscar(false, rfc);
+        }
+
+        if (!existeEmail && !existeRFC) {
+          this.obtenerPaises();
+          this.obtenerEstados();
+          this.obtenerActEconomicas();
+          this.currentStepform = 4;
+          this.form_poliza.addControl('pais', this.fb.control({ value: 1, disabled: true }, Validators.required));
+          this.form_poliza.addControl('estado', this.fb.control('', [Validators.required]));
+          this.form_poliza.addControl('actE', this.fb.control('', [Validators.required]));
+        } else {
+          return;
+        }
+      } catch (e) {
+        this.generalService.alert(
+          'Ocurrió un error al consultar. Intenta nuevamente.',
+          'Error',
+          'danger'
+        );
+        console.error(e);
+        return;
+      }
+
     } else if (this.currentStepform === 4) {
       this.generalService.confirmarAccion(
         '¿Autorizas enviar tu datos par acrear tu registro?',
@@ -219,20 +288,23 @@ onBuscar() {
     this.detectaUsuario();
     let controlesAEliminar: string[] = [];
     if (this.currentStepform === 1) {
-      this.islandKey++;
-      // this.location.back();
-      this.router.navigate(['/seguros']);
+      if (this.bustasUserBoleano()) {
+        this.statusUserDtos = true;
+      } else {
+        this.islandKey++;
+        this.router.navigate(['/seguros']);
+      }
     } else if (this.currentStepform === 2) {
-      this.tipoPersonaSeleccionada = null;
       this.currentStepform = 1;
+      controlesAEliminar = [
+        'telefono', 'calle', 'int', 'ext', 'col'
+      ];
+    } else if (this.currentStepform === 3) {
+      this.tipoPersonaSeleccionada = null;
+      this.currentStepform = 2;
       controlesAEliminar = [
         'nombre', 'email', 'rfc',
         'apellidoP', 'apellidoM', 'curp', 'folio', 'nmRepLegal'
-      ];
-    } else if (this.currentStepform === 3) {
-      this.currentStepform = 2;
-      controlesAEliminar = [
-        'telefono', 'calle', 'int', 'ext', 'col'
       ];
     } else if (this.currentStepform === 4) {
       this.currentStepform = 3;
@@ -243,6 +315,11 @@ onBuscar() {
     controlesAEliminar.forEach(c => {
       if (this.form_poliza.contains(c)) this.form_poliza.removeControl(c);
     });
+  }
+  regresarInicio() {
+    this.detectaUsuario();
+    this.islandKey++;
+    this.router.navigate(['/seguros']);
   }
   toUpper(ctrlName: string) {
     const c = this.form_poliza.get(ctrlName);
@@ -388,25 +465,52 @@ onBuscar() {
       error: (error) => console.error('Error al obtener actividades economicas:', error),
     });
   }
-  enviarDatosCrearPersona(payload: any) {
+  async enviarDatosCrearPersona(payload: any) {
     this.mostrar_spinnet = true;
-    this.seguros.crearPersona(payload).subscribe({
-      next: (data) => {
-        this.islandKey++;
-        const nombre = data.response?.first_name || this.form_poliza.get('nombre')?.value || 'Tu registro';
+
+    try {
+      const data = await firstValueFrom(this.seguros.crearPersona(payload));
+
+      const autorizado = await firstValueFrom(
+        this.generalService.tokenExistente$.pipe(take(1))
+      );
+
+      this.islandKey++;
+      const nombre =
+        data?.response?.first_name ||
+        this.form_poliza.get('nombre')?.value;
+
+      this.mostrar_spinnet = false;
+
+      if (autorizado) {
         this.generalService.alert(
           `¡Listo! ${nombre} quedó registrado correctamente.`,
           'Registro exitoso',
           'success'
         );
         localStorage.setItem('UsuarioRespuesta', JSON.stringify(data));
-        this.mostrar_spinnet = false;
         this.router.navigate(['/seguros/poliza']);
-      },
-      error: (error) => {
-        this.mostrar_spinnet = false;
-        console.error('Error al obtener actividades economicas:', error)
+      } else {
+        this.generalService.alert(
+          `Para crear tu póliza, es necesario que inicies sesión.`,
+          'Regístrate o inicia sesión',
+          'danger'
+        );
+        this.router.navigate(['/inicio']);
       }
+    } catch (error: any) {
+      this.mostrar_spinnet = false;
+      console.error('Error al crear persona:', error);
+      const msg = error?.error?.message || 'No se pudo registrar a la persona.';
+      this.generalService.alert(msg, 'Error', 'danger');
+    }
+  }
+  async verificarAuth(): Promise<boolean> {
+    return new Promise((resolve) => {
+      this.generalService.tokenExistente$.subscribe((estado) => {
+        this.isLoggedIn = estado;
+        resolve(estado);
+      });
     });
   }
 }
