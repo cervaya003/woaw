@@ -4,6 +4,7 @@
   <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
+
   <div class="page-head">
     <h1>Mis reservas</h1>
     <p class="sub">
@@ -71,7 +72,8 @@
               <span *ngIf="!(actingIds.has(b._id) && actingAction==='accept')">Aceptar</span>
             </ion-button>
 
-            <ion-button size="small" color="danger" fill="outline" (click)="cancelPending(b)"
+            <!-- Cancelar (dueño) en lista de pendientes -->
+            <ion-button size="small" color="danger" fill="outline" (click)="cancelar(b)"
               [disabled]="actingIds.has(b._id)">
               <ion-spinner *ngIf="actingIds.has(b._id) && actingAction==='cancel'" name="crescent"></ion-spinner>
               <span *ngIf="!(actingIds.has(b._id) && actingAction==='cancel')">Cancelar</span>
@@ -128,6 +130,13 @@
 
           <ion-button *ngIf="puedeFinalizar(b)" color="success" (click)="irCheckout(b)">
             Finalizar renta
+          </ion-button>
+
+          <!-- NUEVO: Cancelar (dueño o usuario) en pendiente/aceptada/en_curso -->
+          <ion-button *ngIf="puedeCancelar(b)" color="danger" fill="outline" (click)="cancelar(b)"
+            [disabled]="actingIds.has(b._id)">
+            <ion-spinner *ngIf="actingIds.has(b._id) && actingAction==='cancel'" name="crescent"></ion-spinner>
+            <span *ngIf="!(actingIds.has(b._id) && actingAction==='cancel')">Cancelar</span>
           </ion-button>
 
           <ion-button color="danger" fill="solid" (click)="irAccion(b)">

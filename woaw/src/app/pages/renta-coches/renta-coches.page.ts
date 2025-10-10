@@ -1,25 +1,11 @@
-import {
-  Component,
-  OnInit,
-  ViewChild,
-  OnDestroy,
-  ChangeDetectionStrategy,
-} from "@angular/core";
+import { Component, OnInit, ViewChild, OnDestroy, ChangeDetectionStrategy, } from "@angular/core";
 import { IonContent, PopoverController } from "@ionic/angular";
 import { Router, NavigationStart } from "@angular/router";
-import {
-  RentaService,
-  ListarCochesResp,
-  RentaFiltro,
-} from "../../services/renta.service";
+import { RentaService, ListarCochesResp, RentaFiltro, } from "../../services/renta.service";
 import { ListComponent } from "../../components/filtos/list/list.component";
 import { filter, map, catchError } from "rxjs/operators";
 import { GeneralService } from "../../services/general.service";
-import {
-  ReservaService,
-  RentalBooking,
-  BookingStatus,
-} from "../../services/reserva.service";
+import { ReservaService, RentalBooking, BookingStatus, } from "../../services/reserva.service";
 import { of, forkJoin, Subscription } from "rxjs";
 import { ActivatedRoute } from "@angular/router";
 import { finalize } from "rxjs/operators";
@@ -49,30 +35,23 @@ export class RentaCochesPage implements OnInit, OnDestroy {
   private routerSub?: any;
 
   vistaActiva: Segmento = "todos";
-
   todosStorage: any[] = [];
   todosFiltrados: any[] = [];
   todosPaginados: any[] = [];
   totalTodos = 0;
   paginaTodosActual = 1;
   totalPaginasTodos = 1;
-
   miosStorage: any[] = [];
   miosFiltrados: any[] = [];
   miosPaginados: any[] = [];
   totalMios = 0;
   paginaMiosActual = 1;
   totalPaginasMios = 1;
-
   loading = false;
   error: string | null = null;
-
-  // ⬇️ Fijo en 8 (igual que motos)
   readonly itemsPorPagina = 8;
-
   ordenActual: "precioAsc" | "precioDesc" | "recientes" | "" = "";
 
-  // Filtros activos (sin color)
   filtros = [
     { label: "$", tipo: "precio" },
     { label: "Marca", tipo: "marca" },
@@ -87,16 +66,11 @@ export class RentaCochesPage implements OnInit, OnDestroy {
 
   private lastPopover?: HTMLIonPopoverElement | null;
 
-  // ===== estado del modal propio (Mi coche) =====
   modalOpen = false;
   modalCarId: string | null = null;
   private pendingNav: any[] | null = null;
-
-  // ====== FILTRO DE DISPONIBILIDAD (UI en esta page) ======
   minFecha = this.toLocalISODate();
   rangoTexto = "";
-
-  // Estado aplicado (chip + highlight)
   fechasSeleccionadas: string[] = [];
   highlightedRange: Array<{
     date: string;
@@ -104,7 +78,6 @@ export class RentaCochesPage implements OnInit, OnDestroy {
     backgroundColor?: string;
   }> = [];
 
-  // Modal de fechas (estado temporal)
   modalFechasOpen = false;
   tempFechasSeleccionadas: string[] = [];
   tempHighlightedRange: Array<{
@@ -113,7 +86,6 @@ export class RentaCochesPage implements OnInit, OnDestroy {
     backgroundColor?: string;
   }> = [];
 
-  // ====== Disponibilidad (API) ======
   dispoLoading = false;
   private dispoReqId = 0;
 
@@ -184,7 +156,6 @@ export class RentaCochesPage implements OnInit, OnDestroy {
     }
   }
 
-  /** Normaliza precio por día desde varias formas posibles del backend */
   precioPorDia(c: any): number {
     const v = c?.precio?.porDia ?? c?.precioPorDia ?? c?.precio ?? 0;
     const n = Number(v);
@@ -361,7 +332,6 @@ export class RentaCochesPage implements OnInit, OnDestroy {
     this.aplicarFiltros();
   }
 
-  /** Normalización simple para comparar strings de filtros */
   private normStr(v: any): string {
     return (v ?? "").toString().toLowerCase().trim();
   }
@@ -534,6 +504,7 @@ export class RentaCochesPage implements OnInit, OnDestroy {
     dd.setHours(0, 0, 0, 0);
     return dd;
   }
+
   private dayEnd(d: string | Date): Date {
     const dd = typeof d === "string" ? this.asLocalDateOnly(d) : new Date(d);
     dd.setHours(23, 59, 59, 999);
@@ -575,7 +546,6 @@ export class RentaCochesPage implements OnInit, OnDestroy {
     return true;
   }
 
-  // ====== Paginación (fija en 8 por página) ======
   calcularPaginacion(seg: Segmento) {
     const base = seg === "todos" ? this.todosFiltrados : this.miosFiltrados;
     const totalPag = Math.max(1, Math.ceil(base.length / this.itemsPorPagina));
@@ -621,15 +591,18 @@ export class RentaCochesPage implements OnInit, OnDestroy {
       this.totalPaginasTodos
     );
   }
+
   get paginasReducidasMios(): NumOrDots[] {
     return this.buildPaginasReducidas(
       this.paginaMiosActual,
       this.totalPaginasMios
     );
   }
+
   esNumero(v: NumOrDots): v is number {
     return typeof v === "number";
   }
+
   private buildPaginasReducidas(actual: number, total: number): NumOrDots[] {
     const rango = 1;
 
@@ -654,7 +627,6 @@ export class RentaCochesPage implements OnInit, OnDestroy {
     return paginas;
   }
 
-  // ====== Click en card ======
   onCardClick(coche: any) {
     if (this.esMio(coche)) {
       this.modalCarId = coche?._id ?? coche?.id ?? null;
@@ -679,6 +651,7 @@ export class RentaCochesPage implements OnInit, OnDestroy {
     }
     return false;
   }
+
   getEsMio(c: any): boolean {
     return this.esMio(c);
   }
@@ -686,7 +659,6 @@ export class RentaCochesPage implements OnInit, OnDestroy {
   trackCar = (_: number, c: any) =>
     c?._id ?? c?.id ?? `${c?.marca}-${c?.modelo}-${c?.anio}`;
 
-  // ====== Refresher ======
   refrescar(ev: CustomEvent) {
     const done = () =>
       (ev.target as HTMLIonRefresherElement).complete();
@@ -699,7 +671,6 @@ export class RentaCochesPage implements OnInit, OnDestroy {
     }
   }
 
-  // ===== handlers del modal propio (Mi coche) =====
   goToFicha() {
     if (!this.modalCarId) return;
     this.pendingNav = ["/renta-ficha", this.modalCarId];
@@ -741,7 +712,6 @@ export class RentaCochesPage implements OnInit, OnDestroy {
     this.aplicarFiltros();
   }
 
-  // ============ MODAL DE FECHAS ============
   openModalFechas() {
     this.tempFechasSeleccionadas = [...this.fechasSeleccionadas];
     this.tempBuildHighlightedRange();

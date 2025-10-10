@@ -3,9 +3,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { RentaService } from '../../services/renta.service';
 import { GeneralService } from '../../services/general.service';
 import { take } from 'rxjs/operators';
-import { FooterComponent } from '../../components/footer/footer.component'; // 👈 ajusta la ruta si es distinta
+import { FooterComponent } from '../../components/footer/footer.component';
 
-/* ===== Tipos (alineados al servicio nuevo) ===== */
 interface Ventana { inicio: string; fin: string; nota?: string; }
 interface Excepcion { inicio: string; fin: string; motivo?: string; }
 interface Ubicacion { ciudad: string; estado: string; }
@@ -16,30 +15,23 @@ interface Rental {
   marca: string;
   modelo: string;
   anio?: number;
-
   imagenPrincipal?: string;
   imagenes?: string[];
-
-  precio?: number;       // por día
+  precio?: number;
   deposito?: number | null;
   minDias?: number | null;
-
   ratingPromedio?: number;
   totalRentas?: number;
   estadoRenta?: EstadoRenta;
-
   transmision?: string;
   combustible?: string;
   pasajeros?: number;
   kilometrajeActual?: number;
-
   ubicacion?: Ubicacion;
   gps?: boolean;
   inmovilizador?: boolean;
-
   ventanasDisponibles?: Ventana[];
   excepcionesNoDisponibles?: Excepcion[];
-
   entrega?: any;
   requisitosConductor?: {
     edadMinima: number;
@@ -57,6 +49,11 @@ interface Rental {
 
   politicaCombustible?: string;
   politicaLimpieza?: string;
+  propietarioId?: string;
+  duenoId?: string;
+  ownerId?: string;
+  usuarioId?: string;
+  usuario?: { id?: string; _id?: string };
 }
 
 @Component({
@@ -72,13 +69,12 @@ export class RentaFichaPage implements OnInit {
   loading = true;
   rental: Rental | null = null;
   isLoggedIn = false;
-
-  /** Fechas resaltadas para pintar TODO el rango en el ion-datetime */
   highlightedRange: Array<{ date: string; textColor?: string; backgroundColor?: string }> = [];
-
-  // Galería
   galeria: string[] = [];
   imagenSeleccionada: string | null = null;
+
+  esDueno = false;
+
   get tieneVarias(): boolean { return (this.galeria?.length || 0) > 1; }
 
   get ratingEntero(): number {
@@ -86,14 +82,14 @@ export class RentaFichaPage implements OnInit {
     return Math.max(0, Math.min(5, Math.round(r)));
   }
 
-  // ===== Selección de fechas =====
-  minFecha = this.toLocalISODate(); // yyyy-mm-dd
-  fechasSeleccionadas: string[] = []; // 'YYYY-MM-DD' o ISO de ion-datetime
+  minFecha = this.toLocalISODate();
+  fechasSeleccionadas: string[] = [];
 
   get fechaInicio(): string | null {
     if (!this.fechasSeleccionadas?.length) return null;
     return [...this.fechasSeleccionadas].sort()[0] || null;
   }
+
   get fechaFin(): string | null {
     if (!this.fechasSeleccionadas?.length) return null;
     return [...this.fechasSeleccionadas].sort().slice(-1)[0] || null;
@@ -107,7 +103,6 @@ export class RentaFichaPage implements OnInit {
     total: number;
   } | null = null;
 
-  // 👇 referencia al footer para abrir sus modales
   @ViewChild(FooterComponent) footer!: FooterComponent;
 
   constructor(
@@ -128,8 +123,36 @@ export class RentaFichaPage implements OnInit {
     this.cargar(id);
   }
 
+  private obtenerIdActual(): string | null {
+    const g: any = this.general as any;
+    try {
+      return (
+        g.currentUserId ||
+        g.userId ||
+        g.usuario?.id ||
+        g.usuario?._id ||
+        (typeof g.getUserId === 'function' ? g.getUserId() : null) ||
+        null
+      );
+    } catch { return null; }
+  }
 
-  /* ================== Utilidades de fecha (sin TZ) ================== */
+  private extraerOwnerId(r: any): string | null {
+    const cand = [
+      r?.propietarioId, r?.duenoId, r?.ownerId, r?.usuarioId, r?.userId,
+      r?.usuario?.id, r?.usuario?._id, r?.owner?.id, r?.owner?._id,
+      r?.propietario?.id, r?.propietario?._id, r?.creadoPor?.id, r?.creadoPor?._id,
+    ].filter(Boolean);
+    return cand.length ? String(cand[0]) : null;
+  }
+
+  public soyPropietarioDeAuto(r: any = this.rental): boolean {
+    if (!r) return false;
+    const actual = this.obtenerIdActual();
+    const owner = this.extraerOwnerId(r);
+    return !!actual && !!owner && String(actual).trim() === String(owner).trim();
+  }
+
   private toLocalISODate(d = new Date()): string {
     const y = d.getFullYear();
     const m = String(d.getMonth() + 1).padStart(2, '0');
@@ -137,9 +160,7 @@ export class RentaFichaPage implements OnInit {
     return `${y}-${m}-${day}`;
   }
 
-  /** Toma 'YYYY-MM-DD' o ISO y devuelve Date local yyyy-mm-dd (ignora zona). */
   private asLocalDateOnly(isoLike: string): Date {
-    // usa sólo los 10 primeros caracteres si viene con 'T...' o 'Z'
     const s = (isoLike || '').slice(0, 10);
     const [y, m, d] = s.split('-').map(n => parseInt(n, 10));
     return new Date(y, (m - 1), d);
@@ -149,14 +170,12 @@ export class RentaFichaPage implements OnInit {
     return new Date(d.getFullYear(), d.getMonth(), d.getDate());
   }
 
-  /** Diferencia INCLUSIVA en días (inicio y fin cuentan) */
   private diffDaysInclusive(inicio: Date, fin: Date): number {
     const ms = this.startOfDay(fin).getTime() - this.startOfDay(inicio).getTime();
-    const excl = Math.ceil(ms / 86400000); // excluyente
-    return Math.max(1, excl + 1);          // inclusivo
+    const excl = Math.ceil(ms / 86400000);
+    return Math.max(1, excl + 1);
   }
 
-  /** yyyy-mm-dd desde Date */
   private toISOyyyyMMdd(d: Date): string {
     const y = d.getFullYear();
     const m = String(d.getMonth() + 1).padStart(2, '0');
@@ -164,7 +183,6 @@ export class RentaFichaPage implements OnInit {
     return `${y}-${m}-${day}`;
   }
 
-  /* ================== Galería ================== */
   private buildGaleria(res: Rental): string[] {
     const principal = res?.imagenPrincipal ? [res.imagenPrincipal] : [];
     const extras = Array.isArray(res?.imagenes) ? res.imagenes : [];
@@ -182,17 +200,30 @@ export class RentaFichaPage implements OnInit {
         this.rental = cast;
         this.galeria = this.buildGaleria(cast);
         this.imagenSeleccionada = this.galeria[0] || null;
-        this.loading = false;
-
-        if (this.fechasSeleccionadas.length >= 1) this.calcularTotal();
-        this.buildHighlightedRange();
-
-        this.cdr.markForCheck();
+        this.rentaService.misCoches().pipe(take(1)).subscribe({
+          next: (mis) => {
+            const idActual = this.obtenerIdActual();
+            const esPorListado = Array.isArray(mis) && mis.some(a => String(a?._id || a?.id) === String(cast._id));
+            const esPorOwnerEnFicha = this.soyPropietarioDeAuto(cast);
+            this.esDueno = esPorListado || esPorOwnerEnFicha;
+            console.log('[Ficha] idUsuario=', idActual, 'idAuto=', cast._id, 'esPorListado=', esPorListado, 'esPorOwner=', esPorOwnerEnFicha, 'esDueno=', this.esDueno);
+            this.loading = false;
+            if (this.fechasSeleccionadas.length >= 1) this.calcularTotal();
+            this.buildHighlightedRange();
+            this.cdr.markForCheck();
+          },
+          error: () => {
+            this.esDueno = this.soyPropietarioDeAuto(cast);
+            this.loading = false;
+            if (this.fechasSeleccionadas.length >= 1) this.calcularTotal();
+            this.buildHighlightedRange();
+            this.cdr.markForCheck();
+          }
+        });
       },
       error: (err) => {
         this.loading = false;
         this.cdr.markForCheck();
-
         const msg = err?.error?.message || 'No se pudo cargar el vehículo';
         this.general.alert('Error', msg, 'danger');
         this.router.navigate(['/renta-coches']);
@@ -200,14 +231,12 @@ export class RentaFichaPage implements OnInit {
     });
   }
 
-  // Navegación
   volver() {
     try { if (window.history.length > 2) return history.back(); } catch { }
     this.router.navigate(['/renta-coches']);
   }
   cerrar() { this.volver(); }
 
-  // Galería
   cambiarImagen(dir: 'siguiente' | 'anterior') {
     const imgs = this.galeria;
     if (!imgs.length) return;
@@ -232,7 +261,6 @@ export class RentaFichaPage implements OnInit {
 
   trackByUrl(_i: number, url: string) { return url; }
 
-  /* ================== Fechas / Disponibilidad ================== */
   onRangoChange() {
     if (this.fechasSeleccionadas.length > 2) {
       this.fechasSeleccionadas = this.fechasSeleccionadas.slice(-2);
@@ -246,7 +274,6 @@ export class RentaFichaPage implements OnInit {
     this.cdr.markForCheck();
   }
 
-  /** Construye highlightedRange con todas las fechas del rango (inclusivo) */
   private buildHighlightedRange(): void {
     this.highlightedRange = [];
     if (!this.fechasSeleccionadas?.length) return;
@@ -272,7 +299,6 @@ export class RentaFichaPage implements OnInit {
 
   esFechaHabil = (_isoDateString: string) => true;
 
-  /* ================== Cálculo de total ================== */
   private calcularTotal() {
     this.resumen = null;
     const r = this.rental;
@@ -286,11 +312,10 @@ export class RentaFichaPage implements OnInit {
     let fin = this.asLocalDateOnly(finISO);
     if (fin < inicio) [inicio, fin] = [fin, inicio];
 
-    // **INCLUSIVO**
     let dias = this.fechasSeleccionadas.length === 1 ? 1 : this.diffDaysInclusive(inicio, fin);
 
     const porDia = Number(r.precio || 0);
-    const total = porDia * dias; // coherente con inclusivo
+    const total = porDia * dias;
 
     this.resumen = {
       valido: dias > 0 && porDia > 0,
@@ -303,7 +328,6 @@ export class RentaFichaPage implements OnInit {
     this.cdr.markForCheck();
   }
 
-  // CTAs
   contactarWhatsApp(): void {
     if (!this.rental) return;
 
@@ -333,12 +357,25 @@ export class RentaFichaPage implements OnInit {
   reservar() {
     if (!this.rental?._id) return;
 
+    if (!this.isLoggedIn) {
+      this.general.alert(
+        'Inicia sesión',
+        'Debes iniciar sesión para continuar con la reserva.',
+        'info'
+      );
+      this.router.navigate(['/inicio']);
+      return;
+    }
+
+    if (this.esDueno || this.soyPropietarioDeAuto(this.rental)) {
+      this.general.toast('No puedes reservar tu propio vehículo.', 'warning');
+      return;
+    }
+
     const inicio = this.fechaInicio || null;
     const fin = this.fechaFin || this.fechaInicio || null;
 
-    // Si el usuario seleccionó fechas, validamos y mandamos los params
     if (inicio && fin) {
-      // Calcula días (inclusivo si ya tienes diffDaysInclusive)
       const dias = this.fechasSeleccionadas.length === 1
         ? 1
         : this.diffDaysInclusive(
@@ -359,16 +396,13 @@ export class RentaFichaPage implements OnInit {
       return;
     }
 
-    // Sin fechas seleccionadas: navegar sin query params
     this.router.navigate(['/reservas', this.rental._id]);
   }
 
-  // ===== Aviso y Términos desde el Footer (opción 2) =====
   abrirAviso() {
     if (this.footer?.mostrarAviso) {
       this.footer.mostrarAviso();
     } else {
-      // Fallback por si no existe el método
       this.general.alert('Aviso de Privacidad', 'Contenido…', 'info');
     }
   }
