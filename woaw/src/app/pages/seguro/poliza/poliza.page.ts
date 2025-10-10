@@ -11,7 +11,7 @@ import { Location } from '@angular/common';
 
 import { Browser } from '@capacitor/browser';
 import { Capacitor } from '@capacitor/core';
-
+import { environment } from "../../../../environments/environment";
 
 type Policy = {
   policy_number?: string;
@@ -32,8 +32,7 @@ export class PolizaPage implements OnInit {
   currentStepform: 1 | 2 | 3 | 4 = 1;
   form_poliza: FormGroup;
 
-  // private branchId = 'ded09658-50cd-4637-8390-31a8f39fe9a1'; // Prueba
-  private branchId = 'e283bb8b-28d8-4445-a5e7-80036981841d'; // Producción
+  private branchId = environment.crabi_branchId; 
 
   public tipoDispocitivo: 'computadora' | 'telefono' | 'tablet' = 'computadora';
 
@@ -284,7 +283,7 @@ export class PolizaPage implements OnInit {
         this.datoscotizacion = JSON.parse(cotizacion);
       } else {
         this.datoscotizacion = null;
-        this.router.navigate(['/seguros']);
+        this.router.navigate(['/seguros/autos']);
         // this.generalService.alert(
         //   'Debes cotizar un coche antes de continuar con tu registro.',
         //   'Atención',
@@ -299,7 +298,7 @@ export class PolizaPage implements OnInit {
         // console.log('DATOS - coche ', this.datosCoche);
       } else {
         this.datosCoche = null;
-        this.router.navigate(['/seguros']);
+        this.router.navigate(['/seguros/autos']);
         this.generalService.alert(
           'Debes de cotizar un auto antes de continuar.',
           'Atención',
@@ -408,7 +407,7 @@ export class PolizaPage implements OnInit {
         localStorage.removeItem('datosPolizaVin');
         this.polizaCreada = false;
         this.islandKey++;
-        this.router.navigate(['/seguros']);
+        this.router.navigate(['/seguros/autos']);
       }
     );
   }

@@ -574,17 +574,15 @@ ion-content {
   position: relative;
   z-index: 1;
   margin: 10px 30px;
+  background: #ffffff;
+  border-radius: 20px;
+  overflow: clip;
+
 
   @media (max-width: 820px) {
     margin: 5px auto;
   }
 
-  background: #ffffff;
-  // border: 1px solid #75747441;
-  border-radius: 20px;
-  overflow: clip;
-
-  /* HEAD */
   .qp-head {
     display: grid;
     grid-template-columns: 1fr auto;
@@ -863,13 +861,12 @@ ion-content {
             &::part(text) {
               color: #0b0b0e;
               font-size: 16px;
+              font-weight: 800;
+              padding-inline: 12px;
 
               @media (max-width: 820px) {
                 font-size: 12px;
               }
-
-              font-weight: 800;
-              padding-inline: 12px;
             }
 
             &::part(icon) {
@@ -974,13 +971,12 @@ ion-content {
           grid-template-columns: minmax(0, 1fr) auto;
           gap: 10px;
           padding: 12px 16px;
+          border-bottom: 1px solid #e9edf3;
+          background: #ffffff;
 
           @media (max-width: 820px) {
             padding: 5px 8px;
           }
-
-          border-bottom: 1px solid #e9edf3;
-          background: #ffffff;
 
           .left,
           .right {

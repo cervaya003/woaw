@@ -15,33 +15,33 @@
 
   <section class="categorias">
     <div class="categorias__grid">
-      <!-- ✅ Activo -->
-      <a class="cat-card autos" href="/seguros">
+      
+      <div class="cat-card autos" (click)="elegirSeguro('Auto', '/seguros/autos')">
         <div class="icon-wrap">
           <img src="/assets/img/icon-coche.png" alt="Autos" class="cat-img" />
         </div>
         <h3>Autos</h3>
         <p class="desc">Protege tu vehículo particular con las mejores coberturas del mercado.</p>
         <button class="cta">Cotizar ahora</button>
-      </a>
+      </div>
 
-      <!-- 🚫 Deshabilitados -->
-      <div class="cat-card camiones disabled">
+      <div class="cat-card autos" (click)="elegirSeguro('Camion', 'seguros/cotiza/camiones')">
         <div class="icon-wrap">
           <img src="/assets/img/icon-camion.png" alt="Camiones" class="cat-img" />
         </div>
         <h3>Camiones</h3>
         <p class="desc">Seguro especializado para flotillas, carga pesada y transporte comercial.</p>
-        <span class="soon">Próximamente</span>
+        <!-- <span class="soon">Próximamente</span> -->
+        <button class="cta">Cotizar ahora</button>
       </div>
 
-      <div class="cat-card motos disabled">
+      <div class="cat-card motos" (click)="elegirSeguro('Moto', 'seguros/cotiza/camiones')">
         <div class="icon-wrap">
           <img src="/assets/img/icon-moto.png" alt="Motos" class="cat-img" />
         </div>
         <h3>Motos</h3>
         <p class="desc">Coberturas rápidas y flexibles para motocicletas urbanas o deportivas.</p>
-        <span class="soon">Próximamente</span>
+        <button class="cta">Cotizar ahora</button>
       </div>
 
       <div class="cat-card servicios disabled">

@@ -81,9 +81,22 @@
 
 }
 
-
-
-
+.btn_back{
+  background: transparent;
+  border: 1px solid #ff0000;
+  color: #ff0000;
+  width: 65px;
+  height: 25px;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  border-radius: 20px;
+  ion-icon{
+    font-size: 10px;
+    align-items: center;
+    text-align: center;
+  }
+}
 
 .advertencia {
   background: #fff3cd;

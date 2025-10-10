@@ -164,21 +164,6 @@ const routes: Routes = [
         data: { title: "renta | woaw" },
       },
       {
-        path: "seguros",
-        loadChildren: () =>
-          import("./pages/seguro/seguros/seguros.module").then(
-            (m) => m.SegurosPageModule
-          ),
-        data: { title: "seguros | woaw" },
-      },
-      {
-        path: "seguros/persona",
-        loadChildren: () =>
-          import("./pages/seguro/persona/persona.module").then(
-            (m) => m.PersonaPageModule
-          ),
-      },
-      {
         path: "lote-edit/:id",
         loadChildren: () =>
           import("./pages/lote-edit/lote-edit.module").then(
@@ -293,6 +278,23 @@ const routes: Routes = [
           ),
       },
 
+      // ---- Rutas de seguros ----
+
+      {
+        path: "seguros/autos",
+        loadChildren: () =>
+          import("./pages/seguro/seguros/seguros.module").then(
+            (m) => m.SegurosPageModule
+          ),
+        data: { title: "seguros | woaw" },
+      },
+      {
+        path: "seguros/persona",
+        loadChildren: () =>
+          import("./pages/seguro/persona/persona.module").then(
+            (m) => m.PersonaPageModule
+          ),
+      },
       {
         path: "seguros/poliza",
         loadChildren: () =>
@@ -303,14 +305,17 @@ const routes: Routes = [
         canActivate: [AuthGuard],
       },
       {
-        path: "seguros-disponibles",
+        path: "seguros/disponibles",
         loadChildren: () =>
           import("./pages/seguro/elige-seguro/elige-seguro.module").then(
             (m) => m.EligeSeguroPageModule
           ),
         data: { title: "Seguros de autos" },
       },
-
+      {
+        path: 'seguros/cotiza/:tipo',
+        loadChildren: () => import('./pages/seguro/cotiza-moto-camion-ert/cotiza-moto-camion-ert.module').then(m => m.CotizaMotoCamionErtPageModule)
+      },
       {
         path: "seguros/ver-polizas",
         loadChildren: () =>
@@ -337,7 +342,7 @@ const routes: Routes = [
     loadChildren: () =>
       import("./pages/error/error.module").then((m) => m.ErrorPageModule),
     data: { title: "Página no encontrada | woaw" },
-  }
+  },
 ];
 
 @NgModule({

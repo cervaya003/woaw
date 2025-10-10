@@ -77,21 +77,16 @@ export class ArrendamientoPage implements OnInit {
       this.esDispositivoMovil = tipo === 'telefono' || tipo === 'tablet';
       this.dispositivo = tipo;
     });
-    this.getMarcas_cohes();
     this.formArrendamiento = this.fb.group({
       nombre: ['', Validators.required],
       correo: ['', [Validators.required, Validators.email]],
       tipoPersona: ['', Validators.required],
-      // modelos: [[], Validators.required],
-      // versiones: [[], Validators.required],
       plazo: ['', Validators.required],
     });
   }
   seleccionarMarca(marca: Marca): void {
     this.marcaSeleccionada = marca;
     this.expandedCard = null;
-    // Scroll suave hacia el ancla
-    // c 
   }
   confirmarArrendamiento(): void {
     if (!this.marcaSeleccionada) return;

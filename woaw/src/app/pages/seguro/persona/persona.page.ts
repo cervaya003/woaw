@@ -90,13 +90,13 @@ export class PersonaPage implements OnInit {
       this.datosCoche = JSON.parse(stored);
     } else {
       this.datosCoche = null;
-      // this.router.navigate(['/seguros']);
+      // this.router.navigate(['/seguros/atuos']);
     }
     const cotizacion = localStorage.getItem('cotizacion');
     if (cotizacion) {
       this.datoscotizacion = cotizacion;
     } else {
-      // this.router.navigate(['/seguros']);
+      // this.router.navigate(['/seguros/atuos']);
       // this.generalService.alert(
       //   'Debes cotizar un coche antes de continuar con tu registro.',
       //   'Atención',
@@ -292,7 +292,7 @@ export class PersonaPage implements OnInit {
         this.statusUserDtos = true;
       } else {
         this.islandKey++;
-        this.router.navigate(['/seguros']);
+        this.router.navigate(['/seguros/autos']);
       }
     } else if (this.currentStepform === 2) {
       this.currentStepform = 1;
@@ -319,7 +319,7 @@ export class PersonaPage implements OnInit {
   regresarInicio() {
     this.detectaUsuario();
     this.islandKey++;
-    this.router.navigate(['/seguros']);
+    this.router.navigate(['/seguros/autos']);
   }
   toUpper(ctrlName: string) {
     const c = this.form_poliza.get(ctrlName);

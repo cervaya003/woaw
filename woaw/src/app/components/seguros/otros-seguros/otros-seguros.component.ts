@@ -6,7 +6,7 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { Router } from '@angular/router';
 import { GeneralService } from "../../../services/general.service";
 import { AppRoutingModule } from "src/app/app-routing.module";
-
+import { Location } from '@angular/common';
 import { ModalController } from '@ionic/angular';
 import { PasosComponent } from '../pasos/pasos.component';
 
@@ -62,7 +62,8 @@ export class OtrosSegurosComponent implements OnInit, OnChanges {
 
   constructor(private cdr: ChangeDetectorRef, private router: Router,
     public generalService: GeneralService,
-    public modalCtrl: ModalController) { }
+    public modalCtrl: ModalController,
+    private location: Location) { }
 
   ngOnInit() {
     this.generalService.dispositivo$.subscribe((tipo) => {
@@ -71,19 +72,16 @@ export class OtrosSegurosComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(): void {
-  
-  }
 
+  }
   formatMXN(n?: number): string {
     if (!n || isNaN(n)) return '—';
     return n.toLocaleString('es-MX', { style: 'currency', currency: 'MXN', maximumFractionDigits: 2 });
   }
-
   redireccion(url: string) {
     if (!url) return;
     this.router.navigate([`/${url}`]);
   }
-
   async abrirModalPasos() {
     const modal = await this.modalCtrl.create({
       component: PasosComponent,
@@ -100,5 +98,8 @@ export class OtrosSegurosComponent implements OnInit, OnChanges {
       showBackdrop: true,
     });
     await modal.present();
+  }
+  public atras() {
+    this.location.back();
   }
 }
