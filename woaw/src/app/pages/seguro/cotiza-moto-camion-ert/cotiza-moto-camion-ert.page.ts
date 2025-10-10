@@ -46,7 +46,7 @@ export class CotizaMotoCamionErtPage implements OnInit {
   public marcador: 1 | 2 | 3 | 4 = 1;
 
   modelos: any[] = [];
-  public selectedMarcaNombre: string | null = null;
+  public selectedMarcaNombre: string = '';
   marcasCamionesERT: any[] = [];
   marcasMotos: any[] = [];
 
@@ -124,7 +124,9 @@ export class CotizaMotoCamionErtPage implements OnInit {
       return;
     }
     if (this.marcador === 1) {
-      this.GetModelos(this.form.get('marca')?.value);
+      if (this.tipo_vehiculo !== 'ERT') {
+        this.GetModelos(this.form.get('marca')?.value);
+      }
       this.marcador = 2;
       this.form.addControl('modelo', this.fb.control('', [Validators.required]));
       this.form.addControl('version', this.fb.control('', [Validators.required, Validators.minLength(3)]));
@@ -268,18 +270,18 @@ export class CotizaMotoCamionErtPage implements OnInit {
         },
       });
     } else if (this.tipo_vehiculo === 'ERT') {
-    this.carsService.getMarcas_all().subscribe({
-      next: (res: any[]) => {
-        console.log('Marcas de camiones ERT cargadas:', res);
-        const fromAPI = (res || []).map(m => ({
-          key: (m?.key || '').toLowerCase(),
-          nombre: m?.nombre || '',
-          imageUrl: m?.imageUrl ?? null
-        }));
-        this.marcasCamionesERT = fromAPI; 
-      },
-      error: (err) => console.error('Error al obtener marcas:', err),
-    });
+      this.carsService.getMarcas_all().subscribe({
+        next: (res: any[]) => {
+          console.log('Marcas de camiones ERT cargadas:', res);
+          const fromAPI = (res || []).map(m => ({
+            key: (m?.key || '').toLowerCase(),
+            nombre: m?.nombre || '',
+            imageUrl: m?.imageUrl ?? null
+          }));
+          this.marcasCamionesERT = fromAPI;
+        },
+        error: (err) => console.error('Error al obtener marcas:', err),
+      });
 
     }
   }
@@ -296,7 +298,6 @@ export class CotizaMotoCamionErtPage implements OnInit {
           this.generalService.loadingDismiss();
         },
       });
-
     } else if (this.tipo_vehiculo === 'Moto') {
       this.motosService.GetModelos(marca).subscribe({
         next: (data) => {
@@ -309,16 +310,31 @@ export class CotizaMotoCamionErtPage implements OnInit {
           this.generalService.loadingDismiss();
         },
       });
-
+    } else if (this.tipo_vehiculo === 'ERT') {
+      const anio = this.form.value.anio;
+      const key = this.form.value.marca;
+      this.carsService.GetModelos(key, anio).subscribe({
+        next: (data) => {
+          this.modelos = data;
+        },
+        error: (error) => {
+          console.error('Error al obtener modelos:', error);
+        },
+        complete: () => {
+          this.generalService.loadingDismiss();
+        },
+      });
     }
   }
   selectMarca(marca: any): void {
     console.log('Marca seleccionada:', marca);
-    if(this.tipo_vehiculo === 'ERT'){
-      
+    if (this.tipo_vehiculo === 'ERT') {
+      this.selectedMarcaNombre = marca.nombre;
+      this.form.get('marca')?.setValue(marca.key);
+    } else {
+      this.selectedMarcaNombre = marca.nombre;
+      this.form.get('marca')?.setValue(marca._id);
     }
-    this.selectedMarcaNombre = marca.nombre;
-    this.form.get('marca')?.setValue(marca._id);
   }
   isSelected(id: string): boolean {
     return this.form.get('marca')?.value === id;
@@ -349,6 +365,9 @@ export class CotizaMotoCamionErtPage implements OnInit {
     this.showOtroModelo = false;
     this.form.get('modelo')?.setValue(null);
     this.form.get('modelo')?.markAsUntouched();
+  }
+  public onSelectAnio(ev: CustomEvent) {
+    this.GetModelos(this.selectedMarcaNombre)
   }
 
   // ----- SELECTS -- FORMATO PARA Q SE VEAN BIEN ----
