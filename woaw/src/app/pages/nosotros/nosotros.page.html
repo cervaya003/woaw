@@ -40,7 +40,7 @@
   </section>
  
 
-
+<!-- 
   <section>
     <figure class="phone-mock" aria-hidden="true">
       <picture>
@@ -50,16 +50,31 @@
       <div id="features-end-sentinel" aria-hidden="true"></div>
     </figure>
   </section>
- 
+  -->
   <!-- CARTAS CON IMÁGENES -->
-  <section class="cards-row">
-    <div class="cards-row__wrap">
-      <article class="card-img" *ngFor="let c of cardsNosotros">
-        <figure class="thumb">
-          <img [src]="c.img" [alt]="c.title" />
+ <section class="cards-row">
+  <div class="cards-row__wrap">
+    <article
+      class="card-img"
+      *ngFor="let c of cardsNosotros"
+      [routerLink]="c.link"
+      routerDirection="forward"
+    >
+      <figure class="thumb">
+        <img [src]="c.img" [alt]="c.title" />
+      </figure>
+      <h4>{{ c.title }}</h4>
+    </article>
+     <figure class="phone-mock" aria-hidden="true">
+          <picture>
+            <source srcset="/assets/nosotros/iphone.png" type="image/webp" />
+            <img src="/assets/nosotros/iphone.webp" alt="" loading="lazy" />
+          </picture>
+          <div id="features-end-sentinel" aria-hidden="true"></div>
         </figure>
-        <h4>{{ c.title }}</h4>
-      </article>
+  </div>
+</section>
+
 
 
       <!-- <section>
@@ -72,10 +87,9 @@
           <div id="features-end-sentinel" aria-hidden="true"></div>
         </figure>
 
-      </section> -->
+      </section>  
 
-    </div>
-  </section>
+    
 
   <!-- CONECTOR COMPRADOR / CONECTAMOS / VENDEDOR -->
       <section class="connect-band" aria-label="Conectamos compradores y vendedores">

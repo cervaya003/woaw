@@ -25,13 +25,14 @@ export class NosotrosPage implements AfterViewInit {
 
 
 cardsNosotros = [
-  { img: '/assets/nosotros/carrito.png', title: 'Compra' },
-  { img: '/assets/nosotros/precio.png', title: 'Vende' },
-  { img: '/assets/nosotros/monedas.png', title: 'Financia' },
-  { img: '/assets/nosotros/llaves.png', title: 'Renta' },
-  { img: '/assets/nosotros/seguro.png', title: 'Arrienda' },
-  { img: '/assets/nosotros/auto.png', title: 'Asegura' },
+  { img: '/assets/nosotros/carrito.png', title: 'Compra', link: '/home' },
+  { img: '/assets/nosotros/precio.png', title: 'Vende', link: '/new-car' },
+  { img: '/assets/nosotros/monedas.png', title: 'Financia', link: '/menu-vehiculos/autos' },
+  { img: '/assets/nosotros/llaves.png', title: 'Renta', link: '/renta-ciudades' },
+  { img: '/assets/nosotros/seguro.png', title: 'Arrienda', link: '/arrendamiento' },
+  { img: '/assets/nosotros/auto.png', title: 'Asegura', link: '/seguros/disponibles' },
 ];
+
 
   private io?: IntersectionObserver;
 
@@ -71,4 +72,8 @@ cardsNosotros = [
     };
     requestAnimationFrame(step);
   }
+
+
+
+  
 }

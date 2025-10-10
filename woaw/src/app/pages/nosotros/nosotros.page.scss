@@ -39,29 +39,34 @@ ion-content {
 .fondo-seguros,
 .banner-autos {
   position: relative;
-  overflow: hidden; /* evita huecos o espacios extra */
+  overflow: hidden;
+  /* evita huecos o espacios extra */
 }
 
 /* Logo principal */
 .logo {
   position: absolute;
-  top: 70px;     /* bajamos un poco, pero sin crear hueco arriba */
+  top: 70px;
+  /* bajamos un poco, pero sin crear hueco arriba */
   left: 80px;
   z-index: 12;
 }
 
 .logo .img img {
-  width: 160px;  /* tamaño fijo escritorio */
+  width: 160px;
+  /* tamaño fijo escritorio */
   height: auto;
   display: block;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,.3));
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, .3));
 }
 
 /* Móvil */
 @media (max-width: 768px) {
   .logo {
-    top: 60px;   /* baja el logo hasta rozar el título */
-    left: 35px;  /* alinea con el padding del texto */
+    top: 60px;
+    /* baja el logo hasta rozar el título */
+    left: 35px;
+    /* alinea con el padding del texto */
   }
 
   .logo .img img {
@@ -96,11 +101,11 @@ ion-content {
       width: 100%;
       height: 100%;
       object-fit: cover;
- 
+
 
       object-position: 50% 90%;
 
- 
+
       filter: contrast(.9) brightness(.6);
     }
   }
@@ -225,167 +230,225 @@ ion-content {
 
 
 /* ===================== BARRA DE CARTAS + TELÉFONO ===================== */
-
+/* === DESKTOP (no lo toques) === */
 .phone-mock {
-  position: relative;
-  /* 'position: flex' no es válido */
+  position: absolute;
+  bottom: 0;
+  right: 6%;
   transform: rotate(-0.2deg);
-  z-index: 3;
-  transition: opacity .25s ease, transform .25s ease;
+  z-index: 5;
+  transition: transform .3s ease, opacity .3s ease;
 
   img {
     display: block;
-    width: 200px;
+    width: clamp(220px, 28vw, 380px);
     height: auto;
-    /* evita doble declaración de height */
-  }
-
-  #features-end-sentinel {
-    display: block;
-    height: 1px;
-    width: 100%;
-  }
-
-  @media (max-width: 868px) {
-    display: none;
-    /* la ocultas en móvil */
+    filter: drop-shadow(0 8px 18px rgba(0,0,0,.35));
   }
 }
+
+/* === MOBILE/TABLET (≤1024px) — corregido === */
+@media (max-width: 1024px) {
+@media (max-width: 1024px) {
+  /* Asegura que el contenedor sea el referente del absolute */
+  .connect-band { position: relative; }
+
+  .phone-mock {
+    position: absolute;        /* seguimos usando absolute */
+    right: 20px;
+    top: +10px !important;     /* (-) SUBE | (+) BAJA */
+    bottom: auto !important;
+    transform: none !important;
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+    margin: 0 !important;      /* quita empuje hacia abajo */
+    z-index: 0 !important;
+  }
+
+  .phone-mock img {
+    width: 120px !important;   /* ajusta tamaño si quieres */
+    height: auto !important;
+  }
+}
+
+
+  // .phone-mock img {
+  //   width: 120px !important;         /* más pequeño */
+  //   max-width: 120px ;
+  //   height: auto !important;
+  //   filter: drop-shadow(0 6px 14px rgba(0,0,0,.25));
+  // }
+}
+
+/* === MÓVILES CHICOS (≤480px) — aún más pequeño === */
+@media (max-width: 480px) {
+  .phone-mock img {
+    width: 95px !important;
+    max-width: 95px !important;
+  }
+}
+
+
 
 
 /* ===================== CONNECT BAND ===================== */
 .connect-band {
+  --railY: clamp(34px, 6vw, 64px);   /* altura de la línea */
+  --railH: 3px;                      /* grosor de la línea */
+  /* posiciones horizontales de los círculos (centro de cada columna 1fr) */
+  --leftX: 25%;
+  --rightX: 75%;
+
   background: #fff;
   position: relative;
-  padding: clamp(18px, 2.6vw, 30px) 0 clamp(26px, 3vw, 36px);
-
-  /* más cerca del h5 */
-  --line-y: clamp(20px, 2vw, 26px);
-  --line-h: 2.5px;
-  --pill-h: 34px;
-  --ring: #ff2121;
+  isolation: isolate;
+  padding: clamp(18px, 3vw, 28px) 0 clamp(28px, 4vw, 40px);
 }
 
 .connect-track {
-  width: 100%;
-  margin: 0 auto;
   position: relative;
+  width: 100%;
   display: grid;
   grid-template-columns: 1fr max-content 1fr;
   align-items: start;
-  gap: clamp(24px, 6vw, 80px);
-  text-align: center;
+  gap: clamp(16px, 5vw, 56px);
 }
 
-/* línea horizontal (más arriba) */
+/* Línea roja continua detrás del chip */
 .connect-track::before {
   content: "";
   position: absolute;
   left: 0;
   right: 0;
-  top: var(--line-y);
-  height: var(--line-h);
-  background: var(--ring);
+  top: var(--railY);
+  height: var(--railH);
+  background: #ff2121;
   z-index: 0;
 }
 
-/* columnas */
-.connect-col {
-  position: relative;
+/* SOLO nodos/círculos: centrados sobre COMPRADOR (leftX), CONECTAMOS (50%) y VENDEDOR (rightX) */
+.connect-track::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
   z-index: 1;
+
+  background:
+    radial-gradient(circle 7px at var(--leftX)  var(--railY), #ff2121 99%, transparent 101%),
+    radial-gradient(circle 7px at 50%          var(--railY), #ff2121 99%, transparent 101%),
+    radial-gradient(circle 7px at var(--rightX) var(--railY), #ff2121 99%, transparent 101%);
 }
 
-.connect-col h5 {
-  margin: 0;
-  font-weight: 900;
-  color: var(--ring);
-  font-size: clamp(14px, 1.8vw, 18px);
-  line-height: 1.1;
-  position: relative;
-  top: -2px;
+/* columnas: evita que la línea atraviese el texto */
+.connect-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: calc(var(--railY) + 12px);
 }
 
-/* texto columnas */
+/* TÍTULOS EN ROJO */
+.connect-track .connect-col h4 {
+  color: #ff2121 !important;
+  font-weight: 800;
+  text-transform: uppercase; /* opcional: quítalo si no lo quieres */
+  letter-spacing: .2px;
+}
+
 .connect-col p {
   margin: 0;
-  padding-top: clamp(8px, 1.4vw, 12px);
-  padding-inline: clamp(10px, 3vw, 18px);
-  font-size: clamp(12px, 1.6vw, 14px);
-  line-height: 1.55;
-  color: #000;
-  max-width: 30ch;
-  margin-inline: auto;
+  color: #0e0b0b;
+  text-align: center;
 }
 
-/* centro */
-.connect-center {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  gap: clamp(10px, 2vw, 18px);
-  margin-top: calc(var(--line-y) - (var(--pill-h) / 2));
-}
-
-/* pastilla */
-.connect-label {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: var(--pill-h);
-  padding: 0 clamp(18px, 2.6vw, 24px);
-  border-radius: 999px;
-  background: var(--ring);
-  color: #fff;
-  font-weight: 900;
-  letter-spacing: .3px;
-  font-size: clamp(12px, 1.6vw, 14px);
-  box-shadow: 0 6px 16px rgba(255, 33, 33, .25);
-
-  /* variables para flechas */
-  --arrow-gap: 28px;
-  /* distancia desde la pastilla */
-  --arrow-size: clamp(16px, 1.8vw, 20px);
-  /* tamaño del símbolo < y > */
-}
-
-/* === Flechas como texto: < y > === */
-.connect-label::before,
-.connect-label::after {
+/* chip centrado con flechas cortas pegaditas */
+.connect-chip {
   position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  line-height: 1;
-  font-weight: 900;
-  font-size: var(--arrow-size);
-  color: var(--ring);
-  text-shadow: 0 0 0 2px #fff;
-  /* fino contorno para legibilidad en fondos claros */
+  left: 50%;
+  top: var(--railY);
+  transform: translate(-50%, -50%);
   z-index: 2;
-  pointer-events: none;
-  content: "";
+  background: #ff2121;
+  color: #fff;
+  font-weight: 800;
+  line-height: 1;
+  white-space: nowrap;
+  padding: 8px 22px;
+  border-radius: 999px;
+  box-shadow: 0 6px 18px rgba(255, 33, 33, .25);
+
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 16px;
+    height: 10px;
+    transform: translateY(-50%);
+    background:
+      linear-gradient(to right, transparent 45%, #ff2121 46% 54%, transparent 55%),
+      linear-gradient(-45deg, transparent 40%, #ff2121 41% 59%, transparent 60%),
+      linear-gradient(45deg, transparent 40%, #ff2121 41% 59%, transparent 60%);
+    filter: drop-shadow(0 0 5px rgba(255, 33, 33, .3));
+  }
+
+  &::before {
+    left: -18px;
+    transform: translateY(-50%) rotate(180deg);
+  }
+
+  &::after {
+    right: -18px;
+  }
 }
 
-/* Flecha izquierda: “<” */
-.connect-label::before {
-  content: "<";
-  left: calc(var(--arrow-gap) * -1);
-}
 
-/* Flecha derecha: “>” */
-.connect-label::after {
-  content: ">";
-  right: calc(var(--arrow-gap) * -1);
-}
+/* === MÓVIL: mantener 3 columnas, todo compacto y conectado === */
+@media (max-width: 480px) {
+  .connect-band {
+    --railY: 30px;
+    --railH: 3px;
+    /* afina la posición de los círculos sobre los títulos en pantallas estrechas */
+    --leftX: 23%;
+    --rightX: 77%;
 
-/* Solo móvil: letra de la pastilla más delgada */
-@media (max-width: 820px) {
-  .connect-center .connect-label {
-    font-weight: 300;
-    /* más delgada en móvil */
-    letter-spacing: 0.5px;
-    /* un poco más de aire */
+    padding: 12px 0 18px;
+  }
+
+  .connect-track {
+    grid-template-columns: 1fr max-content 1fr;
+    gap: 8px;
+  }
+
+  .connect-col {
+    padding-top: calc(var(--railY) + 8px);
+  }
+
+  .connect-col h4 {
+    font-size: 13px;
+    letter-spacing: .2px;
+    color: #ff2121; /* asegurar rojo en móvil */
+  }
+
+  .connect-col p {
+    font-size: 12px;
+    line-height: 1.25;
+    max-width: 92%;
+  }
+
+  .connect-chip {
+    padding: 8px 16px;
+    font-size: 12px;
+  }
+
+  /* nodos ligeramente más grandes en móvil (sin coma final) */
+  .connect-track::after {
+    background:
+      radial-gradient(circle 7.5px at var(--leftX)  var(--railY), #ff2121 99%, transparent 101%),
+      radial-gradient(circle 7.5px at 50%          var(--railY), #ff2121 99%, transparent 101%),
+      radial-gradient(circle 7.5px at var(--rightX) var(--railY), #ff2121 99%, transparent 101%);
   }
 }
 
