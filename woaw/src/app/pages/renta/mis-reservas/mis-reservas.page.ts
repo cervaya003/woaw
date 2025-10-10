@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { ReservaService, RentalBooking } from '../../../services/reserva.service';
 import { finalize, timeout, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
-import { ModalController, ToastController } from '@ionic/angular';
+import { ModalController, ToastController, AlertController } from '@ionic/angular';
 import { DetalleReservaModalComponent } from '../../../components/detalle-reserva-modal/detalle-reserva-modal.component';
 
 @Component({
@@ -41,7 +41,8 @@ export class MisReservasPage implements OnInit {
     private router: Router,
     private cdr: ChangeDetectorRef,
     private toast: ToastController,
-    private modalCtrl: ModalController
+    private modalCtrl: ModalController,
+    private alertCtrl: AlertController // <-- para confirmar cancelación
   ) { }
 
   ngOnInit(): void {
@@ -88,7 +89,7 @@ export class MisReservasPage implements OnInit {
       this.aplicarPaginaBase(this.myAll);
     });
 
-    /** --- RESERVAS A MIS COCHES (solo si tengo myUserId) --- */
+    // --- RESERVAS A MIS COCHES (solo si tengo myUserId) ---
     if (!this.myUserId) {
       this.loading = false;
       this.loadingMore = false;
@@ -103,11 +104,10 @@ export class MisReservasPage implements OnInit {
       page: 1,
       limit: 100,
       sort: '-createdAt',
-      // Intentamos varias llaves de servidor
       ownerId: this.myUserId,
       rentalCarOwnerId: this.myUserId,
       owner: this.myUserId,
-      propietarioId: this.myUserId, // clave real que trae tu payload
+      propietarioId: this.myUserId,
     };
 
     const petOwner$ = this.ownerAllLoaded
@@ -131,7 +131,6 @@ export class MisReservasPage implements OnInit {
         const owners: RentalBooking[] = (Array.isArray(resp) ? resp : resp?.bookings) || [];
 
         if (!this.ownerAllLoaded) {
-          // Si rentalCar es string (no populado), confiamos en el filtro del servidor.
           const seguros = owners.filter(b => {
             const rc: any = (b as any)?.rentalCar;
             if (typeof rc === 'string') return true;
@@ -143,12 +142,10 @@ export class MisReservasPage implements OnInit {
           this.ownerAllLoaded = true;
         }
 
-        // NUEVO: calcular pendientes del dueño
         this.pendingOwner = this.ownerAll
           .filter(b => b?.estatus === 'pendiente')
           .map(b => ({ ...b, dias: this.calcDays(b.fechaInicio, b.fechaFin) }));
 
-        // Merge sin duplicados
         const map = new Map<string, RentalBooking>();
         [...this.myAll, ...this.ownerAll].forEach(b => map.set(b._id, b));
         this.mergedAll = Array.from(map.values()).sort(this.sortBookingDesc);
@@ -195,7 +192,6 @@ export class MisReservasPage implements OnInit {
       if (!raw) return { id: null, rol: 'invitado' };
       const u = JSON.parse(raw);
 
-      // Soporta más alias para el id
       const id =
         u?._id || u?.id || u?.uid || u?.userId || u?.usuarioId || null;
 
@@ -218,13 +214,11 @@ export class MisReservasPage implements OnInit {
   public soyPropietarioDeAuto(b: RentalBooking): boolean {
     if (!this.myUserId) return false;
 
-    // si viene directo en el booking
     const directOwner = (b as any)?.rentalCarOwnerId || (b as any)?.propietarioId;
     if (typeof directOwner === 'string' && directOwner) return directOwner === this.myUserId;
 
     const rc: any = (b as any)?.rentalCar;
     if (rc && typeof rc === 'object') {
-      // contemplamos varias llaves comunes
       const owner =
         rc.owner || rc.ownerId || rc.dueno || rc.propietario || rc.propietarioId || rc.user || rc.usuario;
 
@@ -235,13 +229,12 @@ export class MisReservasPage implements OnInit {
         if (oid) return oid === this.myUserId;
       }
 
-      // si viene como campo directo tipo string
       if (typeof rc?.propietarioId === 'string') return rc.propietarioId === this.myUserId;
       if (typeof rc?.ownerId === 'string') return rc.ownerId === this.myUserId;
     }
     return false;
   }
-  
+
   public esSolicitante(b: RentalBooking): boolean {
     try {
       if (!b) return false;
@@ -261,7 +254,7 @@ export class MisReservasPage implements OnInit {
     }
   }
 
-  /** ====== Helpers de fecha (sin TZ shift) ====== */
+  /** ====== Helpers fecha ====== */
   private normalizarFechaLocalISO(d: string | Date): string {
     const dt = new Date(d);
     const y = dt.getFullYear();
@@ -269,13 +262,11 @@ export class MisReservasPage implements OnInit {
     const day = String(dt.getDate()).padStart(2, '0');
     return `${y}-${m}-${day}`;
   }
-
   public esHoy(fecha: string | Date): boolean {
     const hoy = this.normalizarFechaLocalISO(new Date());
     const f = this.normalizarFechaLocalISO(fecha);
     return hoy === f;
   }
-
   public tieneCheckIn(b: RentalBooking): boolean {
     const ci: any = (b as any)?.checkIn;
     if (!ci) return false;
@@ -294,16 +285,24 @@ export class MisReservasPage implements OnInit {
       && this.tieneCheckIn(b);
   }
 
-  /** ✅ Mostrar botón de Finalizar si soy dueño y está en curso (sin importar el día) */
+  /** ✅ Finalizar si soy dueño y está en curso */
   public puedeFinalizar(b: RentalBooking): boolean {
     return this.soyPropietarioDeAuto(b)
       && b?.estatus === 'en_curso';
   }
 
+  /** ✅ NUEVO: reglas para mostrar botón Cancelar (dueño o usuario) */
+  public puedeCancelar(b: RentalBooking): boolean {
+    const estadosPermitidos = new Set(['pendiente', 'aceptada', 'en_curso']);
+    if (!estadosPermitidos.has(b?.estatus)) return false;
+
+    // ambos pueden cancelar
+    return this.soyPropietarioDeAuto(b) || this.esSolicitante(b);
+  }
+
   async iniciarRenta(b: RentalBooking) {
     if (!b?._id) return;
 
-    // Guardas defensivas
     if (!this.soyPropietarioDeAuto(b)) {
       await constToast(this.toast, 'Solo el propietario puede iniciar la renta', 'warning');
       return;
@@ -357,7 +356,7 @@ export class MisReservasPage implements OnInit {
     });
   }
 
-  /** ⛳ Ahora solo navega al Checkout (NO cambia el estatus aquí) */
+  /** ⛳ Navega al Checkout (no cambia estatus aquí) */
   irCheckout(b: RentalBooking) {
     if (!b?._id) return;
     if (!this.soyPropietarioDeAuto(b)) return;
@@ -414,7 +413,6 @@ export class MisReservasPage implements OnInit {
 
     await modal.present();
 
-    // Recibir booking actualizada (si el modal hace acciones y la devuelve)
     const { data } = await modal.onWillDismiss();
     if (data?.updated) {
       const updated: RentalBooking = data.updated;
@@ -437,7 +435,6 @@ export class MisReservasPage implements OnInit {
 
     this.reservas.acceptBooking(b._id).subscribe({
       next: () => {
-        // actualizar estados en memoria
         this.ownerAll = this.ownerAll.map(x => x._id === b._id ? { ...x, estatus: 'aceptada' } as RentalBooking : x);
         this.mergedAll = this.mergedAll.map(x => x._id === b._id ? { ...x, estatus: 'aceptada' } as RentalBooking : x);
         this.pendingOwner = this.pendingOwner.filter(x => x._id !== b._id);
@@ -452,20 +449,53 @@ export class MisReservasPage implements OnInit {
     });
   }
 
-  cancelPending(b: RentalBooking) {
+  /** ✅ NUEVO: cancelar para dueño o usuario (pendiente/aceptada/en_curso) */
+  async cancelar(b: RentalBooking) {
     if (!b?._id) return;
+    if (!this.puedeCancelar(b)) {
+      await constToast(this.toast, 'No puedes cancelar esta reserva', 'warning');
+      return;
+    }
+
+    const soyOwner = this.soyPropietarioDeAuto(b);
+    const soyCliente = this.esSolicitante(b);
+
+    const header = 'Cancelar reserva';
+    const msg = `¿Deseas cancelar la reserva #${b.codigo || b._id}?`;
+    const btnOk = 'Cancelar';
+    const motivo = soyOwner ? 'Cancelada por propietario' : (soyCliente ? 'Cancelada por cliente' : 'Cancelada');
+
+    const alert = await this.alertCtrl.create({
+      header,
+      message: msg,
+      buttons: [
+        { text: 'No', role: 'cancel' },
+        { text: btnOk, role: 'destructive' }
+      ]
+    });
+    await alert.present();
+    const { role } = await alert.onDidDismiss();
+    if (role !== 'destructive') return;
+
     this.actingAction = 'cancel';
     this.actingIds.add(b._id);
     this.cdr.markForCheck();
 
-    this.reservas.cancelBooking(b._id, 'Cancelada por propietario').subscribe({
-      next: () => {
-        this.ownerAll = this.ownerAll.map(x => x._id === b._id ? { ...x, estatus: 'cancelada' } as RentalBooking : x);
-        this.mergedAll = this.mergedAll.map(x => x._id === b._id ? { ...x, estatus: 'cancelada' } as RentalBooking : x);
+    this.reservas.cancelBooking(b._id, motivo).subscribe({
+      next: async () => {
+        const patch = (x: RentalBooking) => x._id === b._id ? ({ ...x, estatus: 'cancelada' } as RentalBooking) : x;
+
+        this.ownerAll = this.ownerAll.map(patch);
+        this.myAll = this.myAll.map(patch);
+        this.mergedAll = this.mergedAll.map(patch);
+        this.datos = this.datos.map(patch);
         this.pendingOwner = this.pendingOwner.filter(x => x._id !== b._id);
-        this.datos = this.datos.map(x => x._id === b._id ? { ...x, estatus: 'cancelada' } as RentalBooking : x);
+
+        await constToast(this.toast, 'Reserva cancelada', 'success');
       },
-      error: (err) => console.error(err),
+      error: async () => {
+        await constToast(this.toast, 'No se pudo cancelar la reserva', 'danger');
+      },
       complete: () => {
         this.actingIds.delete(b._id);
         this.actingAction = null;

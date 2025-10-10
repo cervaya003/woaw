@@ -23,9 +23,7 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <!-- 2 columnas: IZQ calendario | DER título+chips+imagen -->
   <section class="grid-cal-img" *ngIf="coche">
-    <!-- IZQUIERDA: calendario + notas -->
     <ion-card class="card-fechas">
       <ion-card-header>
         <ion-card-title>Datos de la reserva</ion-card-title>
@@ -40,10 +38,8 @@
                 [value]="rangeValue" [highlightedDates]="highlightedRange" locale="es-ES"
                 (ionChange)="onRangeChange($event)">
               </ion-datetime>
-
             </ion-item>
 
-            <!-- Mensajes de validación -->
             <ion-note color="danger"
               *ngIf="form.get('fechaInicio')?.hasError('minHoy') && form.get('fechaInicio')?.touched">
               La fecha de inicio no puede ser anterior a hoy.
@@ -59,7 +55,6 @@
             </ion-note>
           </div>
 
-          <!-- Notas -->
           <ion-item>
             <ion-textarea label="Notas para el propietario" formControlName="notasCliente"
               placeholder="Indica preferencias de entrega, horarios, etc.">
@@ -69,7 +64,6 @@
       </ion-card-content>
     </ion-card>
 
-    <!-- DERECHA: título + chips + imagen -->
     <div class="col-media">
       <div class="media-head">
         <h1 class="titulo truncate">{{ coche?.marca }} {{ coche?.modelo }}</h1>
@@ -88,7 +82,6 @@
       </ion-card>
     </div>
 
-    <!-- TERCER BLOQUE: Resumen a lo ancho de ambas columnas -->
     <ion-card class="card-resumen">
       <ion-card-header>
         <ion-card-title>Resumen</ion-card-title>
@@ -113,7 +106,6 @@
     </ion-card>
   </section>
 
-  <!-- Barra de acción -->
   <div class="action-bar">
     <ion-toolbar>
       <div class="bar">

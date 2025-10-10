@@ -122,7 +122,6 @@
           </div>
         </ng-container>
 
-        <!-- ============= MIS COCHES ============= -->
         <ng-container *ngIf="vistaActiva === 'mios'">
           <div *ngIf="(miosPaginados?.length || 0) === 0" class="no-coches">
             <ion-icon name="car-outline" class="icono-carro"></ion-icon>
@@ -170,11 +169,9 @@
             </ion-card>
           </div>
 
-          <!-- Paginación (MIOS) -->
           <div class="contenedor-paginacion" *ngIf="totalPaginasMios > 1">
             <div class="paginacion-scroll">
               <div class="paginacion">
-                <!-- Flecha anterior: AHORA CON SÍMBOLO -->
                 <button class="pagina" (click)="cambiarPagina('mios', paginaMiosActual - 1)"
                   [disabled]="paginaMiosActual === 1">
                   ‹
@@ -188,7 +185,6 @@
                   <span *ngIf="!esNumero(i)" class="ellipsis">...</span>
                 </ng-container>
 
-                <!-- Flecha siguiente: AHORA CON SÍMBOLO -->
                 <button class="pagina" (click)="cambiarPagina('mios', paginaMiosActual + 1)"
                   [disabled]="paginaMiosActual === totalPaginasMios">
                   ›
@@ -204,7 +200,6 @@
   <app-footer></app-footer>
 </ion-content>
 
-<!-- Modal propio para coches del dueño -->
 <ion-modal [isOpen]="modalOpen" (didDismiss)="onModalDismiss()" class="mio-modal" [backdropDismiss]="true" mode="md">
   <ng-template>
     <div class="mio-modal__box">
@@ -223,7 +218,6 @@
   </ng-template>
 </ion-modal>
 
-<!-- ===== Modal del calendario (vive en ESTA PAGE) ===== -->
 <ion-modal [isOpen]="modalFechasOpen" (didDismiss)="closeModalFechas()" class="modal-calendario" mode="md">
   <ng-template>
     <ion-header translucent="true">

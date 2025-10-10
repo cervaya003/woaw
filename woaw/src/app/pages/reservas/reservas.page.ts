@@ -4,10 +4,8 @@ import { AlertController, LoadingController, ToastController } from '@ionic/angu
 import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { RentaService } from '../../services/renta.service';
 import { ReservaService, CreateBookingResponse } from '../../services/reserva.service';
+import { GeneralService } from '../../services/general.service';
 
-/* ============================
-   Helpers de fecha (LOCAL, sin TZ)
-   ============================ */
 function toYMDLocal(d = new Date()): string {
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, '0');
@@ -26,13 +24,10 @@ function startOfDayLocal(d: Date): Date {
 
 function ymdToUtcNoonISO(ymd: string): string {
   const [y, m, d] = ymd.slice(0, 10).split('-').map(Number);
-  const dt = new Date(Date.UTC(y, (m - 1), d, 12, 0, 0)); // 12:00Z para evitar “día anterior”
+  const dt = new Date(Date.UTC(y, (m - 1), d, 12, 0, 0));
   return dt.toISOString();
 }
 
-/* ============================
-   Validadores personalizados (LOCAL)
-   ============================ */
 function minHoy(c: AbstractControl): ValidationErrors | null {
   const v = c.value as string | null;
   if (!v) return null;
@@ -44,7 +39,7 @@ function minHoy(c: AbstractControl): ValidationErrors | null {
 function rangoFechas(group: AbstractControl): ValidationErrors | null {
   const ini = group.get('fechaInicio')?.value as string | null;
   const fin = group.get('fechaFin')?.value as string | null;
-  if (!ini || !fin) return null; // permite 1 solo día
+  if (!ini || !fin) return null;
   const i = parseYMDLocal(ini);
   const f = parseYMDLocal(fin);
   return f < i ? { rangoInvalido: true } : null;
@@ -59,21 +54,13 @@ function rangoFechas(group: AbstractControl): ValidationErrors | null {
 export class ReservasPage implements OnInit {
   carId!: string;
   coche: any | null = null;
-
   form!: FormGroup;
   total = 0;
   dias = 1;
-
   enviando = false;
-
-  // Fechas ocupadas (YYYY-MM-DD)
   ocupadasISO = new Set<string>();
-  // Endpoints que pasamos a ion-datetime
   rangeValue: string[] = [];
-  // Rango resaltado (relleno rojo)
   highlightedRange: Array<{ date: string; textColor?: string; backgroundColor?: string }> = [];
-
-  /** Para detectar el “doble evento” de ion-datetime */
   private prevRendered = new Set<string>();
   private suppressDupUntil = 0;
 
@@ -85,23 +72,20 @@ export class ReservasPage implements OnInit {
     private reservaService: ReservaService,
     private loadingCtrl: LoadingController,
     private toastCtrl: ToastController,
-    private alertCtrl: AlertController
+    private alertCtrl: AlertController,
+    private general: GeneralService // <-- para usar la misma alerta que en renta-ficha
   ) { }
 
   ngOnInit(): void {
     this.carId = this.route.snapshot.paramMap.get('id') || '';
     this.initForm();
-
-    // Prefill query params
     const qp = this.route.snapshot.queryParamMap;
     if (qp.get('inicio')) this.form.patchValue({ fechaInicio: qp.get('inicio') });
     if (qp.get('fin')) this.form.patchValue({ fechaFin: qp.get('fin') });
-
     this.syncRangeFromForm();
     this.prevRendered = new Set(this.rangeValue);
     this.buildHighlightedRange();
     this.loadCar();
-
     this.form.valueChanges.subscribe(() => {
       this.recalc();
       this.syncRangeFromForm();
@@ -114,7 +98,7 @@ export class ReservasPage implements OnInit {
     this.form = this.fb.group(
       {
         fechaInicio: [null, [Validators.required, minHoy]],
-        fechaFin: [null], // 1 día permitido
+        fechaFin: [null],
         notasCliente: [''],
       },
       { validators: [rangoFechas] }
@@ -139,7 +123,9 @@ export class ReservasPage implements OnInit {
               }
             });
           }
-        } catch { /* noop */ }
+        } catch {
+          /* noop */
+        }
 
         await loading.dismiss();
         this.recalc();
@@ -148,11 +134,10 @@ export class ReservasPage implements OnInit {
         await loading.dismiss();
         this.toast('No se pudo cargar el coche');
         this.router.navigateByUrl('/');
-      }
+      },
     });
   }
 
-  // ====== Cálculos ======
   get minStart(): string {
     return toYMDLocal(new Date());
   }
@@ -166,7 +151,6 @@ export class ReservasPage implements OnInit {
     }
   };
 
-  /** Diferencia INCLUSIVA en días (inicio y fin cuentan) */
   private diffDaysInclusiveLocal(i: Date, f: Date): number {
     const si = startOfDayLocal(i).getTime();
     const sf = startOfDayLocal(f).getTime();
@@ -193,7 +177,6 @@ export class ReservasPage implements OnInit {
     this.total = porDia * (this.dias || 1);
   }
 
-  // ====== Validaciones extra ======
   private rangoTieneOcupadas(iniStr?: string | null, finStr?: string | null): boolean {
     if (!iniStr) return false;
     let start = parseYMDLocal(iniStr);
@@ -221,23 +204,20 @@ export class ReservasPage implements OnInit {
     this.form.setErrors(Object.keys(errors).length ? errors : null);
   }
 
-  // ====== Calendario ======
   private syncRangeFromForm() {
     const ini = this.form.get('fechaInicio')?.value;
     const fin = this.form.get('fechaFin')?.value;
-    this.rangeValue = [ini, fin].filter(Boolean) as string[]; // endpoints
+    this.rangeValue = [ini, fin].filter(Boolean) as string[];
   }
 
   onRangeChange(ev: CustomEvent) {
     this.handlePick(ev?.detail?.value);
   }
 
-  // Si tu HTML todavía tiene (ionValueChange), lo soportamos sin duplicar
   onRangeValueChange(ev: any) {
     this.handlePick(Array.isArray(ev) ? ev : (ev?.detail?.value ?? ev));
   }
 
-  /** Normaliza arreglo a YYYY-MM-DD únicos (en orden) */
   private normalizeMulti(val: string[] | string | null | undefined): string[] {
     const raw = Array.isArray(val) ? val : (val ? [val] : []);
     const out: string[] = [];
@@ -250,85 +230,92 @@ export class ReservasPage implements OnInit {
 
   private sameSet(a: string[], b: string[]): boolean {
     if (a.length !== b.length) return false;
-    const A = new Set(a), B = new Set(b);
+    const A = new Set(a),
+      B = new Set(b);
     for (const x of A) if (!B.has(x)) return false;
     return true;
   }
 
   private handlePick(val: string[] | string | null | undefined) {
     const now = Date.now();
-    if (now < this.suppressDupUntil) return; // anti-doble evento
+    if (now < this.suppressDupUntil) return;
 
     const arr = this.normalizeMulti(val);
 
-    // Si llega exactamente lo que ya mostramos, no reproceses
     if (this.sameSet(arr, this.rangeValue)) return;
 
     const newSet = new Set(arr);
 
-    // Detectar si fue toggle on/off y cuál fue la última fecha tocada
     let lastTouched: string | null = null;
     let isRemoval = false;
 
     for (const d of newSet) {
-      if (!this.prevRendered.has(d)) { lastTouched = d; isRemoval = false; break; }
+      if (!this.prevRendered.has(d)) {
+        lastTouched = d;
+        isRemoval = false;
+        break;
+      }
     }
     if (!lastTouched) {
       for (const d of this.prevRendered) {
-        if (!newSet.has(d)) { lastTouched = d; isRemoval = true; break; }
+        if (!newSet.has(d)) {
+          lastTouched = d;
+          isRemoval = true;
+          break;
+        }
       }
     }
     if (!lastTouched && arr.length) lastTouched = arr[arr.length - 1];
 
     this.applyTouchedInteractive(lastTouched, isRemoval, arr);
-
-    // Actualiza “pintado” y bloquea duplicados por un instante
     this.prevRendered = new Set(this.rangeValue);
     this.suppressDupUntil = Date.now() + 60;
   }
 
-  /**
-   * Interactivo:
-   * - 1er tap => día único.
-   * - 2º tap => rango (ordena si hace falta).
-   * - Con inicio+fin:
-   *    * Tap < inicio => mueve inicio.
-   *    * Tap > fin    => mueve fin.
-   *    * Tap dentro   => mueve el BORDE MÁS CERCANO (no colapsa).
-   */
   private applyTouchedInteractive(last: string | null, isRemoval: boolean, arrNow: string[]) {
     if (!last) return;
 
     const curStart = this.form.get('fechaInicio')?.value as string | null;
-    const curEnd   = this.form.get('fechaFin')?.value as string | null;
-
+    const curEnd = this.form.get('fechaFin')?.value as string | null;
     let newStart: string | null = curStart ?? null;
-    let newEnd:   string | null = curEnd ?? null;
+    let newEnd: string | null = curEnd ?? null;
 
     if (isRemoval) {
       const arr = [...arrNow].sort();
-      if (arr.length === 0) { newStart = null; newEnd = null; }
-      else if (arr.length === 1) { newStart = arr[0]; newEnd = null; }
-      else { newStart = arr[0]; newEnd = arr[arr.length - 1]; }
+      if (arr.length === 0) {
+        newStart = null;
+        newEnd = null;
+      } else if (arr.length === 1) {
+        newStart = arr[0];
+        newEnd = null;
+      } else {
+        newStart = arr[0];
+        newEnd = arr[arr.length - 1];
+      }
     } else {
       if (!curStart) {
-        newStart = last; newEnd = null;
+        newStart = last;
+        newEnd = null;
       } else if (curStart && !curEnd) {
         const s = parseYMDLocal(curStart);
         const L = parseYMDLocal(last);
-        if (+L < +s) { newStart = last; newEnd = curStart; }
-        else { newStart = curStart; newEnd = last; }
+        if (+L < +s) {
+          newStart = last;
+          newEnd = curStart;
+        } else {
+          newStart = curStart;
+          newEnd = last;
+        }
       } else {
         const s = parseYMDLocal(curStart!);
         const e = parseYMDLocal(curEnd!);
         const L = parseYMDLocal(last);
 
         if (+L < +s) {
-          newStart = last;              // extiende/recorta por la izquierda
+          newStart = last;
         } else if (+L > +e) {
-          newEnd = last;                // extiende/recorta por la derecha
+          newEnd = last;
         } else {
-          // Dentro del rango -> mover el borde más cercano
           const distS = Math.abs(+L - +s);
           const distE = Math.abs(+e - +L);
           if (distS <= distE) newStart = last;
@@ -337,21 +324,22 @@ export class ReservasPage implements OnInit {
       }
     }
 
-    // Normalizar si hay ambos
     if (newStart && newEnd) {
       const si = parseYMDLocal(newStart);
       const ei = parseYMDLocal(newEnd);
-      if (+ei < +si) { const tmp = newStart; newStart = newEnd; newEnd = tmp; }
+      if (+ei < +si) {
+        const tmp = newStart;
+        newStart = newEnd;
+        newEnd = tmp;
+      }
     }
 
-    // Aplicar y refrescar sin loops
     this.form.patchValue({ fechaInicio: newStart, fechaFin: newEnd ?? null }, { emitEvent: false });
     this.syncRangeFromForm();
     this.validarMinDiasYDisponibilidad();
     this.buildHighlightedRange();
   }
 
-  /** ==== Highlight (rango inclusivo, LOCAL) ==== */
   private buildHighlightedRange(): void {
     this.highlightedRange = [];
 
@@ -363,7 +351,6 @@ export class ReservasPage implements OnInit {
     let f = parseYMDLocal(fin0!);
     if (f < i) [i, f] = [f, i];
 
-    // ROJO (tema)
     const bg = '#e11d2f';
     const fg = '#ffffff';
 
@@ -378,7 +365,6 @@ export class ReservasPage implements OnInit {
     }
   }
 
-  // ====== Submit ======
   async reservar() {
     if (!this.canSubmit || !this.coche || this.enviando) {
       if (!this.enviando) this.toast('Completa el formulario.');
@@ -407,40 +393,40 @@ export class ReservasPage implements OnInit {
 
     const loading = await this.loadingCtrl.create({ message: 'Creando reserva...' });
     await loading.present();
-
     const fechaInicioISO = ymdToUtcNoonISO(fechaInicio);
     const fechaFinISO = ymdToUtcNoonISO(fechaFin!);
 
-    this.reservaService.createBookingV2({
-      rentalCar: this.coche._id,
-      fechaInicio: fechaInicioISO,
-      fechaFin: fechaFinISO,
-      items: [],
-      moneda: this.coche?.precio?.moneda ?? 'MXN',
-      notasCliente,
-      politicaCancelacion: 'flex',
-      aceptoTerminos: true,
-    }).subscribe({
-      next: async (res: CreateBookingResponse) => {
-        await loading.dismiss();
-        this.enviando = false;
-        const alert = await this.alertCtrl.create({
-          header: 'Reserva creada',
-          message: `Código: <b>${res?.booking?.codigo || '—'}</b>`,
-          buttons: ['OK'],
-        });
-        await alert.present();
-        this.router.navigate(['/']);
-      },
-      error: async (e: any) => {
-        await loading.dismiss();
-        this.enviando = false;
-        this.toast(e?.message || 'Error al crear la reserva.');
-      }
-    });
+    this.reservaService
+      .createBookingV2({
+        rentalCar: this.coche._id,
+        fechaInicio: fechaInicioISO,
+        fechaFin: fechaFinISO,
+        items: [],
+        moneda: this.coche?.precio?.moneda ?? 'MXN',
+        notasCliente,
+        politicaCancelacion: 'flex',
+        aceptoTerminos: true,
+      })
+      .subscribe({
+        next: async (res: CreateBookingResponse) => {
+          await loading.dismiss();
+          this.enviando = false;
+          this.general.alert(
+            '¡Renta creada!',
+            `Tu reserva fue creada correctamente. Espera a que el dueño acepte la solicitud para continuar.`,
+            'success'
+          );
+
+          this.router.navigate(['/']);
+        },
+        error: async (e: any) => {
+          await loading.dismiss();
+          this.enviando = false;
+          this.toast(e?.message || 'Error al crear la reserva.');
+        },
+      });
   }
 
-  // ====== UX ======
   async toast(message: string) {
     const t = await this.toastCtrl.create({ message, duration: 2200, position: 'bottom' });
     await t.present();
