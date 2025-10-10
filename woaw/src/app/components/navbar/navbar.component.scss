@@ -488,3 +488,38 @@ ion-toolbar ion-button.stack .label {
   display: inline-block;
   vertical-align: middle;
 }
+
+
+
+
+/* ====== XXS: hasta 400px ====== */
+@media (max-width: 400px) {
+  ion-toolbar {
+    padding: 0 4px;
+    gap: 6px;
+  }
+
+  .logo_content .logo {
+    width: clamp(40px, 18vw, 56px);
+  }
+
+  .buscador-container {
+    width: clamp(100px, 46vw, 180px);
+  }
+  .buscador-container:focus-within {
+    width: clamp(140px, 72vw, 240px);
+  }
+
+  ion-buttons[slot="end"] {
+    max-width: 55%;
+    gap: 2px;
+  }
+  ion-buttons[slot="end"] ion-button {
+    height: 28px;
+    min-width: 28px;
+    font-size: 9px;
+  }
+  ion-buttons[slot="end"] ion-button ion-icon {
+    font-size: 15px;
+  }
+}
