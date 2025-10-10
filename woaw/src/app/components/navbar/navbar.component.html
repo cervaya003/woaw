@@ -1,8 +1,8 @@
 <app-spinner *ngIf="mostrar_spinnet"></app-spinner>
 <ion-header [translucent]="true">
-  
+
   <ion-toolbar class="custom-toolbar" color="dark">
-    
+
     <ion-buttons slot="start">
       <div class="logo_content">
         <img src="/assets/icon/logo4.png" loading="lazy" alt="WOAW" class="logo" (click)="redirecion_logo()" />
@@ -45,11 +45,8 @@
         </ion-button>
 
 
-        <ion-button
-          fill="clear"
-          (click)="abrirPopover('Autos')"
-          [ngClass]="{ 'activo': isActive('menu-vehiculos/autos') }"
-        >
+        <ion-button fill="clear" (click)="abrirPopover('Autos')"
+          [ngClass]="{ 'activo': isActive('menu-vehiculos/autos') }">
 
           Vehiculos
         </ion-button>
@@ -73,15 +70,12 @@
           Renta de coches
         </ion-button>
 
-        <ion-button fill="clear" [ngClass]="{ 'activo': isActive('seguros-disponibles') }" (click)="redirecion('seguros-disponibles')">
+        <ion-button fill="clear" [ngClass]="{ 'activo': isActive('seguros/disponibles') }"
+          (click)="redirecion('seguros/disponibles')">
           Seguros de autos
         </ion-button>
 
-         <ion-button
-          fill="clear"
-          [ngClass]="{ 'activo': isActive('conocenos') }"
-          (click)="redirecion('conocenos')"
-        >
+        <ion-button fill="clear" [ngClass]="{ 'activo': isActive('conocenos') }" (click)="redirecion('conocenos')">
 
           Nosotros
         </ion-button>
@@ -133,8 +127,8 @@
         </span>
       </ion-button>
 
-      <ion-button fill="clear" class="stack" [ngClass]="{ 'activo': isActive('seguros-disponibles') }"
-        (click)="redirecion('seguros-disponibles')" *ngIf="!mostrarBuscador && esDispositivoMovil">
+      <ion-button fill="clear" class="stack" [ngClass]="{ 'activo': isActive('seguros/disponibles') }"
+        (click)="redirecion('seguros/disponibles')" *ngIf="!mostrarBuscador && esDispositivoMovil">
         <span class="vcol">
           <ion-icon name="shield-checkmark-outline"></ion-icon>
           <span class="label">Seguros</span>
@@ -158,6 +152,3 @@
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
-
-
- 

@@ -116,6 +116,7 @@ export class SegurosPage implements OnInit {
       marca: [null, Validators.required],
     });
   }
+
   ngOnInit() {
     this.verificaStorage();
     this.generalService.tokenExistente$.subscribe((estado) => {
@@ -129,18 +130,19 @@ export class SegurosPage implements OnInit {
   }
   private verificaStorage() {
     const raw = localStorage.getItem('cotizacion');
-
     if (!raw) {
       this.getMarcas_cohes();
       this.obtenerMarcas();
       return;
     }
+
     this.currentStep = 7;
     this.quote = JSON.parse(raw);
     this.cotizacion = !!this.quote;
 
     if (this.quote?.plans?.length) {
       this.selectedPaymentByPlan = {};
+      
       this.quote.plans.forEach((pl: any) => {
         const firstId = pl?.payment_plans?.[0]?.id ?? null;
         if (firstId) this.selectedPaymentByPlan[pl.id] = firstId;
@@ -152,7 +154,6 @@ export class SegurosPage implements OnInit {
     } else {
       this.activePlan = null;
     }
-
   }
   async cargaimagen() {
     this.imgenPrincipal = '/assets/autos/seguro.webp';
@@ -854,6 +855,7 @@ export class SegurosPage implements OnInit {
     };
     return map[norm] ?? norm;
   }
+
   // BUSCADOR -----
   isSelected(id: number): boolean {
     return this.form.get('marca')?.value === id;
@@ -932,9 +934,6 @@ export class SegurosPage implements OnInit {
     return Array.from(index.values());
   }
   selectOtherBrand(): void {
-    try {
-      localStorage.setItem('tipo-cotizar-manual', 'Auto');
-    } catch { }
     this.router.navigateByUrl('/seguros/cotizar-manual');
   }
 }

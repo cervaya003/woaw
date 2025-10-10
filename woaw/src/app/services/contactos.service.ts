@@ -592,4 +592,43 @@ export class ContactosService {
     window.open(url, '_blank');
   }
 
+  cotizaSeguro(data: {
+    tipo?: string;
+    marca: string;
+    modelo: string;
+    version: string;
+    anio: string | number;
+    nombre: string;
+    correo: string;
+    estadoCivil: string;
+    fechaNacimiento: string;
+    codigoPostal: string | number;
+  }): void {
+    const telefonoJefe = '+524424736940';
+    const storage = localStorage.getItem('user');
+    let nombreCompleto = '';
+
+    if (storage) {
+      try {
+        const u = JSON.parse(storage);
+        if (u?.nombre && u?.apellidos) nombreCompleto = `${u.nombre} ${u.apellidos}`.toUpperCase();
+      } catch { }
+    }
+
+    const saludo = nombreCompleto ? `Hola, soy *${nombreCompleto}*.` : 'Hola.';
+    const mensaje = encodeURIComponent(
+      `${saludo}\n\nQuiero cotizar un *seguro* para:\n\n` +
+      `🚗 *${data.marca} ${data.modelo} ${data.anio}*\n` +
+      `🧩 Versión: *${data.version}*\n` +
+      `📦 Tipo: *${data.tipo || 'auto'}*\n\n` +
+      `👤 Nombre del cliente: *${data.nombre}*\n` +
+      `📧 Correo: *${data.correo}*\n` +
+      `❤️ Estado civil: *${data.estadoCivil}*\n` +
+      `🎂 Fecha de nacimiento: *${data.fechaNacimiento}*\n` +
+      `📮 Código postal: *${data.codigoPostal}*`
+    );
+
+    const url = `https://api.whatsapp.com/send?phone=${telefonoJefe}&text=${mensaje}`;
+    window.open(url, '_blank');
+  }
 }

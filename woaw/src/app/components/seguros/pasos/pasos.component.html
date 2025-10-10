@@ -4,7 +4,7 @@
     <button (click)="cerrarModal()">x</button>
   </div>
   <div class="opciones-grid">
-    <div class="card motos" (click)="redireccion('seguros')" [class.card--ok]="cards[0].estatus"
+    <div class="card motos" (click)="redireccion('seguros/autos')" [class.card--ok]="cards[0].estatus"
       [class.card--off]="!cards[0].estatus">
       <h1 class="pasoTex">Paso 1°</h1>
       <ion-icon [name]="cards[0].icon"></ion-icon>

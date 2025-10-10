@@ -3,6 +3,7 @@ import { PopoverController, AlertController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { CarsService } from '../../../services/cars.service';
+import { ContactosService } from '../../../services/contactos.service';
 import { GeneralService } from '../../../services/general.service';
 import { SeguroService } from '../../../services/seguro.service';
 
@@ -28,6 +29,7 @@ export class CotizarManualPage implements OnInit {
     private router: Router,
     private generalService: GeneralService,
     public carsService: CarsService,
+    private contactosService: ContactosService,
     private fb: FormBuilder,
     private seguros: SeguroService,
     private location: Location
@@ -111,34 +113,40 @@ export class CotizarManualPage implements OnInit {
       return;
     }
 
-    this.mostrar_spinnet = true;
-
     const data = {
-      tipo_envio: tipo,
-      tipo: this.tipo || 'auto',
+      tipo: this.tipo,
       ...this.form.value,
     };
+
+    if (tipo === 'whatsapp') {
+      this.contactosService.cotizaSeguro(data);
+      this.marcador = 1;
+      this.router.navigateByUrl('/seguros/disponibles');
+      this.form.reset();
+      return;
+    }
+
+    this.mostrar_spinnet = true;
+
     this.seguros.cotizaManual(data).subscribe({
-      next: (resp) => {
-        setTimeout(() => {
-          this.mostrar_spinnet = false;
-
-          if (resp?.success || resp?.status === 200) {
-            this.generalService.alert(
-              `Tu solicitud fue enviada correctamente por ${tipo}.`,
-              'Envío exitoso',
-              'success'
-            );
-
-            this.marcador = 4;
-          } else {
-            this.generalService.alert(
-              'Ocurrió un problema al enviar tus datos. Intenta nuevamente.',
-              'Error en el envío',
-              'danger'
-            );
-          }
-        }, 2000);
+      next: (res) => {
+        this.mostrar_spinnet = false;
+        if (res.status === 200) {
+          this.generalService.alert(
+            `Tu solicitud fue enviada correctamente por ${tipo}.`,
+            'Envío exitoso',
+            'success'
+          );
+          this.marcador = 1;
+          this.router.navigateByUrl('/seguros/disponibles');
+          this.form.reset();
+        } else {
+          this.generalService.alert(
+            'Ocurrió un problema al enviar tus datos. Intenta nuevamente.',
+            'Error en el envío',
+            'danger'
+          );
+        }
       },
       error: (err) => {
         this.mostrar_spinnet = false;
