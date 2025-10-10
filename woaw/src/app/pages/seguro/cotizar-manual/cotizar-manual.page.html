@@ -15,6 +15,12 @@
           <ion-icon name="arrow-back-outline"></ion-icon>
         </button>
         <h1 class="titulo_manual_cotizar">Cotiza tu {{tipo}}</h1>
+        <div class="icon-wrap">
+          <img *ngIf="tipo_vehiculo === 'Camion'" src="/assets/img/icon-camion.png" alt="Camiones" class="cat-img" />
+          <img *ngIf="tipo_vehiculo === 'Auto'" src="/assets/img/icon-coche.png" alt="Autos" class="cat-img" />
+          <img *ngIf="tipo_vehiculo === 'Moto'" src="/assets/img/icon-moto.png" alt="Motos" class="cat-img" />
+          <img *ngIf="tipo_vehiculo === 'ERT'" src="/assets/img/icon-coche-rt.png" alt="Servicios RT" class="cat-img" />
+        </div>
       </div>
 
       <form [formGroup]="form">
@@ -154,7 +160,8 @@
             <span *ngIf="marcador != 3">Regresar</span>
           </button>
 
-          <button class="btn-primary" *ngIf="marcador != 3" type="button" [disabled]="form.invalid" (click)="siguiente()">
+          <button class="btn-primary" *ngIf="marcador != 3" type="button" [disabled]="form.invalid"
+            (click)="siguiente()">
             Siguiente
             <ion-icon name="arrow-forward-outline"></ion-icon>
           </button>
@@ -175,5 +182,5 @@
     </div>
   </section>
 
-  <app-footer></app-footer>
+  <app-footer *ngIf="tipoDispocitivo !== 'telefono'"></app-footer>
 </ion-content>

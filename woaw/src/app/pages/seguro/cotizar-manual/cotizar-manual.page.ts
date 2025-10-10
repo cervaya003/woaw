@@ -23,6 +23,10 @@ export class CotizarManualPage implements OnInit {
   anios: number[] = [];
   public marcador: 1 | 2 | 3 | 4 = 1;
 
+  public tipo_vehiculo: string = '';
+
+  public tipoDispocitivo: 'computadora' | 'telefono' | 'tablet' = 'computadora';
+
   constructor(
     private popoverCtrl: PopoverController,
     private alertCtrl: AlertController,
@@ -45,6 +49,15 @@ export class CotizarManualPage implements OnInit {
   ngOnInit() {
     this.anios = this.buildAnios(1960);
     this.getStoarage();
+
+    this.generalService.dispositivo$.subscribe((tipo) => {
+      this.tipoDispocitivo = tipo;
+    });
+
+    let v = localStorage.getItem('tipo-cotizar-manual');
+    if (v) {
+      this.tipo_vehiculo = v;
+    }
   }
   private async getStoarage() {
     let v = localStorage.getItem('tipo-cotizar-manual');

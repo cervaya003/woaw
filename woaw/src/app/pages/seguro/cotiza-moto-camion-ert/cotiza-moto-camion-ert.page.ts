@@ -47,11 +47,14 @@ export class CotizaMotoCamionErtPage implements OnInit {
 
   modelos: any[] = [];
   public selectedMarcaNombre: string | null = null;
-  marcasCamiones: any[] = [];
+  marcasCamionesERT: any[] = [];
   marcasMotos: any[] = [];
 
   OTRO_MODELO = '__OTRO_MODELO__';
   showOtroModelo = false;
+
+
+  public tipoDispocitivo: 'computadora' | 'telefono' | 'tablet' = 'computadora';
 
   constructor(
     private popoverCtrl: PopoverController,
@@ -75,6 +78,9 @@ export class CotizaMotoCamionErtPage implements OnInit {
     this.anios = this.buildAnios(1960);
     this.getStoarage();
     this.GetMarcas();
+    this.generalService.dispositivo$.subscribe((tipo) => {
+      this.tipoDispocitivo = tipo;
+    });
   }
   private async getStoarage() {
     let v = localStorage.getItem('tipo-cotizar-manual');
@@ -232,7 +238,7 @@ export class CotizaMotoCamionErtPage implements OnInit {
     if (this.tipo_vehiculo === 'Camion') {
       this.carsService.GetMarcasCamiones().subscribe({
         next: (res: any[]) => {
-          this.marcasCamiones = (res || []).map((m) => {
+          this.marcasCamionesERT = (res || []).map((m) => {
             if (!m.imageUrl && this.LOGO_FALLBACKS[m.nombre]) {
               m.imageUrl = this.LOGO_FALLBACKS[m.nombre];
             }
@@ -240,10 +246,10 @@ export class CotizaMotoCamionErtPage implements OnInit {
           });
 
           this.cdr.markForCheck();
-          console.log('Marcas de camiones cargadas con fallback:', this.marcasCamiones);
+          console.log('Marcas de camiones cargadas con fallback:', this.marcasCamionesERT);
         },
         error: () => {
-          this.marcasCamiones = [];
+          this.marcasCamionesERT = [];
         },
       });
     } else if (this.tipo_vehiculo === 'Moto') {
@@ -261,6 +267,19 @@ export class CotizaMotoCamionErtPage implements OnInit {
           this.generalService.loadingDismiss();
         },
       });
+    } else if (this.tipo_vehiculo === 'ERT') {
+    this.carsService.getMarcas_all().subscribe({
+      next: (res: any[]) => {
+        console.log('Marcas de camiones ERT cargadas:', res);
+        const fromAPI = (res || []).map(m => ({
+          key: (m?.key || '').toLowerCase(),
+          nombre: m?.nombre || '',
+          imageUrl: m?.imageUrl ?? null
+        }));
+        this.marcasCamionesERT = fromAPI; 
+      },
+      error: (err) => console.error('Error al obtener marcas:', err),
+    });
 
     }
   }
@@ -295,6 +314,9 @@ export class CotizaMotoCamionErtPage implements OnInit {
   }
   selectMarca(marca: any): void {
     console.log('Marca seleccionada:', marca);
+    if(this.tipo_vehiculo === 'ERT'){
+      
+    }
     this.selectedMarcaNombre = marca.nombre;
     this.form.get('marca')?.setValue(marca._id);
   }

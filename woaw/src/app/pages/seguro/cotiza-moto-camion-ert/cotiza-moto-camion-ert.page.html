@@ -15,6 +15,11 @@
           <ion-icon name="arrow-back-outline"></ion-icon>
         </button>
         <h1 class="titulo_manual_cotizar">Cotiza tu {{tipo_vehiculo}}</h1>
+        <div class="icon-wrap">
+          <img *ngIf="tipo_vehiculo === 'Camion'" src="/assets/img/icon-camion.png" alt="Camiones" class="cat-img" />
+          <img *ngIf="tipo_vehiculo === 'Moto'"  src="/assets/img/icon-moto.png" alt="Motos" class="cat-img" />
+          <img *ngIf="tipo_vehiculo === 'ERT'" src="/assets/img/icon-coche-rt.png" alt="Servicios RT" class="cat-img" />
+        </div>
       </div>
 
       <form [formGroup]="form">
@@ -26,7 +31,7 @@
           <div class="linea_horizontal"></div>
         </div>
 
-        <ng-content *ngIf="marcador === 1 && tipo_vehiculo === 'Camion'">
+        <ng-content *ngIf="marcador === 1 && tipo_vehiculo === 'Camion' || tipo_vehiculo === 'ERT'">
 
           <div class="marca-picker" role="listbox" aria-label="Selecciona una marca">
             <div class="marca-picker__grid">
@@ -39,7 +44,7 @@
                 <div class="marca-picker__name--other">Otra marca</div>
               </button>
 
-              <button type="button" class="marca-picker__card" *ngFor="let b of marcasCamiones"
+              <button type="button" class="marca-picker__card" *ngFor="let b of marcasCamionesERT"
                 [class.is-selected]="isSelected(b._id)" role="option" [attr.aria-selected]="isSelected(b._id)"
                 (click)="selectMarca(b)">
                 <div class="marca-picker__icon">
@@ -67,6 +72,12 @@
                   <label for="marca">Selecciona la marca <span>*</span></label>
 
                   <div class="select-row">
+
+                    <button type="button" class="btn-otra-marca" (click)="selectOtherBrand()">
+                      <ion-icon name="add-circle-outline"></ion-icon>
+                      <span>Otra marca</span>
+                    </button>
+
                     <div class="control control--select">
                       <ion-select #lista formControlName="marca" interface="popover" placeholder="Selecciona..."
                         aria-label="Seleccionar marca"
@@ -79,10 +90,6 @@
                       </ion-select>
                     </div>
 
-                    <button type="button" class="btn-otra-marca" (click)="selectOtherBrand()">
-                      <ion-icon name="add-circle-outline"></ion-icon>
-                      <span>Otra marca</span>
-                    </button>
                   </div>
 
                   <p *ngIf="analizaForm('marca')" class="error">Selecciona una marca</p>
@@ -258,8 +265,27 @@
 
       </form>
 
+      <div class="mensaje-seguro">
+        <div class="mensaje-seguro__header">
+          <ion-icon name="information-circle-outline"></ion-icon>
+          <h3>¡Cotizamos por ti!</h3>
+        </div>
+
+        <p>
+          Déjanos los datos de tu vehículo y tus datos de contacto. Nosotros realizaremos la cotización por ti y te
+          contactaremos por <ion-icon name="mail-outline"></ion-icon> correo o
+          <ion-icon name="logo-whatsapp"></ion-icon> WhatsApp con las mejores opciones disponibles.
+        </p>
+
+        <div class="mensaje-seguro__stickers">
+          <ion-icon name="car-outline"></ion-icon>
+          <ion-icon name="cash-outline"></ion-icon>
+          <ion-icon name="shield-checkmark-outline"></ion-icon>
+        </div>
+      </div>
+
     </div>
   </section>
 
-  <app-footer></app-footer>
+  <app-footer *ngIf="tipoDispocitivo !== 'telefono'"></app-footer>
 </ion-content>
