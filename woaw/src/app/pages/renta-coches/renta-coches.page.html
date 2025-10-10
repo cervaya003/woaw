@@ -172,6 +172,7 @@
           <div class="contenedor-paginacion" *ngIf="totalPaginasMios > 1">
             <div class="paginacion-scroll">
               <div class="paginacion">
+                <!-- Flecha anterior: AHORA CON SÍMBOLO -->
                 <button class="pagina" (click)="cambiarPagina('mios', paginaMiosActual - 1)"
                   [disabled]="paginaMiosActual === 1">
                   ‹
@@ -185,6 +186,7 @@
                   <span *ngIf="!esNumero(i)" class="ellipsis">...</span>
                 </ng-container>
 
+                <!-- Flecha siguiente: AHORA CON SÍMBOLO -->
                 <button class="pagina" (click)="cambiarPagina('mios', paginaMiosActual + 1)"
                   [disabled]="paginaMiosActual === totalPaginasMios">
                   ›

@@ -1,0 +1,265 @@
+<app-navbar></app-navbar>
+
+<ion-content [fullscreen]="true">
+  <app-spinner *ngIf="mostrar_spinnet"></app-spinner>
+
+  <div class="fondo-seguros">
+    <img src="/assets/autos/seg1.webp" alt="">
+    <span class="fondo-seguros__overlay"></span>
+  </div>
+
+  <section class="carta_manual_cotizar">
+    <div class="carta_manual_cotizar__contenido">
+      <div class="header_manual_cotizar">
+        <button (click)="atras()">
+          <ion-icon name="arrow-back-outline"></ion-icon>
+        </button>
+        <h1 class="titulo_manual_cotizar">Cotiza tu {{tipo_vehiculo}}</h1>
+      </div>
+
+      <form [formGroup]="form">
+
+        <div class="titulo-auto">
+          <h3 *ngIf="marcador === 1">Selecciona la marca</h3>
+          <h3 *ngIf="marcador === 2 || marcador === 3">Ingresa tus datos</h3>
+          <h3 *ngIf="marcador === 4">Corrobora tus datos</h3>
+          <div class="linea_horizontal"></div>
+        </div>
+
+        <ng-content *ngIf="marcador === 1 && tipo_vehiculo === 'Camion'">
+
+          <div class="marca-picker" role="listbox" aria-label="Selecciona una marca">
+            <div class="marca-picker__grid">
+
+              <button type="button" class="marca-picker__card marca-picker__card--other" role="option"
+                aria-selected="false" (click)="selectOtherBrand()">
+                <div class="marca-picker__icon--other">
+                  <ion-icon name="add-circle-outline" aria-hidden="true"></ion-icon>
+                </div>
+                <div class="marca-picker__name--other">Otra marca</div>
+              </button>
+
+              <button type="button" class="marca-picker__card" *ngFor="let b of marcasCamiones"
+                [class.is-selected]="isSelected(b._id)" role="option" [attr.aria-selected]="isSelected(b._id)"
+                (click)="selectMarca(b)">
+                <div class="marca-picker__icon">
+                  <img *ngIf="b.imageUrl; else noimg" [src]="b.imageUrl" [alt]="b.nombre" loading="lazy" />
+                  <ng-template #noimg>
+                    <span class="marca-picker__fallback">{{ b.nombre | titlecase }}</span>
+                  </ng-template>
+                </div>
+                <div class="marca-picker__name">{{ b.nombre | titlecase }}</div>
+              </button>
+            </div>
+          </div>
+          <p *ngIf="analizaForm('marca')" class="error">Selecciona una Marca</p>
+
+        </ng-content>
+
+        <ion-grid>
+          <ion-row>
+
+            <ng-content *ngIf="marcador === 1 && tipo_vehiculo === 'Moto'">
+              <ion-col size="12" size-md="12" class="col-field">
+
+
+                <div class="field">
+                  <label for="marca">Selecciona la marca <span>*</span></label>
+
+                  <div class="select-row">
+                    <div class="control control--select">
+                      <ion-select #lista formControlName="marca" interface="popover" placeholder="Selecciona..."
+                        aria-label="Seleccionar marca"
+                        [interfaceOptions]="{ cssClass: 'select-popover pop-marca', side: 'bottom', alignment: 'start' }"
+                        data-key="marca" (ionFocus)="syncPopoverWidths()" (ionChange)="onMarcaChange($event)">
+                        <ion-select-option [value]="null" disabled>Selecciona...</ion-select-option>
+                        <ion-select-option *ngFor="let m of marcasMotos" [value]="m._id">
+                          {{ m.nombre }}
+                        </ion-select-option>
+                      </ion-select>
+                    </div>
+
+                    <button type="button" class="btn-otra-marca" (click)="selectOtherBrand()">
+                      <ion-icon name="add-circle-outline"></ion-icon>
+                      <span>Otra marca</span>
+                    </button>
+                  </div>
+
+                  <p *ngIf="analizaForm('marca')" class="error">Selecciona una marca</p>
+                </div>
+
+              </ion-col>
+            </ng-content>
+
+            <ng-content *ngIf="marcador === 2">
+              <!-- SELECT de modelo (visible por defecto) -->
+              <ion-col size="12" size-md="6" class="col-field" *ngIf="!showOtroModelo">
+                <div class="field">
+                  <label for="modelo">Selecciona el modelo <span>*</span></label>
+                  <div class="control control--select">
+                    <ion-select #lista formControlName="modelo" interface="popover" placeholder="Selecciona..."
+                      aria-label="Seleccionar modelo"
+                      [interfaceOptions]="{ cssClass: 'select-popover pop-modelo', side: 'bottom', alignment: 'start' }"
+                      data-key="modelo" (ionFocus)="syncPopoverWidths()" (ionChange)="onModeloChange($event)">
+                      <ion-select-option [value]="null" disabled>Selecciona...</ion-select-option>
+                      <ion-select-option *ngFor="let m of modelos" [value]="m.nombre">
+                        {{ m.nombre }}
+                      </ion-select-option>
+
+                      <ion-select-option [value]="OTRO_MODELO">
+                        Otro modelo…
+                      </ion-select-option>
+                    </ion-select>
+                  </div>
+                  <p *ngIf="analizaForm('modelo')" class="error">Selecciona un modelo</p>
+                </div>
+              </ion-col>
+
+              <ion-col size="12" size-md="6" class="col-field" *ngIf="showOtroModelo">
+                <div class="field">
+                  <label for="modeloInput">Modelo <span>*</span></label>
+                  <div class="control">
+                    <input id="modeloInput" type="text" class="form-input" maxlength="40"
+                      placeholder="Escribe el modelo" formControlName="modelo" />
+                  </div>
+                  <a class="switcher-link" (click)="usarListaModelos()">Usar lista de modelos</a>
+                  <p *ngIf="analizaForm('modelo')" class="error">Escribe un modelo</p>
+                </div>
+              </ion-col>
+
+              <ion-col size="12" size-md="6" class="col-field">
+                <div class="field">
+                  <label for="version">Versión <span>*</span></label>
+                  <div class="control">
+                    <input id="version" type="text" class="form-input" maxlength="25" placeholder="Versión del auto"
+                      formControlName="version" />
+                  </div>
+                  <p *ngIf="analizaForm('version')" class="error">Escribe una Versión</p>
+                </div>
+              </ion-col>
+
+              <ion-col size="12" size-md="6" class="col-field">
+                <div class="field">
+                  <label for="anio">Seleccionar año <span>*</span></label>
+                  <div class="control control--select">
+                    <ion-select #lista formControlName="anio" interface="popover" placeholder="Selecciona..."
+                      aria-label="Seleccionar año"
+                      [interfaceOptions]="{ cssClass: 'select-popover pop-anio', side: 'bottom', alignment: 'start' }"
+                      data-key="anio" (ionFocus)="syncPopoverWidths()">
+                      <ion-select-option [value]="null" disabled>Selecciona...</ion-select-option>
+                      <ion-select-option *ngFor="let y of anios" [value]="y">{{ y }}</ion-select-option>
+                    </ion-select>
+                  </div>
+                  <p *ngIf="analizaForm('anio')" class="error">Selecciona una año</p>
+                </div>
+              </ion-col>
+
+              <ion-col size="12" size-md="6" class="col-field">
+                <div class="field">
+                  <label for="codigoPostal">Código postal <span>*</span></label>
+                  <div class="control">
+                    <input id="codigoPostal" type="text" class="form-input" maxlength="5" placeholder="Ej. 76000"
+                      formControlName="codigoPostal" />
+                  </div>
+                  <p *ngIf="analizaForm('codigoPostal')" class="error">Escribe tu CP.</p>
+                </div>
+              </ion-col>
+
+            </ng-content>
+
+            <ng-content *ngIf="marcador === 3">
+
+              <ion-col size="12" size-md="6" class="col-field">
+                <div class="field">
+                  <label for="nombre">Nombre Completo<span>*</span></label>
+                  <div class="control">
+                    <input id="nombre" type="text" class="form-input" maxlength="50" placeholder="Nombre completo"
+                      formControlName="nombre" />
+                  </div>
+                  <p *ngIf="analizaForm('nombre')" class="error">Escribe tu Nombre.</p>
+                </div>
+              </ion-col>
+
+              <ion-col size="12" size-md="6" class="col-field">
+                <div class="field">
+                  <label for="correo">Correo electrónico <span>*</span></label>
+                  <div class="control">
+                    <input id="correo" type="email" class="form-input" maxlength="80" placeholder="correo@ejemplo.com"
+                      formControlName="correo" />
+                  </div>
+                  <p *ngIf="analizaForm('correo')" class="error">Escribe tu Correo.</p>
+                </div>
+              </ion-col>
+
+              <ion-col size="12" size-md="6" class="col-field">
+                <div class="field">
+                  <label for="estadoCivil">Estado civil <span>*</span></label>
+                  <div class="control control--select">
+                    <ion-select formControlName="estadoCivil" interface="popover" placeholder="Selecciona..."
+                      aria-label="Seleccionar estado civil"
+                      [interfaceOptions]="{ cssClass: 'select-popover pop-estado', side: 'bottom', alignment: 'start' }"
+                      data-key="estadoCivil" (ionFocus)="syncPopoverWidths()">
+                      <ion-select-option [value]="null" disabled>Selecciona...</ion-select-option>
+                      <ion-select-option value="soltero">Soltero(a)</ion-select-option>
+                      <ion-select-option value="casado">Casado(a)</ion-select-option>
+                      <ion-select-option value="divorciado">Divorciado(a)</ion-select-option>
+                    </ion-select>
+                  </div>
+                  <p *ngIf="analizaForm('estadoCivil')" class="error">Selecciona una opción.</p>
+                </div>
+              </ion-col>
+
+              <ion-col size="12" size-md="6" class="col-field">
+                <div class="field">
+                  <label for="fechaNacimiento">Fecha de nacimiento <span>*</span></label>
+                  <div class="control">
+                    <input id="fechaNacimiento" type="date" class="form-input" formControlName="fechaNacimiento" />
+                  </div>
+                  <p *ngIf="analizaForm('fechaNacimiento')" class="error">Escribe tu fecha de nacimiento..</p>
+                </div>
+              </ion-col>
+
+            </ng-content>
+
+
+          </ion-row>
+        </ion-grid>
+
+        <div class="mis_datos" *ngIf="marcador === 4">
+          <div class="mis_datos__list">
+            <div class="mis_datos__row" *ngFor="let r of resumen">
+              <div class="mis_datos__label">{{ r.label }}</div>
+              <div class="mis_datos__value">{{ r.value || '—' }}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="paybox__cta">
+          <button type="button" *ngIf="marcador != 1" class="btn-secondary" (click)="regresar()">
+            <ion-icon name="arrow-back-outline"></ion-icon>
+            <span *ngIf="marcador != 4">Regresar</span>
+          </button>
+
+          <button class="btn-primary" *ngIf="marcador != 4" type="button" (click)="siguiente()">
+            Siguiente
+            <ion-icon name="arrow-forward-outline"></ion-icon>
+          </button>
+
+          <button class="btn-primary" *ngIf="marcador == 4" type="button" (click)="enviarDatos('correo')">
+            <ion-icon name="mail-outline"></ion-icon>
+            Correo
+          </button>
+
+          <button class="btn-primary" *ngIf="marcador == 4" type="button" (click)="enviarDatos('whatsapp')">
+            <ion-icon name="logo-whatsapp"></ion-icon>
+            Whatsapp
+          </button>
+        </div>
+
+      </form>
+
+    </div>
+  </section>
+
+  <app-footer></app-footer>
+</ion-content>

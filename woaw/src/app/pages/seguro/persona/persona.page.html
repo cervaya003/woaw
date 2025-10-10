@@ -3,6 +3,8 @@
 
 <ion-content [fullscreen]="true">
   <app-spinner *ngIf="mostrar_spinnet"></app-spinner>
+  <app-otros-seguros [refreshKey]="islandKey" *ngIf="tipoDispocitivo === 'telefono'"></app-otros-seguros>
+
 
   <div class="fondo-seguros">
     <img src="/assets/autos/seg1.webp" alt="">
@@ -317,12 +319,15 @@
             </div>
 
             <div class="paybox__cta">
-              <button type="button" *ngIf="datosCoche" class="btn-secondary" (click)="regresar()">&#x2B05;
-                Regresar
+              <button type="button" *ngIf="datosCoche" class="btn-secondary" (click)="regresar()">
+                &#x2B05; Regresar
               </button>
-              <button type="submit" class="btn-primary" *ngIf="datosCoche">Siguiente &#x27A1;</button>
-              <button type="button" class="btn-primary" (click)="regresar()" *ngIf="!datosCoche">&#x2B05; Selecionar
-                coche</button>
+              <button type="submit" class="btn-primary" *ngIf="datosCoche">
+                Siguiente &#x27A1;
+              </button>
+              <button type="button" class="btn-primary" (click)="regresar()" *ngIf="!datosCoche">
+                &#x2B05; Cotiza un coche
+              </button>
             </div>
 
             <div class="carta_msj">

@@ -1,6 +1,13 @@
 <app-navbar></app-navbar>
 
 <ion-content [fullscreen]="true">
+
+<section class="cta-section">
+  <ion-button fill="clear" class="btn-regresar" (click)="redirigir('/home')">
+    <ion-icon name="arrow-back-outline"></ion-icon>
+  </ion-button>
+</section>
+
   <section class="polizas-section">
     <ion-header collapse="condense">
       <ion-toolbar>
@@ -30,55 +37,65 @@
       <ng-template #dash><div class="num">—</div></ng-template>
     </section>
     <!-- /CONTADOR -->
+<div class="cards-wrap" *ngIf="!cargando && polizas.length; else estado">
+  <div
+  
+    class="poliza-card"
+    *ngFor="let p of polizas; let i = index; trackBy: trackById"
+  > <footer class="card-footer">
+      <span class="numero-ficha">Póliza # {{ i + 1 }}</span>
+    </footer>
+   
+    <span (click)="detallesPoliza(p)">
+      <header class="card-head">
+        <h3 class="folio">{{ folioOf(p) }}</h3>
+        <span class="plan tiny-pill">{{ planOf(p) }}</span>
+      </header>
 
-    <div class="cards-wrap" *ngIf="!cargando && polizas.length; else estado">
-      <div class="poliza-card" *ngFor="let p of polizas; trackBy: trackById">
-        <span (click)="detallesPoliza(p)">
-          <header class="card-head">
-            <h3 class="folio">{{ folioOf(p) }}</h3>
-            <span class="plan tiny-pill">{{ planOf(p) }}</span>
-          </header>
+      <div class="kv">
+        <div class="row">
+          <span class="label">Vigencia</span>
+          <span
+            class="value"
+            *ngIf="vigenciaInicioOf(p) || vigenciaFinOf(p); else sinVig"
+          >
+            <ng-container *ngIf="vigenciaInicioOf(p) as vi">
+              {{ vi | date:"d 'de' MMMM 'de' y" }}
+            </ng-container>
+            <ng-container *ngIf="vigenciaInicioOf(p) && vigenciaFinOf(p)">
+              –
+            </ng-container>
+            <ng-container *ngIf="vigenciaFinOf(p) as vf">
+              {{ vf | date:"d 'de' MMMM 'de' y" }}
+            </ng-container>
+          </span>
+          <ng-template #sinVig>—</ng-template>
+        </div>
 
-          <div class="kv">
-            <div class="row">
-              <span class="label">Vigencia</span>
-              <span
-                class="value"
-                *ngIf="vigenciaInicioOf(p) || vigenciaFinOf(p); else sinVig"
-              >
-                <ng-container *ngIf="vigenciaInicioOf(p) as vi">
-                  {{ vi | date:"d 'de' MMMM 'de' y" }}
-                </ng-container>
-                <ng-container *ngIf="vigenciaInicioOf(p) && vigenciaFinOf(p)">
-                  –
-                </ng-container>
-                <ng-container *ngIf="vigenciaFinOf(p) as vf">
-                  {{ vf | date:"d 'de' MMMM 'de' y" }}
-                </ng-container>
-              </span>
-              <ng-template #sinVig>—</ng-template>
-            </div>
+        <div class="row">
+          <span class="label">VIN/Auto</span>
+          <span class="value">{{ vehiculoOf(p) }}</span>
+        </div>
 
-            <div class="row">
-              <span class="label">VIN/Auto</span>
-              <span class="value">{{ vehiculoOf(p) }}</span>
-            </div>
+        <div class="row">
+          <span class="label">RFC</span>
+          <span class="value value--mono">{{ rfcOf(p) }}</span>
+        </div>
 
-            <div class="row">
-              <span class="label">RFC</span>
-              <span class="value value--mono">{{ rfcOf(p) }}</span>
-            </div>
-
-            <div class="row">
-              <span class="label">Placa</span>
-              <span class="value"
-                ><span class="placa-pill">{{ placasOf(p) }}</span></span
-              >
-            </div>
-          </div>
-        </span>
+        <div class="row">
+          <span class="label">Placa</span>
+          <span class="value">
+            <span class="placa-pill">{{ placasOf(p) }}</span>
+          </span>
+        </div>
       </div>
-    </div>
+    </span>
+
+    <!-- 🧾 Pie de número -->
+    
+  </div>
+</div>
+
 
     <ng-template #estado>
       <div class="state">

@@ -72,6 +72,8 @@ export class SegurosPage implements OnInit {
   ];
   duracionOpts: number[] = [12, 24, 36, 48, 60];
 
+  public tipoDispocitivo: 'computadora' | 'telefono' | 'tablet' = 'computadora';
+
   // Paso 5: fecha de nacimiento
   dias: number[] = Array.from({ length: 31 }, (_, i) => i + 1);
   meses = [
@@ -114,28 +116,33 @@ export class SegurosPage implements OnInit {
       marca: [null, Validators.required],
     });
   }
+
   ngOnInit() {
     this.verificaStorage();
     this.generalService.tokenExistente$.subscribe((estado) => {
       this.isLoggedIn = estado;
+    });
+    this.generalService.dispositivo$.subscribe((tipo) => {
+      this.tipoDispocitivo = tipo;
     });
     this.buildAniosNacimiento();
     this.cargaimagen();
   }
   private verificaStorage() {
     const raw = localStorage.getItem('cotizacion');
-
     if (!raw) {
       this.getMarcas_cohes();
       this.obtenerMarcas();
       return;
     }
+
     this.currentStep = 7;
     this.quote = JSON.parse(raw);
     this.cotizacion = !!this.quote;
 
     if (this.quote?.plans?.length) {
       this.selectedPaymentByPlan = {};
+      
       this.quote.plans.forEach((pl: any) => {
         const firstId = pl?.payment_plans?.[0]?.id ?? null;
         if (firstId) this.selectedPaymentByPlan[pl.id] = firstId;
@@ -147,7 +154,6 @@ export class SegurosPage implements OnInit {
     } else {
       this.activePlan = null;
     }
-
   }
   async cargaimagen() {
     this.imgenPrincipal = '/assets/autos/seguro.webp';
@@ -391,12 +397,12 @@ export class SegurosPage implements OnInit {
         this.form.setErrors(null);
         break;
       case (5):
-        // ['nacDia', 'nacMes', 'nacAnio'].forEach(k => this.form.get(k)?.reset(null));
+        ['nacDia', 'nacMes', 'nacAnio'].forEach(k => { if (this.form.get(k)) this.form.removeControl(k); });
         this.currentStep = 4;
         this.form.setErrors(null);
         break;
       case (6):
-        // ['cp', 'genero', 'estadoCivil'].forEach(k => this.form.get(k)?.reset(null));
+        ['cp', 'genero', 'estadoCivil'].forEach(k => { if (this.form.get(k)) this.form.removeControl(k); });
         this.currentStep = 5;
         this.form.setErrors(null);
         break;
@@ -405,46 +411,6 @@ export class SegurosPage implements OnInit {
         break;
       default:
         break;
-    }
-  }
-  toUpper(ctrlName: string) {
-    const c = this.form.get(ctrlName);
-    if (!c) return;
-    const v = (c.value ?? '').toString().toUpperCase();
-    if (v !== c.value) c.setValue(v, { emitEvent: false });
-  }
-  private ensurePaso7() {
-    if (!this.form.get('nombre')) {
-      this.form.addControl(
-        'nombre',
-        this.fb.control(null, [
-          Validators.required,
-          Validators.minLength(2),
-          Validators.pattern(/^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ\s'.-]{2,}$/)
-        ])
-      );
-    }
-    if (!this.form.get('email')) {
-      this.form.addControl(
-        'email',
-        this.fb.control(null, [Validators.required, Validators.email])
-      );
-    }
-
-    if (this.isLoggedIn === true) {
-      const storage = localStorage.getItem('user');
-      if (storage) {
-        this.usuario = JSON.parse(storage);
-
-        if (this.usuario?.nombre) {
-          this.form.get('nombre')?.setValue(
-            `${this.usuario.nombre} ${this.usuario.apellidos}`.toUpperCase()
-          );
-        }
-        if (this.usuario?.email) {
-          this.form.get('email')?.setValue(this.usuario.email);
-        }
-      }
     }
   }
   getMarcaLabel(): string {
@@ -542,6 +508,7 @@ export class SegurosPage implements OnInit {
       '¿Estás seguro en cotizar un nuevo coche?',
       'Cotizar nuevo coche',
       async () => {
+        this.islandKey++;
         this.getMarcas_cohes();
         this.obtenerMarcas();
         localStorage.removeItem('datosCoche');
@@ -571,7 +538,6 @@ export class SegurosPage implements OnInit {
         this.form.setErrors(null);
 
         try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch { }
-        this.islandKey++;
       }
     );
   }
@@ -681,6 +647,7 @@ export class SegurosPage implements OnInit {
       case 'ANNUAL': return 'Pago de contado';
       case 'SUBSCRIPTION': return count > 1 ? `${count} pagos (suscripción)` : 'Suscripción';
       case 'FLAT_FEE': return count > 1 ? `${count} pagos fijos` : 'Pago fijo';
+      case 'MSI': return count > 1 ? `${count} pagos Meses sin intereses` : 'Pago fijo';
       default: return raw;
     }
   }
@@ -792,9 +759,6 @@ export class SegurosPage implements OnInit {
   trackByCov = (_: number, c: any) => c?.code || _;
   @ViewChildren('lista', { read: ElementRef })
   allSelects!: QueryList<ElementRef<HTMLElement>>;
-  private setVar(name: string, value: string) {
-    document.documentElement.style.setProperty(name, value);
-  }
   ngAfterViewInit() {
     const syncAll = () => this.syncPopoverWidths();
     syncAll();
@@ -809,79 +773,87 @@ export class SegurosPage implements OnInit {
     });
   }
   getMarcas_cohes(): void {
-    this.carsService.GetMarcas(2025).subscribe({
+    this.carsService.getMarcas_all().subscribe({
       next: (res: any[]) => {
-        this.opciones = (res || []).map(m => ({
+        const fromAPI = (res || []).map(m => ({
           key: (m?.key || '').toLowerCase(),
           nombre: m?.nombre || '',
           imageUrl: m?.imageUrl ?? null
         }));
+
+        this.opciones = this.concatMarcasManuales(fromAPI);
+
         this.buildVM();
       },
-      error: () => { },
+      error: (err) => console.error('Error al obtener marcas:', err),
     });
   }
-  private slug(s: string): string {
-    const map: Record<string, string> = {
-      á: 'a', é: 'e', í: 'i', ó: 'o', ú: 'u', ü: 'u', ñ: 'n',
-      Á: 'a', É: 'e', Í: 'i', Ó: 'o', Ú: 'u', Ü: 'u', Ñ: 'n'
-    };
-    return (s || '')
-      .trim()
-      .replace(/[ÁÉÍÓÚÜÑáéíóúüñ]/g, ch => map[ch] || ch)
-      .toLowerCase()
-      .replace(/&/g, 'and')
-      .replace(/\s+|[-]+/g, '_')
-      .replace(/[^a-z0-9_]/g, '')
-      .replace(/_+/g, '_');
-  }
-  private aliasKey(name: string): string {
-    const k = this.slug(name);
-    const dict: Record<string, string> = {
-      'alfa_romeo': 'alfa_romeo',
-      'land_rover': 'land_rover',
-      'great_wall': 'great_wall',
-      'mercedes_benz': 'mercedes_benz',
-      'rolls_royce': 'rolls_royce',
-      'mg': 'mg',
-      'vw': 'volkswagen',
-      'seat': 'seat',
-      'lynk_co': 'lynk_co',
-      'byd': 'byd',
-    };
-    return dict[k] || k;
-  }
   private buildVM(): void {
-    if (!this.marcas?.length) {
+    if (!this.marcas?.length && !this.opciones?.length) {
       this.brandsVM = [];
       this.brandsVMFull = [];
       return;
     }
 
     const byKey = new Map<string, { imageUrl: string | null; nombre: string }>();
-    const byName = new Map<string, { imageUrl: string | null; nombre: string }>();
-
-    for (const o of this.opciones || []) {
-      const k = (o?.key || '').toLowerCase();
-      if (k) byKey.set(k, { imageUrl: o.imageUrl ?? null, nombre: o.nombre });
-      const n = (o?.nombre || '').toLowerCase();
-      if (n) byName.set(n, { imageUrl: o.imageUrl ?? null, nombre: o.nombre });
+    for (const o of (this.opciones || [])) {
+      const raw = (o?.key || o?.nombre || '');
+      const k = this.aliasKey(this.normalizeKey(raw));
+      if (k) byKey.set(k, { imageUrl: o.imageUrl ?? null, nombre: o.nombre || raw });
     }
 
-    // llena el respaldo con TODAS las marcas
-    this.brandsVMFull = this.marcas.map(m => {
-      const display = (m.name || '').trim();
-      const k = this.aliasKey(display);
-      const hit = byKey.get(k) || byName.get(display.toLowerCase()) || null;
-      return {
-        id: m.id,
-        name: display,
-        imageUrl: hit?.imageUrl ?? null
-      };
+    const apiVM = (this.marcas || []).map(m => {
+      const name = (m?.name || '').trim();
+      const norm = this.aliasKey(this.normalizeKey(name));
+      const hit = byKey.get(norm) || null;
+      return { id: m.id, name, imageUrl: hit?.imageUrl ?? null };
     });
 
-    // inicial visible
+    const apiKeys = new Set(
+      (this.marcas || []).map(m => this.aliasKey(this.normalizeKey(m?.name || '')))
+    );
+
+    const manualOnly = (this.opciones || [])
+      .map(o => {
+        const raw = (o?.key || o?.nombre || '');
+        const k = this.aliasKey(this.normalizeKey(raw));
+        return { k, nombre: o?.nombre || raw, imageUrl: o?.imageUrl ?? null };
+      })
+      .filter(o => o.k && !apiKeys.has(o.k))
+      .map((o, idx) => ({
+        id: -1 - idx,
+        name: o.nombre,
+        imageUrl: o.imageUrl
+      }));
+
+    this.brandsVMFull = [...apiVM, ...manualOnly];
     this.brandsVM = [...this.brandsVMFull];
+  }
+  private normalizeKey(str: string): string {
+    return str
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "_")
+      .replace(/^_+|_+$/g, "");
+  }
+  private aliasKey(norm: string): string {
+    const map: Record<string, string> = {
+      gac_motor: 'gac',
+      jinpeng: 'jingpeng',
+      mastretta: 'mastretta',
+      citroen: 'citroen',
+      cupra: 'cupra',
+      omoda: 'omoda',
+      dfsk: 'dfsk',
+      sev: 'sev',
+      skywell: 'skywell',
+      smart: 'smart',
+      seres: 'seres',
+      soueast: 'soueast',
+      zeekr: 'zeekr',
+    };
+    return map[norm] ?? norm;
   }
 
   // BUSCADOR -----
@@ -896,5 +868,72 @@ export class SegurosPage implements OnInit {
     this.brandsVM = !term
       ? [...this.brandsVMFull]
       : this.brandsVMFull.filter(b => b.name.toLowerCase().includes(term));
+  }
+  private concatMarcasManuales(fromAPI: Array<{ key: string; nombre?: string; imageUrl?: string | null }>): any[] {
+    const manuales = [
+      { key: 'arra', nombre: 'Arra', imageUrl: 'https://storage.googleapis.com/wo-aw/marcas/arra.png' },
+      { key: 'aston_martin', nombre: 'Aston Martin', imageUrl: 'https://storage.googleapis.com/wo-aw/marcas/aston_martin.png' },
+      { key: 'bentley', nombre: 'Bentley', imageUrl: 'https://storage.googleapis.com/wo-aw/marcas/bentley.webp' },
+      { key: 'citroen', nombre: 'Citroën', imageUrl: 'https://storage.googleapis.com/wo-aw/marcas/citroen.png' },
+      { key: 'dongfeng', nombre: 'Dongfeng', imageUrl: 'https://storage.googleapis.com/wo-aw/marcas/dongfeng.png' },
+      { key: 'exeed', nombre: 'Exeed', imageUrl: 'https://storage.googleapis.com/wo-aw/marcas/exeed.png' },
+      { key: 'ferrari', nombre: 'Ferrari', imageUrl: 'https://storage.googleapis.com/wo-aw/marcas/ferrari.png' },
+      { key: 'gac', nombre: 'GAC', imageUrl: 'https://storage.googleapis.com/wo-aw/marcas/gac.png' },
+      { key: 'gwm', nombre: 'GWM', imageUrl: 'https://storage.googleapis.com/wo-aw/marcas/gwm.png' },
+      { key: 'hummer', nombre: 'Hummer', imageUrl: 'https://storage.googleapis.com/wo-aw/marcas/hummer.jpg' },
+      { key: 'jaecoo', nombre: 'Jaecoo', imageUrl: 'https://storage.googleapis.com/wo-aw/marcas/jaecoo.png' },
+      { key: 'jim', nombre: 'Jim', imageUrl: 'https://storage.googleapis.com/wo-aw/marcas/jim.jpg' },
+      { key: 'jingpeng', nombre: 'Jinpeng', imageUrl: 'https://storage.googleapis.com/wo-aw/marcas/jingpeng.png' }, // tu archivo es jingpeng.png
+      { key: 'kiri', nombre: 'Kiri', imageUrl: 'https://storage.googleapis.com/wo-aw/marcas/kiri.jpg' },
+      { key: 'lamborghini', nombre: 'Lamborghini', imageUrl: 'https://storage.googleapis.com/wo-aw/marcas/lamborghini.png' },
+      { key: 'lotus', nombre: 'Lotus', imageUrl: 'https://storage.googleapis.com/wo-aw/marcas/lotus.jpg' },
+      { key: 'maserati', nombre: 'Maserati', imageUrl: 'https://storage.googleapis.com/wo-aw/marcas/maserati.png' },
+      { key: 'mastretta', nombre: 'Mastretta', imageUrl: 'https://storage.googleapis.com/wo-aw/marcas/mastretta.png' }, // ← corregido
+      { key: 'pontiac', nombre: 'Pontiac', imageUrl: 'https://storage.googleapis.com/wo-aw/marcas/pontiac.png' },
+      { key: 'rover', nombre: 'Rover', imageUrl: 'https://storage.googleapis.com/wo-aw/marcas/rover.png' },
+      { key: 'saab', nombre: 'Saab', imageUrl: 'https://storage.googleapis.com/wo-aw/marcas/saab.png' },
+      { key: 'seres', nombre: 'Seres', imageUrl: 'https://storage.googleapis.com/wo-aw/marcas/seres.jpg' },
+      { key: 'soueast', nombre: 'Soueast', imageUrl: 'https://storage.googleapis.com/wo-aw/marcas/soueast.png' },
+      { key: 'zacua', nombre: 'Zacua', imageUrl: 'https://storage.googleapis.com/wo-aw/marcas/zacua.png' },
+      { key: 'zeekr', nombre: 'Zeekr', imageUrl: 'https://storage.googleapis.com/wo-aw/marcas/zeekr.png' }
+    ];
+
+    const index = new Map<string, { key: string; nombre: string; imageUrl: string | null }>();
+
+    for (const a of fromAPI || []) {
+      const raw = a?.key || a?.nombre || '';
+      const k = this.aliasKey(this.normalizeKey(raw));
+      if (!k) continue;
+      index.set(k, {
+        key: k,
+        nombre: a?.nombre || raw,
+        imageUrl: a?.imageUrl ?? null
+      });
+    }
+
+    // 2) Merge manuales (PREFERIR manual si trae imageUrl NO nula)
+    for (const m of manuales) {
+      const raw = m?.key || m?.nombre || '';
+      const k = this.aliasKey(this.normalizeKey(raw));
+      if (!k) continue;
+
+      const prev = index.get(k);
+      if (!prev) {
+        index.set(k, { key: k, nombre: m.nombre || raw, imageUrl: m.imageUrl ?? null });
+        continue;
+      }
+
+      const hasPrevLogo = !!prev.imageUrl;
+      const hasManualLogo = !!m.imageUrl;
+
+      if (!hasPrevLogo && hasManualLogo) {
+        index.set(k, { key: k, nombre: m.nombre || prev.nombre, imageUrl: m.imageUrl! });
+      }
+    }
+
+    return Array.from(index.values());
+  }
+  selectOtherBrand(): void {
+    this.router.navigateByUrl('/seguros/cotizar-manual');
   }
 }

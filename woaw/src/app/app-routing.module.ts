@@ -164,21 +164,6 @@ const routes: Routes = [
         data: { title: "renta | woaw" },
       },
       {
-        path: "seguros",
-        loadChildren: () =>
-          import("./pages/seguro/seguros/seguros.module").then(
-            (m) => m.SegurosPageModule
-          ),
-        data: { title: "seguros | woaw" },
-      },
-      {
-        path: "seguros/persona",
-        loadChildren: () =>
-          import("./pages/seguro/persona/persona.module").then(
-            (m) => m.PersonaPageModule
-          ),
-      },
-      {
         path: "lote-edit/:id",
         loadChildren: () =>
           import("./pages/lote-edit/lote-edit.module").then(
@@ -293,21 +278,44 @@ const routes: Routes = [
           ),
       },
 
+      // ---- Rutas de seguros ----
+
+      {
+        path: "seguros/autos",
+        loadChildren: () =>
+          import("./pages/seguro/seguros/seguros.module").then(
+            (m) => m.SegurosPageModule
+          ),
+        data: { title: "seguros | woaw" },
+      },
+      {
+        path: "seguros/persona",
+        loadChildren: () =>
+          import("./pages/seguro/persona/persona.module").then(
+            (m) => m.PersonaPageModule
+          ),
+      },
       {
         path: "seguros/poliza",
         loadChildren: () =>
           import("./pages/seguro/poliza/poliza.module").then(
             (m) => m.PolizaPageModule
           ),
+        data: { title: "Crear Poliza | WOAW" },
+        canActivate: [AuthGuard],
       },
       {
-        path: "seguros-disponibles",
+        path: "seguros/disponibles",
         loadChildren: () =>
           import("./pages/seguro/elige-seguro/elige-seguro.module").then(
             (m) => m.EligeSeguroPageModule
           ),
+        data: { title: "Seguros de autos" },
       },
-
+      {
+        path: 'seguros/cotiza/:tipo',
+        loadChildren: () => import('./pages/seguro/cotiza-moto-camion-ert/cotiza-moto-camion-ert.module').then(m => m.CotizaMotoCamionErtPageModule)
+      },
       {
         path: "seguros/ver-polizas",
         loadChildren: () =>
@@ -321,6 +329,10 @@ const routes: Routes = [
           import("./pages/seguro/detalle-poliza/detalle-poliza.module").then(
             (m) => m.DetallePolizaPageModule
           ),
+      },
+      {
+        path: 'seguros/cotizar-manual',
+        loadChildren: () => import('./pages/seguro/cotizar-manual/cotizar-manual.module').then(m => m.CotizarManualPageModule)
       },
       // -----
     ],
@@ -339,4 +351,4 @@ const routes: Routes = [
   ],
   exports: [RouterModule],
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }

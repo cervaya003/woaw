@@ -22,6 +22,9 @@ import { SpinnerComponent } from "../../components/spinner/spinner.component";
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class NavbarComponent implements OnInit {
+onClear() {
+throw new Error('Method not implemented.');
+}
   esDispositivoMovil: boolean = false;
   mostrar_spinnet: boolean = false;
   estaEnHome: boolean = false;
@@ -154,6 +157,7 @@ export class NavbarComponent implements OnInit {
     if (ruta.includes("/renta-coches")) return "Renda de autos";
     if (ruta.includes("/seguros")) return "Seguro de autos";
     if (ruta.includes("/m-nuevos")) return "Motos";
+    if (ruta.includes("/seguros-disponibles")) return "Seguros disponibles";
 
     if (ruta.includes("/search/vehiculos")) {
       return this.terminoBusquedaURL ? `"${this.terminoBusquedaURL}"` : "";

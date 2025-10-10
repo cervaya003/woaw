@@ -33,7 +33,52 @@ ion-content {
   }
 }
 
+/*logo woaw*/
+/* Asegura que el fondo sea el límite de referencia */
+.hero-section,
+.fondo-seguros,
+.banner-autos {
+  position: relative;
+  overflow: hidden;
+  /* evita huecos o espacios extra */
+}
+
+/* Logo principal */
+.logo {
+  position: absolute;
+  top: 70px;
+  /* bajamos un poco, pero sin crear hueco arriba */
+  left: 80px;
+  z-index: 12;
+}
+
+.logo .img img {
+  width: 160px;
+  /* tamaño fijo escritorio */
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, .3));
+}
+
+/* Móvil */
+@media (max-width: 768px) {
+  .logo {
+    top: 60px;
+    /* baja el logo hasta rozar el título */
+    left: 35px;
+    /* alinea con el padding del texto */
+  }
+
+  .logo .img img {
+    width: clamp(100px, 32vw, 128px);
+  }
+}
+
+
+/****************/
 /* ===================== HERO ===================== */
+/* Solo móvil */
+/* ====== Hero original (Desktop y tablets grandes) ====== */
 .hero {
   position: relative;
   min-height: clamp(360px, 58svh, 640px);
@@ -41,7 +86,6 @@ ion-content {
   align-items: end;
   justify-items: start;
   overflow: hidden;
-
   isolation: isolate;
   z-index: 0;
   padding-bottom: clamp(16px, 6vh, 56px);
@@ -58,7 +102,11 @@ ion-content {
       height: 100%;
       object-fit: cover;
 
+
+
       object-position: 50% 90%;
+
+
 
       filter: contrast(.9) brightness(.6);
     }
@@ -68,7 +116,9 @@ ion-content {
     position: absolute;
     inset: auto -10% -35% -20%;
     height: 60%;
-    background: radial-gradient(60% 60% at 50% 0%, rgba(255, 33, 33, .35), transparent 60%);
+    background: radial-gradient(60% 60% at 50% 0%,
+        rgba(255, 33, 33, .35),
+        transparent 60%);
     filter: blur(40px);
   }
 
@@ -123,168 +173,285 @@ ion-content {
       }
     }
   }
-
 }
 
-/* ===================== BARRA DE CARTAS + TELÉFONO ===================== */
+/* ====== Solo MÓVIL: acercar imagen y ocultar rostro ====== */
+@media (max-width: 820px) {
+  .hero {
+    padding-bottom: 0;
+    margin-bottom: 0;
+    min-height: auto;
+    height: auto;
 
-.phone-mock {
-  position: flex;
-  transform: rotate(-0.2deg);
-  z-index: 3;
+    .hero__bg {
+      position: relative;
+      height: clamp(260px, 58vw, 380px);
+      overflow: hidden;
 
-  @media (max-width: 868px) {
-    display: none;
+      img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: 75% 35%;
+        /* mantiene base igual */
+        transform: scale(1.50) translateY(-15%);
+        /* 🔥 zoom sin mostrar rostro */
+        transform-origin: center center;
+      }
+    }
+
+    .hero__glow {
+      display: none;
+    }
+
+    .hero__content {
+      position: absolute;
+      inset: auto 0 12px 0;
+      padding: 0 clamp(16px, 6vw, 28px);
+      color: #fff;
+      text-align: left;
+
+      h1 {
+        font-size: clamp(22px, 6vw, 32px);
+        margin: 0 0 6px;
+      }
+
+      p {
+        font-size: clamp(14px, 3.8vw, 18px);
+        line-height: 1.35;
+        margin: 0;
+      }
+    }
   }
+
+  .hero+* {
+    margin-top: 0 !important;
+  }
+}
+
+
+/* ===================== BARRA DE CARTAS + TELÉFONO ===================== */
+/* === DESKTOP (no lo toques) === */
+.phone-mock {
+  position: absolute;
+  bottom: 0;
+  right: 6%;
+  transform: rotate(-0.2deg);
+  z-index: 5;
+  transition: transform .3s ease, opacity .3s ease;
 
   img {
     display: block;
-    width: 200px;
-    height: 300px;
+    width: clamp(220px, 28vw, 380px);
     height: auto;
-  }
-
-  transition: opacity .25s ease,
-  transform .25s ease;
-
-  #features-end-sentinel {
-    display: block;
-    height: 1px;
-    width: 100%;
+    filter: drop-shadow(0 8px 18px rgba(0,0,0,.35));
   }
 }
+
+/* === MOBILE/TABLET (≤1024px) — corregido === */
+@media (max-width: 1024px) {
+@media (max-width: 1024px) {
+  /* Asegura que el contenedor sea el referente del absolute */
+  .connect-band { position: relative; }
+
+  .phone-mock {
+    position: absolute;        /* seguimos usando absolute */
+    right: 20px;
+    top: +10px !important;     /* (-) SUBE | (+) BAJA */
+    bottom: auto !important;
+    transform: none !important;
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+    margin: 0 !important;      /* quita empuje hacia abajo */
+    z-index: 0 !important;
+  }
+
+  .phone-mock img {
+    width: 120px !important;   /* ajusta tamaño si quieres */
+    height: auto !important;
+  }
+}
+
+
+  // .phone-mock img {
+  //   width: 120px !important;         /* más pequeño */
+  //   max-width: 120px ;
+  //   height: auto !important;
+  //   filter: drop-shadow(0 6px 14px rgba(0,0,0,.25));
+  // }
+}
+
+/* === MÓVILES CHICOS (≤480px) — aún más pequeño === */
+@media (max-width: 480px) {
+  .phone-mock img {
+    width: 95px !important;
+    max-width: 95px !important;
+  }
+}
+
 
 
 
 /* ===================== CONNECT BAND ===================== */
 .connect-band {
+  --railY: clamp(34px, 6vw, 64px);   /* altura de la línea */
+  --railH: 3px;                      /* grosor de la línea */
+  /* posiciones horizontales de los círculos (centro de cada columna 1fr) */
+  --leftX: 25%;
+  --rightX: 75%;
+
   background: #fff;
   position: relative;
-  padding: clamp(18px, 2.6vw, 30px) 0 clamp(26px, 3vw, 36px);
-
-  /* más cerca del h5 */
-  --line-y: clamp(20px, 2vw, 26px);
-  --line-h: 2.5px;
-  --pill-h: 34px;
-  --ring: #ff2121;
+  isolation: isolate;
+  padding: clamp(18px, 3vw, 28px) 0 clamp(28px, 4vw, 40px);
 }
 
 .connect-track {
-  width: 100%;
-  margin: 0 auto;
   position: relative;
+  width: 100%;
   display: grid;
   grid-template-columns: 1fr max-content 1fr;
   align-items: start;
-  gap: clamp(24px, 6vw, 80px);
-  text-align: center;
+  gap: clamp(16px, 5vw, 56px);
 }
 
-/* línea horizontal (más arriba) */
+/* Línea roja continua detrás del chip */
 .connect-track::before {
   content: "";
   position: absolute;
   left: 0;
   right: 0;
-  top: var(--line-y);
-  height: var(--line-h);
-  background: var(--ring);
+  top: var(--railY);
+  height: var(--railH);
+  background: #ff2121;
   z-index: 0;
 }
 
-/* columnas */
-.connect-col {
-  position: relative;
-  z-index: 1;
-}
-
-.connect-col h5 {
-  margin: 0;
-  font-weight: 900;
-  color: var(--ring);
-  font-size: clamp(14px, 1.8vw, 18px);
-  line-height: 1.1;
-  position: relative;
-  top: -2px;
-  /* acerca aún más al trazo */
-}
-
-/* texto: menos aire arriba para pegarse a la línea */
-.connect-col p {
-  margin: 0;
-  padding-top: clamp(8px, 1.4vw, 12px);
-  padding-inline: clamp(10px, 3vw, 18px);
-  font-size: clamp(12px, 1.6vw, 14px);
-  line-height: 1.55;
-  color: #000;
-  max-width: 30ch;
-  margin-inline: auto;
-}
-
-/* centro */
-.connect-center {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  gap: clamp(10px, 2vw, 18px);
-  margin-top: calc(var(--line-y) - (var(--pill-h) / 2));
-}
-
-/* pastilla */
-.connect-label {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: var(--pill-h);
-  padding: 0 clamp(18px, 2.6vw, 24px);
-  border-radius: 999px;
-  background: var(--ring);
-  color: #fff;
-  font-weight: 900;
-  letter-spacing: .3px;
-  font-size: clamp(12px, 1.6vw, 14px);
-  box-shadow: 0 6px 16px rgba(255, 33, 33, .25);
-}
-
-/* Nodos conectores: doble aro concéntrico con líneas más gruesas */
-/* nodos conectores: círculo simple */
-.connect-label {
-  --node-d: clamp(22px, 2.6vw, 26px);
-  /* diámetro */
-  --ring: #ff2121;
-  --space: 28px;
-  /* 🔴 antes 42px → ahora más pegado */
-  --ring-w: 3px;
-  /* grosor del aro */
-}
-
-.connect-label::before,
-.connect-label::after {
+/* SOLO nodos/círculos: centrados sobre COMPRADOR (leftX), CONECTAMOS (50%) y VENDEDOR (rightX) */
+.connect-track::after {
   content: "";
   position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: var(--node-d);
-  height: var(--node-d);
-  border-radius: 50%;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+
+  background:
+    radial-gradient(circle 7px at var(--leftX)  var(--railY), #ff2121 99%, transparent 101%),
+    radial-gradient(circle 7px at 50%          var(--railY), #ff2121 99%, transparent 101%),
+    radial-gradient(circle 7px at var(--rightX) var(--railY), #ff2121 99%, transparent 101%);
+}
+
+/* columnas: evita que la línea atraviese el texto */
+.connect-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: calc(var(--railY) + 12px);
+}
+
+/* TÍTULOS EN ROJO */
+.connect-track .connect-col h4 {
+  color: #ff2121 !important;
+  font-weight: 800;
+  text-transform: uppercase; /* opcional: quítalo si no lo quieres */
+  letter-spacing: .2px;
+}
+
+.connect-col p {
+  margin: 0;
+  color: #0e0b0b;
+  text-align: center;
+}
+
+/* chip centrado con flechas cortas pegaditas */
+.connect-chip {
+  position: absolute;
+  left: 50%;
+  top: var(--railY);
+  transform: translate(-50%, -50%);
   z-index: 2;
+  background: #ff2121;
+  color: #fff;
+  font-weight: 800;
+  line-height: 1;
+  white-space: nowrap;
+  padding: 8px 22px;
+  border-radius: 999px;
+  box-shadow: 0 6px 18px rgba(255, 33, 33, .25);
 
-  background: radial-gradient(circle,
-      transparent 45%,
-      var(--ring) 46% 100%);
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 16px;
+    height: 10px;
+    transform: translateY(-50%);
+    background:
+      linear-gradient(to right, transparent 45%, #ff2121 46% 54%, transparent 55%),
+      linear-gradient(-45deg, transparent 40%, #ff2121 41% 59%, transparent 60%),
+      linear-gradient(45deg, transparent 40%, #ff2121 41% 59%, transparent 60%);
+    filter: drop-shadow(0 0 5px rgba(255, 33, 33, .3));
+  }
 
-  box-shadow: 0 0 0 3px #fff;
+  &::before {
+    left: -18px;
+    transform: translateY(-50%) rotate(180deg);
+  }
+
+  &::after {
+    right: -18px;
+  }
 }
 
-/* posiciones */
-.connect-label::before {
-  left: calc(var(--space) * -1);
-}
 
-.connect-label::after {
-  right: calc(var(--space) * -1);
+/* === MÓVIL: mantener 3 columnas, todo compacto y conectado === */
+@media (max-width: 480px) {
+  .connect-band {
+    --railY: 30px;
+    --railH: 3px;
+    /* afina la posición de los círculos sobre los títulos en pantallas estrechas */
+    --leftX: 23%;
+    --rightX: 77%;
+
+    padding: 12px 0 18px;
+  }
+
+  .connect-track {
+    grid-template-columns: 1fr max-content 1fr;
+    gap: 8px;
+  }
+
+  .connect-col {
+    padding-top: calc(var(--railY) + 8px);
+  }
+
+  .connect-col h4 {
+    font-size: 13px;
+    letter-spacing: .2px;
+    color: #ff2121; /* asegurar rojo en móvil */
+  }
+
+  .connect-col p {
+    font-size: 12px;
+    line-height: 1.25;
+    max-width: 92%;
+  }
+
+  .connect-chip {
+    padding: 8px 16px;
+    font-size: 12px;
+  }
+
+  /* nodos ligeramente más grandes en móvil (sin coma final) */
+  .connect-track::after {
+    background:
+      radial-gradient(circle 7.5px at var(--leftX)  var(--railY), #ff2121 99%, transparent 101%),
+      radial-gradient(circle 7.5px at 50%          var(--railY), #ff2121 99%, transparent 101%),
+      radial-gradient(circle 7.5px at var(--rightX) var(--railY), #ff2121 99%, transparent 101%);
+  }
 }
 
 
@@ -301,6 +468,8 @@ ion-content {
   max-width: min(1080px, 96vw);
   margin: 0 auto;
   align-items: stretch;
+
+
 
   .kpi {
     position: relative;
@@ -542,7 +711,7 @@ ion-content {
   text-align: left;
 }
 
-/* tamaños originales de móvil */
+/* tamaños originales */
 .cards-row .thumb {
   width: clamp(44px, 16vw, 64px);
   height: clamp(44px, 16vw, 64px);
@@ -551,7 +720,8 @@ ion-content {
     radial-gradient(140% 100% at 0% 0%, rgba(255, 255, 255, .04), transparent 60%),
     #0d0d11;
   border: 1px solid rgba(0, 0, 0, .12);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, .18), inset 0 0 0 1px rgba(255, 255, 255, .05);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, .18),
+    inset 0 0 0 1px rgba(255, 255, 255, .05);
   display: grid;
   place-items: center;
   overflow: hidden;
@@ -566,6 +736,51 @@ ion-content {
   color: #000;
   text-transform: uppercase;
 }
+
+/* ===== SOLO MÓVIL: cartas más pequeñas y cuadrícula compacta ===== */
+@media (max-width: 820px) {
+  .cards-row {
+    padding: 8px 0 10px;
+  }
+
+  .cards-row .cards-row__wrap {
+    width: 100%;
+    padding-inline: clamp(10px, 4vw, 16px);
+    /* cuadricula más compacta y pequeña */
+    grid-template-columns: repeat(auto-fill,
+        minmax(clamp(72px, 22vw, 104px), max-content));
+    gap: clamp(6px, 2.8vw, 10px);
+    justify-items: start;
+  }
+
+  .cards-row .card-img {
+    gap: 2px;
+    /* 🔥 texto más pegado al icono */
+    text-align: left;
+    grid-template-rows: auto auto;
+    align-items: start;
+  }
+
+  .cards-row .thumb {
+    width: clamp(36px, 13vw, 52px);
+    height: clamp(36px, 13vw, 52px);
+    border-radius: 10px;
+    margin-bottom: 0;
+    /* asegura cero espacio debajo del icono */
+  }
+
+  .cards-row h4 {
+    font-size: clamp(8px, 2.8vw, 11px);
+    letter-spacing: .35px;
+    margin: 0;
+    /* elimina separación adicional */
+    line-height: 1.9;
+    /* texto más cerca del icono */
+    transform: translateY(-1px);
+    /* lo baja un poquito visualmente */
+  }
+}
+
 
 /* ===================== MVV ===================== */
 .mvv-band {
@@ -588,8 +803,7 @@ ion-content {
 .mvv {
   position: relative;
   padding: clamp(18px, 3vw, 28px) 0;
-  width: min(1200px, 94vw);
-  margin: 0 auto;
+  width: min(1200px, 94vw);  margin: 0 auto;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: clamp(14px, 2vw, 20px);

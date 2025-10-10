@@ -1,25 +1,30 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { environment } from '../../environments/environment';
-import { Observable, from } from 'rxjs';
-import { switchMap, catchError } from 'rxjs/operators';
-import { GeneralService } from '../services/general.service';
-import { Router } from '@angular/router';
-import { firstValueFrom } from 'rxjs';
-import { HeadersService } from './headers.service';
+import { Injectable } from "@angular/core";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { environment } from "../../environments/environment";
+import { Observable, from } from "rxjs";
+import { switchMap, catchError } from "rxjs/operators";
+import { GeneralService } from "../services/general.service";
+import { Router } from "@angular/router";
+import { firstValueFrom } from "rxjs";
+import { HeadersService } from "./headers.service";
 
 export interface CotizacionDTO {
   vehicle: { version: { code: number } };
   region: { postal_code: string };
-  person: { gender_code: number | null; birthdate: string; civil_status_code: number | null };
+  person: {
+    gender_code: number | null;
+    birthdate: string;
+    civil_status_code: number | null;
+  };
   duration: number;
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class SeguroService {
-
+ 
+ 
   constructor(
     private http: HttpClient,
     private generalService: GeneralService,
@@ -28,70 +33,223 @@ export class SeguroService {
   ) { }
 
   getMarcas(): Observable<any> {
-    return this.http.get(`${environment.api_key}/crabi/brands`);
+    return from(this.headersService.obtenerToken()).pipe(
+      switchMap((token) => {
+        const headers = this.headersService.getJsonHeaders(token);
+        return this.http.get(`${environment.api_key}/crabi/brands`, {
+          headers,
+        });
+      }),
+      catchError((error) => this.headersService.handleError(error))
+    );  
+    //  return this.http.get(${environment.api_key}/crabi/brands);
   }
   getModelos(marcaId: Number): Observable<any> {
-    return this.http.get(`${environment.api_key}/crabi/brands/${marcaId}/types`);
+    return from(this.headersService.obtenerToken()).pipe(
+      switchMap((token) => {
+        const headers = this.headersService.getJsonHeaders(token);
+        return this.http.get(`${environment.api_key}/crabi/brands/${marcaId}/types`, {
+          headers,
+        });
+      }),
+      catchError((error) => this.headersService.handleError(error))
+    );
+    // return this.http.get(
+    //   `${environment.api_key}/crabi/brands/${marcaId}/types`
+    // );
   }
   getAnios(marcaId: Number, modeloId: number): Observable<any> {
-    return this.http.get(`${environment.api_key}/crabi/brands/${marcaId}/types/${modeloId}/models`);
+    return from(this.headersService.obtenerToken()).pipe(
+      switchMap((token) => {
+        const headers = this.headersService.getJsonHeaders(token);
+        return this.http.get(`${environment.api_key}/crabi/brands/${marcaId}/types/${modeloId}/models`, {
+          headers,
+        });
+      }),
+      catchError((error) => this.headersService.handleError(error))
+    );
+    // return this.http.get(
+    //   `${environment.api_key}/crabi/brands/${marcaId}/types/${modeloId}/models`
+    // );
   }
   getVersion(marcaId: Number, modeloId: number, anio: number): Observable<any> {
-    return this.http.get(`${environment.api_key}/crabi/brands/${marcaId}/types/${modeloId}/models/${anio}/versions`);
+    return from(this.headersService.obtenerToken()).pipe(
+      switchMap((token) => {
+        const headers = this.headersService.getJsonHeaders(token);
+        return this.http.get(`${environment.api_key}/crabi/brands/${marcaId}/types/${modeloId}/models/${anio}/versions`, {
+          headers,
+        });
+      }),
+      catchError((error) => this.headersService.handleError(error))
+    );
+    // return this.http.get(
+    //   `${environment.api_key}/crabi/brands/${marcaId}/types/${modeloId}/models/${anio}/versions`
+    // );
   }
   CotizacionEstimada(dto: CotizacionDTO): Observable<any> {
     const url = `${environment.api_key}/crabi/quotation`;
-    return this.http.post(url, dto, {
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return from(this.headersService.obtenerToken()).pipe(
+      switchMap((token) => {
+        const headers = this.headersService.getJsonHeaders(token);
+        return this.http.post(url, dto, { headers });
+      }),
+      catchError((error) => this.headersService.handleError(error))
+    );
+    // const url = `${environment.api_key}/crabi/quotation`;
+    // return this.http.post(url, dto, {
+    //   headers: { "Content-Type": "application/json" },
+    // });
   }
   optenerPaises(): Observable<any> {
-    return this.http.get(`${environment.api_key}/info/paises`);
+    return from(this.headersService.obtenerToken()).pipe(
+      switchMap((token) => {
+        const headers = this.headersService.getJsonHeaders(token);
+        return this.http.get(`${environment.api_key}/info/paises`, {
+          headers,
+        });
+      }),
+      catchError((error) => this.headersService.handleError(error))
+    );
+    // return this.http.get(`${environment.api_key}/info/paises`);
   }
   optenerEstados(): Observable<any> {
-    return this.http.get(`${environment.api_key}/info/mexico-states`);
+    return from(this.headersService.obtenerToken()).pipe(
+      switchMap((token) => {
+        const headers = this.headersService.getJsonHeaders(token);
+        return this.http.get(`${environment.api_key}/info/mexico-states`, {
+          headers,
+        });
+      }),
+      catchError((error) => this.headersService.handleError(error))
+    );
+    // return this.http.get(`${environment.api_key}/info/mexico-states`);
   }
   optenerActEcon(): Observable<any> {
-    return this.http.get(`${environment.api_key}/info/actividades-economicas`);
+    return from(this.headersService.obtenerToken()).pipe(
+      switchMap((token) => {
+        const headers = this.headersService.getJsonHeaders(token);
+        return this.http.get(`${environment.api_key}/info/actividades-economicas`, {
+          headers,
+        });
+      }),
+      catchError((error) => this.headersService.handleError(error))
+    );
+    // return this.http.get(`${environment.api_key}/info/actividades-economicas`);
   }
   crearPersona(dto: CotizacionDTO): Observable<any> {
     const url = `${environment.api_key}/crabi/users/register`;
-    return this.http.post(url, dto, {
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return from(this.headersService.obtenerToken()).pipe(
+      switchMap((token) => {
+        const headers = this.headersService.getJsonHeaders(token);
+        return this.http.post(url, dto, { headers });
+      }),
+      catchError((error) => this.headersService.handleError(error))
+    );
+    // const url = `${environment.api_key}/crabi/users/register`;
+    // return this.http.post(url, dto, {
+    //   headers: { "Content-Type": "application/json" },
+    // });
   }
   crearPoliza(dto: any): Observable<any> {
-     return from(this.headersService.obtenerToken()).pipe(
+    return from(this.headersService.obtenerToken()).pipe(
       switchMap((token) => {
         const headers = this.headersService.getJsonHeaders(token);
-        return this.http.post(`${environment.api_key}/crabi/policy`, dto, { headers });
+        return this.http.post(`${environment.api_key}/crabi/policy`, dto, {
+          headers,
+        });
+      }),
+      catchError((error) => this.headersService.handleError(error))
+    );
+  }
+  getPolizas(): Observable<any> {
+    return from(this.headersService.obtenerToken()).pipe(
+      switchMap((token) => {
+        const headers = this.headersService.getJsonHeaders(token);
+        return this.http.get(`${environment.api_key}/crabi/mypolicies`, {
+          headers,
+        });
+      }),
+      catchError((error) => this.headersService.handleError(error))
+    );
+  }
+  getPolizayRecibo(id: string): Observable<any> {
+    return from(this.headersService.obtenerToken()).pipe(
+      switchMap((token) => {
+        const headers = this.headersService.getJsonHeaders(token);
+        return this.http.get(
+          `${environment.api_key}/crabi/policy/${id}/documents`,
+          { headers }
+        );
+      }),
+      catchError((error) => this.headersService.handleError(error))
+    );
+  }
+ 
+  getPagoPoliza(id: string): Observable<any> {
+    return from(this.headersService.obtenerToken()).pipe(
+      switchMap((token) => {
+        const headers = this.headersService.getJsonHeaders(token);
+        return this.http.get(`${environment.api_key}/crabi/checkout/${id} `, {
+          headers,
+        });
+      }),
+      catchError((error) => this.headersService.handleError(error))
+    );
+  }
+ 
+
+  descargarRecibo(): Observable<any> {
+    return from(this.headersService.obtenerToken()).pipe(
+      switchMap((token) => {
+        const headers = this.headersService.getJsonHeaders(token);
+        return this.http.get(`${environment.api_key}/crabi/policy/:id`, {
+          headers,
+        });
       }),
       catchError((error) => this.headersService.handleError(error))
     );
   }
 
-   getPolizas(): Observable<any> {
-     return from(this.headersService.obtenerToken()).pipe(
-      switchMap((token) => {
-        const headers = this.headersService.getJsonHeaders(token);
-        return this.http.get(`${environment.api_key}/crabi/mypolicies`, { headers });
-      }),
-      catchError((error) => this.headersService.handleError(error))
-    );
-  }
-
-// 
-
+ 
   pagoPoliza(id: string): Observable<any> {
-    return this.http.get(`${environment.api_key}/crabi/checkout/${id}`);
+    return from(this.headersService.obtenerToken()).pipe(
+      switchMap((token) => {
+        const headers = this.headersService.getJsonHeaders(token);
+        return this.http.get(`${environment.api_key}/crabi/checkout/${id}`, {
+          headers,
+        });
+      }),
+      catchError((error) => this.headersService.handleError(error))
+    );
+    // return this.http.get(`${environment.api_key}/crabi/checkout/${id}`);
   }
   buscarPersona(value: string): Observable<any> {
-    return this.http.post(
-      `${environment.api_key}/crabi/person`, 
-      { value: value },                      
-      {
-        headers: { 'Content-Type': 'application/json' } 
-      }
+    return from(this.headersService.obtenerToken()).pipe(
+      switchMap((token) => {
+        const headers = this.headersService.getJsonHeaders(token);
+        return this.http.post(
+          `${environment.api_key}/crabi/person`,
+          { value },
+          { headers }
+        );
+      }),
+      catchError((error) => this.headersService.handleError(error))
+    );
+    // return this.http.post(
+    //   `${environment.api_key}/crabi/person`,
+    //   { value: value },
+    //   {
+    //     headers: { "Content-Type": "application/json" },
+    //   }
+    // );
+  }
+  cotizaManual(datos: any): Observable<any> {
+    return from(this.headersService.obtenerToken()).pipe(
+      switchMap((token) => {
+        const headers = this.headersService.getJsonHeaders(token);
+        return this.http.post(`${environment.api_key}/crabi/seguros`, datos, { headers, observe: 'response' as const });
+      }),
+      catchError((error) => this.headersService.handleError(error))
     );
   }
 }

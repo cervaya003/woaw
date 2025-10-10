@@ -11,7 +11,15 @@ import { Location } from '@angular/common';
 
 import { Browser } from '@capacitor/browser';
 import { Capacitor } from '@capacitor/core';
+import { environment } from "../../../../environments/environment";
 
+type Policy = {
+  policy_number?: string;
+  policy_id?: string;
+  policy_type?: { id?: string };
+  start_date?: string;
+  end_date?: string;
+};
 
 @Component({
   selector: 'app-poliza',
@@ -24,7 +32,10 @@ export class PolizaPage implements OnInit {
   currentStepform: 1 | 2 | 3 | 4 = 1;
   form_poliza: FormGroup;
 
-  private branchId = 'ded09658-50cd-4637-8390-31a8f39fe9a1';
+  private branchId = environment.crabi_branchId; 
+
+  public tipoDispocitivo: 'computadora' | 'telefono' | 'tablet' = 'computadora';
+
   placasEnTramite: boolean = false;
 
   datosCoche: any = null;
@@ -103,8 +114,10 @@ export class PolizaPage implements OnInit {
     //   if (norm !== v) this.form_poliza.get('placas')!.setValue(norm, { emitEvent: false });
     // });
   }
-
   ngOnInit() {
+    this.generalService.dispositivo$.subscribe((tipo) => {
+      this.tipoDispocitivo = tipo;
+    });
     this.mostrarPresouestaPoliza();
     this.getPosition();
   }
@@ -270,7 +283,7 @@ export class PolizaPage implements OnInit {
         this.datoscotizacion = JSON.parse(cotizacion);
       } else {
         this.datoscotizacion = null;
-        this.router.navigate(['/seguros']);
+        this.router.navigate(['/seguros/autos']);
         // this.generalService.alert(
         //   'Debes cotizar un coche antes de continuar con tu registro.',
         //   'Atención',
@@ -285,7 +298,7 @@ export class PolizaPage implements OnInit {
         // console.log('DATOS - coche ', this.datosCoche);
       } else {
         this.datosCoche = null;
-        this.router.navigate(['/seguros']);
+        this.router.navigate(['/seguros/autos']);
         this.generalService.alert(
           'Debes de cotizar un auto antes de continuar.',
           'Atención',
@@ -312,25 +325,22 @@ export class PolizaPage implements OnInit {
     }
   }
   realizarPago() {
-    console.log(this.datosPolizaCreada)
+    // console.log(this.datosPolizaCreada)
 
     if (!this.datosPolizaCreada?.response?.policies?.length) {
       console.error('No hay pólizas en la respuesta');
       return;
     }
 
-    let id: string = '';
+    let id = "";
     const targetId = "a64c55ab-03bb-4774-89e6-ad69d2362966";
-    const policy = this.datosPolizaCreada.response.policies.find(
-      (p: any) => p.policy_type?.id === targetId
-    );
 
-    if (policy) {
-      const policyId = policy.policy_id;
+    const policyId = resolvePolicyId(this.datosPolizaCreada, targetId, "CO-");
+    if (policyId) {
       id = policyId;
-      // console.log("Policy encontrada:", policyId);
     } else {
-      console.warn("No se encontró la póliza con el ID buscado");
+      console.warn("No se encontró policy_id ni por policy_type.id ni por 'CO-'.");
+      return;
     }
 
     this.mostrar_spinnet = true;
@@ -367,7 +377,6 @@ export class PolizaPage implements OnInit {
         );
       }
     });
-
   }
   private async abrirPagoForzado(url: string) {
     if (!url || typeof url !== 'string') {
@@ -398,7 +407,7 @@ export class PolizaPage implements OnInit {
         localStorage.removeItem('datosPolizaVin');
         this.polizaCreada = false;
         this.islandKey++;
-        this.router.navigate(['/seguros']);
+        this.router.navigate(['/seguros/autos']);
       }
     );
   }
@@ -446,18 +455,14 @@ export class PolizaPage implements OnInit {
   //     .toUpperCase()
   //     .replace(/[^A-Z0-9]/g, '');
   //   if (!raw) return { required: true };
-
   //   const patterns = [
   //     /^[A-Z]{3}\d{4}$/,
   //     /^[A-Z]{3}\d{3}[A-Z]$/,
   //     /^[A-Z]{3}\d[A-Z]\d{2}$/
   //   ];
-
   //   const ok = raw.length === 7 && patterns.some(r => r.test(raw));
   //   return ok ? null : { placaFormato: true };
   // };
-
-
   // 1) ÚNICO switch centralizado
   private formatPaymentLabel(rawName: string, count: number): string {
     const raw = (rawName ?? '').toString().toUpperCase();
@@ -486,8 +491,15 @@ export class PolizaPage implements OnInit {
     return pos;
   }
   paymentPlanLabel(pp: any): string {
+    const raw = (pp?.name ?? '').toString().toUpperCase();
     const count = Array.isArray(pp?.payments) ? pp.payments.length : 1;
-    return this.formatPaymentLabel(pp?.name, count);
+    switch (raw) {
+      case 'ANNUAL': return 'Pago de contado';
+      case 'SUBSCRIPTION': return count > 1 ? `${count} pagos (suscripción)` : 'Suscripción';
+      case 'FLAT_FEE': return count > 1 ? `${count} pagos fijos` : 'Pago fijo';
+      case 'MSI': return count > 1 ? `${count} pagos Meses sin intereses` : 'Pago fijo';
+      default: return raw;
+    }
   }
   onSelectPayment(paymentPlanId: string) {
     const arr = this.datoscotizacion?.plans?.[0]?.payment_plans;
@@ -502,39 +514,53 @@ export class PolizaPage implements OnInit {
       this.miPlan = `${label} — ${this.fmtMoney(pp?.total)}`;
     }
   }
-
-
-
-
   // === GETTERS derivados DIRECTAMENTE de datosPolizaCreada ===
   get policyCO() {
     const policies = this.datosPolizaCreada?.response?.policies || [];
     return policies.find((p: any) => typeof p?.policy_number === 'string' && p.policy_number.startsWith('CO-')) || null;
   }
-
   get folioCO(): string | null {
     return this.policyCO?.policy_number ?? null;
   }
-
   get inicioVigencia(): string | null {
     const s = this.policyCO?.start_date ? new Date(this.policyCO.start_date) : null;
     return s ? s.toLocaleDateString() : null;
   }
-
   get finVigencia(): string | null {
     const e = this.policyCO?.end_date ? new Date(this.policyCO.end_date) : null;
     return e ? e.toLocaleDateString() : null;
   }
-
   get invoiceUrl(): string | null {
     const files = this.datosPolizaCreada?.response?.files || [];
     return files.find((f: any) => f?.name === 'invoice')?.url ?? null;
   }
-
   get coverUrl(): string | null {
     const files = this.datosPolizaCreada?.response?.files || [];
     return files.find((f: any) => f?.name === 'cover')?.url ?? null;
   }
+}
 
+function resolvePolicyId(
+  payload: any,
+  targetTypeId: string,
+  coPrefix = "CO-"
+): string | null {
+  const policies: Policy[] = payload?.response?.policies ?? [];
+  if (!Array.isArray(policies) || policies.length === 0) return null;
 
+  const byType = policies.find(p => p?.policy_type?.id === targetTypeId);
+  if (byType?.policy_id) return byType.policy_id;
+
+  const coPolicies = policies.filter(
+    p => typeof p.policy_number === "string" && p.policy_number.startsWith(coPrefix)
+  );
+  if (coPolicies.length === 0) return null;
+
+  coPolicies.sort((a, b) => {
+    const ta = new Date(a.start_date ?? 0).getTime();
+    const tb = new Date(b.start_date ?? 0).getTime();
+    return tb - ta;
+  });
+
+  return coPolicies[0]?.policy_id ?? null;
 }

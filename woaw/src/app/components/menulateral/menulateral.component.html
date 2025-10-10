@@ -21,7 +21,6 @@
         (click)="toggleSection('servicios')"
         [attr.aria-expanded]="expandedSections.servicios"
       >
-
         <span>Servicios</span>
         <ion-icon
           [name]="expandedSections.servicios ? 'chevron-up-outline' : 'chevron-down-outline'"
@@ -39,7 +38,7 @@
         </ion-item>
 
         <ion-item (click)="redirecion('m-nuevos')" button lines="none">
-          <ion-icon name="bicycle-outline" color="danger"></ion-icon>
+          <ion-icon name="speedometer-outline" color="danger"></ion-icon>
           <ion-label>Motos</ion-label>
         </ion-item>
 
@@ -54,7 +53,7 @@
         </ion-item>
 
         <ion-item (click)="redirecion('renta-coches')" button lines="none">
-          <ion-icon name="document-lock-outline" color="danger"></ion-icon>
+          <ion-icon name="today-outline" color="danger"></ion-icon>
           <ion-label>Renta de coches</ion-label>
         </ion-item>
 
@@ -63,20 +62,19 @@
           <ion-label>Seguros de autos</ion-label>
         </ion-item>
 
-        <ion-item (click)="redirecion('conocenos')" button lines="none">
-          <ion-icon name="people-outline" color="danger"></ion-icon>
-          <ion-label>Nosotros</ion-label>
-        </ion-item>
-
-         <ion-item
+        <ion-item
           (click)="redirecion('seguros/ver-polizas')"
           button
           lines="none"
         >
-          <ion-icon name="car-outline" color="danger"></ion-icon>
-          <ion-label>ver polizas</ion-label>
-        </ion-item>  
+          <ion-icon name="document-lock-outline" color="danger"></ion-icon>
+          <ion-label>Ver polizas</ion-label>
+        </ion-item>
 
+        <ion-item (click)="redirecion('conocenos')" button lines="none">
+          <ion-icon name="people-outline" color="danger"></ion-icon>
+          <ion-label>Nosotros</ion-label>
+        </ion-item>
       </div>
 
       <!-- Mis publicaciones (solo roles permitidos) -->
@@ -88,27 +86,24 @@
         (click)="toggleSection('publicaciones')"
         [attr.aria-expanded]="expandedSections.publicaciones"
       >
-
         <span>Mis publicaciones</span>
         <ion-icon
           [name]="expandedSections.publicaciones ? 'chevron-up-outline' : 'chevron-down-outline'"
         ></ion-icon>
       </div>
 
-
       <div
         *ngIf="isPublisher"
         class="menu-items"
         [class.expanded]="expandedSections.publicaciones"
       >
-
         <ion-item (click)="redirecion('mis-autos')" button lines="none">
           <ion-icon name="car-sport-outline" color="danger"></ion-icon>
           <ion-label>Mis autos</ion-label>
         </ion-item>
 
         <ion-item (click)="redirecion('mis-motos')" button lines="none">
-          <ion-icon name="bicycle-outline" color="danger"></ion-icon>
+          <ion-icon name="speedometer-outline" color="danger"></ion-icon>
           <ion-label>Mis motos</ion-label>
         </ion-item>
 
@@ -119,13 +114,24 @@
       </div>
 
       <!-- Reservas (solo si hay sesión) -->
-      <div *ngIf="isLoggedIn" class="menu-section" [class.expanded]="expandedSections.reservas"
-        (click)="toggleSection('reservas')" [attr.aria-expanded]="expandedSections.reservas">
+      <div
+        *ngIf="isLoggedIn"
+        class="menu-section"
+        [class.expanded]="expandedSections.reservas"
+        (click)="toggleSection('reservas')"
+        [attr.aria-expanded]="expandedSections.reservas"
+      >
         <span>Reservas</span>
-        <ion-icon [name]="expandedSections.reservas ? 'chevron-up-outline' : 'chevron-down-outline'"></ion-icon>
+        <ion-icon
+          [name]="expandedSections.reservas ? 'chevron-up-outline' : 'chevron-down-outline'"
+        ></ion-icon>
       </div>
 
-      <div *ngIf="isLoggedIn" class="menu-items" [class.expanded]="expandedSections.reservas">
+      <div
+        *ngIf="isLoggedIn"
+        class="menu-items"
+        [class.expanded]="expandedSections.reservas"
+      >
         <ion-item (click)="redirecion('mis-reservas')" button lines="none">
           <ion-icon name="calendar-outline" color="danger"></ion-icon>
           <ion-label>Mis reservas</ion-label>
@@ -141,22 +147,17 @@
         (click)="toggleSection('configuracion')"
         [attr.aria-expanded]="expandedSections.configuracion"
       >
-
         <span>Cuenta</span>
         <ion-icon
           [name]="expandedSections.configuracion ? 'chevron-up-outline' : 'chevron-down-outline'"
         ></ion-icon>
       </div>
 
-
-
       <div
         *ngIf="isLoggedIn"
         class="menu-items"
         [class.expanded]="expandedSections.configuracion"
       >
-
-
         <ion-item (click)="abrirModalPerfil()" button lines="none">
           <ion-icon name="person-outline" color="danger"></ion-icon>
           <ion-label>Perfil</ion-label>

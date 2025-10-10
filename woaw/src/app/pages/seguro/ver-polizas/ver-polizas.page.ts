@@ -26,12 +26,19 @@ export class VerPolizasPage implements OnInit {
   polizas: any[] = [];
   cargando = false;
   totalPolizas = 0;
+i: any;
 
   constructor(
     private generalService: GeneralService,
     private seguroService: SeguroService,
     private Router: Router
   ) {}
+
+
+
+  redirigir(ruta: string) {
+    this.Router.navigate([ruta]);
+  }
 
   ngOnInit() {
     this.getPolizas();
@@ -43,9 +50,10 @@ export class VerPolizasPage implements OnInit {
     this.seguroService.getPolizas().subscribe({
       next: (res) => {
         const items: any[] = Array.isArray(res?.items) ? res.items : [];
-        this.polizas = items; // ← crudo
-        this.totalPolizas = items.length; // contador
+        this.polizas = items;
+        this.totalPolizas = items.length;
         this.cargando = false;
+        console.log(res);
       },
       error: (error) => {
         this.cargando = false;

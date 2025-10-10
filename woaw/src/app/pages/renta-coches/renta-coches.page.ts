@@ -448,6 +448,7 @@ export class RentaCochesPage implements OnInit, OnDestroy {
     }
   }
 
+  // ======= DISPONIBILIDAD: integración con ReservaService =======
   private fetchUnavailableCarIdsForRange(desde: string, hasta?: string) {
     const from = this.dayStart(desde);
     const to = this.dayEnd(hasta || desde);

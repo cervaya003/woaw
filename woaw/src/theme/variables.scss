@@ -750,7 +750,7 @@ img.oculta {
     min-width: 0;
     overflow: auto;
     background-color: #000000;
-    min-height: 80svh;
+    // min-height: 80svh;
   }
 
   @media (max-width: 860px) {
@@ -796,5 +796,41 @@ img.oculta {
     inset: 0;
     background: linear-gradient(120deg, rgba(255, 255, 255, 0.801)  40%, #0000005f 40% 80%);
     pointer-events: none;
+  }
+}
+
+
+
+
+
+
+.modal-pasos-seguros {
+  --background: #000000 !important;
+  --ion-background-color: #000000 !important;
+  --color: #ffffff !important;
+  --backdrop-opacity: 0.7 !important;
+  --border-radius: 16px !important;
+  --box-shadow: none !important;
+
+  ion-content {
+    --background: #000000 !important;
+    color: #ffffff !important;
+  }
+
+  ion-button,
+  ion-icon,
+  h1, h2, h3, h4, h5, h6,
+  p, span {
+    color: #ffffff !important;
+  }
+
+  .card {
+    background: #111 !important;
+    border: 1px solid rgba(255,255,255,0.12);
+    color: #fff;
+  }
+
+  ion-modal::part(handle) {
+    background: #ffffff33;
   }
 }

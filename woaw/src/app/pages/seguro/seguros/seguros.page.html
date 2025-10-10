@@ -44,7 +44,9 @@
 <app-navbar></app-navbar>
 
 <ion-content [fullscreen]="true">
+
   <app-spinner *ngIf="mostrar_spinnet"></app-spinner>
+  <app-otros-seguros [refreshKey]="islandKey" *ngIf="tipoDispocitivo === 'telefono'"></app-otros-seguros>
 
   <div class="fondo-seguros">
     <img src="/assets/autos/seg1.webp" alt="">
@@ -88,6 +90,14 @@
                   </div>
 
                   <div class="marca-picker__grid">
+                    <button type="button" class="marca-picker__card marca-picker__card--other" role="option"
+                      aria-selected="false" (click)="selectOtherBrand()">
+                      <div class="marca-picker__icon--other">
+                        <ion-icon name="add-circle-outline" aria-hidden="true"></ion-icon>
+                      </div>
+                      <div class="marca-picker__name--other">Otra marca</div>
+                    </button>
+                    
                     <button type="button" class="marca-picker__card" *ngFor="let b of brandsVM"
                       [class.is-selected]="isSelected(b.id)" role="option" [attr.aria-selected]="isSelected(b.id)"
                       (click)="selectBrand(b.id)">
@@ -100,6 +110,7 @@
                       <div class="marca-picker__name">{{ b.name | titlecase }}</div>
                     </button>
                   </div>
+
                 </div>
               </div>
 
@@ -380,7 +391,7 @@
 
             <!-- CTA card -->
             <article class="qp-cta">
-              <button type="button" class="btn ghost" (click)="nuevoSeguro()">Cotizar nuevo ↻</button>
+              <button type="button" class="btn ghost" (click)="nuevoSeguro()">Nueva cotizacion ↻</button>
               <button type="button" class="btn prime" (click)="confirmarCrearPersona()">Continuar ➜</button>
             </article>
 

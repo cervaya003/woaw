@@ -2,11 +2,22 @@
 
 <ion-content [fullscreen]="true">
   <ng-container *ngIf="!cargando; else cargandoTpl">
+
+ 
+<section class="cta-section">
+    <ion-button fill="clear" class="btn-regresar" (click)="redirigir('/seguros/ver-polizas')">
+   <ion-icon name="arrow-back-outline"></ion-icon>
+  </ion-button>
+</section>
+
     <section
       class="detalle-poliza"
+      
       *ngIf="polizaUI as poliza; else sinDatosTpl"
-    >
+      >
+ 
       <header class="detalle__head">
+        
         <h1>Póliza #{{ poliza.folio }}</h1>
         <span class="plan-pill">{{ poliza.plan || 'Plan estándar' }}</span>
       </header>
@@ -46,22 +57,23 @@
       <!-- Botones solo visuales -->
       <section class="acciones-poliza">
         <div class="detalle__acciones">
-          <button class="btn dark">
+          <button
+            class="btn dark"
+            title="Descargar póliza y comprobante"
+            [disabled]="descargando"
+            (click)="descargarPolizaYComprobante()"
+          >
             <ion-icon name="document-text-outline"></ion-icon>
-            Póliza
+            Póliza y Comprobante
           </button>
 
-          <button class="btn gray">
-            <ion-icon name="receipt-outline"></ion-icon>
-            Comprobante
-          </button>
-
-          <button class="btn red">
+          <button class="btn red" (click)="PagoPoliza()" title="Realizar Pagó">
             <ion-icon name="card-outline"></ion-icon>
-            Pago
+            Pagó
           </button>
         </div>
       </section>
+      
     </section>
   </ng-container>
 

@@ -11,6 +11,9 @@ import { SeguroService } from '../../../services/seguro.service';
 import { Location } from '@angular/common';
 import { IonContent } from '@ionic/angular';
 import { ViewChild } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
+import { take } from 'rxjs/operators';
+
 
 import { MotosService } from '../../../services/motos.service';
 @Component({
@@ -20,7 +23,6 @@ import { MotosService } from '../../../services/motos.service';
   standalone: false
 })
 export class PersonaPage implements OnInit {
-  esDispositivoMovil: boolean = false;
   form_poliza: FormGroup;
   currentStepform: 1 | 2 | 3 | 4 = 1;
   datosCoche: any = null;
@@ -31,7 +33,11 @@ export class PersonaPage implements OnInit {
   tipoPersonaSeleccionada: string | null = null;
   mostrarMasOpciones: boolean = false;
 
+  public tipoDispocitivo: 'computadora' | 'telefono' | 'tablet' = 'computadora';
+
   buscarForm!: FormGroup;
+
+  public isLoggedIn: boolean = false;
 
   paises: any[] = [];
   estados: any[] = [];
@@ -74,28 +80,29 @@ export class PersonaPage implements OnInit {
   }
   ngOnInit() {
     this.detectaUsuario();
+    
     this.generalService.dispositivo$.subscribe((tipo) => {
-      this.esDispositivoMovil = tipo === 'telefono' || tipo === 'tablet';
+      this.tipoDispocitivo = tipo;
     });
+    
     const stored = localStorage.getItem('datosCoche');
     if (stored) {
       this.datosCoche = JSON.parse(stored);
     } else {
       this.datosCoche = null;
-      // this.router.navigate(['/seguros']);
+      // this.router.navigate(['/seguros/atuos']);
     }
     const cotizacion = localStorage.getItem('cotizacion');
     if (cotizacion) {
       this.datoscotizacion = cotizacion;
     } else {
-      // this.router.navigate(['/seguros']);
+      // this.router.navigate(['/seguros/atuos']);
       // this.generalService.alert(
       //   'Debes cotizar un coche antes de continuar con tu registro.',
       //   'Atención',
       //   'warning'
       // );
     }
-
   }
   onBuscar(status: boolean = true, val: string = ''): Promise<boolean> {
     return new Promise((resolve, reject) => {
@@ -172,11 +179,24 @@ export class PersonaPage implements OnInit {
     const storedPersona = localStorage.getItem('UsuarioRespuesta');
     return !!(storedPersona && storedPersona.trim() !== '');
   }
-  nuevosDatos() {
+  async nuevosDatos() {
     this.mostrar_spinnet = true;
-    setTimeout(() => {
+
+    setTimeout(async () => {
       this.mostrar_spinnet = false;
-      this.router.navigate(['/seguros/poliza']);
+
+      const autorizado = await this.verificarAuth();
+
+      if (autorizado) {
+        this.router.navigate(['/seguros/poliza']);
+      } else {
+        this.generalService.alert(
+          `Para crear tu póliza, es necesario que inicies sesión.`,
+          'Regístrate o inicia sesión',
+          'danger'
+        );
+        this.router.navigate(['/inicio']);
+      }
     }, 1500);
   }
   editarUser() {
@@ -272,7 +292,7 @@ export class PersonaPage implements OnInit {
         this.statusUserDtos = true;
       } else {
         this.islandKey++;
-        this.router.navigate(['/seguros']);
+        this.router.navigate(['/seguros/autos']);
       }
     } else if (this.currentStepform === 2) {
       this.currentStepform = 1;
@@ -299,7 +319,7 @@ export class PersonaPage implements OnInit {
   regresarInicio() {
     this.detectaUsuario();
     this.islandKey++;
-    this.router.navigate(['/seguros']);
+    this.router.navigate(['/seguros/autos']);
   }
   toUpper(ctrlName: string) {
     const c = this.form_poliza.get(ctrlName);
@@ -445,25 +465,52 @@ export class PersonaPage implements OnInit {
       error: (error) => console.error('Error al obtener actividades economicas:', error),
     });
   }
-  enviarDatosCrearPersona(payload: any) {
+  async enviarDatosCrearPersona(payload: any) {
     this.mostrar_spinnet = true;
-    this.seguros.crearPersona(payload).subscribe({
-      next: (data) => {
-        this.islandKey++;
-        const nombre = data.response?.first_name || this.form_poliza.get('nombre')?.value || 'Tu registro';
+
+    try {
+      const data = await firstValueFrom(this.seguros.crearPersona(payload));
+
+      const autorizado = await firstValueFrom(
+        this.generalService.tokenExistente$.pipe(take(1))
+      );
+
+      this.islandKey++;
+      const nombre =
+        data?.response?.first_name ||
+        this.form_poliza.get('nombre')?.value;
+
+      this.mostrar_spinnet = false;
+
+      if (autorizado) {
         this.generalService.alert(
           `¡Listo! ${nombre} quedó registrado correctamente.`,
           'Registro exitoso',
           'success'
         );
         localStorage.setItem('UsuarioRespuesta', JSON.stringify(data));
-        this.mostrar_spinnet = false;
         this.router.navigate(['/seguros/poliza']);
-      },
-      error: (error) => {
-        this.mostrar_spinnet = false;
-        console.error('Error al obtener actividades economicas:', error)
+      } else {
+        this.generalService.alert(
+          `Para crear tu póliza, es necesario que inicies sesión.`,
+          'Regístrate o inicia sesión',
+          'danger'
+        );
+        this.router.navigate(['/inicio']);
       }
+    } catch (error: any) {
+      this.mostrar_spinnet = false;
+      console.error('Error al crear persona:', error);
+      const msg = error?.error?.message || 'No se pudo registrar a la persona.';
+      this.generalService.alert(msg, 'Error', 'danger');
+    }
+  }
+  async verificarAuth(): Promise<boolean> {
+    return new Promise((resolve) => {
+      this.generalService.tokenExistente$.subscribe((estado) => {
+        this.isLoggedIn = estado;
+        resolve(estado);
+      });
     });
   }
 }

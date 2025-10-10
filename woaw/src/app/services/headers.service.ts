@@ -40,6 +40,8 @@ export class HeadersService {
       Authorization: `Bearer ${token ?? ''}`,
       'Content-Type': 'application/json',
       'x-api-key': environment.public_key,
+      "x-ambiente": environment.crabi_status,
+      // "x-ambiente": "production" 
     });
   }
 
@@ -47,6 +49,7 @@ export class HeadersService {
   getFormDataHeaders(token: string | null): HttpHeaders {
     return new HttpHeaders({
       Authorization: `Bearer ${token ?? ''}`,
+      "x-ambiente": environment.crabi_status,
     });
   }
 
