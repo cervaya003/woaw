@@ -25,12 +25,12 @@ export class NosotrosPage implements AfterViewInit {
 
 
 cardsNosotros = [
-  { img: '/assets/nosotros/carrito.png', title: 'Compra', link: '/home' },
-  { img: '/assets/nosotros/precio.png', title: 'Vende', link: '/new-car' },
-  { img: '/assets/nosotros/monedas.png', title: 'Financia', link: '/menu-vehiculos/autos' },
-  { img: '/assets/nosotros/llaves.png', title: 'Renta', link: '/renta-ciudades' },
-  { img: '/assets/nosotros/seguro.png', title: 'Arrienda', link: '/arrendamiento' },
-  { img: '/assets/nosotros/auto.png', title: 'Asegura', link: '/seguros/disponibles' },
+  { img: '/assets/nosotros/carrito.webp', title: 'Compra', link: '/home' },
+  { img: '/assets/nosotros/precio.webp', title: 'Vende', link: '/new-car' },
+  { img: '/assets/nosotros/monedas.webp', title: 'Financia', link: '/menu-vehiculos/autos' },
+  { img: '/assets/nosotros/llaves.webp', title: 'Renta', link: '/renta-ciudades' },
+  { img: '/assets/nosotros/seguro.webp', title: 'Arrienda', link: '/arrendamiento' },
+  { img: '/assets/nosotros/auto.webp', title: 'Asegura', link: '/seguros/disponibles' },
 ];
 
 
