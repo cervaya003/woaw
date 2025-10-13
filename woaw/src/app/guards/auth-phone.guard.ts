@@ -1,59 +1,60 @@
 import { Injectable, inject } from '@angular/core';
-import { CanActivate, CanActivateChild, CanMatch, Route, UrlSegment, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
+import { CanActivate, CanActivateChild, CanMatch, Route, UrlSegment, ActivatedRouteSnapshot, RouterStateSnapshot, Router, UrlTree } from '@angular/router';
 import { GeneralService } from '../services/general.service';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class AuthPhoneGuard implements CanMatch, CanActivate, CanActivateChild {
   private router = inject(Router);
   private general = inject(GeneralService);
 
-  private checkPhoneAndRedirect(urlIntentada: string): boolean {
-    const token = localStorage.getItem('token');
+  private checkPhoneAndRedirect(urlIntentada: string): boolean | UrlTree {
+    const token   = localStorage.getItem('token');
     const rawUser = localStorage.getItem('user');
 
-    // Si no está logueado, no bloquees aquí (otro guard o la propia ruta se encarga)
+    // Aquí NO bloquees al no logueado: deja que AuthGuard lo haga.
     if (!token || !rawUser) return true;
 
-    // Reusa el helper del service si quieres, o haz la validación aquí:
-    const user = JSON.parse(rawUser);
+    // parse seguro
+    let user: any = null;
+    try { user = JSON.parse(rawUser); } catch { /* noop */ }
+
+    // intenta múltiples campos
     const candidatos = [
       user?.numero, user?.telefono, user?.phone, user?.celular, user?.mobile, user?.tel,
       user?.contacto?.telefono, user?.contacto?.celular, user?.contact?.phone
     ];
-    const crudo = candidatos.find(v => v !== null && v !== undefined) ?? '';
-    const str = String(crudo).trim();
-    const soloDigitos = str.replace(/\D+/g, '');
-    const tieneTelefono = soloDigitos.length >= 7;
 
-    if (!tieneTelefono) {
-      // evita loop si ya estás en autenticacion-user
-      if (!urlIntentada.startsWith('/autenticacion-user')) {
-        this.router.navigate(
-          ['/autenticacion-user'],
-          { queryParams: { next: urlIntentada }, replaceUrl: true }
-        );
-      }
-      return false; // bloquea la navegación
+    const crudo        = candidatos.find(v => v != null) ?? '';
+    const str          = String(crudo).trim();
+    const soloDigitos  = str.replace(/\D+/g, '');
+
+    // Recomendación MX: pide 10 dígitos (celular/lada nacional). Ajusta si usas otra regla.
+    const tieneTelefono = soloDigitos.length >= 10;
+
+    // Evita loop si ya estás en autenticación
+    const yaEnAuthPhone = urlIntentada.startsWith('/autenticacion-user');
+
+    if (!tieneTelefono && !yaEnAuthPhone) {
+      // Usa UrlTree (guard "puro")
+      return this.router.createUrlTree(
+        ['/autenticacion-user'],
+        { queryParams: { next: urlIntentada, step: 'phone' } } // mantén nombres consistentes
+      );
     }
 
-    return true; // deja pasar
+    return true;
   }
 
-  // ---- CanMatch (recomendado en Angular moderno)
-  canMatch(route: Route, segments: UrlSegment[]): boolean {
-    const url = '/' + segments.map(s => s.path).join('/');
-    return this.checkPhoneAndRedirect(url || '/');
+  canMatch(route: Route, segments: UrlSegment[]): boolean | UrlTree {
+    const url = '/' + segments.map(s => s.path).join('/new-car');
+    return this.checkPhoneAndRedirect(url || '/new-car');
   }
 
-  // ---- CanActivate (si lo necesitas en rutas concretas)
-  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
-    return this.checkPhoneAndRedirect(state.url || '/');
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | UrlTree {
+    return this.checkPhoneAndRedirect(state.url || '/new-car');
   }
 
-  // ---- CanActivateChild (para módulos con children)
-  canActivateChild(childRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
-    return this.checkPhoneAndRedirect(state.url || '/');
+  canActivateChild(childRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean | UrlTree {
+    return this.checkPhoneAndRedirect(state.url || '/new-car');
   }
 }

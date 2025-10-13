@@ -22,7 +22,7 @@ const routes: Routes = [
   },
   {
     path: "",
-    canMatch: [AuthPhoneGuard],
+ 
     children: [
       {
         path: "home",
@@ -103,6 +103,8 @@ const routes: Routes = [
             (m) => m.NewCarPageModule
           ),
         data: { title: "Publicar nuevo vehículo | woaw" },
+         canActivate: [AuthGuard],
+           canMatch: [AuthPhoneGuard],
       },
       {
         path: "mis-motos",
