@@ -764,5 +764,24 @@
     height: 2px;
     background: #ff0000;
     border-radius: 6px;
-    margin-bottom: 2rem;
+    margin-bottom: 0rem;
+}
+
+.item-date {
+    --background: #fff;
+    border-radius: 8px;
+    padding: 4px 12px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+
+    ion-datetime {
+        width: 100%;
+        font-family: 'Poppins', sans-serif;
+        font-size: 15px;
+        font-weight: 500;
+        color: #000;
+        --placeholder-color: #aaa;
+        --background: transparent;
+    }
 }

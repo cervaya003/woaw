@@ -43,6 +43,9 @@
                     <input id="marca" type="text" class="form-input" maxlength="25" placeholder="Marca del auto"
                       formControlName="marca" />
                   </div>
+                  <p *ngIf="analizaForm('marca')" class="error">
+                    Ingresa la marca de tu vehiculo.
+                  </p>
                 </div>
               </ion-col>
 
@@ -53,6 +56,9 @@
                     <input id="modelo" type="text" class="form-input" maxlength="25" placeholder="Modelo del auto"
                       formControlName="modelo" />
                   </div>
+                  <p *ngIf="analizaForm('modelo')" class="error">
+                    Ingresa el modelo de tu vehiculo.
+                  </p>
                 </div>
               </ion-col>
 
@@ -63,6 +69,9 @@
                     <input id="version" type="text" class="form-input" maxlength="25" placeholder="Versión del auto"
                       formControlName="version" />
                   </div>
+                  <p *ngIf="analizaForm('version')" class="error">
+                    Ingresa la version de tu vehiculo.
+                  </p>
                 </div>
               </ion-col>
 
@@ -78,6 +87,9 @@
                       <ion-select-option *ngFor="let y of anios" [value]="y">{{ y }}</ion-select-option>
                     </ion-select>
                   </div>
+                  <p *ngIf="analizaForm('anio')" class="error">
+                    Ingresa el año del vehiculo.
+                  </p>
                 </div>
               </ion-col>
 
@@ -92,6 +104,9 @@
                     <input id="nombre" type="text" class="form-input" maxlength="50" placeholder="Nombre completo"
                       formControlName="nombre" />
                   </div>
+                  <p *ngIf="analizaForm('nombre')" class="error">
+                    Ingresa tu nombre.
+                  </p>
                 </div>
               </ion-col>
 
@@ -102,6 +117,22 @@
                     <input id="correo" type="email" class="form-input" maxlength="80" placeholder="correo@ejemplo.com"
                       formControlName="correo" />
                   </div>
+                  <p *ngIf="analizaForm('correo')" class="error">
+                    Ingresa tu correo.
+                  </p>
+                </div>
+              </ion-col>
+
+              <ion-col size="12" size-md="4" class="col-field">
+                <div class="field">
+                  <label for="codigoPostal">Código postal <span>*</span></label>
+                  <div class="control">
+                    <input id="codigoPostal" type="text" class="form-input" maxlength="5" placeholder="Ej. 76000"
+                      formControlName="codigoPostal" />
+                  </div>
+                  <p *ngIf="analizaForm('codigoPostal')" class="error">
+                    Inresa tu código postal.
+                  </p>
                 </div>
               </ion-col>
 
@@ -119,27 +150,29 @@
                       <ion-select-option value="divorciado">Divorciado(a)</ion-select-option>
                     </ion-select>
                   </div>
+                  <p *ngIf="analizaForm('estadoCivil')" class="error">
+                    Seleciona una opción.
+                  </p>
                 </div>
               </ion-col>
 
-              <ion-col size="12" size-md="4" class="col-field">
+              <ion-col size="12" size-md="6" class="col-field">
                 <div class="field">
                   <label for="fechaNacimiento">Fecha de nacimiento <span>*</span></label>
                   <div class="control">
-                    <input id="fechaNacimiento" type="date" class="form-input" formControlName="fechaNacimiento" />
+                    <input id="fechaNacimiento" type="date" class="form-input" formControlName="fechaNacimiento"
+                      [max]="maxFechaNacimiento" (change)="onFechaNacimientoChange($event)" />
                   </div>
+                  <p *ngIf="analizaForm('fechaNacimiento')" class="error">
+                    Ingresa tu fecha de nacimiento.
+                  </p>
+                  <p *ngIf="form.get('fechaNacimiento')?.hasError('underage') && (form.get('fechaNacimiento')?.dirty || form.get('fechaNacimiento')?.touched)"
+                    class="error">
+                    Debes ser mayor de 18 años.
+                  </p>
                 </div>
               </ion-col>
 
-              <ion-col size="12" size-md="4" class="col-field">
-                <div class="field">
-                  <label for="codigoPostal">Código postal <span>*</span></label>
-                  <div class="control">
-                    <input id="codigoPostal" type="text" class="form-input" maxlength="5" placeholder="Ej. 76000"
-                      formControlName="codigoPostal" />
-                  </div>
-                </div>
-              </ion-col>
             </ng-content>
 
           </ion-row>
@@ -160,7 +193,7 @@
             <span *ngIf="marcador != 3">Regresar</span>
           </button>
 
-          <button class="btn-primary" *ngIf="marcador != 3" type="button" [disabled]="form.invalid"
+          <button class="btn-primary" *ngIf="marcador != 3" type="button" 
             (click)="siguiente()">
             Siguiente
             <ion-icon name="arrow-forward-outline"></ion-icon>

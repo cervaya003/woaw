@@ -143,8 +143,7 @@
                       [interfaceOptions]="{ cssClass: 'select-popover pop-modelo', side: 'bottom', alignment: 'start' }"
                       data-key="modelo" (ionFocus)="syncPopoverWidths()" (ionChange)="onModeloChange($event)">
                       <ion-select-option [value]="null" disabled>Selecciona...</ion-select-option>
-                      <ion-select-option  *ngFor="let m of modelos"
-                        [value]="m.nombre">
+                      <ion-select-option *ngFor="let m of modelos" [value]="m.nombre">
                         {{ m.nombre }}
                       </ion-select-option>
 
@@ -264,9 +263,17 @@
                 <div class="field">
                   <label for="fechaNacimiento">Fecha de nacimiento <span>*</span></label>
                   <div class="control">
-                    <input id="fechaNacimiento" type="date" class="form-input" formControlName="fechaNacimiento" />
+                    <input id="fechaNacimiento" type="date" class="form-input" formControlName="fechaNacimiento"
+                      inputmode="numeric" [min]="minNacimiento" [max]="maxAdulto" placeholder="aaaa-mm-dd"
+                      (change)="onFechaNacimientoChange($event)" />
                   </div>
-                  <p *ngIf="analizaForm('fechaNacimiento')" class="error">Escribe tu fecha de nacimiento..</p>
+                  <p *ngIf="analizaForm('fechaNacimiento')" class="error">
+                    Escribe tu fecha de nacimiento.
+                  </p>
+                  <p *ngIf="form.get('fechaNacimiento')?.hasError('underage') && (form.get('fechaNacimiento')?.dirty || form.get('fechaNacimiento')?.touched)"
+                    class="error">
+                    Debes ser mayor de 18 años.
+                  </p>
                 </div>
               </ion-col>
 

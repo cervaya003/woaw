@@ -248,7 +248,7 @@ ion-buttons[slot="end"] {
 ion-toolbar {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 5px;
 }
 
 /* permite crecer de altura cuando hay buscador en móvil */
@@ -515,8 +515,8 @@ ion-toolbar ion-button.stack .label {
     gap: 2px;
   }
   ion-buttons[slot="end"] ion-button {
-    height: 28px;
-    min-width: 28px;
+    height: 15px;
+    min-width: 15px;
     font-size: 9px;
   }
   ion-buttons[slot="end"] ion-button ion-icon {

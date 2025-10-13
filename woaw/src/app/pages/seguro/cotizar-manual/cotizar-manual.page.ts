@@ -27,6 +27,8 @@ export class CotizarManualPage implements OnInit {
 
   public tipoDispocitivo: 'computadora' | 'telefono' | 'tablet' = 'computadora';
 
+  public maxFechaNacimiento: string = this.toISODateOnly(new Date());
+
   constructor(
     private popoverCtrl: PopoverController,
     private alertCtrl: AlertController,
@@ -229,4 +231,66 @@ export class CotizarManualPage implements OnInit {
       default: return v || '';
     }
   }
+
+  analizaForm(campo: string): boolean {
+    const control = this.form.get(campo);
+    return !!(control && control.invalid && (control.dirty || control.touched));
+  }
+
+
+  // ----- FECHA DE NACIMIENTO -----
+
+  // 2) Validador de mayoría de edad
+  private mayorDeEdadValidator(edadMin = 18) {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const v = control.value;
+      if (!v) return null;
+
+      const cumple = this.esMayorDeEdad(v, edadMin);
+      return cumple ? null : { underage: true };
+    };
+  }
+
+  // 3) Util: checar edad
+  private esMayorDeEdad(fecha: string | Date, edadMin = 18): boolean {
+    const d = new Date(fecha);
+    if (isNaN(d.getTime())) return false;
+
+    const hoy = new Date();
+    let edad = hoy.getFullYear() - d.getFullYear();
+    const m = hoy.getMonth() - d.getMonth();
+    if (m < 0 || (m === 0 && hoy.getDate() < d.getDate())) edad--;
+    return edad >= edadMin;
+  }
+
+  // 4) Util: formatear YYYY-MM-DD (para [max])
+  private toISODateOnly(d: Date): string {
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  }
+
+  // 5) Suscripción al control para disparar alerta si es menor de edad
+  private suscribirFechaNacimientoAlert() {
+    const ctrl = this.form.get('fechaNacimiento');
+    if (!ctrl) return;
+
+    ctrl.valueChanges.subscribe(async (val) => {
+      if (!val) return;
+      if (ctrl.hasError('underage')) {
+        await this.alertCtrl.create({
+          header: 'Edad no válida',
+          message: 'Debes ser mayor de 18 años para continuar.',
+          buttons: ['Entendido'],
+        }).then(a => a.present());
+      }
+    });
+  }
+  public onFechaNacimientoChange(_: Event) {
+    const ctrl = this.form.get('fechaNacimiento');
+    if (!ctrl) return;
+    ctrl.updateValueAndValidity({ onlySelf: true });
+  }
 }
+

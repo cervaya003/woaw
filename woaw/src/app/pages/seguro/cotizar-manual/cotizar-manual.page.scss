@@ -1,5 +1,5 @@
 .carta_manual_cotizar {
-    max-width: 1200px;
+    max-width: 900px;
     width: 100%;
     margin: 30px auto;
     min-height: 50svh;
@@ -392,4 +392,12 @@
             }
         }
     }
+}
+
+
+
+.error {
+    color: #ff2121;
+    font-size: clamp(10px, 1vw, 12px);
+    margin-top: 4px;
 }

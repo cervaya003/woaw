@@ -455,7 +455,7 @@
 
     @media (max-width: 720px) {
       justify-content: end;
-      margin-top: -1px;
+      margin-top: 5px;
     }
   }
 
@@ -479,10 +479,11 @@
     margin: 0;
     font-size: clamp(6px, 1vw, 18px);
     color: #000000;
+    margin-top: -10px;
 
     @media (max-width: 720px) {
-      color: #ffffff;
-      display: none;
+      color: #000000;
+      // display: none;
     }
   }
 
