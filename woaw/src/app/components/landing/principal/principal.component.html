@@ -3,19 +3,19 @@
 </div>
 
 <div class="band-cards">
-  <article class="mini-card mini-arrendamiento">
-    <img src="/assets/home/cartasHome5.png" alt="Auto en arrendamiento" class="bg-card-min">
-    <h4>Arrendamiento</h4>
-    <p>Estrena sin comprar.</p>
-    <button class="mini-btn">Cotizar ahora</button>
-  </article>
+    <article class="mini-card mini-arrendamiento" (click)="redirecion('/arrendamiento')">
+      <img src="/assets/home/cartasHome5.webp" alt="Auto en arrendamiento" class="bg-card-min">
+      <h4>Arrendamiento</h4>
+      <p>Estrena sin comprar.</p>
+      <button class="mini-btn">Cotizar ahora</button>
+    </article>
 
-  <article class="mini-card mini-seguros">
-    <img src="/assets/home/cartasHome4.png" alt="Auto nuevo" class="bg-card-min">
-    <h4>Seguros</h4>
-    <p>Cotiza y asegura en minutos.</p>
-    <button class="mini-btn">Cotizar ahora</button>
-  </article>
+    <article class="mini-card mini-seguros" (click)="redirecion('/seguros/disponibles')">
+      <img src="/assets/home/cartasHome4.webp" alt="Auto nuevo" class="bg-card-min">
+      <h4>Seguros</h4>
+      <p>Cotiza y asegura en minutos.</p>
+      <button class="mini-btn">Cotizar ahora</button>
+    </article>
 </div>
 
 
@@ -50,50 +50,50 @@
 <section class="contenedor_cratas_home">
   <div class="cards-grid">
 
-    <article class="car-card car-card-nuevos">
-      <img src="/assets/home/cartasHome1.png" alt="Auto nuevo" class="bg-card">
-      <header class="card-head">
-        <h3><span>Autos</span> Nuevos</h3>
-        <p>Estrena hoy con garantía total.</p>
-      </header>
-      <ul class="card-list">
-        <li>0 km</li>
-        <li>Financiamiento</li>
-      </ul>
-      <footer class="card-foot">
-        <button class="btn-card btn-nuevos">Ver catálogo</button>
-      </footer>
-    </article>
+      <article class="car-card car-card-nuevos" (click)="redirecion('/nuevos')">
+        <img src="/assets/home/cartasHome1.webp" alt="Auto nuevo" class="bg-card">
+        <header class="card-head">
+          <h3><span>Autos</span> Nuevos</h3>
+          <p>Estrena hoy con garantía total.</p>
+        </header>
+        <ul class="card-list">
+          <li>0 km</li>
+          <li>Financiamiento</li>
+        </ul>
+        <footer class="card-foot">
+          <button class="btn-card btn-nuevos">Ver catálogo</button>
+        </footer>
+      </article>
 
-    <article class="car-card car-card-seminuevos">
-      <img src="/assets/home/cartasHome2.png" alt="Auto seminuevo" class="bg-card">
-      <header class="card-head">
-        <h3><span>Autos</span> Seminuevos</h3>
-        <p>Historial verificado.</p>
-      </header>
-      <ul class="card-list">
-        <li>Tomamos tu auto</li>
-        <li>Financiamiento</li>
-      </ul>
-      <footer class="card-foot">
-        <button class="btn-card btn-seminuevos">Explorar</button>
-      </footer>
-    </article>
+      <article class="car-card car-card-seminuevos" (click)="redirecion('/seminuevos')">
+        <img src="/assets/home/cartasHome2.webp" alt="Auto seminuevo" class="bg-card">
+        <header class="card-head">
+          <h3><span>Autos</span> Seminuevos</h3>
+          <p>Historial verificado.</p>
+        </header>
+        <ul class="card-list">
+          <li>Tomamos tu auto</li>
+          <li>Financiamiento</li>
+        </ul>
+        <footer class="card-foot">
+          <button class="btn-card btn-seminuevos">Explorar</button>
+        </footer>
+      </article>
 
-    <article class="car-card car-card-usados">
-      <img src="/assets/home/cartasHome3.png" alt="Auto nuevo" class="bg-card">
-      <header class="card-head">
-        <h3><span>Autos</span> Usados</h3>
-        <p>Listos para una nueva historia.</p>
-      </header>
-      <ul class="card-list">
-        <li>Entrega rápida</li>
-        <li>Financiamiento</li>
-      </ul>
-      <footer class="card-foot">
-        <button class="btn-card btn-usados">Ver ofertas</button>
-      </footer>
-    </article>
+      <article class="car-card car-card-usados" (click)="redirecion('/usados')">
+        <img src="/assets/home/cartasHome3.webp" alt="Auto nuevo" class="bg-card">
+        <header class="card-head">
+          <h3><span>Autos</span> Usados</h3>
+          <p>Listos para una nueva historia.</p>
+        </header>
+        <ul class="card-list">
+          <li>Entrega rápida</li>
+          <li>Financiamiento</li>
+        </ul>
+        <footer class="card-foot">
+          <button class="btn-card btn-usados">Ver ofertas</button>
+        </footer>
+      </article>
 
   </div>
 </section>

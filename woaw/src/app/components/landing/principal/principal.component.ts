@@ -152,4 +152,7 @@ export class PrincipalComponent implements OnInit {
       // this.overlayLoaded = true;
     }
   }
+  public redirecion(url: string){
+    this.router.navigate([url]);
+  }
 }
