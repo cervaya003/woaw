@@ -136,9 +136,9 @@ export class PrincipalComponent implements OnInit {
     this.router.navigate(['/ficha', 'motos', moto._id]);
   }
   async cargaimagen() {
-    this.img1 = '/assets/autos/A1.webp';
-    this.img2 = '/assets/autos/A5.webp';
-    this.img3 = '/assets/autos/A3.webp';
+    this.img1 = '/assets/home/A1.webp';
+    this.img2 = '/assets/home/A5.webp';
+    this.img3 = '/assets/home/A3.webp';
     this.generalService.addPreload(this.img1, 'image');
     this.generalService.addPreload(this.img2, 'image');
     this.generalService.addPreload(this.img3, 'image');
