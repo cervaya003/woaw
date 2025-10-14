@@ -97,7 +97,7 @@
                       </div>
                       <div class="marca-picker__name--other">Otra marca</div>
                     </button>
-                    
+
                     <button type="button" class="marca-picker__card" *ngFor="let b of brandsVM"
                       [class.is-selected]="isSelected(b.id)" role="option" [attr.aria-selected]="isSelected(b.id)"
                       (click)="selectBrand(b.id)">
@@ -279,7 +279,7 @@
 
               </div>
 
-              <div class="paybox__cta">
+              <div class="paybox__cta" *ngIf="tipoDispocitivo !== 'telefono'">
                 <button type="button" *ngIf="currentStep !== 1" class="btn-secondary"
                   (click)="ClearRegrasar()">&#x2B05;</button>
                 <button class="btn-primary" type="button" (click)="siguiente()" [disabled]="
@@ -390,7 +390,7 @@
             </article>
 
             <!-- CTA card -->
-            <article class="qp-cta">
+            <article class="qp-cta" *ngIf="tipoDispocitivo !== 'telefono'">
               <button type="button" class="btn ghost" (click)="nuevoSeguro()">Nueva cotizacion ↻</button>
               <button type="button" class="btn prime" (click)="confirmarCrearPersona()">Continuar ➜</button>
             </article>
@@ -423,14 +423,74 @@
 
       </section>
 
-      <!-- <app-dynamic-island [refreshKey]="islandKey"></app-dynamic-island> -->
+      <div class="mensaje-seguro" *ngIf="!cotizacion" [ngClass]="{ 'is-step1': currentStep === 1 }">
+
+        <div class="mensaje-seguro__header">
+          <ion-icon name="flash-outline"></ion-icon>
+          <h3>¡Cotiza tu auto rápido!</h3>
+        </div>
+
+        <p>
+          Obtén tu cotización al instante y crea tu registro y tu póliza en solo
+          <strong>3 sencillos pasos</strong>.
+          <br />
+          <ion-icon name="speedometer-outline"></ion-icon> Rápido,
+          <ion-icon name="shield-checkmark-outline"></ion-icon> seguro y
+          <ion-icon name="thumbs-up-outline"></ion-icon> sin complicaciones.
+        </p>
+
+        <div class="mensaje-seguro__stickers">
+          <ion-icon name="car-sport-outline"></ion-icon>
+          <ion-icon name="flash-outline"></ion-icon>
+          <ion-icon name="document-text-outline"></ion-icon>
+        </div>
+
+      </div>
+
+      <br><br>
 
     </div>
 
     <div class="divicion2">
-      <app-otros-seguros [refreshKey]="islandKey"></app-otros-seguros>
+      <app-otros-seguros *ngIf="tipoDispocitivo !== 'telefono'" [refreshKey]="islandKey"></app-otros-seguros>
     </div>
   </div>
 
-  <app-footer></app-footer>
+  <app-footer *ngIf="tipoDispocitivo !== 'telefono'"></app-footer>
 </ion-content>
+
+<ion-footer class="black-footer" *ngIf="tipoDispocitivo === 'telefono'">
+  <div class="footer-buttons" *ngIf="!cotizacion">
+    <ion-button
+      fill="solid"
+      class="btn-secondary"
+      *ngIf="currentStep !== 1"
+      (click)="ClearRegrasar()">
+      &#x2B05;
+    </ion-button>
+
+    <ion-button
+      fill="solid"
+      class="btn-primary"
+      (click)="siguiente()"
+      [disabled]="
+        (currentStep===1 && form.get('marca')?.invalid) ||
+        (currentStep===2 && form.get('modelo')?.invalid) ||
+        (currentStep===3 && form.get('anio')?.invalid) ||
+        (currentStep===4 && form.get('version')?.invalid) ||
+        (currentStep===5 && (form.get('nacDia')?.invalid || form.get('nacMes')?.invalid || form.get('nacAnio')?.invalid)) ||
+        (currentStep===6 && (form.get('cp')?.invalid || form.get('genero')?.invalid || form.get('estadoCivil')?.invalid))
+      ">
+      {{ currentStep < 7 ? 'Siguiente' : 'Cotizar' }} &#x27A1;
+    </ion-button>
+  </div>
+
+  <div class="footer-buttons" *ngIf="cotizacion">
+    <ion-button fill="solid" class="btn-secondary" (click)="nuevoSeguro()">
+      Nueva cotización ↻
+    </ion-button>
+    <ion-button fill="solid" class="btn-primary" (click)="confirmarCrearPersona()">
+      Continuar ➜
+    </ion-button>
+  </div>
+</ion-footer>

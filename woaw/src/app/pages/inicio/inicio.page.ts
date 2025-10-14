@@ -219,7 +219,7 @@ export class InicioPage implements OnInit {
       this.splash = true;
       setInterval(() => {
         this.splash = false;
-      }, 3500);
+      }, 0);
     } else {
       setInterval(() => {
         this.indexContenido = (this.indexContenido + 1) % this.contenidos.length;

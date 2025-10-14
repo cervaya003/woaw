@@ -92,34 +92,38 @@ export class FooterComponent implements OnInit {
     nodes.forEach(n => io.observe(n));
   }
   async abrirUbicacion() {
-    const label = encodeURIComponent(this.destinoLabel);
-    const webUrl = `https://www.google.com/maps/search/?api=1&query=${this.destinoLat},${this.destinoLng}`;
+  let destinoLabel = 'Blvd. Bernardo Quintana Arrioja 17, Álamos 2da Secc, Santiago de Querétaro';
+  let destinoLat = 20.607572064205126;
+  let destinoLng = -100.37906506352265;
 
-    const platform = Capacitor.getPlatform();
+  const label = encodeURIComponent(destinoLabel);
+  const webUrl = `https://www.google.com/maps/search/?api=1&query=${destinoLat},${destinoLng}`;
 
-    if (platform === 'android') {
-      const url = `geo:${this.destinoLat},${this.destinoLng}?q=${this.destinoLat},${this.destinoLng}(${label})`;
-      try {
-        await Browser.open({ url });
-      } catch {
-        window.open(webUrl, '_blank');
-      }
-      return;
+  const platform = Capacitor.getPlatform();
+
+  if (platform === 'android') {
+    const url = `geo:${destinoLat},${destinoLng}?q=${destinoLat},${destinoLng}(${label})`;
+    try {
+      await Browser.open({ url });
+    } catch {
+      window.open(webUrl, '_blank');
     }
-
-    if (platform === 'ios') {
-      const url = `http://maps.apple.com/?ll=${this.destinoLat},${this.destinoLng}&q=${label}`;
-      try {
-        await Browser.open({ url });
-      } catch {
-        window.open(webUrl, '_blank');
-      }
-      return;
-    }
-
-    // Web/desktop
-    window.open(webUrl, '_blank');
+    return;
   }
+
+  if (platform === 'ios') {
+    const url = `http://maps.apple.com/?ll=${destinoLat},${destinoLng}&q=${label}`;
+    try {
+      await Browser.open({ url });
+    } catch {
+      window.open(webUrl, '_blank');
+    }
+    return;
+  }
+
+  // Web / Desktop
+  window.open(webUrl, '_blank');
+}
 
   async mostrarTerminos() {
     let modal;

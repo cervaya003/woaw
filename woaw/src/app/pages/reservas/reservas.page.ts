@@ -303,7 +303,8 @@ export class ReservasPage implements OnInit {
 
   private sameSet(a: string[], b: string[]): boolean {
     if (a.length !== b.length) return false;
-    const A = new Set(a), B = new Set(b);
+    const A = new Set(a),
+      B = new Set(b);
     for (const x of A) if (!B.has(x)) return false;
     return true;
   }

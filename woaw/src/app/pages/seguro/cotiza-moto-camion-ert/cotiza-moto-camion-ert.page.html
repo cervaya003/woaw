@@ -4,7 +4,7 @@
   <app-spinner *ngIf="mostrar_spinnet"></app-spinner>
 
   <div class="fondo-seguros">
-    <img src="/assets/autos/seg1.webp" alt="">
+    <img src="/assets/autos/seguro.png" alt="">
     <span class="fondo-seguros__overlay"></span>
   </div>
 
@@ -15,6 +15,11 @@
           <ion-icon name="arrow-back-outline"></ion-icon>
         </button>
         <h1 class="titulo_manual_cotizar">Cotiza tu {{tipo_vehiculo}}</h1>
+        <div class="icon-wrap">
+          <img *ngIf="tipo_vehiculo === 'Camion'" src="/assets/img/icon-camion.png" alt="Camiones" class="cat-img" />
+          <img *ngIf="tipo_vehiculo === 'Moto'" src="/assets/img/icon-moto.png" alt="Motos" class="cat-img" />
+          <img *ngIf="tipo_vehiculo === 'ERT'" src="/assets/img/icon-coche-rt.png" alt="Servicios RT" class="cat-img" />
+        </div>
       </div>
 
       <form [formGroup]="form">
@@ -26,7 +31,7 @@
           <div class="linea_horizontal"></div>
         </div>
 
-        <ng-content *ngIf="marcador === 1 && tipo_vehiculo === 'Camion'">
+        <ng-content *ngIf="marcador === 1 && (tipo_vehiculo === 'Camion' || tipo_vehiculo === 'ERT')">
 
           <div class="marca-picker" role="listbox" aria-label="Selecciona una marca">
             <div class="marca-picker__grid">
@@ -39,17 +44,34 @@
                 <div class="marca-picker__name--other">Otra marca</div>
               </button>
 
-              <button type="button" class="marca-picker__card" *ngFor="let b of marcasCamiones"
-                [class.is-selected]="isSelected(b._id)" role="option" [attr.aria-selected]="isSelected(b._id)"
-                (click)="selectMarca(b)">
-                <div class="marca-picker__icon">
-                  <img *ngIf="b.imageUrl; else noimg" [src]="b.imageUrl" [alt]="b.nombre" loading="lazy" />
-                  <ng-template #noimg>
-                    <span class="marca-picker__fallback">{{ b.nombre | titlecase }}</span>
-                  </ng-template>
-                </div>
-                <div class="marca-picker__name">{{ b.nombre | titlecase }}</div>
-              </button>
+              <ng-container *ngIf="tipo_vehiculo === 'Camion'">
+                <button type="button" class="marca-picker__card" *ngFor="let b of marcasCamionesERT"
+                  [class.is-selected]="isSelected(b._id)" role="option" [attr.aria-selected]="isSelected(b._id)"
+                  (click)="selectMarca(b)">
+                  <div class="marca-picker__icon">
+                    <img *ngIf="b.imageUrl; else noimg" [src]="b.imageUrl" [alt]="b.nombre" loading="lazy" />
+                    <ng-template #noimg>
+                      <span class="marca-picker__fallback">{{ b.nombre | titlecase }}</span>
+                    </ng-template>
+                  </div>
+                  <div class="marca-picker__name">{{ b.nombre | titlecase }}</div>
+                </button>
+              </ng-container>
+
+              <ng-container *ngIf="tipo_vehiculo === 'ERT'">
+                <button type="button" class="marca-picker__card" *ngFor="let b of marcasCamionesERT"
+                  [class.is-selected]="isSelected(b.key)" role="option" [attr.aria-selected]="isSelected(b.key)"
+                  (click)="selectMarca(b)">
+                  <div class="marca-picker__icon">
+                    <img *ngIf="b.imageUrl; else noimg" [src]="b.imageUrl" [alt]="b.nombre" loading="lazy" />
+                    <ng-template #noimg>
+                      <span class="marca-picker__fallback">{{ b.nombre | titlecase }}</span>
+                    </ng-template>
+                  </div>
+                  <div class="marca-picker__name">{{ b.nombre | titlecase }}</div>
+                </button>
+              </ng-container>
+
             </div>
           </div>
           <p *ngIf="analizaForm('marca')" class="error">Selecciona una Marca</p>
@@ -67,6 +89,12 @@
                   <label for="marca">Selecciona la marca <span>*</span></label>
 
                   <div class="select-row">
+
+                    <button type="button" class="btn-otra-marca" (click)="selectOtherBrand()">
+                      <ion-icon name="add-circle-outline"></ion-icon>
+                      <span>Otra marca</span>
+                    </button>
+
                     <div class="control control--select">
                       <ion-select #lista formControlName="marca" interface="popover" placeholder="Selecciona..."
                         aria-label="Seleccionar marca"
@@ -79,10 +107,6 @@
                       </ion-select>
                     </div>
 
-                    <button type="button" class="btn-otra-marca" (click)="selectOtherBrand()">
-                      <ion-icon name="add-circle-outline"></ion-icon>
-                      <span>Otra marca</span>
-                    </button>
                   </div>
 
                   <p *ngIf="analizaForm('marca')" class="error">Selecciona una marca</p>
@@ -92,8 +116,25 @@
             </ng-content>
 
             <ng-content *ngIf="marcador === 2">
+
+              <ion-col size="12" size-md="6" class="col-field">
+                <div class="field">
+                  <label for="anio">Seleccionar año <span>*</span></label>
+                  <div class="control control--select">
+                    <ion-select #lista formControlName="anio" interface="popover" placeholder="Selecciona..."
+                      aria-label="Seleccionar año" (ionChange)="onSelectAnio($event)"
+                      [interfaceOptions]="{ cssClass: 'select-popover pop-anio', side: 'bottom', alignment: 'start' }"
+                      data-key="anio" (ionFocus)="syncPopoverWidths()">
+                      <ion-select-option [value]="null" disabled>Selecciona...</ion-select-option>
+                      <ion-select-option *ngFor="let y of anios" [value]="y">{{ y }}</ion-select-option>
+                    </ion-select>
+                  </div>
+                  <p *ngIf="analizaForm('anio')" class="error">Selecciona una año</p>
+                </div>
+              </ion-col>
+
               <!-- SELECT de modelo (visible por defecto) -->
-              <ion-col size="12" size-md="6" class="col-field" *ngIf="!showOtroModelo">
+              <ion-col size="12" size-md="6" class="col-field" *ngIf="!showOtroModelo && tipo_vehiculo !== 'ERT'">
                 <div class="field">
                   <label for="modelo">Selecciona el modelo <span>*</span></label>
                   <div class="control control--select">
@@ -104,6 +145,30 @@
                       <ion-select-option [value]="null" disabled>Selecciona...</ion-select-option>
                       <ion-select-option *ngFor="let m of modelos" [value]="m.nombre">
                         {{ m.nombre }}
+                      </ion-select-option>
+
+                      <ion-select-option [value]="OTRO_MODELO">
+                        Otro modelo…
+                      </ion-select-option>
+                    </ion-select>
+                  </div>
+                  <p *ngIf="analizaForm('modelo')" class="error">Selecciona un modelo</p>
+                </div>
+              </ion-col>
+
+              <!-- SELECT de modelo (visible por defecto) -->
+              <ion-col size="12" size-md="6" class="col-field" *ngIf="!showOtroModelo && tipo_vehiculo === 'ERT'">
+                <div class="field">
+                  <label for="modelo">Selecciona el modelo <span>*</span></label>
+                  <div class="control control--select">
+                    <ion-select #lista formControlName="modelo" interface="popover" placeholder="Selecciona..."
+                      aria-label="Seleccionar modelo"
+                      [interfaceOptions]="{ cssClass: 'select-popover pop-modelo', side: 'bottom', alignment: 'start' }"
+                      data-key="modelo" (ionFocus)="syncPopoverWidths()" (ionChange)="onModeloChange($event)">
+                      <ion-select-option [value]="null" disabled>Selecciona...</ion-select-option>
+                      <ion-select-option [disabled]="!form.get('anio')?.value" *ngFor="let m of modelos"
+                        [value]="m.modelo">
+                        {{ m.modelo }}
                       </ion-select-option>
 
                       <ion-select-option [value]="OTRO_MODELO">
@@ -138,21 +203,6 @@
                 </div>
               </ion-col>
 
-              <ion-col size="12" size-md="6" class="col-field">
-                <div class="field">
-                  <label for="anio">Seleccionar año <span>*</span></label>
-                  <div class="control control--select">
-                    <ion-select #lista formControlName="anio" interface="popover" placeholder="Selecciona..."
-                      aria-label="Seleccionar año"
-                      [interfaceOptions]="{ cssClass: 'select-popover pop-anio', side: 'bottom', alignment: 'start' }"
-                      data-key="anio" (ionFocus)="syncPopoverWidths()">
-                      <ion-select-option [value]="null" disabled>Selecciona...</ion-select-option>
-                      <ion-select-option *ngFor="let y of anios" [value]="y">{{ y }}</ion-select-option>
-                    </ion-select>
-                  </div>
-                  <p *ngIf="analizaForm('anio')" class="error">Selecciona una año</p>
-                </div>
-              </ion-col>
 
               <ion-col size="12" size-md="6" class="col-field">
                 <div class="field">
@@ -213,9 +263,17 @@
                 <div class="field">
                   <label for="fechaNacimiento">Fecha de nacimiento <span>*</span></label>
                   <div class="control">
-                    <input id="fechaNacimiento" type="date" class="form-input" formControlName="fechaNacimiento" />
+                    <input id="fechaNacimiento" type="date" class="form-input" formControlName="fechaNacimiento"
+                      inputmode="numeric" [min]="minNacimiento" [max]="maxAdulto" placeholder="aaaa-mm-dd"
+                      (change)="onFechaNacimientoChange($event)" />
                   </div>
-                  <p *ngIf="analizaForm('fechaNacimiento')" class="error">Escribe tu fecha de nacimiento..</p>
+                  <p *ngIf="analizaForm('fechaNacimiento')" class="error">
+                    Escribe tu fecha de nacimiento.
+                  </p>
+                  <p *ngIf="form.get('fechaNacimiento')?.hasError('underage') && (form.get('fechaNacimiento')?.dirty || form.get('fechaNacimiento')?.touched)"
+                    class="error">
+                    Debes ser mayor de 18 años.
+                  </p>
                 </div>
               </ion-col>
 
@@ -258,8 +316,27 @@
 
       </form>
 
+      <div class="mensaje-seguro">
+        <div class="mensaje-seguro__header">
+          <ion-icon name="information-circle-outline"></ion-icon>
+          <h3>¡Cotizamos por ti!</h3>
+        </div>
+
+        <p>
+          Déjanos los datos de tu vehículo y tus datos de contacto. Nosotros realizaremos la cotización por ti y te
+          contactaremos por <ion-icon name="mail-outline"></ion-icon> correo o
+          <ion-icon name="logo-whatsapp"></ion-icon> WhatsApp con las mejores opciones disponibles.
+        </p>
+
+        <div class="mensaje-seguro__stickers">
+          <ion-icon name="car-outline"></ion-icon>
+          <ion-icon name="cash-outline"></ion-icon>
+          <ion-icon name="shield-checkmark-outline"></ion-icon>
+        </div>
+      </div>
+
     </div>
   </section>
 
-  <app-footer></app-footer>
+  <app-footer *ngIf="tipoDispocitivo !== 'telefono'"></app-footer>
 </ion-content>

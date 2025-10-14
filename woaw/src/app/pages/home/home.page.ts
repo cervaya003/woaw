@@ -48,7 +48,6 @@ export class HomePage implements OnInit {
   overlayLoaded = false;
 
   imgenPrincipal: string = '';
-  imgenArrendamiento: string = '';
   videoSrc: string = '';
 
   @ViewChild('videoEl', { static: false })
@@ -188,15 +187,12 @@ export class HomePage implements OnInit {
     localStorage.setItem('historialBusqueda', JSON.stringify(historial));
   } 
   async cargaimagen() {
-    this.imgenPrincipal = '/assets/autos/publicidad/principal4.webp';
-    this.imgenArrendamiento = '/assets/autos/publicidad/arrendamiento.png';
+    this.imgenPrincipal = '/assets/autos/publicidad/angel.webp';
     this.generalService.addPreload(this.imgenPrincipal, 'image');
-    this.generalService.addPreload(this.imgenArrendamiento, 'image');
     this.overlayLoaded = false;
     try {
       await Promise.all([
         this.generalService.preloadHero(this.imgenPrincipal, 4500),
-        this.generalService.preloadHero(this.imgenArrendamiento, 4500),
       ]);
     } finally {
       this.overlayLoaded = true;

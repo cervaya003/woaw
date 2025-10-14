@@ -3,7 +3,7 @@
 <ion-content [fullscreen]="true">
 
   <div class="hero">
-    <img src="/assets/autos/seg1.webp" class="cabecera" alt="Seguro de autos" />
+    <img src="/assets/autos/seguro.png" class="cabecera" alt="Seguro de autos" />
 
     <div class="hero__overlay">
       <div class="hero__content">
@@ -25,17 +25,17 @@
         <button class="cta">Cotizar ahora</button>
       </div>
 
-      <div class="cat-card autos" (click)="elegirSeguro('Camion', 'seguros/cotiza/camiones')">
+      <div class="cat-card camiones" (click)="elegirSeguro('Camion', 'seguros/cotiza/camiones')">
         <div class="icon-wrap">
           <img src="/assets/img/icon-camion.png" alt="Camiones" class="cat-img" />
         </div>
         <h3>Camiones</h3>
-        <p class="desc">Seguro especializado para flotillas, carga pesada y transporte comercial.</p>
+        <p class="desc">Seguro especializado para carga pesada y transporte comercial.</p>
         <!-- <span class="soon">Próximamente</span> -->
         <button class="cta">Cotizar ahora</button>
       </div>
 
-      <div class="cat-card motos" (click)="elegirSeguro('Moto', 'seguros/cotiza/camiones')">
+      <div class="cat-card motos" (click)="elegirSeguro('Moto', 'seguros/cotiza/motos')">
         <div class="icon-wrap">
           <img src="/assets/img/icon-moto.png" alt="Motos" class="cat-img" />
         </div>
@@ -44,13 +44,13 @@
         <button class="cta">Cotizar ahora</button>
       </div>
 
-      <div class="cat-card servicios disabled">
+      <div class="cat-card ERT" (click)="elegirSeguro('ERT', 'seguros/cotiza/ert')">
         <div class="icon-wrap">
           <img src="/assets/img/icon-coche-rt.png" alt="Servicios RT" class="cat-img" />
         </div>
         <h3>Servicios ERT</h3>
-        <p class="desc">Soluciones de aseguramiento para autos de plataforma como Uber, Didi Y inDrive.</p>
-        <span class="soon">Próximamente</span>
+        <p class="desc">Soluciones para autos de plataforma como Uber, Didi Y inDrive.</p>
+        <button class="cta">Cotizar ahora</button>
       </div>
     </div>
   </section>

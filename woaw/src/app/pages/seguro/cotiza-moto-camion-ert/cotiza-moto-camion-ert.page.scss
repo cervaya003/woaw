@@ -6,7 +6,7 @@
 
     @media(max-width: 820px) {
         margin: 10px auto;
-        min-height: 70svh;
+        min-height: 100svh;
     }
 
     .carta_manual_cotizar__contenido {
@@ -36,12 +36,6 @@
                 letter-spacing: 0.3px;
             }
 
-            .linea_horizontal {
-                width: 80px;
-                height: 2px;
-                background: #ff0000;
-                border-radius: 6px;
-            }
         }
 
         .header_manual_cotizar {
@@ -77,6 +71,31 @@
                 ion-icon {
                     color: #000000;
                     font-size: 20px;
+                }
+            }
+
+            .icon-wrap {
+                width: 70px;
+                height: 70px;
+                display: grid;
+                place-items: center;
+                background: #fff;
+                border-radius: 50%;
+                box-shadow: 0 0 0 2px #ff2121 inset, 0 6px 20px rgba(255, 33, 33, 0.2);
+                position: relative;
+                z-index: 2;
+                margin-left: 3rem;
+
+                @media(max-width: 720px) {
+                    margin-left: 0rem;
+                }
+
+                .cat-img {
+                    width: 46px;
+                    height: 46px;
+                    object-fit: contain;
+                    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.25));
+                    transition: transform 0.25s ease;
                 }
             }
         }
@@ -152,7 +171,7 @@
             @media (max-width: 820px) {
                 width: 100%;
                 position: fixed;
-                bottom: 64px;
+                bottom: 0px;
                 left: 0;
                 right: 0;
                 z-index: 2;
@@ -161,7 +180,7 @@
                 flex-direction: row;
                 gap: 8px;
                 padding: 12px;
-                background: #ffffff;
+                background: hsl(0, 0%, 0%);
                 border-top: 1px solid #e9edf3;
                 box-shadow: 0 -4px 12px rgba(0, 0, 0, .08);
                 border-radius: 0;
@@ -655,4 +674,114 @@
     text-decoration: underline;
     color: #3a8f05;
     cursor: pointer;
+}
+
+.mensaje-seguro {
+    text-align: center;
+    margin-top: 5rem;
+    padding: 14px 16px;
+    background: rgba(255, 255, 255, 0.128);
+    border-radius: 14px;
+    font-size: clamp(14px, 2vw, 16px);
+    color: #000;
+    line-height: 1.5;
+    max-width: 640px;
+    border: 1px solid #b10101;
+    margin-inline: auto;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+
+    &:hover {
+        background: rgba(177, 1, 1, 0.08);
+        transform: translateY(-2px);
+    }
+
+    &__header {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin-bottom: 8px;
+
+        ion-icon {
+            color: #b10101;
+            font-size: 22px;
+        }
+
+        h3 {
+            margin: 0;
+            font-weight: 600;
+            font-size: clamp(16px, 2vw, 18px);
+            color: #000;
+        }
+    }
+
+    p {
+        margin: 0 auto 10px;
+        color: #000;
+        max-width: 560px;
+
+        ion-icon {
+            color: #b10101;
+            vertical-align: middle;
+            font-size: 18px;
+        }
+    }
+
+    &__stickers {
+        display: flex;
+        justify-content: center;
+        gap: 18px;
+        margin-top: 10px;
+
+        ion-icon {
+            font-size: 26px;
+            color: #b10101;
+            background: #f9e6e6;
+            border-radius: 50%;
+            padding: 8px;
+            transition: transform 0.2s ease;
+
+            &:hover {
+                transform: scale(1.15);
+            }
+        }
+    }
+
+    @media (max-width: 820px) {
+        margin-top: 2rem;
+        padding: 10px;
+
+        &__stickers ion-icon {
+            font-size: 22px;
+            padding: 6px;
+        }
+    }
+}
+
+.linea_horizontal {
+    width: 80px;
+    height: 2px;
+    background: #ff0000;
+    border-radius: 6px;
+    margin-bottom: 0rem;
+}
+
+.item-date {
+    --background: #fff;
+    border-radius: 8px;
+    padding: 4px 12px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+
+    ion-datetime {
+        width: 100%;
+        font-family: 'Poppins', sans-serif;
+        font-size: 15px;
+        font-weight: 500;
+        color: #000;
+        --placeholder-color: #aaa;
+        --background: transparent;
+    }
 }

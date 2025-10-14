@@ -1,5 +1,5 @@
 .carta_manual_cotizar {
-    max-width: 1200px;
+    max-width: 900px;
     width: 100%;
     margin: 30px auto;
     min-height: 50svh;
@@ -79,6 +79,31 @@
                     font-size: 20px;
                 }
             }
+
+            .icon-wrap {
+                width: 70px;
+                height: 70px;
+                display: grid;
+                place-items: center;
+                background: #fff;
+                border-radius: 50%;
+                box-shadow: 0 0 0 2px #ff2121 inset, 0 6px 20px rgba(255, 33, 33, 0.2);
+                position: relative;
+                z-index: 2;
+                margin-left: 3rem;
+
+                @media(max-width: 720px) {
+                    margin-left: 0rem;
+                }
+
+                .cat-img {
+                    width: 46px;
+                    height: 46px;
+                    object-fit: contain;
+                    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.25));
+                    transition: transform 0.25s ease;
+                }
+            }
         }
 
         .field {
@@ -152,7 +177,7 @@
             @media (max-width: 820px) {
                 width: 100%;
                 position: fixed;
-                bottom: 64px;
+                bottom: 0px;
                 left: 0;
                 right: 0;
                 z-index: 2;
@@ -161,7 +186,7 @@
                 flex-direction: row;
                 gap: 8px;
                 padding: 12px;
-                background: #ffffff;
+                background: #000000;
                 border-top: 1px solid #e9edf3;
                 box-shadow: 0 -4px 12px rgba(0, 0, 0, .08);
                 border-radius: 0;
@@ -208,8 +233,9 @@
                 }
 
                 &:disabled {
-                    background: #ff7f7f;
+                    background: #ff0000;
                     cursor: not-allowed;
+                    opacity: 0.6;
                     box-shadow: none;
                     transform: none;
                 }
@@ -366,4 +392,12 @@
             }
         }
     }
+}
+
+
+
+.error {
+    color: #ff2121;
+    font-size: clamp(10px, 1vw, 12px);
+    margin-top: 4px;
 }
