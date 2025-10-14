@@ -1,72 +1,55 @@
 <app-navbar></app-navbar>
 
 <ion-content class="home-wrap" [fullscreen]="true">
-  <!-- HERO -->
-  <!-- <section class="hero">
-    <div class="hero__bg"></div>
-    <div class="hero__fx hero__fx--a"></div>
-    <div class="hero__fx hero__fx--b"></div>
+ <section class="contenedor_cratas_home">
+  <div class="cards-grid">
 
-    <div class="hero__content">
-      <h1 class="hero__title">
-        Encuentra tu siguiente auto en minutos
-      </h1>
-      <p class="hero__subtitle">
-        Nuevos impecables, seminuevos certificados y usados con historia clara. Todo en un solo lugar.
-      </p>
-    </div>
-  </section> -->
-
-  <!-- CATEGORÍAS TOP -->
-  <section class="cats">
-    <div class="cats__grid">
-      <article class="cat" *ngFor="let c of categorias" (click)="go(c.href)" tabindex="0" (keyup.enter)="go(c.href)">
-        <div class="cat__bg" [ngClass]="c.bg"></div>
-        <div class="cat__overlay"></div>
-        <header class="cat__head">
-          <div class="cat__icon" [innerHTML]="c.icon"></div>
-          <h2 class="cat__title">{{ c.title }}</h2>
+      <article class="car-card car-card-nuevos" (click)="redirecion('/nuevos')">
+        <img src="/assets/home/cartasHome1.webp" alt="Auto nuevo" class="bg-card">
+        <header class="card-head">
+          <h3><span>Autos</span> Nuevos</h3>
+          <p>Estrena hoy con garantía total.</p>
         </header>
-        <p class="cat__desc">{{ c.desc }}</p>
-        <footer class="cat__footer">
-          <div class="meta">
-            <span class="meta__item">
-              <ion-icon name="speedometer-outline"></ion-icon>
-              {{ c.meta.km }} km.
-            </span>
-            <span class="meta__item">
-              <ion-icon name="cash-outline"></ion-icon>
-              {{ c.meta.precio }} MXN.
-            </span>
-          </div>
-          <button class="btn__item">Explorar</button>
+        <ul class="card-list">
+          <li>0 km</li>
+          <li>Financiamiento</li>
+        </ul>
+        <footer class="card-foot">
+          <button class="btn-card btn-nuevos">Ver catálogo</button>
         </footer>
       </article>
-    </div>
-  </section>
 
-  <app-precentacion></app-precentacion>
+      <article class="car-card car-card-seminuevos" (click)="redirecion('/seminuevos')">
+        <img src="/assets/home/cartasHome2.webp" alt="Auto seminuevo" class="bg-card">
+        <header class="card-head">
+          <h3><span>Autos</span> Seminuevos</h3>
+          <p>Historial verificado.</p>
+        </header>
+        <ul class="card-list">
+          <li>Tomamos tu auto</li>
+          <li>Financiamiento</li>
+        </ul>
+        <footer class="card-foot">
+          <button class="btn-card btn-seminuevos">Explorar</button>
+        </footer>
+      </article>
 
-  <!-- BENEFICIOS / TRUST -->
-  <section class="trust">
-    <div class="trust__grid">
-      <div class="trust__item">
-        <ion-icon name="shield-checkmark-outline"></ion-icon>
-        <h3>Financiamiento en Hey Banco</h3>
-        <p>Publicaciones verificadas y procesos con identidad validada.</p>
-      </div>
-      <div class="trust__item">
-        <ion-icon name="card-outline"></ion-icon>
-        <h3>Opciones de pago</h3>
-        <p>Contado, crédito y arrendamiento con simuladores claros.</p>
-      </div>
-      <div class="trust__item">
-        <ion-icon name="leaf-outline"></ion-icon>
-        <h3>Eficiencia</h3>
-        <p>Filtros inteligentes, favoritos y seguimiento en tiempo real.</p>
-      </div>
-    </div>
-  </section>
+      <article class="car-card car-card-usados" (click)="redirecion('/usados')">
+        <img src="/assets/home/cartasHome3.webp" alt="Auto nuevo" class="bg-card">
+        <header class="card-head">
+          <h3><span>Autos</span> Usados</h3>
+          <p>Listos para una nueva historia.</p>
+        </header>
+        <ul class="card-list">
+          <li>Entrega rápida</li>
+          <li>Financiamiento</li>
+        </ul>
+        <footer class="card-foot">
+          <button class="btn-card btn-usados">Ver ofertas</button>
+        </footer>
+      </article>
 
+  </div>
+</section>
   <app-footer></app-footer>
 </ion-content>

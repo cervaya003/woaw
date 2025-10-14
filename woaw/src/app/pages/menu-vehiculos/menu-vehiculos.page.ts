@@ -93,4 +93,8 @@ export class MenuVehiculosPage implements OnInit {
   verMas(url: string) {
     this.router.navigate([url]);
   }
+
+  public redirecion(url: string){
+    this.router.navigate([url]);
+  }
 }
