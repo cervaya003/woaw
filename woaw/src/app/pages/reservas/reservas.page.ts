@@ -5,6 +5,7 @@ import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors }
 import { RentaService } from '../../services/renta.service';
 import { ReservaService, CreateBookingResponse } from '../../services/reserva.service';
 import { GeneralService } from '../../services/general.service';
+import { take } from 'rxjs/operators';
 
 function toYMDLocal(d = new Date()): string {
   const y = d.getFullYear();
@@ -58,9 +59,23 @@ export class ReservasPage implements OnInit {
   total = 0;
   dias = 1;
   enviando = false;
+
+  // Días bloqueados (YYYY-MM-DD)
   ocupadasISO = new Set<string>();
+
+  // Rango elegido por el usuario (highlight rojo)
   rangeValue: string[] = [];
   highlightedRange: Array<{ date: string; textColor?: string; backgroundColor?: string }> = [];
+
+  // Highlights grises para días bloqueados
+  highlightedDisabled: Array<{ date: string; textColor?: string; backgroundColor?: string }> = [];
+
+  // Para forzar re-montaje del ion-datetime
+  showCalendar = true;
+
+  // 🔒 Nuevo: sólo calculamos cuando el usuario toque el calendario aquí
+  private userInteracted = false;
+
   private prevRendered = new Set<string>();
   private suppressDupUntil = 0;
 
@@ -73,25 +88,35 @@ export class ReservasPage implements OnInit {
     private loadingCtrl: LoadingController,
     private toastCtrl: ToastController,
     private alertCtrl: AlertController,
-    private general: GeneralService // <-- para usar la misma alerta que en renta-ficha
+    private general: GeneralService
   ) { }
 
   ngOnInit(): void {
     this.carId = this.route.snapshot.paramMap.get('id') || '';
     this.initForm();
-    const qp = this.route.snapshot.queryParamMap;
-    if (qp.get('inicio')) this.form.patchValue({ fechaInicio: qp.get('inicio') });
-    if (qp.get('fin')) this.form.patchValue({ fechaFin: qp.get('fin') });
-    this.syncRangeFromForm();
-    this.prevRendered = new Set(this.rangeValue);
-    this.buildHighlightedRange();
-    this.loadCar();
+
+    // ❌ Ignoramos params de renta-ficha para arrancar en blanco
+    // const qp = this.route.snapshot.queryParamMap;
+    // if (qp.get('inicio')) this.form.patchValue({ fechaInicio: qp.get('inicio') });
+    // if (qp.get('fin')) this.form.patchValue({ fechaFin: qp.get('fin') });
+
+    // Suscripción gateada: no calcula hasta interacción local
     this.form.valueChanges.subscribe(() => {
+      if (!this.userInteracted) return;
       this.recalc();
       this.syncRangeFromForm();
       this.validarMinDiasYDisponibilidad();
       this.buildHighlightedRange();
     });
+
+    // Arranca limpio
+    this.form.reset({ fechaInicio: null, fechaFin: null, notasCliente: '' }, { emitEvent: false });
+    this.rangeValue = [];
+    this.highlightedRange = [];
+    this.prevRendered = new Set(this.rangeValue);
+
+    this.buildDisabledHighlights(); // inicial
+    this.loadCar();                 // carga coche y bloqueos
   }
 
   private initForm() {
@@ -113,22 +138,39 @@ export class ReservasPage implements OnInit {
       next: async (coche) => {
         this.coche = coche;
 
+        // Excepciones -> bloqueados
+        this.rentaService
+          .diasNoDisponibles(this.carId)
+          .pipe(take(1))
+          .subscribe((dias: string[]) => {
+            const nuevo = new Set(this.ocupadasISO);
+            for (const ymd of dias) nuevo.add(ymd);
+            this.ocupadasISO = nuevo;
+
+            this.buildDisabledHighlights();
+            // NO calculamos nada del resumen hasta interacción local
+            this.forceCalendarRerender();
+          });
+
+        // (opcional) Días ocupados por reservas si tu servicio los provee
         try {
           const maybe$ = (this.rentaService as any)?.fechasOcupadas?.(this.carId);
           if (maybe$?.subscribe) {
-            maybe$.subscribe((arrYMD: string[]) => {
+            maybe$.pipe(take(1)).subscribe((arrYMD: string[]) => {
               if (Array.isArray(arrYMD)) {
-                this.ocupadasISO = new Set(arrYMD);
-                this.validarMinDiasYDisponibilidad();
+                const nuevo = new Set(this.ocupadasISO);
+                for (const s of arrYMD) nuevo.add(String(s).slice(0, 10));
+                this.ocupadasISO = nuevo;
+
+                this.buildDisabledHighlights();
+                this.forceCalendarRerender();
               }
             });
           }
-        } catch {
-          /* noop */
-        }
+        } catch {/* noop */ }
 
         await loading.dismiss();
-        this.recalc();
+        // NO recalc aquí (evitamos influir el resumen sin interacción)
       },
       error: async () => {
         await loading.dismiss();
@@ -142,6 +184,7 @@ export class ReservasPage implements OnInit {
     return toYMDLocal(new Date());
   }
 
+  // Deshabilita días bloqueados
   isDateEnabled = (isoDateString: string): boolean => {
     try {
       const ymd = (isoDateString || '').slice(0, 10);
@@ -150,6 +193,27 @@ export class ReservasPage implements OnInit {
       return true;
     }
   };
+
+  // Highlights grises para días bloqueados
+  private buildDisabledHighlights(): void {
+    const bg = '#e5e7eb'; // gris claro
+    const fg = '#6b7280'; // texto gris medio
+    this.highlightedDisabled = Array.from(this.ocupadasISO).map((ymd) => ({
+      date: ymd,
+      backgroundColor: bg,
+      textColor: fg,
+    }));
+  }
+
+  // Combinar bloqueados (gris) + rango seleccionado (rojo)
+  get mergedHighlights() {
+    return [...this.highlightedDisabled, ...this.highlightedRange];
+  }
+
+  private forceCalendarRerender() {
+    this.showCalendar = false;
+    setTimeout(() => (this.showCalendar = true), 0);
+  }
 
   private diffDaysInclusiveLocal(i: Date, f: Date): number {
     const si = startOfDayLocal(i).getTime();
@@ -173,7 +237,12 @@ export class ReservasPage implements OnInit {
       this.dias = 1;
     }
 
-    const porDia = Number(this.coche?.precio) || 0;
+    const porDia = Number(
+      this.coche?.precio?.porDia ??
+      this.coche?.precioPorDia ??
+      this.coche?.precio ??
+      0
+    );
     this.total = porDia * (this.dias || 1);
   }
 
@@ -211,10 +280,14 @@ export class ReservasPage implements OnInit {
   }
 
   onRangeChange(ev: CustomEvent) {
+    // 👇 marca interacción local
+    this.userInteracted = true;
     this.handlePick(ev?.detail?.value);
   }
 
   onRangeValueChange(ev: any) {
+    // 👇 marca interacción local
+    this.userInteracted = true;
     this.handlePick(Array.isArray(ev) ? ev : (ev?.detail?.value ?? ev));
   }
 
@@ -230,8 +303,7 @@ export class ReservasPage implements OnInit {
 
   private sameSet(a: string[], b: string[]): boolean {
     if (a.length !== b.length) return false;
-    const A = new Set(a),
-      B = new Set(b);
+    const A = new Set(a), B = new Set(b);
     for (const x of A) if (!B.has(x)) return false;
     return true;
   }
@@ -241,11 +313,9 @@ export class ReservasPage implements OnInit {
     if (now < this.suppressDupUntil) return;
 
     const arr = this.normalizeMulti(val);
-
     if (this.sameSet(arr, this.rangeValue)) return;
 
     const newSet = new Set(arr);
-
     let lastTouched: string | null = null;
     let isRemoval = false;
 
@@ -334,10 +404,8 @@ export class ReservasPage implements OnInit {
       }
     }
 
-    this.form.patchValue({ fechaInicio: newStart, fechaFin: newEnd ?? null }, { emitEvent: false });
-    this.syncRangeFromForm();
-    this.validarMinDiasYDisponibilidad();
-    this.buildHighlightedRange();
+    // A partir de aquí (interacción local) sí calculamos
+    this.form.patchValue({ fechaInicio: newStart, fechaFin: newEnd ?? null }, { emitEvent: true });
   }
 
   private buildHighlightedRange(): void {
@@ -366,8 +434,17 @@ export class ReservasPage implements OnInit {
   }
 
   async reservar() {
+    // 🚫 Hasta que el usuario interactúe aquí
+    if (!this.userInteracted) {
+      this.toast('Selecciona las fechas de tu reserva.');
+      return;
+    }
+
     if (!this.canSubmit || !this.coche || this.enviando) {
-      if (!this.enviando) this.toast('Completa el formulario.');
+      if (!this.enviando) {
+        this.form.markAllAsTouched();
+        this.toast('Completa el formulario.');
+      }
       return;
     }
 
@@ -408,7 +485,7 @@ export class ReservasPage implements OnInit {
         aceptoTerminos: true,
       })
       .subscribe({
-        next: async (res: CreateBookingResponse) => {
+        next: async (_res: CreateBookingResponse) => {
           await loading.dismiss();
           this.enviando = false;
           this.general.alert(
@@ -416,13 +493,12 @@ export class ReservasPage implements OnInit {
             `Tu reserva fue creada correctamente. Espera a que el dueño acepte la solicitud para continuar.`,
             'success'
           );
-
           this.router.navigate(['/']);
         },
-        error: async (e: any) => {
+        error: async (_e: any) => {
           await loading.dismiss();
           this.enviando = false;
-          this.toast(e?.message || 'Error al crear la reserva.');
+          // El service ya muestra la alerta con el detalle del backend.
         },
       });
   }
@@ -433,6 +509,9 @@ export class ReservasPage implements OnInit {
   }
 
   get canSubmit(): boolean {
+    // 🚫 No habilitar hasta interacción local
+    if (!this.userInteracted) return false;
+
     const ini = this.form.value.fechaInicio as string | null;
     const fin = (this.form.value.fechaFin as string | null) ?? ini;
     if (!ini) return false;
@@ -451,3 +530,4 @@ export class ReservasPage implements OnInit {
   volver() { history.back(); }
   cerrar() { this.router.navigateByUrl('/'); }
 }
+git

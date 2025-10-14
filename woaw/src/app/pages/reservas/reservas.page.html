@@ -34,10 +34,11 @@
         <form [formGroup]="form">
           <div class="fechas-grid">
             <ion-item class="danger-datetime" lines="none">
-              <ion-datetime presentation="date" [multiple]="true" [min]="minStart" [isDateEnabled]="isDateEnabled"
-                [value]="rangeValue" [highlightedDates]="highlightedRange" locale="es-ES"
-                (ionChange)="onRangeChange($event)">
+              <ion-datetime *ngIf="showCalendar" presentation="date" [multiple]="true" [min]="minStart"
+                [isDateEnabled]="isDateEnabled" [value]="rangeValue" [highlightedDates]="mergedHighlights"
+                locale="es-ES" (ionChange)="onRangeChange($event)">
               </ion-datetime>
+
             </ion-item>
 
             <ion-note color="danger"

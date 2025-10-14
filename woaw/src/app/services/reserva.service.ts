@@ -4,6 +4,7 @@ import { environment } from '../../environments/environment';
 import { Observable, from, throwError } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
 import { HeadersService } from './headers.service';
+import { GeneralService } from './general.service';
 
 export interface BookingFiltro {
   estatus?: 'pendiente' | 'aceptada' | 'en_curso' | 'finalizada' | 'cancelada';
@@ -52,7 +53,7 @@ export interface RentalBooking {
   _id: string;
   codigo?: string;
   rentalCar: string;
-  usuario: any; // puede venir como string u objeto
+  usuario: any;
   fechaInicio: string;
   fechaFin: string;
   estatus: BookingStatus;
@@ -84,7 +85,7 @@ export interface CreateBookingInput {
   rentalCar: string;
   fechaInicio: string | Date;
   fechaFin: string | Date;
-  items?: LineItem[] | string; // permitimos string JSON en UI, lo parseamos
+  items?: LineItem[] | string;
   total?: number;
   moneda?: string;
   notasCliente?: string;
@@ -105,7 +106,8 @@ export class ReservaService {
 
   constructor(
     private http: HttpClient,
-    private headersService: HeadersService
+    private headersService: HeadersService,
+    private general: GeneralService
   ) { }
 
   private normalizeBaseUrl(url: string): string {
@@ -141,16 +143,13 @@ export class ReservaService {
     const base = this.baseUrl.replace(/\/+$/, '');
     const p = path.startsWith('/') ? path : `/${path}`;
     const primary = `${base}${p}`;
-
     const hasApi = /\/api$/.test(base);
     const altBase = hasApi ? base.replace(/\/api$/, '') : `${base}/api`;
     const alt = `${altBase}${p}`;
-
     const set = new Set([primary.replace(/\/+$/, ''), alt.replace(/\/+$/, '')]);
     return Array.from(set);
   }
 
-  // ======== ANTI-CACHE HELPERS ========
   private withNoCache(h: HttpHeaders): HttpHeaders {
     return h
       .set('Cache-Control', 'no-cache')
@@ -162,7 +161,6 @@ export class ReservaService {
     if (headers instanceof HttpHeaders) {
       return this.withNoCache(headers);
     }
-    // fallback para objetos literales de headers
     return {
       ...headers,
       'Cache-Control': 'no-cache',
@@ -175,47 +173,127 @@ export class ReservaService {
     const ts = Date.now().toString();
     return (p ?? new HttpParams()).set('_ts', ts);
   }
-  // ====================================
+
+  private formatHttpErrorMessage(err: any): string {
+    const fallback = 'Ocurrió un error al procesar la solicitud.';
+    if (!err) return fallback;
+
+    const parts: string[] = [];
+    const body = err.error;
+
+    if (body) {
+      if (typeof body === 'string') {
+        parts.push(body);
+      } else {
+        if (typeof body.message === 'string') parts.push(body.message);               // título típico
+        if (typeof body.error === 'string') parts.push(body.error);                   // detalle típico
+        else if (body.error?.message) parts.push(String(body.error.message));
+
+        if (Array.isArray(body.errors) && body.errors.length > 0) {
+          parts.push(
+            ...body.errors
+              .map((e: any) => e?.msg || e?.message || e)
+              .filter(Boolean)
+              .map(String)
+          );
+        }
+      }
+    }
+
+    if (parts.length === 0 && err.message) parts.push(String(err.message));
+
+    const clean = Array.from(new Set(parts.map(s => s.trim()).filter(Boolean)));
+    return clean.length ? clean.join('\n') : fallback;
+  }
+
+  private handleHttpErrorWithContext(_op: 'GET' | 'POST' | 'PUT' | 'DELETE', _path: string) {
+    return (err: any) => {
+      const body = err?.error;
+      const title =
+        (typeof body?.message === 'string' && body.message.trim()) ||
+        (typeof err?.message === 'string' && err.message.trim()) ||
+        'No se pudo completar la acción';
+
+      let detail = '';
+      if (typeof body?.error === 'string' && body.error.trim()) {
+        detail = body.error.trim();
+      } else if (body?.error?.message) {
+        detail = String(body.error.message);
+      } else if (Array.isArray(body?.errors) && body.errors.length) {
+        detail = body.errors
+          .map((e: any) => e?.msg || e?.message || String(e))
+          .filter(Boolean)
+          .join('\n');
+      }
+
+      if (!detail) detail = this.formatHttpErrorMessage(err);
+
+      this.general.alert(title, detail, 'danger');
+      return throwError(() => err);
+    };
+  }
 
   private getWithApiFallback<T>(path: string, headers: any, params?: any) {
     const [primary, alt] = this.buildApiCandidates(path);
-    const h = this.withNoCacheHeaders(headers); // fuerza no-cache en GET
+    const h = this.withNoCacheHeaders(headers);
+    const handle = this.handleHttpErrorWithContext('GET', path);
+
     return this.http.get<T>(primary, { headers: h, params }).pipe(
       catchError((err) => {
-        if (err?.status === 404 && alt) return this.http.get<T>(alt, { headers: h, params });
-        return this.headersService.handleError(err);
+        if (err?.status === 404 && alt) {
+          return this.http.get<T>(alt, { headers: h, params }).pipe(
+            catchError(this.handleHttpErrorWithContext('GET', path))
+          );
+        }
+        return handle(err);
       })
     );
   }
 
   private postWithApiFallback<T>(path: string, body: any, headers: any, params?: any) {
     const [primary, alt] = this.buildApiCandidates(path);
+    const handle = this.handleHttpErrorWithContext('POST', path);
+
     return this.http.post<T>(primary, body, { headers, params }).pipe(
       catchError((err) => {
-        if (err?.status === 404 && alt) return this.http.post<T>(alt, body, { headers, params });
-        return this.headersService.handleError(err);
+        if (err?.status === 404 && alt) {
+          return this.http.post<T>(alt, body, { headers, params }).pipe(
+            catchError(this.handleHttpErrorWithContext('POST', path))
+          );
+        }
+        return handle(err);
       })
     );
   }
 
   private putWithApiFallback<T>(path: string, body: any, headers: any, params?: any) {
     const [primary, alt] = this.buildApiCandidates(path);
+    const handle = this.handleHttpErrorWithContext('PUT', path);
+
     return this.http.put<T>(primary, body, { headers, params }).pipe(
       catchError((err) => {
-        if (err?.status === 404 && alt) return this.http.put<T>(alt, body, { headers, params });
-        return this.headersService.handleError(err);
+        if (err?.status === 404 && alt) {
+          return this.http.put<T>(alt, body, { headers, params }).pipe(
+            catchError(this.handleHttpErrorWithContext('PUT', path))
+          );
+        }
+        return handle(err);
       })
     );
   }
 
   private deleteWithApiFallback<T>(path: string, headers: any, params?: any, body?: any) {
     const [primary, alt] = this.buildApiCandidates(path);
+    const handle = this.handleHttpErrorWithContext('DELETE', path);
+
     return this.http.request<T>('DELETE', primary, { headers, params, body }).pipe(
       catchError((err) => {
         if (err?.status === 404 && alt) {
-          return this.http.request<T>('DELETE', alt, { headers, params, body });
+          return this.http.request<T>('DELETE', alt, { headers, params, body }).pipe(
+            catchError(this.handleHttpErrorWithContext('DELETE', path))
+          );
         }
-        return this.headersService.handleError(err);
+        return handle(err);
       })
     );
   }
@@ -270,16 +348,22 @@ export class ReservaService {
 
     if (typeof payload.items === 'string') {
       try { payload.items = JSON.parse(payload.items); }
-      catch { return throwError(() => new Error('Formato inválido de items (JSON)')); }
+      catch {
+        this.general.alert('Datos inválidos', 'Formato inválido de items (JSON).', 'danger');
+        return throwError(() => new Error('Formato inválido de items (JSON)'));
+      }
     }
 
     if (!payload.rentalCar || !payload.fechaInicio || !payload.fechaFin) {
+      this.general.alert('Campos faltantes', 'Faltan campos: rentalCar, fechaInicio, fechaFin', 'danger');
       return throwError(() => new Error('Faltan campos: rentalCar, fechaInicio, fechaFin'));
     }
     if (new Date(payload.fechaFin) <= new Date(payload.fechaInicio)) {
+      this.general.alert('Rango inválido', 'fechaFin debe ser mayor a fechaInicio.', 'danger');
       return throwError(() => new Error('Rango de fechas inválido: fechaFin debe ser > fechaInicio.'));
     }
     if (payload.aceptoTerminos !== true) {
+      this.general.alert('Términos', 'Debes aceptar los términos para continuar.', 'danger');
       return throwError(() => new Error('Debes aceptar los términos para continuar.'));
     }
 
@@ -339,31 +423,17 @@ export class ReservaService {
     );
   }
 
-  /**
-   * Enviar datos + fotos de Check-In en UN SOLO request multipart.
-   * Campos esperados por el backend:
-   * - Archivos: checkInFotos[]
-   * - Body: fecha, combustible, notas, checkInFotosExistentes (JSON string)
-   */
   setCheckIn(
     id: string,
     fotos: File[] = [],
     data?: { fecha?: string; combustible?: number; notas?: string; existentes?: string[] }
   ): Observable<{ message: string; booking: RentalBooking; }> {
     const fd = new FormData();
-
-    // Archivos
     (fotos || []).forEach((f) => fd.append('checkInFotos', f));
-
-    // Datos
     if (data?.fecha) fd.append('fecha', data.fecha);
     if (data?.combustible != null) fd.append('combustible', String(data.combustible));
     if (data?.notas != null) fd.append('notas', data.notas);
-
-    // Conservar fotos previas (si las hay)
-    if (data?.existentes) {
-      fd.append('checkInFotosExistentes', JSON.stringify(data.existentes));
-    }
+    if (data?.existentes) fd.append('checkInFotosExistentes', JSON.stringify(data.existentes));
 
     return this.authMultipartHeaders$().pipe(
       switchMap((headers) =>
@@ -377,11 +447,10 @@ export class ReservaService {
   setCheckOut(
     id: string,
     fotos: File[] = [],
-    data?: { fecha?: string; combustible?: number; notas?: string  }
+    data?: { fecha?: string; combustible?: number; notas?: string }
   ): Observable<{ message: string; booking: RentalBooking; }> {
     const fd = new FormData();
     (fotos || []).forEach((f) => fd.append('checkOutFotos', f));
-
     if (data?.fecha) fd.append('fecha', data.fecha);
     if (data?.combustible != null) fd.append('combustible', String(data.combustible));
     if (data?.notas != null) fd.append('notas', data.notas);
@@ -488,7 +557,6 @@ export class ReservaService {
     );
   }
 
-  /** Opcional: solo datos en JSON (si no vas a subir fotos en el mismo request) */
   saveCheckInData(id: string, data: { fecha?: string; combustible?: number; notas?: string }) {
     return this.authJsonHeaders$().pipe(
       switchMap(headers =>
@@ -500,5 +568,4 @@ export class ReservaService {
       )
     );
   }
-
 }
