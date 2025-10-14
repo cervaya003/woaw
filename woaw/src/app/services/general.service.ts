@@ -10,7 +10,6 @@ import { ModalController } from '@ionic/angular';
 import { PopoverController } from '@ionic/angular';
 import { AlertComponent } from '../components/alert/alert.component';
 import { Router } from '@angular/router';
-
 import { fromEvent, merge, Subscription } from 'rxjs';
 import { map, startWith, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { NgZone } from '@angular/core';
@@ -101,9 +100,10 @@ export class GeneralService {
   hasToken(): boolean {
     const token = localStorage.getItem('token');
     const userStr = localStorage.getItem('user');
+    const usuario = localStorage.getItem('sesionActiva');
+ //   console.log(usuario)
 
     if (!token || !userStr) return false;
-
     try {
       const user = JSON.parse(userStr);
       const camposRequeridos = ['rol', 'nombre', 'email'];
@@ -115,6 +115,25 @@ export class GeneralService {
         }
       }
 
+      const sesionStr = localStorage.getItem('sesionActiva');
+      const inicioSesionMs = sesionStr ? Date.parse(sesionStr) : NaN;
+      const SIETE_DIAS_MS = 7 * 24 * 60 * 60 * 1000;
+
+      if (!Number.isFinite(inicioSesionMs) || (Date.now() - inicioSesionMs) >= SIETE_DIAS_MS) {
+        try {
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          localStorage.removeItem('sesionActiva');
+        } catch { }
+
+        this.tokenSubject.next(false);
+        this.rolSubject.next(null);
+
+        this.presentToast('La sesión ha expirado. Inicia sesión de nuevo.', 'warning');
+        this.router.navigate(['/inicio'], { replaceUrl: true });
+        return false;
+      }
+
       return true;
     } catch (_error) {
       this.presentToast('Error en el guards', 'danger');
@@ -122,14 +141,15 @@ export class GeneralService {
     }
   }
 
-  // Guarda token y actualiza el estado reactivo
   guardarCredenciales(token: string, user: any): void {
     localStorage.setItem('token', token);
     localStorage.setItem('user', JSON.stringify(user));
+//    localStorage.setItem('sesionActiva', '2025-10-01T17:30:57.727Z');  
+    localStorage.setItem('sesionActiva', new Date().toISOString());
+
     this.tokenSubject.next(true);
     this.rolSubject.next(user?.rol || null);
 
-    // ✅ Revisar teléfono inmediatamente (sin reload)
     const telefono = this.getTelefonoUsuario(user);
     const rutaActual = (this.router.url || '').split('?')[0] || '/inicio';
 
@@ -140,12 +160,13 @@ export class GeneralService {
         { queryParams: { next }, replaceUrl: true }
       );
     } else {
-      // Si tiene teléfono, lo dejamos/mandamos a inicio
+
       if (rutaActual !== '/inicio') {
         this.router.navigate(['/inicio'], { replaceUrl: true });
       }
     }
   }
+
 
   // === Helper robusto para extraer/validar el teléfono del usuario ===
   private getTelefonoUsuario(rawUser: any): string {
@@ -394,11 +415,6 @@ export class GeneralService {
     }
   }
 
-
-
-
-
-
   private withTimeout<T>(p: Promise<T>, ms: number, key?: string): Promise<T> {
     let t: any;
     const killer = new Promise<never>((_, rej) =>
@@ -470,14 +486,4 @@ export class GeneralService {
     link.crossOrigin = 'anonymous';
     document.head.appendChild(link);
   }
-
-
-
-
-
-
-
-
-
-  
 }
