@@ -102,8 +102,8 @@ ion-buttons[slot="end"] {
 
   .activo {
     font-weight: bold;
-    color: #f83a37 !important;
-    border-bottom: 2px solid #fb2b28;
+    color: #ff0400 !important;
+    border-bottom: 2px solid #ff0400;
     transition: all 0.2s ease-in-out;
     border-radius: 0;
 
@@ -160,7 +160,7 @@ ion-buttons[slot="end"] {
   align-items: center;
   justify-content: center;
 
-  background: linear-gradient(90deg, #ff0000, #ff4d00);
+  background: linear-gradient(90deg, #ff0000, #ff0000);
   color: #fff;
   font-weight: 600;
   font-size: 9px;
@@ -183,7 +183,7 @@ ion-buttons[slot="end"] {
   }
 
   &:hover {
-    background: linear-gradient(90deg, #ff4d00, #ff0000);
+    background: linear-gradient(90deg, #ff0000, #000000);
     transform: scale(1.03);
     animation: none;
   }

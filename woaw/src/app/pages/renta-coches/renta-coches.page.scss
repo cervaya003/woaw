@@ -287,14 +287,82 @@ ion-modal.mio-modal::part(content) {
   border-radius: 10px;
 }
 
+ion-modal.mio-modal .mio-modal__actions ion-button:first-child {
+  --background: #0e0e11;
+  --background-hover: #16161a;
+  --background-activated: #0c0c0f;
+  --background-focused: #16161a;
+  --color: #fff;
+  --ripple-color: rgba(255, 255, 255, .15);
+}
+
+ion-modal.mio-modal .mio-modal__actions ion-button:first-child::part(native) {
+  border-radius: 10px;
+  border: 2px solid transparent;
+  box-shadow: none;
+}
+
+@media (hover: hover) {
+  ion-modal.mio-modal .mio-modal__actions ion-button:first-child:hover::part(native) {
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, .06);
+  }
+}
+
+ion-modal.mio-modal .mio-modal__actions ion-button:first-child:focus-visible::part(native) {
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, .12);
+}
+
+ion-modal.mio-modal .mio-modal__actions ion-button:last-child {
+  --background: var(--ion-color-danger);
+  --background-hover: color-mix(in srgb, var(--ion-color-danger) 92%, black);
+  --background-activated: color-mix(in srgb, var(--ion-color-danger) 88%, black);
+  --background-focused: color-mix(in srgb, var(--ion-color-danger) 92%, black);
+  --color: #fff;
+  --ripple-color: color-mix(in srgb, var(--ion-color-danger) 25%, white);
+}
+
+ion-modal.mio-modal .mio-modal__actions ion-button:last-child::part(native) {
+  border-radius: 10px;
+  border: 2px solid transparent;
+  box-shadow: none;
+}
+
+@media (hover: hover) {
+  ion-modal.mio-modal .mio-modal__actions ion-button:last-child:hover::part(native) {
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--ion-color-danger) 22%, transparent);
+  }
+}
+
+ion-modal.mio-modal .mio-modal__actions ion-button:last-child:focus-visible::part(native) {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ion-color-danger) 30%, transparent);
+}
+
 .mio-modal__cancel {
   font-weight: 800;
-  border-radius: 10px;
-  --background: #e53935;
-  --background-activated: #d32f2f;
-  --color: #fff;
-  text-align: center;
   width: 100%;
+  text-align: center;
+  border-radius: 10px;
+  --color: var(--ion-color-danger);
+  --background: transparent;
+  --background-hover: transparent;
+  --background-activated: transparent;
+  --background-focused: transparent;
+  --ripple-color: color-mix(in srgb, var(--ion-color-danger) 20%, transparent);
+}
+
+.mio-modal__cancel::part(native) {
+  border: 2px solid var(--ion-color-danger);
+  border-radius: 10px;
+}
+
+@media (hover: hover) {
+  .mio-modal__cancel:hover::part(native) {
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--ion-color-danger) 16%, transparent);
+  }
+}
+
+.mio-modal__cancel:focus-visible::part(native) {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ion-color-danger) 24%, transparent);
 }
 
 :host-context(.dark) .mio-modal__box {
@@ -361,6 +429,12 @@ ion-datetime ::part(calendar-day-active) {
   color: #fff;
   border-radius: 6px;
   box-shadow: 0 0 0 2px rgba(0, 0, 0, .06);
+}
+
+ion-datetime::part(calendar-day-active),
+ion-datetime::part(calendar-day-selected) {
+  background: var(--ion-color-danger);
+  color: #fff;
 }
 
 .sr-only {

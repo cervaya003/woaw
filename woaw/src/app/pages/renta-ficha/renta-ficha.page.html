@@ -150,9 +150,11 @@
             <ion-item class="center-item danger-datetime" lines="none">
               <ion-label class="sr-only">Fecha(s)</ion-label>
               <ion-datetime [(ngModel)]="fechasSeleccionadas" multiple="true" presentation="date" [min]="minFecha"
-                (ionChange)="onRangoChange()" [highlightedDates]="highlightedRange" locale="es-ES">
+                (ionChange)="onRangoChange()" [isDateEnabled]="esFechaHabil" [highlightedDates]="mergedHighlights"
+                locale="es-ES">
               </ion-datetime>
             </ion-item>
+
 
             <ng-container *ngIf="resumen as rsum; else bloqueInvalido">
               <div class="resumen-precio" *ngIf="rsum.valido">

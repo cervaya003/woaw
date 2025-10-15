@@ -531,4 +531,3 @@ export class ReservasPage implements OnInit {
   volver() { history.back(); }
   cerrar() { this.router.navigateByUrl('/'); }
 }
-git
