@@ -1,4 +1,38 @@
- .contenedor_cratas_home {
+.contenedor{
+
+max-width: 1800px;
+width: 100%;
+margin: 0px auto;
+}
+
+
+.titulo-seccion-autos {
+  width: 100%;
+  text-align: center;
+  padding: clamp(20px, 4vw, 40px) 12px 0;
+  background: #fff;
+
+  .titulo-wrap {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  h2 {
+    font-size: clamp(22px, 4vw, 34px);
+    font-weight: 900;
+    color: #111;
+    letter-spacing: -0.3px;
+    text-transform: capitalize;
+  }
+}
+
+
+
+
+
+
+
+.contenedor_cratas_home {
   padding: 13px 20px;
   background: #ffffff;
   width: 100%;
@@ -10,13 +44,37 @@
   }
 
   .cards-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    display: flex;
+    flex-direction: column;
+    /* Desktop: columna */
     gap: 24px;
 
     @media (max-width: 980px) {
-      gap: 5px;
+      flex-direction: row;
+      /* Móvil: en fila */
+      justify-content: space-between;
+      align-items: stretch;
+      gap: 8px;
     }
+
+    .car-card {
+      flex: 1;
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+
+      &:hover {
+        transform: translateY(-4px);
+      }
+
+      @media (max-width: 980px) {
+        flex-basis: 33.33%;
+        /* Cada carta ocupa un tercio del ancho */
+      }
+    }
+
 
     .car-card {
       cursor: pointer;
@@ -230,3 +288,316 @@
     }
   }
 }
+
+
+
+
+/* ==== BASE GENERAL ==== */
+.cars-rows {
+  --ink: #121212;
+  --muted: #6b7280;
+  --card: #fff;
+  --ring: rgba(0, 0, 0, .08);
+  --brand: #ff2121;
+  display: grid;
+  gap: clamp(16px, 2.4vw, 22px);
+}
+
+/* ==== CARTAS DE AUTO ==== */
+.car-card {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  border: 1px solid var(--ring);
+  border-radius: 14px;
+  overflow: hidden;
+  background: #fff;
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255, 33, 33, .25);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, .12);
+  }
+}
+
+.card-media {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  background: #f3f4f6;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+}
+
+.ribbon {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 2;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, .2);
+
+  &--green { background: #16a34a; }
+  &--amber { background: #f59e0b; }
+  &--red   { background: #ef4444; }
+}
+
+.card-body {
+  padding: 10px 12px 6px;
+
+  .title {
+    margin: 0 0 4px;
+    font-size: clamp(13px, 1.9vw, 15px);
+    font-weight: 800;
+    color: var(--ink);
+    line-height: 1.25;
+  }
+
+  .price {
+    margin: 0;
+    font-size: clamp(14px, 2vw, 16px);
+    font-weight: 900;
+    color: var(--brand);
+  }
+
+  .specs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    li {
+      font-size: 11px;
+      color: #333;
+      padding: 5px 8px;
+      border-radius: 8px;
+      background: #f6f7f9;
+      border: 1px solid rgba(0, 0, 0, .06);
+      font-weight: 600;
+    }
+  }
+}
+
+/* === Alinear con cartas de la izquierda (sin cambiar tu layout) === */
+:root{
+  --left-col-w: 360px;   /* ancho de tus banners izquierdos */
+  --row-min-h: 240px;    /* alto mínimo de cada fila */
+}
+
+.cars-section{
+  position: relative;
+  padding-left: var(--left-col-w);
+  min-height: var(--row-min-h);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  margin-bottom: clamp(18px, 3vw, 26px);
+}
+
+/* Carrusel horizontal, más compacto */
+.cars-section .cars-scroll{
+  display: flex;
+  align-items: stretch;
+  gap: clamp(8px, 1vw, 12px);   /* menos separación */
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding-left: 0;
+  margin-left: 0 !important;
+}
+
+/* === Cartas MÁS ANGOSTAS ===
+   – antes ~280px; ahora entre 190–220px según viewport
+   – siguen alineadas con la columna izquierda por el padding-left del .cars-section */
+.cars-section .cars-scroll .car-card{
+  flex: 0 0 clamp(190px, 15.5vw, 220px);
+  max-width: 220px;
+  scroll-snap-align: start;
+  height: 100%;
+}
+
+/* Compactamos un poco el contenido interno (opcional pero ayuda) */
+.card-body{ padding: 8px 10px 6px; }
+.card-body .title{ font-size: clamp(12px, 1.6vw, 14px); }
+.card-body .price{ font-size: clamp(13px, 1.8vw, 15px); }
+
+/* Responsive */
+@media (max-width: 1120px){
+  .cars-section{ padding-left: calc(var(--left-col-w) - 40px); }
+  .cars-section .cars-scroll .car-card{
+    flex-basis: clamp(180px, 23vw, 210px);
+    max-width: 210px;
+  }
+}
+@media (max-width: 980px){
+  .cars-section{
+    padding-left: 0;
+    min-height: auto;
+  }
+  .cars-section .cars-scroll .car-card{
+    flex-basis: clamp(180px, 44vw, 210px);
+    max-width: 210px;
+  }
+}
+ 
+
+/* ======== MÓVIL: mismas cartas que desktop pero reducidas ======== */
+@media (max-width: 980px) {
+
+  /* Sección más compacta */
+  .cars-section {
+    padding-left: 0;
+    min-height: auto;
+    margin-bottom: 10px;
+  }
+
+  /* Grid de 3 columnas, mismas cartas reducidas */
+  .cars-section .cars-scroll {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    overflow: visible;
+    padding: 0 6px;
+    margin: 0 !important;
+  }
+
+  /* 🔒 Mostrar solo las 3 primeras cartas por sección */
+  .cars-section .cars-scroll > .car-card:nth-child(n+4) {
+    display: none !important;
+  }
+
+  /* Mantenemos el diseño completo, solo reduciendo tamaño general */
+  .cars-section .cars-scroll .car-card {
+    width: 100%;
+    transform: scale(0.9);
+    transform-origin: top center;
+    border-radius: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* === Centrar imagen correctamente === */
+  .car-card .card-media {
+    position: relative;
+    height: 68px;
+    aspect-ratio: 16 / 10;
+    display: flex;
+    align-items: center;
+    justify-content: center; /* 🔹 Centra la imagen */
+    overflow: hidden;
+    background: #f7f7f7;
+  }
+
+  .car-card .card-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* 🔹 Evita que se corte */
+    object-position: center; /* 🔹 Centra horizontalmente */
+    display: block;
+  }
+
+  /* Ribbon igual pero reducido */
+  .car-card .ribbon {
+    top: 5px;
+    left: 5px;
+    padding: 3px 6px;
+    font-size: 9px;
+    border-radius: 999px;
+  }
+
+  /* === Alineación perfecta del contenido === */
+  .card-body {
+    padding: 6px 7px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .card-body .title {
+    width: 100%;
+    font-size: 10.5px;
+    font-weight: 800;
+    line-height: 1.2;
+    margin: 0 0 2px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-align: left;
+  }
+
+  .card-body .price {
+    font-size: 11.5px;
+    font-weight: 900;
+    color: var(--brand);
+    margin: 0 0 4px;
+    text-align: left;
+  }
+
+  /* Mantenemos specs visibles pero mini */
+  .card-body .specs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 2px;
+  }
+
+  .card-body .specs li {
+    font-size: 9px;
+    padding: 3px 6px;
+    border-radius: 6px;
+  }
+}
+
+/* ======== EXTRA MINI: pantallas muy pequeñas ======== */
+@media (max-width: 480px) {
+  .cars-section .cars-scroll {
+    gap: 5px;
+  }
+
+  /* 🔒 También limitar a 3 cartas */
+  .cars-section .cars-scroll > .car-card:nth-child(n+4) {
+    display: none !important;
+  }
+
+  .cars-section .cars-scroll .car-card {
+    transform: scale(0.85);
+  }
+
+  .car-card .card-media {
+    height: 58px;
+  }
+
+  .card-body {
+    padding: 4px 5px;
+  }
+
+  .card-body .title {
+    font-size: 9px;
+  }
+
+  .card-body .price {
+    font-size: 10px;
+  }
+
+  .card-body .specs li {
+    font-size: 8px;
+    padding: 2px 5px;
+  }
+}
+
+

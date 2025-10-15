@@ -14,6 +14,7 @@ import { FooterComponent } from '../../components/footer/footer.component';
 
 import { MenuVehiculosPageRoutingModule } from './menu-vehiculos-routing.module';
 import { MenuVehiculosPage } from './menu-vehiculos.page';
+import { CartasComponent } from "src/app/components/cartas/cartas.component";
 
 @NgModule({
   imports: [
@@ -25,8 +26,9 @@ import { MenuVehiculosPage } from './menu-vehiculos.page';
     NavbarComponent,
     PrecentacionComponent,
     HistorealSearchComponent,
-    FooterComponent
-    ],
+    FooterComponent,
+    CartasComponent
+],
   declarations: [MenuVehiculosPage]
 })
 export class MenuVehiculosPageModule {}
