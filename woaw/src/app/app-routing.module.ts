@@ -303,8 +303,7 @@ const routes: Routes = [
           import("./pages/seguro/poliza/poliza.module").then(
             (m) => m.PolizaPageModule
           ),
-        data: { title: "Crear Poliza | WOAW" },
-        canActivate: [AuthGuard],
+        data: { title: "Crear Poliza | WOAW" }
       },
       {
         path: "seguros/disponibles",

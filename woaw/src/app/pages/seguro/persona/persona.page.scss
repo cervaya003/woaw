@@ -421,45 +421,73 @@ app-dynamic-island {
         position: relative;
 
         @media (max-width: 820px) {
-            padding-top: 15px;
+            padding-top: 1px;
         }
 
-        .edit-btn {
+        .botones-acciones {
+            display: flex;
+            gap: 10px;
             position: absolute;
             top: 10px;
             right: 10px;
-            height: 34px;
-            padding: 0 14px;
-            border-radius: 999px;
-            background: rgb(214, 0, 0);
-            color: #e9ecf1;
-            font-size: 12px;
-            font-weight: 600;
-            line-height: 34px;
-            cursor: pointer;
-            transition: transform .15s ease, box-shadow .2s ease, background .2s ease;
 
             @media (max-width: 820px) {
                 position: static;
-                display: inline-block;
-                margin: 0 auto 0px;
-                line-height: 32px;
-                height: 32px;
-                padding: 0 12px;
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
+                width: 100%;
+                flex-wrap: wrap;
+                gap: 6px;
+                margin-top: 10px;
             }
 
-            &:hover {
-                transform: translateY(-1px);
-                box-shadow: 0 6px 14px rgba(0, 0, 0, .18);
+            .edit-btn {
+                height: 34px;
+                padding: 0 14px;
+                border-radius: 999px;
+                font-size: 12px;
+                font-weight: 600;
+                line-height: 34px;
+                cursor: pointer;
+                transition: transform .15s ease, box-shadow .2s ease, background .2s ease;
+
+                @media (max-width: 820px) {
+                    font-size: 9px;
+                    font-weight: 400;
+                    padding: 0 14px;
+                }
             }
 
-            &:active {
-                transform: translateY(0);
+            .btn-add {
+                background: rgb(53, 170, 2);
+                color: #e9ecf1;
+
+                &:hover {
+                    transform: translateY(-1px);
+                    box-shadow: 0 6px 14px rgba(0, 0, 0, .18);
+                }
+
+                &:focus-visible {
+                    outline: 2px solid #03921b;
+                    outline-offset: 2px;
+                }
             }
 
-            &:focus-visible {
-                outline: 2px solid #ff4d4d;
-                outline-offset: 2px;
+            .btn-delete {
+                background: rgb(214, 0, 0);
+                color: #e9ecf1;
+
+                &:hover {
+                    transform: translateY(-1px);
+                    box-shadow: 0 6px 14px rgba(0, 0, 0, .18);
+                }
+
+
+                &:focus-visible {
+                    outline: 2px solid #ff4d4d;
+                    outline-offset: 2px;
+                }
             }
         }
 
