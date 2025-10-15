@@ -5,18 +5,18 @@ import { Observable, from, EMPTY, concat } from 'rxjs';
 import { switchMap, catchError, map, tap, take, throwIfEmpty } from 'rxjs/operators';
 import { HeadersService } from './headers.service';
 
-export interface RentaFiltro { 
+export interface RentaFiltro {
   estadoRenta?: 'disponible' | 'rentado' | 'inactivo';
   ciudad?: string;
   estado?: string;
   marca?: string;
   modelo?: string;
   minPasajeros?: number;
-  maxPrecio?: number; 
-  precioMin?: number;  
-  precioMax?: number;   
-  fechaInicio?: string;  
-  fechaFin?: string;   
+  maxPrecio?: number;
+  precioMin?: number;
+  precioMax?: number;
+  fechaInicio?: string;
+  fechaFin?: string;
   page?: number;
   limit?: number;
   sort?: string;
@@ -28,7 +28,7 @@ export interface ListarCochesResp {
   autos: any[];
   contador: number;
   rentals: any[];
-    estado?: string;
+  estado?: string;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -71,25 +71,18 @@ export class RentaService {
     return from(this.headersService.obtenerToken()).pipe(
       map((token) => {
         const h = this.headersService.getJsonHeaders(token) as HttpHeaders;
-        // remover Content-Type para que el browser ponga el boundary
         return h.delete('Content-Type');
       })
     );
   }
 
-  // ───────── helpers de rutas tolerantes ─────────
-
-  // Genera variantes: con/sin /api y rentalcars vs rental-cars
   private buildPathCandidates(path: string): string[] {
     const base = this._baseUrl.replace(/\/+$/, '');
     const hasApi = /\/api$/.test(base);
-
     const basePrimary = base;
     const baseAlt = hasApi ? base.replace(/\/api$/, '') : `${base}/api`;
-
     const pathNorm = path.startsWith('/') ? path : `/${path}`;
     const pathHyphen = pathNorm.replace(/\/rentalcars(?=\/|$)/, '/rental-cars');
-
     const set = new Set<string>([
       `${basePrimary}${pathNorm}`,
       `${basePrimary}${pathHyphen}`,
@@ -99,8 +92,6 @@ export class RentaService {
     return Array.from(set.values());
   }
 
-  // Intenta múltiples métodos sobre múltiples URLs; se queda con el primer success
-  // Intenta múltiples métodos sobre múltiples URLs; se queda con el primer success
   private requestOverCandidates<T>(
     methods: Array<'PATCH' | 'PUT' | 'POST' | 'GET' | 'DELETE'>,
     urls: string[],
@@ -111,8 +102,6 @@ export class RentaService {
     for (const u of urls) {
       for (const m of methods) {
         const { url, options, body } = optionsFactory(m, u);
-
-        // Fuerza a Angular a usar la sobrecarga "observe: 'body'" => Observable<T>
         const httpOptions = {
           ...options,
           observe: 'body' as const,
@@ -129,7 +118,6 @@ export class RentaService {
           default: req = this.http.get<T>(url, httpOptions); break;
         }
 
-        // si falla, seguimos con el siguiente intento
         attempts.push(req.pipe(catchError(() => (EMPTY as unknown as Observable<T>))));
       }
     }
@@ -140,8 +128,6 @@ export class RentaService {
     );
   }
 
-
-  // ───────── utilidades de precio (útiles en UI) ─────────
   private toISO(d: string | Date): string {
     return new Date(d).toISOString();
   }
@@ -166,35 +152,25 @@ export class RentaService {
     return Math.round((base + extras) * 100) / 100;
   }
 
-  // ───────── RENTAL CARS (nuevo backend) ─────────
-
-  /** LISTAR con filtros del backend nuevo */
   listarCoches(filtro: RentaFiltro = {}): Observable<ListarCochesResp> {
-    // Mapeos para compatibilidad con tu UI anterior:
     const mapped: Record<string, any> = { ...(filtro as any) };
 
     if (mapped['precioMax'] != null && mapped['maxPrecio'] == null) {
       mapped['maxPrecio'] = mapped['precioMax'];
       delete mapped['precioMax'];
     }
-    // el backend NO soporta precioMin; lo ignoramos si viene
     delete mapped['precioMin'];
-
-    // si hay rango de fechas, DEBEN ir ambos:
     if ((mapped['fechaInicio'] && !mapped['fechaFin']) || (!mapped['fechaInicio'] && mapped['fechaFin'])) {
-      // si falta uno, mejor no mandamos ninguno para evitar 400 del backend
       delete mapped['fechaInicio'];
       delete mapped['fechaFin'];
     }
 
-    // la API actual no usa page/limit/sort; sólo los dejamos fuera
     ['page', 'limit', 'sort'].forEach(k => delete mapped[k]);
 
     const params = this.toParams(mapped);
     return this.http.get<ListarCochesResp>(`${this.api}`, { params });
   }
 
-  /** MIS COCHES del usuario autenticado*/
   misCoches(): Observable<any[]> {
     const url = `${this._baseUrl}/rentalcars/vehiculos/user`;
     return this.authJsonHeaders$().pipe(
@@ -203,50 +179,36 @@ export class RentaService {
     );
   }
 
-  /** DETALLE por ID */
   cochePorId(id: string): Observable<any> {
     return this.http.get(`${this.api}/${id}`);
   }
 
-  /** CREAR (POST /rental-cars) — maneja imagen principal/galería/TC + JSON parseables */
   addRentalCar(payload: {
     marca: string;
     modelo: string;
-
     tipoVehiculo?: string;
     pasajeros?: number;
     transmision?: string;
     combustible?: string;
-
-    // precios/depósitos según backend nuevo:
     precio?: number;        // por día
     deposito?: number;
     minDias?: number;
-
     politicaCombustible?: 'lleno-lleno' | 'como-esta';
     politicaLimpieza?: 'normal' | 'estricta';
-
     requisitosConductor?: any;
     ubicacion?: any;
     entrega?: any;
     excepcionesNoDisponibles?: any[];
-
-    // flags:
     gps?: boolean; inmovilizador?: boolean; bluetooth?: boolean; aireAcondicionado?: boolean;
     bolsasAire?: number; camaraReversa?: boolean; sensoresEstacionamiento?: boolean;
     quemacocos?: boolean; asientosBebes?: boolean;
-
     descripcion?: string;
     lote?: string | null;
-
-    // archivos:
     imagenPrincipal: File;
     imagenes?: File[];
     tarjetaCirculacion?: File | null;
   }): Observable<{ message: string; rental: any; token?: string; rol?: string; }> {
     const fd = new FormData();
-
-    // simples (string/number/bool)
     const simples: (keyof typeof payload)[] = [
       'marca', 'modelo', 'tipoVehiculo', 'pasajeros', 'transmision', 'combustible',
       'precio', 'deposito', 'minDias', 'politicaCombustible', 'politicaLimpieza',
@@ -260,7 +222,6 @@ export class RentaService {
       fd.append(k as string, String(v));
     });
 
-    // JSON parseables
     if (payload.requisitosConductor) fd.append('requisitosConductor', JSON.stringify(payload.requisitosConductor));
     if (payload.ubicacion) fd.append('ubicacion', JSON.stringify(payload.ubicacion));
     if (payload.entrega) fd.append('entrega', JSON.stringify(payload.entrega));
@@ -268,10 +229,8 @@ export class RentaService {
       fd.append('excepcionesNoDisponibles', JSON.stringify(payload.excepcionesNoDisponibles));
     }
 
-    // lote (ObjectId o null). null => no enviar; si envías '', lo rechaza create, así que no lo mandamos
     if (payload.lote) fd.append('lote', payload.lote);
 
-    // archivos
     fd.append('imagenPrincipal', payload.imagenPrincipal);
     (payload.imagenes || []).forEach((f) => fd.append('imagenes', f));
     if (payload.tarjetaCirculacion) fd.append('tarjetaCirculacion', payload.tarjetaCirculacion);
@@ -279,7 +238,6 @@ export class RentaService {
     return this.authMultipartHeaders$().pipe(
       switchMap((headers) => this.http.post<{ message: string; rental: any; token?: string; rol?: string; }>(`${this.api}`, fd, { headers })),
       tap((res) => {
-        // si promovieron a vendedor, actualiza token/rol
         if (res?.token) {
           localStorage.setItem('token', res.token);
           if (res.rol) localStorage.setItem('rol', res.rol);
@@ -289,11 +247,9 @@ export class RentaService {
     );
   }
 
-  /** ACTUALIZAR — soporta imágenes y JSON; tolerante a rutas y método */
   updateRentalCar(
     id: string,
     data: {
-      // mismos del create, todos opcionales:
       marca?: string; modelo?: string; tipoVehiculo?: string; pasajeros?: number;
       transmision?: string; combustible?: string; precio?: number; deposito?: number; minDias?: number;
       politicaCombustible?: 'lleno-lleno' | 'como-esta';
@@ -305,13 +261,9 @@ export class RentaService {
       descripcion?: string;
       lote?: string | null;
       estadoRenta?: 'disponible' | 'rentado' | 'inactivo';
-
-      // flags
       gps?: boolean; inmovilizador?: boolean; bluetooth?: boolean; aireAcondicionado?: boolean;
       bolsasAire?: number; camaraReversa?: boolean; sensoresEstacionamiento?: boolean;
       quemacocos?: boolean; asientosBebes?: boolean;
-
-      // control de imágenes
       imagenesExistentes?: string[]; // lista final a conservar
       imagenPrincipal?: string;      // URL (si no subes file)
       tarjetaCirculacionURL?: string;
@@ -324,15 +276,12 @@ export class RentaService {
     if (hasFiles) {
       const fd = new FormData();
 
-      // simples
       Object.entries(data || {}).forEach(([k, v]) => {
         if (v === undefined || v === null) return;
-
         if (k === 'lote' && v === null) { fd.append('lote', ''); return; } // backend: '' => null
         if (['requisitosConductor', 'ubicacion', 'entrega', 'excepcionesNoDisponibles', 'imagenesExistentes'].includes(k)) {
           fd.append(k, JSON.stringify(v));
         } else {
-          // si estás mandando file para imagenPrincipal/TC, no mandes URL duplicada
           if (k === 'imagenPrincipal' && files?.imagenPrincipal) return;
           if (k === 'tarjetaCirculacionURL' && files?.tarjetaCirculacion) return;
           fd.append(k, String(v));
@@ -354,10 +303,8 @@ export class RentaService {
         catchError(err => this.headersService.handleError(err))
       );
     } else {
-      // JSON puro
       const body: any = { ...(data || {}) };
-      if (body.lote === null) body.lote = ''; // backend usa '' para limpiar el lote
-
+      if (body.lote === null) body.lote = '';
       return this.authJsonHeaders$().pipe(
         switchMap(headers =>
           this.requestOverCandidates<{ message: string; rental: any }>(
@@ -371,7 +318,6 @@ export class RentaService {
     }
   }
 
-  /** TOGGLE/SET estado de renta — tolerante: PATCH→PUT + rutas /api y guion */
   toggleEstadoRenta(
     id: string,
     action: 'disponible' | 'rentado' | 'inactivo'
@@ -391,7 +337,6 @@ export class RentaService {
     );
   }
 
-  /** DISPONIBILIDAD — tolerante: PATCH→PUT + /api on/off + rentalcars/rental-cars */
   setDisponibilidadCar(
     id: string,
     excepciones: Array<{ inicio: string | Date; fin: string | Date; motivo?: string }> = [],
@@ -420,18 +365,15 @@ export class RentaService {
     );
   }
 
-  /** SUGERENCIAS ALEATORIAS (GET /random?id=<opcional>) */
   getRandom(excludeId?: string): Observable<any[]> {
     const params = excludeId ? new HttpParams().set('id', excludeId) : undefined;
     return this.http.get<any[]>(`${this.api}/random`, { params });
   }
 
-  /** POR LOTE (GET /lote/:id) */
   getByLote(loteId: string): Observable<any[]> {
     return this.http.get<any[]>(`${this.api}/lote/${loteId}`);
   }
 
-  /** COTIZAR ENTREGA (GET o POST /:id/quote-entrega) */
   quoteEntrega(
     id: string,
     km: number,
@@ -446,4 +388,40 @@ export class RentaService {
     );
   }
 
+  private expandUtcRangeToYmdList(iniIso: string, finIso: string): string[] {
+    if (!iniIso || !finIso) return [];
+    let s = new Date(iniIso);
+    let e = new Date(finIso);
+    if (isNaN(+s) || isNaN(+e)) return [];
+    if (+e < +s) [s, e] = [e, s];
+
+    const out: string[] = [];
+    const startUTC = new Date(Date.UTC(s.getUTCFullYear(), s.getUTCMonth(), s.getUTCDate()));
+    const endUTC = new Date(Date.UTC(e.getUTCFullYear(), e.getUTCMonth(), e.getUTCDate()));
+
+    for (let d = new Date(startUTC); d <= endUTC; d.setUTCDate(d.getUTCDate() + 1)) {
+      const y = d.getUTCFullYear();
+      const m = String(d.getUTCMonth() + 1).padStart(2, '0');
+      const day = String(d.getUTCDate()).padStart(2, '0');
+      out.push(`${y}-${m}-${day}`);
+    }
+    return out;
+  }
+
+  private diasBloqueadosPorExcepciones(coche: any): string[] {
+    const exc: Array<{ inicio: string; fin: string }> = Array.isArray(coche?.excepcionesNoDisponibles)
+      ? (coche.excepcionesNoDisponibles as Array<{ inicio: string; fin: string }>)
+      : [];
+    return exc.reduce((acc: string[], r: { inicio: string; fin: string }) => {
+      const dias = this.expandUtcRangeToYmdList(r.inicio, r.fin);
+      return acc.concat(dias);
+    }, []);
+  }
+
+
+  diasNoDisponibles(id: string): Observable<string[]> {
+    return this.cochePorId(id).pipe(
+      map(coche => this.diasBloqueadosPorExcepciones(coche))
+    );
+  }
 }
