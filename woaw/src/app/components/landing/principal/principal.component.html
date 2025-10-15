@@ -3,43 +3,42 @@
 </div>
 
 <div class="band-cards">
-    <article class="mini-card mini-arrendamiento" (click)="redirecion('/arrendamiento')">
-      <img src="/assets/home/cartasHome5.webp" alt="Auto en arrendamiento" class="bg-card-min">
-      <h4>Arrendamiento</h4>
-      <p>Estrena sin comprar.</p>
-      <button class="mini-btn">Cotizar ahora</button>
-    </article>
+  <article class="mini-card mini-arrendamiento" (click)="redirecion('/m-nuevos')">
+    <img [src]="img2" alt="Auto en arrendamiento" class="bg-card-min">
+    <h4>Motos</h4>
+    <p>Estrena sin comprar.</p>
+    <button class="mini-btn">Cotizar ahora</button>
+  </article>
 
-    <article class="mini-card mini-seguros" (click)="redirecion('/seguros/disponibles')">
-      <img src="/assets/home/cartasHome4.webp" alt="Auto nuevo" class="bg-card-min">
-      <h4>Seguros</h4>
-      <p>Cotiza y asegura en minutos.</p>
-      <button class="mini-btn">Cotizar ahora</button>
-    </article>
+  <article class="mini-card mini-seguros" (click)="redirecion('/camiones/todos')">
+    <img [src]="img3" alt="Auto nuevo" class="bg-card-min">
+    <h4>Camiones</h4>
+    <p>Cotiza y asegura en minutos.</p>
+    <button class="mini-btn">Cotizar ahora</button>
+  </article>
 </div>
-
+ 
 
 <section class="grid-categorias">
   <div class="grid-categorias__wrap">
 
-    <a class="cat-card" href="/menu-vehiculos/autos">
-      <img class="cat-card__bg animacion__1" [src]="img1" alt="Autos" />
+    <a class="cat-card" href="/renta-ciudades" style="background-image: url('/assets/home/F5.png')">
       <span class="cat-card__overlay">
         <h3 class="cat-card__title">Renta</h3>
         <p class="cat-card__subtitle">Muévete cuando quieras.</p>
       </span>
     </a>
-    <a class="cat-card" href="/m-nuevos">
-      <img class="cat-card__bg animacion__2" [src]="img2" alt="Motos" />
+
+    <a class="cat-card" href="/arrendamiento" style="background-image: url('/assets/home/F6.png')">
       <span class="cat-card__overlay">
-        <h3 class="cat-card__title">Motos</h3>
+        <h3 class="cat-card__title">Arrendamiento</h3>
         <p class="cat-card__subtitle">De calle, touring y más</p>
       </span>
     </a>
-    <a class="cat-card" href="/camiones/todos">
-      <img class="cat-card__bg animacion__3" [src]="img3" alt="Camiones" />
+
+    <a class="cat-card" href="/seguros/disponibles" style="background-image: url('/assets/home/F7.png')">
       <span class="cat-card__overlay">
-        <h3 class="cat-card__title">Camiones</h3>
+        <h3 class="cat-card__title">Seguros</h3>
         <p class="cat-card__subtitle">Carga y flotillas</p>
       </span>
     </a>
@@ -50,50 +49,50 @@
 <section class="contenedor_cratas_home">
   <div class="cards-grid">
 
-      <article class="car-card car-card-nuevos" (click)="redirecion('/nuevos')">
-        <img src="/assets/home/cartasHome1.webp" alt="Auto nuevo" class="bg-card">
-        <header class="card-head">
-          <h3><span>Autos</span> Nuevos</h3>
-          <p>Estrena hoy con garantía total.</p>
-        </header>
-        <ul class="card-list">
-          <li>0 km</li>
-          <li>Financiamiento</li>
-        </ul>
-        <footer class="card-foot">
-          <button class="btn-card btn-nuevos">Ver catálogo</button>
-        </footer>
-      </article>
+    <article class="car-card car-card-nuevos" (click)="redirecion('/nuevos')">
+      <img src="/assets/home/cartasHome1.webp" alt="Auto nuevo" class="bg-card">
+      <header class="card-head">
+        <h3><span>Autos</span> Nuevos</h3>
+        <p>Estrena hoy con garantía total.</p>
+      </header>
+      <ul class="card-list">
+        <li>0 km</li>
+        <li>Financiamiento</li>
+      </ul>
+      <footer class="card-foot">
+        <button class="btn-card btn-nuevos">Ver catálogo</button>
+      </footer>
+    </article>
 
-      <article class="car-card car-card-seminuevos" (click)="redirecion('/seminuevos')">
-        <img src="/assets/home/cartasHome2.webp" alt="Auto seminuevo" class="bg-card">
-        <header class="card-head">
-          <h3><span>Autos</span> Seminuevos</h3>
-          <p>Historial verificado.</p>
-        </header>
-        <ul class="card-list">
-          <li>Tomamos tu auto</li>
-          <li>Financiamiento</li>
-        </ul>
-        <footer class="card-foot">
-          <button class="btn-card btn-seminuevos">Explorar</button>
-        </footer>
-      </article>
+    <article class="car-card car-card-seminuevos" (click)="redirecion('/seminuevos')">
+      <img src="/assets/home/cartasHome2.webp" alt="Auto seminuevo" class="bg-card">
+      <header class="card-head">
+        <h3><span>Autos</span> Seminuevos</h3>
+        <p>Historial verificado.</p>
+      </header>
+      <ul class="card-list">
+        <li>Tomamos tu auto</li>
+        <li>Financiamiento</li>
+      </ul>
+      <footer class="card-foot">
+        <button class="btn-card btn-seminuevos">Explorar</button>
+      </footer>
+    </article>
 
-      <article class="car-card car-card-usados" (click)="redirecion('/usados')">
-        <img src="/assets/home/cartasHome3.webp" alt="Auto nuevo" class="bg-card">
-        <header class="card-head">
-          <h3><span>Autos</span> Usados</h3>
-          <p>Listos para una nueva historia.</p>
-        </header>
-        <ul class="card-list">
-          <li>Entrega rápida</li>
-          <li>Financiamiento</li>
-        </ul>
-        <footer class="card-foot">
-          <button class="btn-card btn-usados">Ver ofertas</button>
-        </footer>
-      </article>
+    <article class="car-card car-card-usados" (click)="redirecion('/usados')">
+      <img src="/assets/home/cartasHome3.webp" alt="Auto nuevo" class="bg-card">
+      <header class="card-head">
+        <h3><span>Autos</span> Usados</h3>
+        <p>Listos para una nueva historia.</p>
+      </header>
+      <ul class="card-list">
+        <li>Entrega rápida</li>
+        <li>Financiamiento</li>
+      </ul>
+      <footer class="card-foot">
+        <button class="btn-card btn-usados">Ver ofertas</button>
+      </footer>
+    </article>
 
   </div>
 </section>

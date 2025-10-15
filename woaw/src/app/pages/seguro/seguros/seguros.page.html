@@ -36,7 +36,7 @@
       </ul>
     </div>
   </section>
-<br><br><br>
+  <br><br><br>
   <app-footer></app-footer>
 </ion-content>  -->
 
@@ -423,28 +423,31 @@
 
       </section>
 
-      <div class="mensaje-seguro" *ngIf="!cotizacion" [ngClass]="{ 'is-step1': currentStep === 1 }">
+      <div class="historial-seguros" [ngClass]="{ 'is-step1': currentStep === 1 }">
+        <ng-container *ngIf="ultimaCotizacion?.datosCoche; else sinHistorial">
+          <button class="historial-cta" (click)="restaurarOIntercambiarCotizacion()" aria-label="Mi última cotización"
+            role="button">
+            <div class="historial-head">
+              <span class="hist-label">Mi última cotización</span>
+              <ion-icon name="chevron-forward-outline" aria-hidden="true"></ion-icon>
+            </div>
 
-        <div class="mensaje-seguro__header">
-          <ion-icon name="flash-outline"></ion-icon>
-          <h3>¡Cotiza tu auto rápido!</h3>
-        </div>
+            <div class="hist-info">
+              <h3>
+                {{ ultimaCotizacion.datosCoche.marca | uppercase }}
+                {{ ultimaCotizacion.datosCoche.modelo }}
+              </h3>
+              <p class="hist-version">Versión: {{ ultimaCotizacion.datosCoche.version }}</p>
+              <p class="hist-year">Año: {{ ultimaCotizacion.datosCoche.anio }}</p>
+            </div>
 
-        <p>
-          Obtén tu cotización al instante y crea tu registro y tu póliza en solo
-          <strong>3 sencillos pasos</strong>.
-          <br />
-          <ion-icon name="speedometer-outline"></ion-icon> Rápido,
-          <ion-icon name="shield-checkmark-outline"></ion-icon> seguro y
-          <ion-icon name="thumbs-up-outline"></ion-icon> sin complicaciones.
-        </p>
+            <div class="hist-hint">Toca para continuar donde te quedaste</div>
+          </button>
+        </ng-container>
 
-        <div class="mensaje-seguro__stickers">
-          <ion-icon name="car-sport-outline"></ion-icon>
-          <ion-icon name="flash-outline"></ion-icon>
-          <ion-icon name="document-text-outline"></ion-icon>
-        </div>
-
+        <ng-template #sinHistorial>
+          <!-- <p>No hay historial de cotizaciones.</p> -->
+        </ng-template>
       </div>
 
       <br><br>
@@ -459,21 +462,15 @@
   <app-footer *ngIf="tipoDispocitivo !== 'telefono'"></app-footer>
 </ion-content>
 
-<ion-footer class="black-footer" *ngIf="tipoDispocitivo === 'telefono'">
-  <div class="footer-buttons" *ngIf="!cotizacion">
-    <ion-button
-      fill="solid"
-      class="btn-secondary"
-      *ngIf="currentStep !== 1"
-      (click)="ClearRegrasar()">
-      &#x2B05;
-    </ion-button>
+<ion-footer class="black-footer" [translucent]="false" *ngIf="tipoDispocitivo === 'telefono'">
+  <ion-toolbar class="black-footer__tb">
 
-    <ion-button
-      fill="solid"
-      class="btn-primary"
-      (click)="siguiente()"
-      [disabled]="
+    <div class="footer-buttons"  *ngIf="!cotizacion">
+      <ion-button fill="solid" class="btn-secondary" *ngIf="currentStep !== 1" (click)="ClearRegrasar()">
+        &#x2B05;
+      </ion-button>
+
+      <ion-button fill="solid" class="btn-primary" (click)="siguiente()" [disabled]="
         (currentStep===1 && form.get('marca')?.invalid) ||
         (currentStep===2 && form.get('modelo')?.invalid) ||
         (currentStep===3 && form.get('anio')?.invalid) ||
@@ -481,16 +478,17 @@
         (currentStep===5 && (form.get('nacDia')?.invalid || form.get('nacMes')?.invalid || form.get('nacAnio')?.invalid)) ||
         (currentStep===6 && (form.get('cp')?.invalid || form.get('genero')?.invalid || form.get('estadoCivil')?.invalid))
       ">
-      {{ currentStep < 7 ? 'Siguiente' : 'Cotizar' }} &#x27A1;
-    </ion-button>
-  </div>
+        {{ currentStep < 7 ? 'Siguiente' : 'Cotizar' }} &#x27A1; </ion-button>
+    </div>
 
-  <div class="footer-buttons" *ngIf="cotizacion">
-    <ion-button fill="solid" class="btn-secondary" (click)="nuevoSeguro()">
-      Nueva cotización ↻
-    </ion-button>
-    <ion-button fill="solid" class="btn-primary" (click)="confirmarCrearPersona()">
-      Continuar ➜
-    </ion-button>
-  </div>
+    <div class="footer-buttons" *ngIf="cotizacion">
+      <ion-button fill="solid" class="btn-secondary" (click)="nuevoSeguro()">
+        Nueva cotización ↻
+      </ion-button>
+      <ion-button fill="solid" class="btn-primary" (click)="confirmarCrearPersona()">
+        Continuar ➜
+      </ion-button>
+    </div>
+
+  </ion-toolbar>
 </ion-footer>

@@ -79,12 +79,13 @@ export class PersonaPage implements OnInit {
     });
   }
   ngOnInit() {
+    this.islandKey++;
     this.detectaUsuario();
-    
+
     this.generalService.dispositivo$.subscribe((tipo) => {
       this.tipoDispocitivo = tipo;
     });
-    
+
     const stored = localStorage.getItem('datosCoche');
     if (stored) {
       this.datosCoche = JSON.parse(stored);
@@ -512,5 +513,14 @@ export class PersonaPage implements OnInit {
         resolve(estado);
       });
     });
+  }
+  public olvidarUser() {
+    this.mostrar_spinnet = true;
+    setTimeout(() => {
+      localStorage.removeItem('UsuarioRespuesta');
+      this.islandKey++;
+      this.mostrar_spinnet = false;
+      this.router.navigate(['/seguros/autos']);
+    }, 1000);
   }
 }

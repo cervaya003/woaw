@@ -45,7 +45,13 @@
 
           <div class="contenedos_info" *ngIf="UsuarioRespuesta && statusUserDtos && !statusBuscar">
             <div class="info-card">
-              <button type="button" class="edit-btn" aria-label="Editar" (click)="editarUser()">Nuevo &#43;</button>
+              <div class="botones-acciones">
+                <button type="button" class="edit-btn btn-add" (click)="editarUser()">Nuevo &#43;</button>
+                <button type="button" class="edit-btn btn-delete" (click)="olvidarUser()">
+                  Olvidar usuario &#10005;
+                </button>
+              </div>
+
               <div class="row">
                 <div class="label">Nombre</div>
                 <div class="value">

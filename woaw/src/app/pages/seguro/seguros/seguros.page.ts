@@ -103,6 +103,8 @@ export class SegurosPage implements OnInit {
     return m[code] ?? code;
   }
 
+  ultimaCotizacion: any = null;
+
   constructor(
     private popoverCtrl: PopoverController,
     private alertCtrl: AlertController,
@@ -118,6 +120,7 @@ export class SegurosPage implements OnInit {
   }
 
   ngOnInit() {
+    this.islandKey++;
     this.verificaStorage();
     this.generalService.tokenExistente$.subscribe((estado) => {
       this.isLoggedIn = estado;
@@ -127,6 +130,12 @@ export class SegurosPage implements OnInit {
     });
     this.buildAniosNacimiento();
     this.cargaimagen();
+    this.cargarUltimaCotizacion();
+    const raw = localStorage.getItem('historialCotizaciones');
+    console.log('📜 Contenido crudo de localStorage →', raw);
+  }
+  ionViewWillEnter() {
+    this.islandKey++;
   }
   private verificaStorage() {
     const raw = localStorage.getItem('cotizacion');
@@ -142,7 +151,7 @@ export class SegurosPage implements OnInit {
 
     if (this.quote?.plans?.length) {
       this.selectedPaymentByPlan = {};
-      
+
       this.quote.plans.forEach((pl: any) => {
         const firstId = pl?.payment_plans?.[0]?.id ?? null;
         if (firstId) this.selectedPaymentByPlan[pl.id] = firstId;
@@ -509,12 +518,10 @@ export class SegurosPage implements OnInit {
       'Cotizar nuevo coche',
       async () => {
         this.islandKey++;
+        this.guardarHistorialCotizacion();
         this.getMarcas_cohes();
         this.obtenerMarcas();
-        localStorage.removeItem('datosCoche');
-        localStorage.removeItem('cotizacion');
-        localStorage.removeItem('datosPolizaVin_Respuesta');
-        localStorage.removeItem('datosPolizaVin');
+
         this.cotizacion = false;
         this.quote = null;
         this.selectedPaymentByPlan = {};
@@ -538,8 +545,76 @@ export class SegurosPage implements OnInit {
         this.form.setErrors(null);
 
         try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch { }
+
+        window.location.reload();
       }
     );
+  }
+  guardarHistorialCotizacion() {
+    const datosCoche = localStorage.getItem('datosCoche');
+    const cotizacion = localStorage.getItem('cotizacion');
+
+    // === Guarda por separado ===
+    if (datosCoche) {
+      localStorage.setItem('historialDatosCoche', datosCoche);
+    }
+
+    if (cotizacion) {
+      localStorage.setItem('historialCotizacion', cotizacion);
+    }
+
+    // === Limpieza de los actuales ===
+    localStorage.removeItem('datosCoche');
+    localStorage.removeItem('cotizacion');
+    localStorage.removeItem('datosPolizaVin_Respuesta');
+    localStorage.removeItem('datosPolizaVin');
+  }
+  cargarUltimaCotizacion() {
+    try {
+      const datosCocheRaw = localStorage.getItem('historialDatosCoche');
+      const cotizacionRaw = localStorage.getItem('historialCotizacion');
+
+      const datosCoche = datosCocheRaw ? JSON.parse(datosCocheRaw) : null;
+      const cotizacion = cotizacionRaw ? JSON.parse(cotizacionRaw) : null;
+
+      if (!datosCoche && !cotizacion) {
+        this.ultimaCotizacion = null;
+        return;
+      }
+
+      this.ultimaCotizacion = {
+        fecha: new Date().toISOString(),
+        datosCoche,
+        cotizacion,
+      };
+
+    } catch (error) {
+      console.error('❌ Error al cargar la última cotización:', error);
+      this.ultimaCotizacion = null;
+    }
+  }
+  private swapKey(currentKey: string, historyKey: string) {
+    const curr = localStorage.getItem(currentKey);
+    const hist = localStorage.getItem(historyKey);
+
+    // Si no hay nada en ninguna, no hacemos nada
+    if (curr === null && hist === null) return;
+
+    // Pasa el historial a actual (si existe) o limpia actual
+    if (hist !== null) localStorage.setItem(currentKey, hist);
+    else localStorage.removeItem(currentKey);
+
+    // Pasa el actual previo a historial (si existía) o limpia historial
+    if (curr !== null) localStorage.setItem(historyKey, curr);
+    else localStorage.removeItem(historyKey);
+  }
+  public restaurarOIntercambiarCotizacion() {
+    this.swapKey('datosCoche', 'historialDatosCoche');
+    this.swapKey('cotizacion', 'historialCotizacion');
+    this.cargarUltimaCotizacion();
+
+    console.log('🔁 Intercambio realizado entre actual ↔ historial.');
+    window.location.reload();
   }
 
   // ---------- COTIZACION ----------
