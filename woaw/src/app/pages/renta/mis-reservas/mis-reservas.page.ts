@@ -138,20 +138,20 @@ export class MisReservasPage implements OnInit {
             return this.soyPropietarioDeAuto(b);
           });
 
-          this.ownerAll = (seguros || []).sort(this.sortBookingDesc);
-          this.ownerAllLoaded = true;
-        }
+        this.ownerAll = (seguros || []).sort(this.sortBookingDesc);
+        this.ownerAllLoaded = true;
+      }
 
-        this.pendingOwner = this.ownerAll
-          .filter(b => b?.estatus === 'pendiente')
-          .map(b => ({ ...b, dias: this.calcDays(b.fechaInicio, b.fechaFin) }));
+      this.pendingOwner = this.ownerAll
+        .filter(b => b?.estatus === 'pendiente')
+        .map(b => ({ ...b, dias: this.calcDays(b.fechaInicio, b.fechaFin) }));
 
-        const map = new Map<string, RentalBooking>();
-        [...this.myAll, ...this.ownerAll].forEach(b => map.set(b._id, b));
-        this.mergedAll = Array.from(map.values()).sort(this.sortBookingDesc);
+      const map = new Map<string, RentalBooking>();
+      [...this.myAll, ...this.ownerAll].forEach(b => map.set(b._id, b));
+      this.mergedAll = Array.from(map.values()).sort(this.sortBookingDesc);
 
-        this.aplicarPaginaBase(this.mergedAll);
-      });
+      this.aplicarPaginaBase(this.mergedAll);
+    });
   }
 
   cargarMas(ev: CustomEvent): void {
@@ -207,7 +207,7 @@ export class MisReservasPage implements OnInit {
 
   private sortBookingDesc = (a: RentalBooking, b: RentalBooking) => {
     const ka = a.createdAt || a.fechaInicio || '';
-    const kb = b.createdAt || b.fechaInicio || '';
+       const kb = b.createdAt || b.fechaInicio || '';
     return (kb as string).localeCompare(ka as string);
   };
 
@@ -278,6 +278,23 @@ export class MisReservasPage implements OnInit {
     return !!tieneAlgo;
   }
 
+  /** === NUEVOS helpers para comparar contra hoy (por día, local) === */
+  private isSameDayAsToday(fecha: string | Date): boolean {
+    const hoy = this.normalizarFechaLocalISO(new Date());
+    const f = this.normalizarFechaLocalISO(fecha);
+    return f === hoy;
+  }
+  private isAfterToday(fecha: string | Date): boolean {
+    const hoy = this.normalizarFechaLocalISO(new Date());
+    const f = this.normalizarFechaLocalISO(fecha);
+    return f > hoy;
+  }
+  private isBeforeToday(fecha: string | Date): boolean {
+    const hoy = this.normalizarFechaLocalISO(new Date());
+    const f = this.normalizarFechaLocalISO(fecha);
+    return f < hoy;
+  }
+
   public puedeIniciar(b: RentalBooking): boolean {
     return this.soyPropietarioDeAuto(b)
       && b?.estatus === 'aceptada'
@@ -291,13 +308,35 @@ export class MisReservasPage implements OnInit {
       && b?.estatus === 'en_curso';
   }
 
-  /** ✅ NUEVO: reglas para mostrar botón Cancelar (dueño o usuario) */
+  /** ✅ Reglas para mostrar botón Cancelar (dueño o usuario) */
   public puedeCancelar(b: RentalBooking): boolean {
-    const estadosPermitidos = new Set(['pendiente', 'aceptada', 'en_curso']);
-    if (!estadosPermitidos.has(b?.estatus)) return false;
+    if (!b) return false;
 
-    // ambos pueden cancelar
-    return this.soyPropietarioDeAuto(b) || this.esSolicitante(b);
+    const est = b.estatus;
+    const soyOwner = this.soyPropietarioDeAuto(b);
+    const soyCliente = this.esSolicitante(b);
+    if (!soyOwner && !soyCliente) return false;
+
+    // PENDIENTE: ambos pueden cancelar
+    if (est === 'pendiente') return true;
+
+    // ACEPTADA:
+    // - Antes del inicio o el mismo día: pueden cancelar dueño o solicitante
+    // - Si ya pasó la fecha de inicio: sólo el dueño
+    if (est === 'aceptada') {
+      if (this.isAfterToday(b.fechaInicio) || this.isSameDayAsToday(b.fechaInicio)) {
+        return true; // ambos
+      }
+      return soyOwner; // ya pasó el inicio -> sólo dueño
+    }
+
+    // EN_CURSO: sólo el dueño
+    if (est === 'en_curso') {
+      return soyOwner;
+    }
+
+    // FINALIZADA / CANCELADA u otras: no
+    return false;
   }
 
   async iniciarRenta(b: RentalBooking) {
@@ -399,10 +438,11 @@ export class MisReservasPage implements OnInit {
   }
 
   async openDetalle(b: RentalBooking): Promise<void> {
+    // 🔴 Cambiamos: pasamos sólo el ID para que el componente haga su fetch populate
     const modal = await this.modalCtrl.create({
       component: DetalleReservaModalComponent,
       componentProps: {
-        booking: b,
+        bookingId: b._id,                          // ← fuerza al modal a pedir /booking/bookings/:id (populate)
         viewerOnly: !this.soyPropietarioDeAuto(b)
       },
       canDismiss: true,
@@ -449,11 +489,12 @@ export class MisReservasPage implements OnInit {
     });
   }
 
-  /** ✅ NUEVO: cancelar para dueño o usuario (pendiente/aceptada/en_curso) */
   async cancelar(b: RentalBooking) {
     if (!b?._id) return;
     if (!this.puedeCancelar(b)) {
-      await constToast(this.toast, 'No puedes cancelar esta reserva', 'warning');
+      let motivo = 'No puedes cancelar esta reserva';
+      if (b.estatus === 'en_curso') motivo = 'Sólo el propietario puede cancelar una renta en curso';
+      await constToast(this.toast, motivo, 'warning');
       return;
     }
 

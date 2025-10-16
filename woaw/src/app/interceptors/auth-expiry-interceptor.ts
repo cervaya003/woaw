@@ -1,6 +1,10 @@
 import { Injectable, inject } from '@angular/core';
 import {
-  HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpErrorResponse
+  HttpEvent,
+  HttpHandler,
+  HttpInterceptor,
+  HttpRequest,
+  HttpErrorResponse
 } from '@angular/common/http';
 import { Observable, EMPTY, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
@@ -12,46 +16,44 @@ export class AuthExpiryInterceptor implements HttpInterceptor {
   private general = inject(GeneralService);
   private router = inject(Router);
 
+  // Sólo este backend debe llevar Authorization
+  private readonly BACKEND_BASE = 'https://woaw-backend-507962515113.us-central1.run.app/api';
+
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    // No pre-validamos nada → dejamos pasar la request.
+    // Saltar requests públicas/externas (sin tocar headers)
     if (this.shouldSkip(req)) {
       return next.handle(req);
     }
 
-    // Solo adjuntamos el token si existe
     const token = localStorage.getItem('token');
-    const authReq = token
+    const shouldAttach = this.shouldAttachToken(req);
+
+    // Agrega Authorization sólo si es nuestro backend y hay token
+    const authReq = (token && shouldAttach)
       ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } })
       : req;
 
-    // Solo si el backend responde 401 ejecutamos hasToken()
     return next.handle(authReq).pipe(
       catchError((err: HttpErrorResponse) => {
         if (err.status === 401) {
-          // Ejecutar tu validación local (7 días, user shape, etc.)
-          const sigueValida = this.general.hasToken();
+          const sigueValida = this.general?.hasToken?.() ?? false;
 
           if (!sigueValida) {
-            // hasToken() ya limpió, avisó y redirigió → cancelamos la cadena
-            return EMPTY;
+            return EMPTY; // tu hasToken ya limpió/avisó/redirigió
           }
 
-          // Si según el cliente “sigue válida” pero el server dice 401,
-          // invalidamos y redirigimos de todos modos.
           try {
             localStorage.removeItem('token');
             localStorage.removeItem('user');
             localStorage.removeItem('sesionActiva');
-          } catch { }
+          } catch {}
 
-          // Si presentToast es pública, mostramos aviso:
-          this.general.presentToast('Tu sesión no es válida. Inicia sesión nuevamente.', 'warning');
+          this.general?.presentToast?.('Tu sesión no es válida. Inicia sesión nuevamente.', 'warning');
           this.router.navigate(['/inicio'], { replaceUrl: true });
           return EMPTY;
         }
 
         if (err.status === 403) {
-          // Opcional: tratamiento similar a 401 (depende de tu backend)
           return EMPTY;
         }
 
@@ -60,10 +62,43 @@ export class AuthExpiryInterceptor implements HttpInterceptor {
     );
   }
 
+  // No tocar headers en assets, rutas públicas o hosts externos (Google/Maps/etc.)
   private shouldSkip(req: HttpRequest<any>): boolean {
     const url = req.url || '';
+
     if (url.startsWith('assets/')) return true;
-    const publicPaths = ['/login', '/registro', '/auth', '/autenticacion-user', '/public'];
-    return publicPaths.some(p => url.includes(p));
+
+    const publicPaths = ['/login', '/registro', '/auth', '/autenticacion-user', '/public', '/forgot-password'];
+    if (publicPaths.some(p => url.includes(p))) return true;
+
+    const externalHosts = [
+      'maps.googleapis.com',
+      'maps.gstatic.com',
+      'googleapis.com',
+      'maps.google',
+    ];
+    if (externalHosts.some(h => url.includes(h))) return true;
+
+    // Si es URL absoluta y NO es nuestro backend, sáltala (no adjuntar nada)
+    try {
+      const parsed = new URL(url, window.location.origin);
+      if (!parsed.href.startsWith(this.BACKEND_BASE)) return true;
+    } catch {
+      // URL relativa: no la saltamos aquí
+    }
+
+    return false;
+    }
+
+  // Sólo adjunta token si la URL es exactamente nuestro backend o '/api' relativo
+  private shouldAttachToken(req: HttpRequest<any>): boolean {
+    const url = req.url || '';
+    try {
+      const parsed = new URL(url, window.location.origin);
+      return parsed.href.startsWith(this.BACKEND_BASE);
+    } catch {
+      // URL relativa
+      return url.startsWith('/api') || url.startsWith('api');
+    }
   }
 }

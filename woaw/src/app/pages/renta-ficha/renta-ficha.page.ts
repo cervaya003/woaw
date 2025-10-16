@@ -70,9 +70,22 @@ export class RentaFichaPage implements OnInit {
   rental: Rental | null = null;
   isLoggedIn = false;
   highlightedRange: Array<{ date: string; textColor?: string; backgroundColor?: string }> = [];
+  ocupadasISO = new Set<string>(); // YYYY-MM-DD bloqueados
+  highlightedDisabled: Array<{ date: string; textColor?: string; backgroundColor?: string }> = [];
+
+  get mergedHighlights() {
+    return [...this.highlightedDisabled, ...this.highlightedRange];
+  }
+
+  esFechaHabil = (isoDateString: string): boolean => {
+    try {
+      const ymd = (isoDateString || '').slice(0, 10);
+      return !this.ocupadasISO.has(ymd);
+    } catch { return true; }
+  };
+
   galeria: string[] = [];
   imagenSeleccionada: string | null = null;
-
   esDueno = false;
 
   get tieneVarias(): boolean { return (this.galeria?.length || 0) > 1; }
@@ -114,13 +127,12 @@ export class RentaFichaPage implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.general.tokenExistente$.subscribe((estado) => {
+    this.general.tokenExistente$.pipe(take(1)).subscribe((estado) => {
       this.isLoggedIn = estado;
+      const id = this.route.snapshot.paramMap.get('id')!;
+      this.cargar(id);
       this.cdr.markForCheck();
     });
-
-    const id = this.route.snapshot.paramMap.get('id')!;
-    this.cargar(id);
   }
 
   private obtenerIdActual(): string | null {
@@ -200,26 +212,50 @@ export class RentaFichaPage implements OnInit {
         this.rental = cast;
         this.galeria = this.buildGaleria(cast);
         this.imagenSeleccionada = this.galeria[0] || null;
-        this.rentaService.misCoches().pipe(take(1)).subscribe({
-          next: (mis) => {
-            const idActual = this.obtenerIdActual();
-            const esPorListado = Array.isArray(mis) && mis.some(a => String(a?._id || a?.id) === String(cast._id));
-            const esPorOwnerEnFicha = this.soyPropietarioDeAuto(cast);
-            this.esDueno = esPorListado || esPorOwnerEnFicha;
-            console.log('[Ficha] idUsuario=', idActual, 'idAuto=', cast._id, 'esPorListado=', esPorListado, 'esPorOwner=', esPorOwnerEnFicha, 'esDueno=', this.esDueno);
-            this.loading = false;
-            if (this.fechasSeleccionadas.length >= 1) this.calcularTotal();
-            this.buildHighlightedRange();
+        this.fillBlockedFromExcepciones(cast?.excepcionesNoDisponibles || []);
+        this.rentaService.diasNoDisponibles(cast._id)
+          .pipe(take(1))
+          .subscribe((dias: string[]) => {
+            const out = new Set(this.ocupadasISO);
+            (dias || []).forEach(d => out.add(String(d).slice(0, 10)));
+            this.ocupadasISO = out;
+            this.buildDisabledHighlights();
             this.cdr.markForCheck();
-          },
-          error: () => {
-            this.esDueno = this.soyPropietarioDeAuto(cast);
-            this.loading = false;
-            if (this.fechasSeleccionadas.length >= 1) this.calcularTotal();
-            this.buildHighlightedRange();
+          }, () => {
+            this.buildDisabledHighlights();
             this.cdr.markForCheck();
-          }
-        });
+          });
+
+        if (this.isLoggedIn) {
+          this.rentaService.misCoches().pipe(take(1)).subscribe({
+            next: (mis) => {
+              const idActual = this.obtenerIdActual();
+              const esPorListado = Array.isArray(mis) && mis.some(a => String(a?._id || a?.id) === String(cast._id));
+              const esPorOwnerEnFicha = this.soyPropietarioDeAuto(cast);
+              this.esDueno = esPorListado || esPorOwnerEnFicha;
+              this.loading = false;
+
+              if (this.fechasSeleccionadas.length >= 1) this.calcularTotal();
+              this.buildHighlightedRange();
+              this.cdr.markForCheck();
+            },
+            error: () => {
+              this.esDueno = this.soyPropietarioDeAuto(cast);
+              this.loading = false;
+
+              if (this.fechasSeleccionadas.length >= 1) this.calcularTotal();
+              this.buildHighlightedRange();
+              this.cdr.markForCheck();
+            }
+          });
+        } else {
+          this.esDueno = this.soyPropietarioDeAuto(cast);
+          this.loading = false;
+
+          if (this.fechasSeleccionadas.length >= 1) this.calcularTotal();
+          this.buildHighlightedRange();
+          this.cdr.markForCheck();
+        }
       },
       error: (err) => {
         this.loading = false;
@@ -229,6 +265,40 @@ export class RentaFichaPage implements OnInit {
         this.router.navigate(['/renta-coches']);
       }
     });
+  }
+
+  private fillBlockedFromExcepciones(excepciones: Array<{ inicio: string; fin: string }>): void {
+    const out = new Set<string>(this.ocupadasISO);
+    for (const e of (excepciones || [])) {
+      const days = this.expandLocalRangeToYmdList(e?.inicio, e?.fin);
+      for (const d of days) out.add(d);
+    }
+    this.ocupadasISO = out;
+    this.buildDisabledHighlights();
+  }
+
+  private buildDisabledHighlights(): void {
+    const bg = '#e5e7eb'; // gris claro
+    const fg = '#6b7280'; // texto gris
+    this.highlightedDisabled = Array.from(this.ocupadasISO).map(ymd => ({
+      date: ymd,
+      backgroundColor: bg,
+      textColor: fg,
+    }));
+  }
+
+  private expandLocalRangeToYmdList(inicio?: string, fin?: string): string[] {
+    if (!inicio) return [];
+    let a = this.asLocalDateOnly(inicio);
+    let b = this.asLocalDateOnly(fin || inicio);
+    if (b < a) { const t = a; a = b; b = t; }
+    const out: string[] = [];
+    const cur = new Date(a);
+    while (cur <= b) {
+      out.push(this.toLocalISODate(cur));
+      cur.setDate(cur.getDate() + 1);
+    }
+    return out;
   }
 
   volver() {
@@ -297,8 +367,6 @@ export class RentaFichaPage implements OnInit {
     }
   }
 
-  esFechaHabil = (_isoDateString: string) => true;
-
   private calcularTotal() {
     this.resumen = null;
     const r = this.rental;
@@ -333,10 +401,8 @@ export class RentaFichaPage implements OnInit {
 
     const numero = "524427706776";
     const urlActual = window.location.href;
-
     const mensaje = `Hola, estoy interesado en rentar: \n\n🚗 *${this.rental.marca} ${this.rental.modelo}*. \n\n🔗 ${urlActual}`;
     const texto = encodeURIComponent(mensaje);
-
     window.open(`https://api.whatsapp.com/send?phone=${numero}&text=${texto}`, "_blank");
   }
 
