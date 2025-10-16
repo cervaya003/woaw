@@ -181,24 +181,24 @@ export class PersonaPage implements OnInit {
     return !!(storedPersona && storedPersona.trim() !== '');
   }
   async nuevosDatos() {
-    this.mostrar_spinnet = true;
+    // this.mostrar_spinnet = true;
 
-    setTimeout(async () => {
-      this.mostrar_spinnet = false;
+    // setTimeout(async () => {
+    //   this.mostrar_spinnet = false;
 
-      const autorizado = await this.verificarAuth();
+      // const autorizado = await this.verificarAuth();
 
-      if (autorizado) {
+      // if (autorizado) {
         this.router.navigate(['/seguros/poliza']);
-      } else {
-        this.generalService.alert(
-          `Para crear tu póliza, es necesario que inicies sesión.`,
-          'Regístrate o inicia sesión',
-          'danger'
-        );
-        this.router.navigate(['/inicio']);
-      }
-    }, 1500);
+    //   } else {
+    //     this.generalService.alert(
+    //       `Para crear tu póliza, es necesario que inicies sesión.`,
+    //       'Regístrate o inicia sesión',
+    //       'danger'
+    //     );
+    //     this.router.navigate(['/inicio']);
+    //   }
+    // }, 1500);
   }
   editarUser() {
     this.statusUserDtos = false;
@@ -521,6 +521,9 @@ export class PersonaPage implements OnInit {
       this.islandKey++;
       this.mostrar_spinnet = false;
       this.router.navigate(['/seguros/autos']);
+      window.location.reload();
     }, 1000);
+  }
+  ionViewWillEnter() {
   }
 }

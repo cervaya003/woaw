@@ -49,23 +49,13 @@
   <app-otros-seguros [refreshKey]="islandKey" *ngIf="tipoDispocitivo === 'telefono'"></app-otros-seguros>
 
   <div class="fondo-seguros">
-    <img src="/assets/autos/seg1.webp" alt="">
+    <img src="/assets/autos/seguro.png" alt="">
     <span class="fondo-seguros__overlay"></span>
   </div>
 
   <div class="split-woaw-seguros" style="--left: 80%; --right: 20%; --gap: 1px;">
 
     <div class="divicion1">
-
-      <div class="progress" *ngIf="!quote">
-        <div class="progress__bar" [style.width.%]="progress()"></div>
-        <div class="progress__markers">
-          <span *ngFor="let step of steps; let i = index" [style.left.%]="(100 / (steps.length - 1)) * i"
-            [class.done]="i + 1 < currentStep" [class.active]="i + 1 === currentStep">
-            {{ step }}
-          </span>
-        </div>
-      </div>
 
       <div class="layout-seguros" *ngIf="!cotizacion">
 
@@ -74,7 +64,17 @@
 
             <header class="cotiza__head">
               <span class="badge">Seguro de auto · Woaw</span>
-              <h1>Cotiza tu seguro de auto</h1>
+              <h1>Cominza tu cotización personalizada</h1>
+
+              <div class="progress" *ngIf="!quote" [ngClass]="{ 'is-step1': currentStep === 1 }">
+                <div class="progress__bar" [style.width.%]="progress()"></div>
+                <div class="progress__markers">
+                  <span *ngFor="let step of steps; let i = index" [style.left.%]="(100 / (steps.length - 1)) * i"
+                    [class.done]="i + 1 < currentStep" [class.active]="i + 1 === currentStep">
+                    {{ step }}
+                  </span>
+                </div>
+              </div>
             </header>
 
             <form [formGroup]="form">
@@ -114,55 +114,60 @@
                 </div>
               </div>
 
-              <div class="field" *ngIf="currentStep === 2">
-                <label for="modelo">Selecciona el modelo <span>*</span> </label>
-                <div class="control control--select">
-                  <ion-select #lista class="sync-pop" formControlName="modelo" interface="popover" aria-label="Modelo"
-                    [interfaceOptions]="{ cssClass: 'select-popover pop-modelo', side: 'bottom', alignment: 'start' }"
-                    placeholder="Elige un modelo..." data-key="modelo" (ionFocus)="syncPopoverWidths()">
-                    <ion-select-option [value]="null" disabled>Elige un modelo...</ion-select-option>
-                    <ion-select-option *ngFor="let mo of modelos" [value]="mo.id">
-                      {{ mo.name | titlecase }}
-                    </ion-select-option>
-                  </ion-select>
+              <ng-container *ngIf="currentStep === 2">
+
+                <div class="field">
+                  <label for="modelo">Selecciona el modelo <span>*</span> </label>
+                  <div class="control control--select">
+                    <ion-select #lista class="sync-pop" formControlName="modelo" interface="popover" aria-label="Modelo"
+                      [interfaceOptions]="{ cssClass: 'select-popover pop-modelo', side: 'bottom', alignment: 'start' }"
+                      placeholder="Elige un modelo..." data-key="modelo" (ionFocus)="syncPopoverWidths()"
+                      (ionChange)="onModeloSeleccionado($event)">
+                      <ion-select-option [value]="null" disabled>Elige un modelo...</ion-select-option>
+                      <ion-select-option *ngFor="let mo of modelos" [value]="mo.id">
+                        {{ mo.name | titlecase }}
+                      </ion-select-option>
+                    </ion-select>
+                  </div>
                 </div>
-              </div>
+
+                <div class="field">
+                  <label for="anio">Selecciona el año <span>*</span></label>
+                  <div class="control control--select">
+
+                    <ion-select #lista class="sync-pop" formControlName="anio" interface="popover"
+                      placeholder="Elige un año..." aria-label="anio"
+                      [interfaceOptions]="{ cssClass: 'select-popover pop-anio', side: 'bottom', alignment: 'start' }"
+                      data-key="anio" (ionFocus)="syncPopoverWidths()" (ionChange)="onAnioSeleccionado($event)">
+
+                      <ion-select-option [value]="null" disabled>Elige un año...</ion-select-option>
+                      <ion-select-option *ngFor="let y of anios" [value]="y">
+                        {{ y }}
+                      </ion-select-option>
+                    </ion-select>
+                  </div>
+                </div>
+
+                <div class="field">
+                  <label for="version">Selecciona la versión <span>*</span></label>
+                  <div class="control control--select">
+
+                    <ion-select #lista class="sync-pop" formControlName="version" interface="popover"
+                      placeholder="Elige una versión..." aria-label="Versión"
+                      [interfaceOptions]="{ cssClass: 'select-popover pop-version', side: 'bottom', alignment: 'start' }"
+                      data-key="version" (ionFocus)="syncPopoverWidths()" >
+
+                      <ion-select-option [value]="null" disabled>Elige una versión...</ion-select-option>
+                      <ion-select-option *ngFor="let v of versions" [value]="v.id">
+                        {{ v.parts | titlecase }}
+                      </ion-select-option>
+                    </ion-select>
+                  </div>
+                </div>
+
+              </ng-container>
 
               <div class="field" *ngIf="currentStep === 3">
-                <label for="anio">Selecciona el año <span>*</span></label>
-                <div class="control control--select">
-
-                  <ion-select #lista class="sync-pop" formControlName="anio" interface="popover"
-                    placeholder="Elige un año..." aria-label="anio"
-                    [interfaceOptions]="{ cssClass: 'select-popover pop-anio', side: 'bottom', alignment: 'start' }"
-                    data-key="anio" (ionFocus)="syncPopoverWidths()">
-
-                    <ion-select-option [value]="null" disabled>Elige un año...</ion-select-option>
-                    <ion-select-option *ngFor="let y of anios" [value]="y">
-                      {{ y }}
-                    </ion-select-option>
-                  </ion-select>
-                </div>
-              </div>
-
-              <div class="field" *ngIf="currentStep === 4">
-                <label for="version">Selecciona la versión <span>*</span></label>
-                <div class="control control--select">
-
-                  <ion-select #lista class="sync-pop" formControlName="version" interface="popover"
-                    placeholder="Elige una versión..." aria-label="Versión"
-                    [interfaceOptions]="{ cssClass: 'select-popover pop-version', side: 'bottom', alignment: 'start' }"
-                    data-key="version" (ionFocus)="syncPopoverWidths()">
-
-                    <ion-select-option [value]="null" disabled>Elige una versión...</ion-select-option>
-                    <ion-select-option *ngFor="let v of versions" [value]="v.id">
-                      {{ v.parts | titlecase }}
-                    </ion-select-option>
-                  </ion-select>
-                </div>
-              </div>
-
-              <div class="field" *ngIf="currentStep === 5">
                 <label>Fecha de nacimiento <span>*</span></label>
 
                 <div class="fecha-flex">
@@ -209,7 +214,7 @@
                 </div>
               </div>
 
-              <div class="field" *ngIf="currentStep === 6">
+              <div class="field" *ngIf="currentStep === 4">
 
                 <label for="cp">Código Postal <span>*</span></label>
                 <div class="control">
@@ -247,7 +252,7 @@
 
               </div>
 
-              <div class="field" *ngIf="currentStep === 7">
+              <div class="field" *ngIf="currentStep === 5">
                 <label>Verifica tu información <span>*</span></label>
 
                 <div class="summary">
@@ -284,13 +289,11 @@
                   (click)="ClearRegrasar()">&#x2B05;</button>
                 <button class="btn-primary" type="button" (click)="siguiente()" [disabled]="
                   (currentStep===1 && form.get('marca')?.invalid) ||
-                  (currentStep===2 && form.get('modelo')?.invalid) ||
-                  (currentStep===3 && form.get('anio')?.invalid)   ||
-                  (currentStep===4 && form.get('version')?.invalid)||
-                  (currentStep===5 && form.get('nacDia')?.invalid || form.get('nacMes')?.invalid || form.get('nacAnio')?.invalid) ||
-                  (currentStep===6 && (form.get('cp')?.invalid || form.get('genero')?.invalid || form.get('estadoCivil')?.invalid))
+                  (currentStep===2 && (form.get('modelo')?.invalid || form.get('anio')?.invalid || form.get('version')?.invalid)) ||
+                  (currentStep===3 && form.get('nacDia')?.invalid || form.get('nacMes')?.invalid || form.get('nacAnio')?.invalid) ||
+                  (currentStep===4 && (form.get('cp')?.invalid || form.get('genero')?.invalid || form.get('estadoCivil')?.invalid))
                   ">
-                  {{ currentStep < 7 ? 'Siguiente ' : 'Cotizar' }} &#x27A1; </button>
+                  {{ currentStep < 5 ? 'Siguiente ' : 'Cotizar' }} &#x27A1; </button>
               </div>
 
             </form>
@@ -424,29 +427,26 @@
       </section>
 
       <div class="historial-seguros" [ngClass]="{ 'is-step1': currentStep === 1 }">
-        <ng-container *ngIf="ultimaCotizacion?.datosCoche; else sinHistorial">
-          <button class="historial-cta" (click)="restaurarOIntercambiarCotizacion()" aria-label="Mi última cotización"
-            role="button">
-            <div class="historial-head">
-              <span class="hist-label">Mi última cotización</span>
-              <ion-icon name="chevron-forward-outline" aria-hidden="true"></ion-icon>
-            </div>
+        <div class="historial-cta" (click)="restaurarOIntercambiarCotizacion()"
+          *ngIf="ultimaCotizacion?.datosCoche; else sinHistorial" aria-label="Mi última cotización" role="button">
+          <div class="historial-head">
+            <span class="hist-label">Mi última cotización</span>
+            <ion-icon name="chevron-forward-outline" aria-hidden="true"></ion-icon>
+          </div>
 
-            <div class="hist-info">
-              <h3>
-                {{ ultimaCotizacion.datosCoche.marca | uppercase }}
-                {{ ultimaCotizacion.datosCoche.modelo }}
-              </h3>
-              <p class="hist-version">Versión: {{ ultimaCotizacion.datosCoche.version }}</p>
-              <p class="hist-year">Año: {{ ultimaCotizacion.datosCoche.anio }}</p>
-            </div>
+          <div class="hist-info">
+            <h3>
+              {{ ultimaCotizacion.datosCoche.marca | uppercase }}
+              {{ ultimaCotizacion.datosCoche.modelo }}
+            </h3>
+            <p class="hist-version">Versión: {{ ultimaCotizacion.datosCoche.version }}</p>
+            <p class="hist-year">Año: {{ ultimaCotizacion.datosCoche.anio }}</p>
+          </div>
 
-            <div class="hist-hint">Toca para continuar donde te quedaste</div>
-          </button>
-        </ng-container>
+          <div class="hist-hint">Toca para ver</div>
+        </div>
 
         <ng-template #sinHistorial>
-          <!-- <p>No hay historial de cotizaciones.</p> -->
         </ng-template>
       </div>
 
@@ -465,7 +465,7 @@
 <ion-footer class="black-footer" [translucent]="false" *ngIf="tipoDispocitivo === 'telefono'">
   <ion-toolbar class="black-footer__tb">
 
-    <div class="footer-buttons"  *ngIf="!cotizacion">
+    <div class="footer-buttons" *ngIf="!cotizacion">
       <ion-button fill="solid" class="btn-secondary" *ngIf="currentStep !== 1" (click)="ClearRegrasar()">
         &#x2B05;
       </ion-button>

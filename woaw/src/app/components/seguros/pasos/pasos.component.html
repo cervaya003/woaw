@@ -29,7 +29,7 @@
         </div>
       </div>
       <ng-template #cotizacionVacia>
-        <div class="card__empty">Sin cotización guardada.</div>
+        <div class="card__empty">Selecciona marca, modeloy vesiónde tu vehículo</div>
       </ng-template>
     </div>
 
@@ -62,7 +62,7 @@
         </div>
       </div>
       <ng-template #usuarioVacio>
-        <div class="card__empty">Sin datos de usuario.</div>
+        <div class="card__empty">Ingresa tu información básica para pesonalizar tu cobertura.</div>
       </ng-template>
     </div>
 
@@ -76,7 +76,8 @@
       </div>
 
       <ng-template #polizaVacia>
-        <div class="card__empty">Sin póliza configurada.</div>
+        <div *ngIf="isLoggedIn" class="card__empty">Cotiza y descarga tu polizá al instante.</div>
+        <div *ngIf="!isLoggedIn" class="card__empty">Crea tu cuenta para gurdar tu cotización y descarga tu polizá al instante.</div>
       </ng-template>
     </div>
   </div>

@@ -2,12 +2,13 @@
 
 
 <ion-content [fullscreen]="true">
+  
   <app-spinner *ngIf="mostrar_spinnet"></app-spinner>
   <app-otros-seguros [refreshKey]="islandKey" *ngIf="tipoDispocitivo === 'telefono'"></app-otros-seguros>
 
 
   <div class="fondo-seguros">
-    <img src="/assets/autos/seg1.webp" alt="">
+    <img src="/assets/autos/seguro.png" alt="">
     <span class="fondo-seguros__overlay"></span>
   </div>
 
@@ -206,7 +207,7 @@
             <div class="field field-grid" *ngIf="currentStepform === 3">
 
               <div>
-                <label *ngIf="tipoPersonaSeleccionada === 'fisica'" for="nombre">Nombre completo <span>*</span></label>
+                <label *ngIf="tipoPersonaSeleccionada === 'fisica'" for="nombre">Nombre(s)<span>*</span></label>
                 <label *ngIf="tipoPersonaSeleccionada === 'moral'" for="nombre">Nombre de la
                   empresa<span>*</span></label>
                 <div class="control">

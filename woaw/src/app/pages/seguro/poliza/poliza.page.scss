@@ -402,7 +402,6 @@
     }
 }
 
-
 .correo-item {
     display: grid;
     grid-template-columns: 1fr auto;
@@ -616,4 +615,136 @@ app-dynamic-island {
     justify-content: center;
     align-items: center;
     margin: 20px auto;
+}
+
+
+
+
+
+
+.carta-login {
+    display: grid;
+    grid-template-columns: 1fr min(420px, 40vw);
+    gap: clamp(16px, 3vw, 48px);
+    align-items: start;
+    width: 100%;
+    max-width: 1100px;
+    margin: 1rem auto 0;
+    padding: clamp(8px, 2vw, 24px);
+    background: #fff;
+    border-radius: 20px;
+
+    /* ----- Columna izquierda: solo estilos, tú metes el contenido ----- */
+    .contenedor_texto {
+        max-width: 900px;
+        padding-inline: clamp(4px, 1vw, 8px);
+
+        /* Tipografía sugerida (opcional) */
+        h2 {
+            margin: 0 0 8px;
+            font-weight: 800;
+            font-size: clamp(28px, 4vw, 48px);
+            line-height: 1.05;
+            color: #e6382e;
+
+            @media (max-width: 820px) {
+                text-align: center;
+            }
+        }
+
+        p {
+            margin: 0 0 10px;
+            font-size: clamp(10px, 1.2vw, 18px);
+            line-height: 1.6;
+            color: #333;
+            max-width: 52ch;
+
+            @media (max-width: 820px) {
+                text-align: justify;
+            }
+        }
+
+        .accent {
+            display: inline-block;
+            width: clamp(60px, 10vw, 140px);
+            height: 4px;
+            margin-top: 10px;
+            border-radius: 999px;
+            background: linear-gradient(90deg, #ff2a2a, #ff5a5a);
+        }
+    }
+
+    /* ----- Columna derecha: NO TOCAR el HTML de .container_vidrio ----- */
+    .container_vidrio {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        width: 100%;
+        max-width: 360px;
+        border-radius: 20px;
+        padding: 12px;
+        padding-bottom: 60px;
+        background: #fff;
+        overflow: visible;
+        transform: translateY(0);
+
+        @media (max-width: 768px) {
+            border-radius: 12px;
+            /* ligero redondeo en móvil */
+            padding: 10px;
+            transform: none !important;
+        }
+
+        .link-registro {
+            margin-top: 0;
+            font-size: 14px;
+            color: #3e3e3e;
+            text-align: center;
+
+            strong {
+                font-size: 15px;
+                cursor: pointer;
+                color: #ff0000;
+                text-decoration: underline;
+            }
+        }
+    }
+
+    /* Separador (por si lo usas fuera del inline-style) */
+    .separador {
+        width: 100%;
+        height: 1px;
+        background-color: #ccc;
+        margin: 16px 0;
+    }
+
+    /* ----- Responsive: apilado en móvil ----- */
+    @media (max-width: 980px) {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        padding: 10px;
+        border-radius: 12px;
+
+        .contenedor_texto {
+            align-self: flex-start;
+            text-align: left;
+            max-width: 100%;
+            padding-inline: 4px;
+        }
+
+        .container_vidrio {
+            max-width: 100%;
+            width: 100%;
+        }
+    }
+
+
+    a.enlace-politica {
+        color: #f5410b;
+        font-weight: bold;
+        text-decoration: underline;
+        cursor: pointer;
+    }
 }

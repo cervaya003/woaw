@@ -22,13 +22,18 @@ const routes: Routes = [
   },
   {
     path: "",
- 
+
     children: [
       {
         path: "home",
         loadChildren: () =>
           import("./pages/home/home.module").then((m) => m.HomePageModule),
         data: { title: "Compra, vende, renta y arrenda tu auto en WOAW" },
+      },
+      {
+        path: "seguros",
+        redirectTo: "seguros/disponibles",
+        pathMatch: "full",
       },
       {
         path: "nuevos",
@@ -103,8 +108,8 @@ const routes: Routes = [
             (m) => m.NewCarPageModule
           ),
         data: { title: "Publicar nuevo vehículo | woaw" },
-         canActivate: [AuthGuard],
-           canMatch: [AuthPhoneGuard],
+        canActivate: [AuthGuard],
+        canMatch: [AuthPhoneGuard],
       },
       {
         path: "mis-motos",
