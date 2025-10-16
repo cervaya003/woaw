@@ -72,9 +72,6 @@ export class MenuVehiculosPage implements OnInit {
     this.getCarsUsados();
   }
 
-  // ==========================
-  // Helpers de precio/ubicación
-  // ==========================
   private toNumberSafe(v: any): number | null {
     if (v === null || v === undefined) return null;
     const n =
@@ -84,7 +81,6 @@ export class MenuVehiculosPage implements OnInit {
     return Number.isFinite(n) ? n : null;
   }
 
-  /** Precio mínimo dentro de version[].(Precio|precio) */
   private minPrecioDeVersion(a: AutoCard): number | null {
     const vs = Array.isArray(a?.version) ? a.version : [];
     const nums = vs
@@ -93,10 +89,6 @@ export class MenuVehiculosPage implements OnInit {
     return nums.length ? Math.min(...nums) : null;
   }
 
-  /** Regla:
-   *  - NUEVO: siempre del mínimo de versiones
-   *  - SEMINUEVO/USADO: usa a.precio si existe; si no, mínimo de versiones; si no, null
-   */
   public getPrecio(a: AutoCard): number | null {
     if (!a) return null;
     if (a.tipoVenta === "nuevo") {
@@ -118,24 +110,18 @@ export class MenuVehiculosPage implements OnInit {
     return km !== null && km >= 0;
   }
 
-  /** trackBy para *ngFor */
   public trackById(_: number, a: AutoCard): string {
     return a?._id;
   }
 
-  // ==========================
-  // Carga de datos
-  // ==========================
-
   getCarsUsados() {
     this.carsService.getCarsUsados().subscribe({
       next: (res: any) => {
-           console.log('📦 Objeto recibido del backend (usados):', res); 
+        //  console.log('📦 Objeto recibido del backend (usados):', res);
         this.conUsados = Number(res?.contador ?? 0);
         const autos: AutoCard[] = res?.coches || [];
         const autosAleatorios = [...autos].sort(() => Math.random() - 0.5);
         this.autosUsados = autosAleatorios;
-         
       },
       error: (err) => {
         const mensaje = err?.error?.message || "Ocurrió un error inesperado";
@@ -146,7 +132,7 @@ export class MenuVehiculosPage implements OnInit {
   getCarsSeminuevos() {
     this.carsService.getCarsSeminuevos().subscribe({
       next: (res: any) => {
-           console.log('📦 Objeto recibido del backend (seminuevos):', res); 
+        //  console.log('📦 Objeto recibido del backend (seminuevos):', res);
         this.conSeminuevos = Number(res?.contador ?? 0);
         const autos: AutoCard[] = res?.coches || [];
         const autosAleatorios = [...autos].sort(() => Math.random() - 0.5);
@@ -162,9 +148,7 @@ export class MenuVehiculosPage implements OnInit {
   getCarsNews() {
     this.carsService.getCarsNews().subscribe({
       next: (res: any) => {
-           console.log('📦 Objeto recibido del backend (nuevos):', res); 
-
-           
+        //  console.log('📦 Objeto recibido del backend (nuevos):', res);
         this.conNuevos = Number(res?.contador ?? 0);
         const autos: AutoCard[] = res?.coches || [];
         // Si quieres orden aleatorio en la vista:
@@ -178,17 +162,12 @@ export class MenuVehiculosPage implements OnInit {
     });
   }
 
-  // ==========================
-  // Navegación
-  // ==========================
   public redirecion(url: string) {
     this.router.navigate([url]);
   }
 
-    /** Redirige a la ficha del vehículo según su ID */
   public irAFichaAuto(id?: string) {
     if (!id) return;
     this.router.navigate(["/ficha", "autos", id]);
   }
-
 }
