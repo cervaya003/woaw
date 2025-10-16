@@ -17,11 +17,12 @@ export const environment = {
   // ----- Praducion -----
   crabi_branchId: 'e283bb8b-28d8-4445-a5e7-80036981841d',
   crabi_status: 'production',
+  // ----- -----
 
-  telefonoFijo: '+524427706776',
-  telefonoJefe: '+524424736940',
-  telefonoJoli: '+524428688669',
-  telefonoArrendamiento: '+524427706776'
+  telefonoFijo: '+524427706776', // Telefono secundario de joel
+  telefonoJefe: '+524424736940', 
+  telefonoJoli: '+524428688669', 
+  telefonoArrendamiento: '+524427706776' // Telefono secundario de joel
 };
 
 /*

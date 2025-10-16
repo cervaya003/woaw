@@ -1,7 +1,6 @@
-import { Component, OnInit } from "@angular/core";
-import { ActivatedRoute } from "@angular/router";
+import { Component, OnInit, OnDestroy } from "@angular/core";
+import { ActivatedRoute, Router } from "@angular/router";
 import { AlertController } from "@ionic/angular";
-import { Router } from "@angular/router";
 import { CarsService } from "../../services/cars.service";
 import { GeneralService } from "../../services/general.service";
 import { DomSanitizer } from "@angular/platform-browser";
@@ -39,17 +38,19 @@ interface AutoCard {
   styleUrls: ["./menu-vehiculos.page.scss"],
   standalone: false,
 })
-export class MenuVehiculosPage implements OnInit {
+export class MenuVehiculosPage implements OnInit, OnDestroy {
   tipoVehiculo!: string;
-  esDispositivoMovil: boolean = false;
+  esDispositivoMovil = false;
 
   autosNuevos: AutoCard[] = [];
   autosSeminuevos: AutoCard[] = [];
   autosUsados: AutoCard[] = [];
 
-  public conUsados: number = 0;
-  public conSeminuevos: number = 0;
-  public conNuevos: number = 0;
+  conUsados = 0;
+  conSeminuevos = 0;
+  conNuevos = 0;
+
+  private timers: any[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -72,19 +73,17 @@ export class MenuVehiculosPage implements OnInit {
     this.getCarsUsados();
   }
 
-  // ==========================
-  // Helpers de precio/ubicación
-  // ==========================
+  ngOnDestroy() {
+    this.clearRotations();
+  }
+
+  // ========= Helpers precio/ubicación =========
   private toNumberSafe(v: any): number | null {
     if (v === null || v === undefined) return null;
-    const n =
-      typeof v === "string"
-        ? Number(v.toString().replace(/[, ]+/g, ""))
-        : Number(v);
+    const n = typeof v === "string" ? Number(v.toString().replace(/[, ]+/g, "")) : Number(v);
     return Number.isFinite(n) ? n : null;
   }
 
-  /** Precio mínimo dentro de version[].(Precio|precio) */
   private minPrecioDeVersion(a: AutoCard): number | null {
     const vs = Array.isArray(a?.version) ? a.version : [];
     const nums = vs
@@ -93,49 +92,57 @@ export class MenuVehiculosPage implements OnInit {
     return nums.length ? Math.min(...nums) : null;
   }
 
-  /** Regla:
-   *  - NUEVO: siempre del mínimo de versiones
-   *  - SEMINUEVO/USADO: usa a.precio si existe; si no, mínimo de versiones; si no, null
-   */
   public getPrecio(a: AutoCard): number | null {
     if (!a) return null;
-    if (a.tipoVenta === "nuevo") {
-      return this.minPrecioDeVersion(a);
-    }
+    if (a.tipoVenta === "nuevo") return this.minPrecioDeVersion(a);
     const p = this.toNumberSafe(a?.precio);
     return p ?? this.minPrecioDeVersion(a);
   }
 
-  public getCiudad(a: AutoCard): string {
-    return a?.ubicacion?.ciudad ?? "";
-  }
-  public getEstado(a: AutoCard): string {
-    return a?.ubicacion?.estado ?? "";
-  }
+  public getCiudad(a: AutoCard): string { return a?.ubicacion?.ciudad ?? ""; }
+  public getEstado(a: AutoCard): string { return a?.ubicacion?.estado ?? ""; }
 
   public mostrarKilometraje(a: AutoCard): boolean {
     const km = this.toNumberSafe(a?.kilometraje);
     return km !== null && km >= 0;
   }
 
-  /** trackBy para *ngFor */
-  public trackById(_: number, a: AutoCard): string {
-    return a?._id;
+  public trackById(_: number, a: AutoCard): string { return a?._id; }
+
+  // ========= Rotación de coches (array) =========
+  private startRotation(ref: "autosUsados" | "autosSeminuevos" | "autosNuevos", ms = 15000) {
+    const tick = () => {
+      const list = this[ref] as AutoCard[];
+      if (!Array.isArray(list) || list.length <= 1) return;
+
+      // Si hay más de 5, rota completo; si hay 5 o menos, igual cicla para variación.
+      const first = list[0];
+      const rotated = [...list.slice(1), first];
+      // Nueva referencia para garantizar cambio en la vista
+      this[ref] = rotated;
+    };
+
+    // No creamos timers si no hay al menos 2
+    if ((this[ref] as AutoCard[]).length > 1) {
+      const id = setInterval(tick, ms);
+      this.timers.push(id);
+    }
   }
 
-  // ==========================
-  // Carga de datos
-  // ==========================
+  private clearRotations() {
+    this.timers.forEach(clearInterval);
+    this.timers = [];
+  }
 
+  // ========= Carga de datos =========
   getCarsUsados() {
     this.carsService.getCarsUsados().subscribe({
       next: (res: any) => {
-           console.log('📦 Objeto recibido del backend (usados):', res); 
         this.conUsados = Number(res?.contador ?? 0);
         const autos: AutoCard[] = res?.coches || [];
-        const autosAleatorios = [...autos].sort(() => Math.random() - 0.5);
-        this.autosUsados = autosAleatorios;
-         
+        this.autosUsados = [...autos].sort(() => Math.random() - 0.5);
+
+        this.startRotation("autosUsados");
       },
       error: (err) => {
         const mensaje = err?.error?.message || "Ocurrió un error inesperado";
@@ -143,14 +150,15 @@ export class MenuVehiculosPage implements OnInit {
       },
     });
   }
+
   getCarsSeminuevos() {
     this.carsService.getCarsSeminuevos().subscribe({
       next: (res: any) => {
-           console.log('📦 Objeto recibido del backend (seminuevos):', res); 
         this.conSeminuevos = Number(res?.contador ?? 0);
         const autos: AutoCard[] = res?.coches || [];
-        const autosAleatorios = [...autos].sort(() => Math.random() - 0.5);
-        this.autosSeminuevos = autosAleatorios;
+        this.autosSeminuevos = [...autos].sort(() => Math.random() - 0.5);
+
+        this.startRotation("autosSeminuevos");
       },
       error: (err) => {
         const mensaje = err?.error?.message || "Ocurrió un error inesperado";
@@ -162,14 +170,11 @@ export class MenuVehiculosPage implements OnInit {
   getCarsNews() {
     this.carsService.getCarsNews().subscribe({
       next: (res: any) => {
-           console.log('📦 Objeto recibido del backend (nuevos):', res); 
-
-           
         this.conNuevos = Number(res?.contador ?? 0);
         const autos: AutoCard[] = res?.coches || [];
-        // Si quieres orden aleatorio en la vista:
-        const autosAleatorios = [...autos].sort(() => Math.random() - 0.5);
-        this.autosNuevos = autosAleatorios;
+        this.autosNuevos = [...autos].sort(() => Math.random() - 0.5);
+
+        this.startRotation("autosNuevos");
       },
       error: (err) => {
         const mensaje = err?.error?.message || "Ocurrió un error inesperado";
@@ -178,17 +183,10 @@ export class MenuVehiculosPage implements OnInit {
     });
   }
 
-  // ==========================
-  // Navegación
-  // ==========================
-  public redirecion(url: string) {
-    this.router.navigate([url]);
-  }
-
-    /** Redirige a la ficha del vehículo según su ID */
+  // ========= Navegación =========
+  public redirecion(url: string) { this.router.navigate([url]); }
   public irAFichaAuto(id?: string) {
     if (!id) return;
     this.router.navigate(["/ficha", "autos", id]);
   }
-
 }

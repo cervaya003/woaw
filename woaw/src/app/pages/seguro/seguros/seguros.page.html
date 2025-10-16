@@ -49,7 +49,7 @@
   <app-otros-seguros [refreshKey]="islandKey" *ngIf="tipoDispocitivo === 'telefono'"></app-otros-seguros>
 
   <div class="fondo-seguros">
-    <img src="/assets/autos/seguro.png" alt="">
+    <img src="/assets/autos/seguro_fondo.webp" alt="">
     <span class="fondo-seguros__overlay"></span>
   </div>
 
@@ -64,7 +64,7 @@
 
             <header class="cotiza__head">
               <span class="badge">Seguro de auto · Woaw</span>
-              <h1>Cominza tu cotización personalizada</h1>
+              <h1>Comienza tu cotización personalizada</h1>
 
               <div class="progress" *ngIf="!quote" [ngClass]="{ 'is-step1': currentStep === 1 }">
                 <div class="progress__bar" [style.width.%]="progress()"></div>

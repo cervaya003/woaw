@@ -18,10 +18,29 @@
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
 	<string>$(MARKETING_VERSION)</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>woaw</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>woaw</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Necesitamos la camara para tomar imagenes de los coches.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Necesitamos la ubicación para funcionamientos de la app.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Guardaremos la imagenes en tu galeria.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Necesitamos imagenes de los vehiculos.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
@@ -45,13 +64,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Necesitamos la ubicación para funcionamientos de la app.</string>
-	<key>NSCameraUsageDescription</key>
-	<string>Necesitamos la camara para tomar imagenes de los coches.</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Necesitamos imagenes de los vehiculos.</string>
-	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>Guardaremos la imagenes en tu galeria.</string>
 </dict>
 </plist>

@@ -1,31 +1,5 @@
 <app-navbar></app-navbar>
 
-<ion-content [fullscreen]="true">
-
-  <img  [src]="imgenPrincipal" alt="Próximamente WOAW" class="img-responsiva" />
-
-
-  <div class="hero-overlay">
-    <span class="eyebrow">
-      <span class="dot"></span> Próximamente
-    </span>
-
-    <h1>Renta de autos <span class="brand">WOAW</span></h1>
-    <p class="lead">Muy pronto una nueva forma de llegar a tu destino. Muévete facil, seguro y cómodo.</p>
-    <ul class="chips" role="list" aria-label="ventajas">
-      <li class="chip" role="listitem">Reserva inmediata</li>
-      <li class="chip" role="listitem">Sin depósito</li>
-      <li class="chip" role="listitem">Cobertura básica incluida</li>
-    </ul>
-  </div>
-
-  <app-footer></app-footer>
-</ion-content>
-
-
-
-<!-- <app-navbar></app-navbar>
-
 <ion-content #pageContent [fullscreen]="true">
   <ion-refresher slot="fixed" (ionRefresh)="refrescar($event)">
     <ion-refresher-content></ion-refresher-content>
@@ -198,6 +172,7 @@
           <div class="contenedor-paginacion" *ngIf="totalPaginasMios > 1">
             <div class="paginacion-scroll">
               <div class="paginacion">
+                <!-- Flecha anterior: AHORA CON SÍMBOLO -->
                 <button class="pagina" (click)="cambiarPagina('mios', paginaMiosActual - 1)"
                   [disabled]="paginaMiosActual === 1">
                   ‹
@@ -211,6 +186,7 @@
                   <span *ngIf="!esNumero(i)" class="ellipsis">...</span>
                 </ng-container>
 
+                <!-- Flecha siguiente: AHORA CON SÍMBOLO -->
                 <button class="pagina" (click)="cambiarPagina('mios', paginaMiosActual + 1)"
                   [disabled]="paginaMiosActual === totalPaginasMios">
                   ›
@@ -283,4 +259,4 @@
       </ion-toolbar>
     </ion-footer>
   </ng-template>
-</ion-modal> -->
+</ion-modal>

@@ -328,6 +328,7 @@ const routes: Routes = [
           import("./pages/seguro/ver-polizas/ver-polizas.module").then(
             (m) => m.VerPolizasPageModule
           ),
+        canActivate: [AuthGuard],
       },
       {
         path: "seguros/detalle-poliza",
