@@ -168,8 +168,14 @@ export class LoginComponent implements OnInit, AfterViewInit {
         this.generalService.loadingDismiss();
         if (res.token && res.user) {
           this.generalService.guardarCredenciales(res.token, res.user);
-          setTimeout(() => this.router.navigate(['/home']), 1200);
-          this.generalService.alert('Bienvenido a WOAW', 'Inicio de sesión exitoso', 'success');
+          let respuesta: boolean = this.verificaStorage();
+
+          if (respuesta) {
+            setTimeout(() => this.router.navigate(['/seguros/poliza']), 1200);
+          } else {
+            setTimeout(() => this.router.navigate(['/home']), 1200);
+            this.generalService.alert('Bienvenido a WOAW', 'Inicio de sesión exitoso', 'success');
+          }
         } else {
           this.generalService.alert('Error de conexión', 'Ups, algo salió mal, vuelve a intentarlo', 'danger');
         }
@@ -188,8 +194,14 @@ export class LoginComponent implements OnInit, AfterViewInit {
         this.generalService.loadingDismiss();
         if (res.token && res.user) {
           this.generalService.guardarCredenciales(res.token, res.user);
-          this.router.navigate(['/home']);
-          this.generalService.alert('Bienvenido a WOAW', 'Inicio de sesión exitoso', 'success');
+          let respuesta: boolean = this.verificaStorage();
+
+          if (respuesta) {
+            setTimeout(() => this.router.navigate(['/seguros/poliza']), 1200);
+          } else {
+            setTimeout(() => this.router.navigate(['/home']), 1200);
+            this.generalService.alert('Bienvenido a WOAW', 'Inicio de sesión exitoso', 'success');
+          }
         } else {
           this.generalService.alert(' Error en registro', 'Ups, algo salió mal, vuelve a intentarlo', 'danger');
         }
@@ -199,6 +211,25 @@ export class LoginComponent implements OnInit, AfterViewInit {
         this.generalService.alert('¡Ups! Error de conexión', 'No se pudo iniciar sesión con Google, por favor intenta de nuevo.', 'danger');
       },
     });
+  }
+
+  public verificaStorage(): boolean {
+    const cotizacionRaw = localStorage.getItem('cotizacion');
+    const usuarioRaw = localStorage.getItem('UsuarioRespuesta');
+
+    const tieneCotizacion =
+      cotizacionRaw !== null &&
+      cotizacionRaw !== '' &&
+      cotizacionRaw !== 'null' &&
+      cotizacionRaw !== 'undefined';
+
+    const tieneUsuario =
+      usuarioRaw !== null &&
+      usuarioRaw !== '' &&
+      usuarioRaw !== 'null' &&
+      usuarioRaw !== 'undefined';
+
+    return tieneCotizacion && tieneUsuario;
   }
 
   // ANDROID (nativo)

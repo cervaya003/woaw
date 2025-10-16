@@ -18,12 +18,19 @@ import { SpinnerComponent } from '../../../components/spinner/spinner.component'
 import { DynamicIslandComponent } from '../../../components/dynamic-island/dynamic-island.component';
 import { OtrosSegurosComponent } from '../../../components/seguros/otros-seguros/otros-seguros.component';
 
+// importamos el componente de login
+import { LoginComponent } from '../../../components/login/login.component';
+// importamos el componente de registro
+import { RegistroComponent } from '../../../components/registro/registro.component';
+// importamos el componente de registro
+import { ResetpasswordComponent } from '../../../components/resetpassword/resetpassword.component';
+
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    PolizaPageRoutingModule, 
+    PolizaPageRoutingModule,
     NavbarComponent,
     MenuComponent,
     CartasComponent,
@@ -33,8 +40,12 @@ import { OtrosSegurosComponent } from '../../../components/seguros/otros-seguros
     ReactiveFormsModule,
     SpinnerComponent,
     DynamicIslandComponent,
-    OtrosSegurosComponent
+    OtrosSegurosComponent,
+    LoginComponent,
+    RegistroComponent,
+    ResetpasswordComponent
+
   ],
   declarations: [PolizaPage]
 })
-export class PolizaPageModule {}
+export class PolizaPageModule { }
