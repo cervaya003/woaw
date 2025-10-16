@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, HostListener } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AlertController, LoadingController, ToastController } from '@ionic/angular';
+import { LoadingController, ToastController } from '@ionic/angular';
 import { RentaService } from '../../services/renta.service';
 
 type EstadoRenta = 'disponible' | 'inactivo';
@@ -25,41 +25,35 @@ type ExcepcionDTO = { inicio: any; fin: any; motivo?: string };
 export class DisponibilidadCarPage implements OnInit {
   carId!: string;
   coche: any | null = null;
-
   esPropietario = false;
   estadoActual: EstadoRenta = 'disponible';
-
   excepciones: ExcepcionNoDisponible[] = [];
   errores: string[] = [];
-
-  // Calendario
   modoSeleccion: 'rango' | 'dia' = 'rango';
   rangeUnified: string[] | string | null = null;
   calendarMounted = true;
   private ignoreNextCalendarChange = false;
-
-  // Límites del calendario
   minDate = this.toYmdLocal(new Date());
   maxDate = this.toYmdLocal(this.addMonths(new Date(), 12));
-
-  // Preview calendario
   selectionHighlights: DayHighlight[] = [];
   highlightedExcepciones: DayHighlight[] = [];
-
-  // Presets
   activePreset: Preset = 'none';
   weekDays = [
-    { label: 'L', value: 1 }, { label: 'M', value: 2 }, { label: 'X', value: 3 },
-    { label: 'J', value: 4 }, { label: 'V', value: 5 }, { label: 'S', value: 6 },
-    { label: 'D', value: 0 },
+    { label: 'Lunes', value: 1 },
+    { label: 'Martes', value: 2 },
+    { label: 'Miércoles', value: 3 },
+    { label: 'Jueves', value: 4 },
+    { label: 'Viernes', value: 5 },
+    { label: 'Sábado', value: 6 },
+    { label: 'Domingo', value: 0 },
   ];
-  blockedWeekdays: Set<number> = new Set();
 
-  // Helpers
+  blockedWeekdays: Set<number> = new Set();
   cargando = false;
   guardando = false;
   private currentUserId: string | null = null;
   private lastSnapshot = '';
+  private backupExcepciones: ExcepcionNoDisponible[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -67,7 +61,6 @@ export class DisponibilidadCarPage implements OnInit {
     private rentaService: RentaService,
     private loadingCtrl: LoadingController,
     private toastCtrl: ToastController,
-    private alertCtrl: AlertController,
     private cdr: ChangeDetectorRef,
   ) { }
 
@@ -78,7 +71,6 @@ export class DisponibilidadCarPage implements OnInit {
     this.loadCar();
   }
 
-  // ====== LOAD ======
   private async loadCar() {
     this.cargando = true; this.cdr.markForCheck();
     const loading = await this.loading('Cargando vehículo…');
@@ -86,10 +78,8 @@ export class DisponibilidadCarPage implements OnInit {
     this.rentaService.cochePorId(this.carId).subscribe({
       next: async (car) => {
         await loading.dismiss(); this.cargando = false;
-
         this.coche = car;
         this.estadoActual = (car?.estadoRenta === 'inactivo' ? 'inactivo' : 'disponible');
-
         const rawEx: ExcepcionDTO[] = (car?.excepcionesNoDisponibles ?? []) as ExcepcionDTO[];
         const ex: ExcepcionNoDisponible[] = rawEx
           .map((e: ExcepcionDTO) => ({
@@ -98,17 +88,12 @@ export class DisponibilidadCarPage implements OnInit {
             motivo: e.motivo || undefined,
           }))
           .filter((e: ExcepcionNoDisponible) => !!e.inicio && !!e.fin);
-
         this.excepciones = this.mergeRanges(ex);
-
         this.activePreset = 'none';
         this.blockedWeekdays.clear();
-
-        // propietario
         const owner = this.extractOwnerId(car);
         const me = this.currentUserId ? String(this.currentUserId) : null;
         this.esPropietario = !!owner && !!me && owner === me;
-
         this.rebuildCalendarHighlights();
         this.selectionHighlights = [];
         this.recalcularErrores();
@@ -125,12 +110,10 @@ export class DisponibilidadCarPage implements OnInit {
     });
   }
 
-  // ====== Estado global ======
   async onEstadoChange(ev?: CustomEvent) {
     if (!this.esPropietario) return;
     const nuevo = (ev?.detail?.value as EstadoRenta) ?? this.estadoActual;
     this.estadoActual = nuevo; this.cdr.markForCheck();
-
     const loading = await this.loading('Actualizando estado…');
     this.rentaService.toggleEstadoRenta(this.carId, nuevo).subscribe({
       next: async () => { await loading.dismiss(); this.toast(`Estado cambiado a "${nuevo}"`, 'success'); },
@@ -138,11 +121,9 @@ export class DisponibilidadCarPage implements OnInit {
     });
   }
 
-  // ====== Selección manual ======
   onUnifiedChange(ev: CustomEvent) {
     if (this.ignoreNextCalendarChange) { this.ignoreNextCalendarChange = false; return; }
     const val = ev?.detail?.value as string[] | string | null | undefined;
-
     this.activePreset = 'none';
     this.blockedWeekdays.clear();
 
@@ -178,7 +159,6 @@ export class DisponibilidadCarPage implements OnInit {
     this.cdr.markForCheck();
   }
 
-  // ====== PRESETS EXCLUSIVOS ======
   applyPreset(preset: Preset) {
     if (!this.esPropietario) return;
 
@@ -234,7 +214,6 @@ export class DisponibilidadCarPage implements OnInit {
     this.activePreset = preset;
     this.rebuildCalendarHighlights();
     this.recalcularErrores();
-
     this.toast(
       preset === 'week' ? 'Semana bloqueada' :
         preset === 'month' ? 'Mes bloqueado' :
@@ -245,6 +224,7 @@ export class DisponibilidadCarPage implements OnInit {
   }
 
   isWeekdaySelected(val: number) { return this.blockedWeekdays.has(val); }
+
   toggleWeekday(val: number) {
     if (!this.esPropietario) return;
     if (this.blockedWeekdays.has(val)) this.blockedWeekdays.delete(val);
@@ -252,7 +232,6 @@ export class DisponibilidadCarPage implements OnInit {
     this.applyPreset('weekdays');
   }
 
-  // ====== GUARDAR ======
   async guardar() {
     if (!this.esPropietario) return;
 
@@ -265,10 +244,8 @@ export class DisponibilidadCarPage implements OnInit {
 
     const prevEstado = this.getPrevEstadoFromSnapshot();
     const debeCambiarEstado = prevEstado !== this.estadoActual;
-
     this.guardando = true; this.cdr.markForCheck();
     const loading = await this.loading('Guardando…');
-
     this.rentaService.setDisponibilidadCar(this.carId, excepcionesClean).subscribe({
       next: async () => {
         if (!debeCambiarEstado) {
@@ -305,7 +282,6 @@ export class DisponibilidadCarPage implements OnInit {
     });
   }
 
-  // ====== Helpers / Validaciones / Calendario ======
   get estadoColorClass(): string {
     return this.estadoActual === 'disponible' ? 'estado--ok' : 'estado--off';
   }
@@ -343,6 +319,7 @@ export class DisponibilidadCarPage implements OnInit {
   }
 
   private rangoOk(a: string, b: string) { return new Date(a).getTime() <= new Date(b).getTime(); }
+
   private toISO(d: any): string { const t = new Date(d); return isNaN(+t) ? '' : t.toISOString(); }
 
   private toStartOfDayISO(iso: string) {
@@ -350,6 +327,7 @@ export class DisponibilidadCarPage implements OnInit {
     const utc = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), 0, 0, 0, 0));
     return utc.toISOString();
   }
+
   private toEndOfDayISO(iso: string) {
     const d = new Date(iso);
     const utc = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), 23, 59, 59, 999));
@@ -409,6 +387,7 @@ export class DisponibilidadCarPage implements OnInit {
     const end = new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth() + months, 0, 0, 0, 0));
     return { start, end };
   }
+
   private generateWeekdayDates(from: Date, to: Date, weekdays: Set<number>): string[] {
     const out: string[] = [];
     const cur = new Date(from);
@@ -431,6 +410,7 @@ export class DisponibilidadCarPage implements OnInit {
     try { if (window.history.length > 2) return history.back(); } catch { }
     this.router.navigate(['/renta-coches']);
   }
+
   cerrar() { this.volver(); }
 
   private refreshCurrentUserId() {
@@ -452,11 +432,13 @@ export class DisponibilidadCarPage implements OnInit {
       }
     } catch { this.currentUserId = null; }
   }
+
   private extractOwnerId(car: any): string | null {
     const candidates = [car?.propietarioId, car?.propietario?._id, car?.propietario, car?.ownerId, car?.owner?._id, car?.userId, car?.user?._id, car?.createdById, car?.createdBy?._id];
     for (const c of candidates) { const v = this.toIdStr(c); if (v) return v; }
     return null;
   }
+
   private toIdStr(val: any): string {
     if (val == null) return '';
     if (typeof val === 'object') {
@@ -466,9 +448,11 @@ export class DisponibilidadCarPage implements OnInit {
     }
     return String(val);
   }
+
   private firstNonEmpty(arr: any[]) {
     return arr.find((x) => x !== undefined && x !== null && String(x) !== '' && String(x) !== '[object Object]');
   }
+
   private decodeJwt(token: string): any {
     const part = token.split('.')[1]; if (!part) return null;
     const b64 = part.replace(/-/g, '+').replace(/_/g, '/');
@@ -487,12 +471,9 @@ export class DisponibilidadCarPage implements OnInit {
   private async loading(message: string) {
     const l = await this.loadingCtrl.create({ message }); await l.present(); return l;
   }
+
   private async toast(message: string, color: 'success' | 'warning' | 'danger' | 'medium' = 'medium') {
     const t = await this.toastCtrl.create({ message, duration: 2500, color }); await t.present();
-  }
-  async confirm(header: string, message: string): Promise<boolean> {
-    const alert = await this.alertCtrl.create({ header, message, buttons: [{ text: 'Cancelar', role: 'cancel' }, { text: 'Aceptar', role: 'confirm' }] });
-    await alert.present(); const { role } = await alert.onDidDismiss(); return role === 'confirm';
   }
 
   trackByRange = (_: number, r: { inicio: string; fin: string }) => `${r.inicio}|${r.fin}`;
@@ -518,16 +499,45 @@ export class DisponibilidadCarPage implements OnInit {
     return out;
   }
 
-  clearExcepciones() {
-    this.confirm('Confirmar', '¿Vaciar todas las excepciones?').then(ok => {
-      if (!ok) return;
+  /* ==== NUEVO: limpiar sin confirm y permitir DESHACER ==== */
+  async clearExcepciones() {
+    if (!this.esPropietario) return;
 
-      this.excepciones = [];
-      this.activePreset = 'none';
-      this.rebuildCalendarHighlights();
-      this.recalcularErrores();
-      this.cdr.markForCheck();
+    // backup para deshacer
+    this.backupExcepciones = [...this.excepciones];
+
+    // limpia directo
+    this.excepciones = [];
+    this.activePreset = 'none';
+    this.rebuildCalendarHighlights();
+    this.recalcularErrores();
+    this.cdr.markForCheck();
+
+    // toast con acción de deshacer
+    await this.showUndoToast();
+  }
+
+  private async showUndoToast() {
+    const t = await this.toastCtrl.create({
+      message: 'Excepciones limpiadas',
+      duration: 4000,
+      color: 'dark',
+      buttons: [
+        {
+          side: 'start',
+          icon: 'refresh',
+          text: 'Deshacer',
+          handler: () => {
+            this.excepciones = [...this.backupExcepciones];
+            this.rebuildCalendarHighlights();
+            this.recalcularErrores();
+            this.cdr.markForCheck();
+          }
+        },
+        { text: 'OK', role: 'cancel' }
+      ]
     });
+    await t.present();
   }
 
   private addMonths(d: Date, n: number) {
@@ -543,14 +553,7 @@ export class DisponibilidadCarPage implements OnInit {
     return `${y}-${m}-${day}`;
   }
 
-  isDateEnabled = (isoDate: string) => {
-    const ymd = isoDate.slice(0, 10);
-    for (const e of this.excepciones) {
-      const days = this.expandToDateList(e.inicio, e.fin);
-      if (days.includes(ymd)) return false;
-    }
-    return true;
-  };
+
 
   get hasChanges(): boolean {
     return this.snapshotKey() !== this.lastSnapshot;

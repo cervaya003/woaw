@@ -9,7 +9,7 @@ import { ReservaService, RentalBooking, BookingStatus, } from "../../services/re
 import { of, forkJoin, Subscription } from "rxjs";
 import { ActivatedRoute } from "@angular/router";
 import { finalize } from "rxjs/operators";
-import { distinctUntilChanged } from "rxjs/operators";
+import { distinctUntilChanged, switchMap } from "rxjs/operators";
 
 type NumOrDots = number | string;
 type Segmento = "todos" | "mios";
@@ -367,8 +367,8 @@ export class RentaCochesPage implements OnInit, OnDestroy {
       if (desde) {
         const reqId = ++this.dispoReqId;
         this.dispoLoading = true;
-        this.fetchUnavailableCarIdsForRange(desde, hasta).subscribe({
-          next: (noDispSet) => {
+        this.fetchUnavailableCarIdsForRange(desde, hasta, lista).subscribe({
+          next: (noDispSet: Set<string>) => {
             if (reqId !== this.dispoReqId) return;
             const filtrada = lista.filter((c) => {
               const id = String(c?._id ?? c?.id ?? "");
@@ -431,32 +431,61 @@ export class RentaCochesPage implements OnInit, OnDestroy {
     }
   }
 
-  private fetchUnavailableCarIdsForRange(desde: string, hasta?: string) {
+  private fetchUnavailableCarIdsForRange(
+    desde: string,
+    hasta?: string,
+    listaBase: any[] = []
+  ) {
     const from = this.dayStart(desde);
     const to = this.dayEnd(hasta || desde);
+
     const baseFiltro = {
       desde: from.toISOString(),
       hasta: to.toISOString(),
       page: 1,
       limit: 5000,
-      sort: "fechaInicio:asc",
+      sort: 'fechaInicio:asc',
     };
 
-    const statuses: BookingStatus[] = ["pendiente", "aceptada", "en_curso"];
-    const calls = statuses.map((st) =>
+    const statuses: BookingStatus[] = ['pendiente', 'aceptada', 'en_curso'];
+    const calls = statuses.map(st =>
       this.reservaService.listarBookings({ ...baseFiltro, estatus: st }).pipe(
-        map((resp) => resp?.bookings || []),
+        map(resp => resp?.bookings || []),
         catchError(() => of<RentalBooking[]>([]))
       )
     );
 
-    return forkJoin(calls).pipe(
-      map((grupos: RentalBooking[][]) => {
-        const all: RentalBooking[] = grupos.reduce(
-          (acc, arr) => (arr ? acc.concat(arr) : acc),
-          [] as RentalBooking[]
-        );
+    const ymdRange = this.buildYmdList(from, to);
+    const exceptionsByListLocalIds = new Set<string>();
+    for (const c of listaBase) {
+      const id = String(c?._id ?? c?.id ?? '');
+      if (!id) continue;
+      const ex = Array.isArray(c?.excepcionesNoDisponibles) ? c.excepcionesNoDisponibles : [];
+      if (ex.length && this.excepcionesIntersectan(ex, from, to)) {
+        exceptionsByListLocalIds.add(id);
+      }
+    }
 
+    const idsSinExEnLista = listaBase
+      .map(c => String(c?._id ?? c?.id ?? ''))
+      .filter(id => id && !exceptionsByListLocalIds.has(id));
+
+    const exceptionCalls$ = idsSinExEnLista.length
+      ? forkJoin(
+        idsSinExEnLista.map(id =>
+          this.rentaService.diasNoDisponibles(id).pipe(
+            map((dias: string[]) => (dias.some(d => ymdRange.has(d)) ? id : null)),
+            catchError(() => of<string | null>(null))
+          )
+        )
+      ).pipe(
+        map((res: Array<string | null>) => new Set(res.filter(Boolean) as string[]))
+      )
+      : of(new Set<string>());
+
+    return forkJoin(calls).pipe(
+      switchMap((grupos: RentalBooking[][]) => {
+        const all: RentalBooking[] = ([] as RentalBooking[]).concat(...grupos);
         const noDisp = new Set<string>();
         for (const b of all) {
           const carId = this.getCarIdFromBooking(b);
@@ -465,10 +494,43 @@ export class RentaCochesPage implements OnInit, OnDestroy {
           const bf = this.dayEnd(b.fechaFin);
           if (this.overlap(from, to, bi, bf)) noDisp.add(carId);
         }
-        return noDisp;
+
+        for (const x of exceptionsByListLocalIds) noDisp.add(x);
+
+        return exceptionCalls$.pipe(
+          map((extra: Set<string>) => {
+            for (const x of extra) noDisp.add(x);
+            return noDisp;
+          })
+        );
       })
     );
   }
+
+  private buildYmdList(from: Date, to: Date): Set<string> {
+    const s = new Set<string>();
+    const cur = new Date(from);
+    while (cur.getTime() <= to.getTime()) {
+      s.add(this.toISOyyyyMMdd(cur));
+      cur.setDate(cur.getDate() + 1);
+    }
+    return s;
+  }
+
+  private excepcionesIntersectan(
+    ex: Array<{ inicio: any; fin: any }>,
+    from: Date,
+    to: Date
+  ): boolean {
+    for (const e of ex) {
+      if (!e?.inicio || !e?.fin) continue;
+      const bi = this.dayStart(e.inicio);
+      const bf = this.dayEnd(e.fin);
+      if (this.overlap(from, to, bi, bf)) return true;
+    }
+    return false;
+  }
+
 
   private getCarIdFromBooking(b: RentalBooking): string {
     const rc: any = (b as any)?.rentalCar;
@@ -493,29 +555,19 @@ export class RentaCochesPage implements OnInit, OnDestroy {
 
   private isCarAvailableLocal(coche: any, from: Date, to: Date): boolean {
     const parse = (x: any) => {
-      const ini =
-        x?.inicio ??
-        x?.ini ??
-        x?.from ??
-        x?.startDate ??
-        x?.start ??
-        x?.desde ??
-        x?.fechaInicio;
-      const fin =
-        x?.fin ?? x?.hasta ?? x?.to ?? x?.endDate ?? x?.end ?? x?.fechaFin;
+      const ini = x?.inicio ?? x?.ini ?? x?.from ?? x?.startDate ?? x?.start ?? x?.desde ?? x?.fechaInicio;
+      const fin = x?.fin ?? x?.hasta ?? x?.to ?? x?.endDate ?? x?.end ?? x?.fechaFin;
       if (!ini || !fin) return null;
-      const di = this.dayStart(ini);
-      const df = this.dayEnd(fin);
+      const di = this.dayStart(ini), df = this.dayEnd(fin);
       return { ini: di, fin: df };
     };
 
     const sets: any[] = [
-      ...(Array.isArray(coche?.reservas)
-        ? coche.reservas.filter((r: any) => r?.estatus !== "cancelada")
-        : []),
+      ...(Array.isArray(coche?.reservas) ? coche.reservas.filter((r: any) => r?.estatus !== 'cancelada') : []),
       ...(Array.isArray(coche?.bloqueos) ? coche.bloqueos : []),
       ...(Array.isArray(coche?.noDisponibilidad) ? coche.noDisponibilidad : []),
       ...(Array.isArray(coche?.excepciones) ? coche.excepciones : []),
+      ...(Array.isArray(coche?.excepcionesNoDisponibles) ? coche.excepcionesNoDisponibles : []), // 👈 nuevo
     ];
 
     for (const s of sets) {
@@ -525,6 +577,7 @@ export class RentaCochesPage implements OnInit, OnDestroy {
     }
     return true;
   }
+
 
   calcularPaginacion(seg: Segmento) {
     const base = seg === "todos" ? this.todosFiltrados : this.miosFiltrados;

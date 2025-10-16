@@ -43,7 +43,6 @@ export class RentaService {
     private headersService: HeadersService
   ) { }
 
-  // ───────── helpers base ─────────
   private normalizeBaseUrl(url: string): string {
     return (url || '').replace(/\/+$/, '');
   }
@@ -321,17 +320,14 @@ export class RentaService {
   toggleEstadoRenta(
     id: string,
     action: 'disponible' | 'rentado' | 'inactivo'
-  ): Observable<{ message: string; }> {
+  ): Observable<{ message: string }> {
+    const url = `${this._baseUrl}/rentalcars/${id}/toggle-estado`;
+    const body = { action };
     const params = new HttpParams().set('action', action);
-    const urls = this.buildPathCandidates(`/rentalcars/${id}/estado`);
 
     return this.authJsonHeaders$().pipe(
       switchMap(headers =>
-        this.requestOverCandidates<{ message: string }>(
-          ['PATCH', 'PUT'],
-          urls,
-          (_method, u) => ({ url: u, options: { headers, params } })
-        )
+        this.http.patch<{ message: string }>(url, body, { headers, params })
       ),
       catchError((error) => this.headersService.handleError(error))
     );
