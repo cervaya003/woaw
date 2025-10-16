@@ -8,6 +8,7 @@ import { AutenticacionUserPageRoutingModule } from './autenticacion-user-routing
 
 import { AutenticacionUserPage } from './autenticacion-user.page';
 import { FooterComponent } from "src/app/components/footer/footer.component";
+import { NavbarComponent } from "src/app/components/navbar/navbar.component";
 
 import { NavbarComponent } from '../../components/navbar/navbar.component';
 
@@ -19,8 +20,10 @@ import { NavbarComponent } from '../../components/navbar/navbar.component';
     ReactiveFormsModule,
     AutenticacionUserPageRoutingModule,
     FooterComponent,
-    NavbarComponent,
-  ],
+ 
+    NavbarComponent
+],
+ 
   declarations: [AutenticacionUserPage]
 })
 export class AutenticacionUserPageModule { }

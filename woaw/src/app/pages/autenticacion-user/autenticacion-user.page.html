@@ -3,12 +3,20 @@
 <ion-content>
   <div class="page-telefono">
     <div class="form-wrapper">
-
-      <img src="assets/icon/logo2.png" loading="lazy" alt="Go Autos" class="logo" />
+      <img
+        src="assets/icon/logo2.png"
+        loading="lazy"
+        alt="Go Autos"
+        class="logo"
+      />
 
       <div class="bienvenida" *ngIf="user as u">
         <div class="avatar">
-          <img *ngIf="fotoPerfil; else inicialesTpl" [src]="fotoPerfil" alt="Foto de perfil" />
+          <img
+            *ngIf="fotoPerfil; else inicialesTpl"
+            [src]="fotoPerfil"
+            alt="Foto de perfil"
+          />
           <ng-template #inicialesTpl>
             <span>{{ iniciales }}</span>
           </ng-template>
@@ -20,22 +28,38 @@
       </div>
 
       <h2>Ingresa tu número</h2>
-      <p>Necesitamos tu número para proteger tu cuenta y publicar vehiculos.</p>
+ 
+      <p>
+        Necesitamos tu número para proteger tu cuenta y completar tu perfil.
+      </p>
+ 
 
       <form [formGroup]="form" (ngSubmit)="submit()">
         <div class="telefono-input-wrapper">
           <ion-item lines="none" class="lada-box" (click)="abrirModalLadas()">
-            <img [src]="ladaSeleccionada.banderaUrl" class="flag-img" alt="flag" />
+            <img
+              [src]="ladaSeleccionada.banderaUrl"
+              class="flag-img"
+              alt="flag"
+            />
             <p class="lada-text">{{ ladaSeleccionada.codigo }}</p>
           </ion-item>
 
           <ion-item lines="none" class="telefono-input">
-            <ion-input formControlName="numero" type="tel" inputmode="numeric" maxlength="15" placeholder="Teléfono">
+            <ion-input
+              formControlName="numero"
+              type="tel"
+              inputmode="numeric"
+              maxlength="15"
+              placeholder="Teléfono"
+            >
             </ion-input>
           </ion-item>
         </div>
 
-        <ion-note *ngIf="form.get('numero')?.touched && form.get('numero')?.invalid">
+        <ion-note
+          *ngIf="form.get('numero')?.touched && form.get('numero')?.invalid"
+        >
           Ingresa un número válido 10 dígitos.
         </ion-note>
 
@@ -51,11 +75,11 @@
   <app-footer></app-footer>
 </ion-content>
 
-
-
-
-
-<ion-modal [isOpen]="mostrarModal" cssClass="modal-ladas" (didDismiss)="cerrarModal()">
+<ion-modal
+  [isOpen]="mostrarModal"
+  cssClass="modal-ladas"
+  (didDismiss)="cerrarModal()"
+>
   <ng-template>
     <ion-header>
       <ion-toolbar>
@@ -68,12 +92,19 @@
 
     <ion-content>
       <div class="buscador-ladas">
-        <ion-input placeholder="Buscar país o código..." [(ngModel)]="filtroPais">
+        <ion-input
+          placeholder="Buscar país o código..."
+          [(ngModel)]="filtroPais"
+        >
         </ion-input>
       </div>
 
       <ion-list>
-        <ion-item button *ngFor="let p of paisesFiltrados()" (click)="seleccionarLada(p)">
+        <ion-item
+          button
+          *ngFor="let p of paisesFiltrados()"
+          (click)="seleccionarLada(p)"
+        >
           <img [src]="p.banderaUrl" class="flag-img" alt="flag" />
           <ion-label>
             <h3>{{ p.nombre }}</h3>
@@ -83,4 +114,5 @@
       </ion-list>
     </ion-content>
   </ng-template>
+  <app-footer></app-footer>
 </ion-modal>
