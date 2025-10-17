@@ -4,49 +4,70 @@
   --c-exc: var(--ion-color-danger);
   --borde-suave: #e5e7eb;
   --bg-claro: #ffffff;
+
+  /* Altura del menú inferior global (ajústala a tu tabbar real: 56–72px) */
+  --woaw-tabbar-h: 64px;
 }
 
-/* Layout base */
+.disp-content {
+  --background: #ffffff;
+  /* espacio extra para que nada quede oculto detrás del tabbar + FAB */
+  --padding-bottom: calc(env(safe-area-inset-bottom) + var(--woaw-tabbar-h) + 96px);
+}
+
 .disp-grid {
-  padding: 12px;
+  margin: 0 auto;
 }
 
-.header-row .titulo {
-  margin: 4px 0 0 0;
-  font-weight: 700;
+/* ===== Title centrado grande ===== */
+.title-center {
+  text-align: center;
+  font-weight: 800;
 }
 
-.sub-row {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  flex-wrap: wrap;
+.head-wrap {
+  background: #ffffff;
+  color: #111;
+  padding: 18px 12px 12px;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: center;
+  /* <- centrado del título */
 }
 
-.header-row .sub {
+.page-title {
   margin: 0;
-  opacity: .8;
+  font-weight: 900;
+  font-size: clamp(22px, 3.2vw, 28px);
+  color: #111;
 }
 
-/* Chip de estado */
-.estado-chip {
-  padding: 2px 10px;
+.page-sub {
+  margin: 6px 0 0;
+  color: #cbd5e1;
+  font-size: 13px;
+}
+
+/* Chip de estado flotando arriba a la derecha del área del título */
+.estado-float {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  padding: 6px 12px;
   border-radius: 999px;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 800;
   color: #fff;
-  line-height: 1.6;
   display: inline-flex;
   align-items: center;
   gap: 6px;
-}
 
-.estado--ok {
-  background: var(--c-ok);
-}
+  &.estado--ok {
+    background: var(--ion-color-success);
+  }
 
-.estado--off {
-  background: var(--c-off);
+  &.estado--off {
+    background: var(--ion-color-medium);
+  }
 }
 
 .estado-help {
@@ -58,18 +79,32 @@
   opacity: .9;
 }
 
-/* Vacío */
-.empty {
-  text-align: center;
-  opacity: .8;
-  padding: 12px 0 16px;
-
-  ion-icon {
-    font-size: 28px;
-  }
+.legend {
+  margin: 6px 0 10px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  justify-content: center;
+  font-size: 13px;
+  color: #6b7280;
 }
 
-/* ====== Presets + Días fijos ====== */
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  display: inline-block;
+  margin-right: 6px;
+}
+
+.legend-dot.blocked {
+  background: #ef4444;
+}
+
+.legend-dot.selection {
+  background: #b91c1c;
+}
+
 .preset-row {
   display: flex;
   align-items: center;
@@ -80,10 +115,12 @@
 }
 
 .preset-row ion-button {
+  --padding-top: 8px;
+  --padding-bottom: 8px;
+  min-height: 36px;
   min-width: 120px;
 }
 
-/* Presets en rojo (outline/solid) */
 .preset-row ion-button[fill="outline"] {
   --border-color: var(--ion-color-danger);
   --color: var(--ion-color-danger);
@@ -94,7 +131,7 @@
   --color: #ffffff;
 }
 
-/* Chips de días fijos (L M X J V S D) */
+/* ===== Weekday selector (chips horizontales breves) ===== */
 .weekday-selector {
   display: flex;
   gap: 6px;
@@ -118,14 +155,12 @@
 }
 
 .weekday-selector .weekday-chip[outline] {
-  /* No seleccionado */
   --color: var(--ion-color-medium);
   --background: #fff;
   border-color: var(--borde-suave);
 }
 
 .weekday-selector .weekday-chip:not([outline]) {
-  /* Seleccionado */
   --background: var(--ion-color-danger);
   --color: #fff;
   border-color: var(--ion-color-danger);
@@ -140,7 +175,7 @@
   transform: translateY(1px);
 }
 
-/* Editor */
+/* ===== Editor / Calendario ===== */
 .editor-grid {
   display: flex;
   flex-direction: column;
@@ -173,27 +208,20 @@ ion-item.center-item .input-wrapper {
   justify-content: center;
 }
 
-/* ===== Calendario: blanco + rojo ===== */
 ion-item.center-item ion-datetime {
   margin: 0 auto;
   width: auto;
   border: 1px solid var(--borde-suave);
   border-radius: 12px;
-
-  /* superficie blanca y texto oscuro */
   --background: #ffffff;
   --background-rgb: 255, 255, 255;
   --wheel-background: #ffffff;
   --ion-text-color: #111111;
   --color: #111111;
-
-  /* primario local forzado a rojo (activos/extremos) */
   --ion-color-primary: var(--ion-color-danger);
   --ion-color-primary-rgb: 239, 68, 68;
-  /* #ef4444 */
   --ion-color-primary-contrast: #ffffff;
 
-  /* asegurar panel/mes blancos */
   ::part(calendar),
   ::part(calendar-month) {
     background: #ffffff;
@@ -218,20 +246,16 @@ ion-item.center-item ion-datetime {
   }
 }
 
-/* (Compat) bloques que quizá no uses ya */
-.quick-picks,
-.weekend-actions {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  justify-content: center;
+/* Hover suave */
+ion-item.center-item.danger-datetime ion-datetime::part(calendar-day):hover {
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .06);
 }
 
-.quick-picks ion-button {
-  min-width: 110px;
+.editor-bar {
+  margin-bottom: 8px;
 }
 
-/* Botón limpiar centrado */
+/* ===== Botón Limpiar ===== */
 .clear-actions {
   display: flex;
   justify-content: center;
@@ -243,13 +267,11 @@ ion-item.center-item ion-datetime {
   --border-radius: 8px;
 }
 
-/* ===== Cards y controles ===== */
+/* ===== Cards y segments ===== */
 ion-card {
   border-radius: 14px;
   background: #ffffff;
-  /* blanco */
   color: #111;
-  /* texto oscuro */
   box-shadow: 0 10px 28px rgba(0, 0, 0, .14);
   border: 1px solid rgba(0, 0, 0, .06);
 }
@@ -267,7 +289,6 @@ ion-card-subtitle {
   color: #6b7280;
 }
 
-/* Segment: fondo claro + indicador rojo + TÍTULO ROJO AL SELECCIONAR */
 ion-segment {
   --background: #ffffff;
   border-radius: 10px;
@@ -282,20 +303,12 @@ ion-segment-button {
   --border-radius: 8px;
   --color: #111111;
   --color-checked: var(--ion-color-danger);
-  /* ← texto ROJO cuando está seleccionado */
   min-height: 38px;
   text-transform: none;
   font-weight: 700;
 }
 
-/* Botón guardar (color="primary" -> rojo) */
-ion-button[color="primary"] {
-  --background: var(--ion-color-danger);
-  --background-activated: color-mix(in srgb, var(--ion-color-danger) 85%, #000 15%);
-  --color: #ffffff;
-}
-
-/* Bloque de errores */
+/* ===== Errores ===== */
 .errors {
   background: #fef2f2;
   color: #991b1b;
@@ -309,19 +322,339 @@ ion-button[color="primary"] {
   }
 }
 
-.list-actions {
+/* ===== Save snackbar ===== */
+.save-bar {
+  position: fixed;
+  left: 12px;
+  right: 88px;
+  bottom: calc(env(safe-area-inset-bottom) + var(--woaw-tabbar-h) + 14px);
+  background: #b91c1c;
+  /* más notorio en rojo oscuro */
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 10px;
+  padding: 10px 12px;
   display: flex;
-  justify-content: flex-end;
+  gap: 8px;
+  align-items: center;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, .35);
+  z-index: 20;
+}
+
+/* ===== FAB por encima del tabbar ===== */
+ion-fab {
+  z-index: 1000;
+  bottom: calc(env(safe-area-inset-bottom) + var(--woaw-tabbar-h) + 12px) !important;
+}
+
+/* Utilidad para accesibilidad */
+.sr-only {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.subline {
+  margin-top: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  align-items: center;
+  justify-content: center;
+}
+
+.loc {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.loc ion-icon {
+  color: var(--ion-color-danger);
+  opacity: .9;
+  font-size: 17px;
+  transform: translateY(1px);
+}
+
+.estado-chip {
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.estado-inline {
+  position: static;
+}
+
+.subline .estado-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1;
+  transform: translateY(1px);
+}
+
+.subline .estado-chip.estado--ok {
+  background: var(--ion-color-success);
+}
+
+.subline .estado-chip.estado--off {
+  background: var(--ion-color-medium);
+}
+
+.car-name {
+  color: var(--ion-color-danger);
+  /* rojo principal de WOAW */
+  font-weight: 900;
+}
+
+/* Indicador grueso y redondeado del segment */
+ion-segment-button::part(indicator) {
+  height: 3px;
+  border-radius: 999px;
+}
+
+@media (hover:hover) {
+  .preset-row ion-button[fill="outline"]:hover {
+    filter: brightness(1.06);
+  }
+
+  .weekday-selector .weekday-chip:hover {
+    box-shadow: 0 2px 10px rgba(239, 68, 68, .12);
+    transform: translateY(-1px);
+  }
+}
+
+/* ===== Grid lateral para Días no disponibles ===== */
+.availability-grid {
+  width: 100%;
+}
+
+.availability-row {
+  align-items: flex-start;
+  row-gap: 16px;
+}
+
+/* Panel de controles (col izquierda) */
+.controls-panel {
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, .06);
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, .06);
+}
+
+.weekday-block {
+  margin-top: 10px;
+}
+
+.weekday-title {
+  font-weight: 800;
+  font-size: 13px;
+  color: #111;
   margin-bottom: 6px;
 }
 
-app-footer {
-  display: block;
-  margin-top: 18px;
+/* Grid 7 columnas para otras variantes (no usado en la lista vertical actual) */
+.weekday-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(38px, 1fr));
+  gap: 8px;
 }
 
+@media (max-width: 768px) {
+  .weekday-grid {
+    grid-template-columns: repeat(7, minmax(34px, 1fr));
+  }
+}
+
+/* Mini ayuda */
+.mini-help {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #6b7280;
+  font-size: 13px;
+  margin-top: 6px;
+}
+
+.mini-help ion-icon {
+  font-size: 16px;
+}
+
+/* Calendario (col derecha) */
+ion-item.center-item {
+  width: 100%;
+}
+
+ion-item.center-item ion-datetime {
+  max-width: 540px;
+  /* respira mejor en desktop */
+}
+
+/* Ajustes a chips ya definidos para que ocupen menos en el grid */
+.weekday-selector .weekday-chip,
+.weekday-chip {
+  height: 32px;
+  --padding-start: 10px;
+  --padding-end: 10px;
+}
+
+/* ===== Días fijos — LISTA VERTICAL (mejorada) ===== */
+.weekday-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  /* centradas horizontalmente */
+}
+
+/* Chips verticales: más compactos y menos largos */
+.weekday-chip.full {
+  width: clamp(150px, 68%, 220px);
+  /* más cortos */
+  height: 36px;
+  justify-content: center;
+  border-radius: 999px;
+  font-weight: 800;
+  --background: #ffffff !important;
+  --color: #1f2937 !important;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, .06);
+  transition: background-color .12s ease, color .12s ease, border-color .12s ease, box-shadow .12s ease, transform .06s ease;
+}
+
+/* Hover del no seleccionado */
+.weekday-chip.full[outline]:hover {
+  background: #fff5f5;
+  border-color: var(--ion-color-danger);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, .18);
+}
+
+/* ===== ACTIVO: rojo sólido real (sin depender del outline) ===== */
+.weekday-chip.full:not([outline]) {
+  --background: var(--ion-color-danger) !important;
+  /* fondo rojo sólido */
+  --color: #ffffff !important;
+  /* texto blanco */
+  border-color: var(--ion-color-danger) !important;
+  box-shadow: 0 6px 16px rgba(239, 68, 68, .25);
+}
+
+/* Forzamos el contenedor interno del chip */
+.weekday-chip.full:not([outline])::part(container) {
+  background: var(--ion-color-danger) !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+/* Accesibilidad / feedback */
+.weekday-chip.full:focus-visible {
+  outline: 2px solid var(--ion-color-danger);
+  outline-offset: 2px;
+}
+
+.weekday-chip.full:active {
+  transform: translateY(1px);
+}
+
+/* Deshabilitado */
+.weekday-chip.full[disabled] {
+  opacity: .65;
+  filter: grayscale(.1);
+  pointer-events: none;
+}
+
+/* Opcional: en desktop puedes hacer dos columnas si quieres */
 @media (min-width: 992px) {
-  ion-col[size-lg="4"] ion-card {
-    height: 100%;
+  .weekday-list.two-cols {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .weekday-list.two-cols .weekday-chip.full {
+    width: calc(50% - 8px);
+  }
+}
+
+/* ===== Toggle tipo apagador rojo/negro ===== */
+.switch-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 8px 0;
+}
+
+.switch-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 800;
+  font-size: 14px;
+  color: #000000;
+  /* gris/negro */
+  user-select: none;
+
+  &.active {
+    color: #ff0000;
+    /* resalta el estado activo */
+  }
+}
+
+ion-toggle.woaw-toggle {
+  --handle-background: #ffffff;
+  --handle-background-checked: #ffffff;
+  --handle-box-shadow: 0 2px 10px rgba(0, 0, 0, .15);
+
+  /* Track base */
+  &::part(track) {
+    width: 64px;
+    height: 34px;
+    background: #e5e7eb;
+    /* off */
+    border-radius: 999px;
+    border: 1px solid #e5e7eb;
+    transition: background .15s ease, border-color .15s ease;
+  }
+
+  /* Track cuando está ON */
+  &.toggle-checked::part(track) {
+    background: var(--ion-color-danger);
+    /* rojo WOAW */
+    border-color: var(--ion-color-danger);
+  }
+
+  /* Handle */
+  &::part(handle) {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, .18);
+  }
+
+  /* Deshabilitado */
+  &.toggle-disabled::part(track) {
+    filter: grayscale(.2);
+    opacity: .7;
   }
 }

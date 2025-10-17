@@ -1,7 +1,7 @@
-import { NgModule, isDevMode } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http'; // 👈 agrega HTTP_INTERCEPTORS
 
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 
@@ -10,6 +10,9 @@ import { AppRoutingModule } from './app-routing.module';
 import { MenulateralComponent } from './components/menulateral/menulateral.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { TabsComponent } from './components/tabs/tabs.component';
+
+// 👇 importa tu interceptor (ajusta la ruta si lo pusiste en otro lado)
+import { AuthExpiryInterceptor } from './interceptors/auth-expiry-interceptor';
 
 @NgModule({
   declarations: [AppComponent],
@@ -22,7 +25,11 @@ import { TabsComponent } from './components/tabs/tabs.component';
     NavbarComponent,
     TabsComponent,
   ],
-  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
+  providers: [
+    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+    // 👇 registra el interceptor
+    { provide: HTTP_INTERCEPTORS, useClass: AuthExpiryInterceptor, multi: true },
+  ],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule { }

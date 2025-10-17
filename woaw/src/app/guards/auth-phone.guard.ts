@@ -38,7 +38,7 @@ export class AuthPhoneGuard implements CanMatch, CanActivate, CanActivateChild {
       // Usa UrlTree (guard "puro")
       return this.router.createUrlTree(
         ['/autenticacion-user'],
-        { queryParams: { next: urlIntentada, step: 'phone' } } // mantén nombres consistentes
+        { queryParams: { next: urlIntentada, step: 'phone' } } 
       );
     }
 

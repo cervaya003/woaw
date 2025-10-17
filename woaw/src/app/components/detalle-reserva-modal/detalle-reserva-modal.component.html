@@ -15,7 +15,6 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <!-- Loader general -->
   <ion-list *ngIf="loading">
     <ion-item *ngFor="let i of [1,2,3,4]">
       <ion-skeleton-text animated style="width:100%; height:62px;"></ion-skeleton-text>
@@ -23,7 +22,6 @@
   </ion-list>
 
   <ng-container *ngIf="!loading && data">
-    <!-- Fechas -->
     <section class="eyebrow">
       <ion-icon name="calendar-outline"></ion-icon>
       <div class="dates">
@@ -34,7 +32,6 @@
       <ion-chip size="small" color="dark" outline> {{ dias() }} día(s) </ion-chip>
     </section>
 
-    <!-- Resumen -->
     <ion-card class="ck-card">
       <ion-card-header>
         <ion-card-title>Resumen</ion-card-title>
@@ -58,7 +55,6 @@
       </ion-card-content>
     </ion-card>
 
-    <!-- Usuario / Propietario -->
     <ion-accordion-group>
       <ion-accordion value="personas">
         <ion-item slot="header" color="light">
@@ -69,7 +65,7 @@
             <ion-card>
               <ion-card-header><ion-card-title>Cliente</ion-card-title></ion-card-header>
               <ion-card-content>
-                <div>{{ data.usuario.nombre || data.usuario.email || 'Cliente' }}</div>
+                <div>{{ clienteNombre() }}</div>
               </ion-card-content>
             </ion-card>
             <ion-card>
@@ -82,7 +78,6 @@
         </div>
       </ion-accordion>
 
-      <!-- Operativo -->
       <ion-accordion value="operativo">
         <ion-item slot="header" color="light">
           <ion-label>Operativo (Check-In / Check-Out)</ion-label>
@@ -97,7 +92,6 @@
                   {{ (data.checkIn?.combustible !== undefined && data.checkIn?.combustible !== null) ?
                   data.checkIn?.combustible : '—' }}
                 </div>
-                <!-- siempre pintamos la línea de notas, aunque venga vacía -->
                 <div><b>Notas:</b> {{ (data.checkIn?.notas ?? '') || '—' }}</div>
               </ion-card-content>
             </ion-card>
@@ -158,7 +152,7 @@
           </ng-template>
         </div>
       </ion-accordion> -->
-      
+
     </ion-accordion-group>
   </ng-container>
 </ion-content>

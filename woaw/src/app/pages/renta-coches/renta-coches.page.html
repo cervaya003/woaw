@@ -24,8 +24,8 @@
                 <ion-label>{{ rangoTexto }}</ion-label>
               </ion-chip>
               <div class="acciones">
-                <ion-button size="small" (click)="openModalFechas()">Cambiar</ion-button>
-                <ion-button size="small" fill="outline" (click)="limpiarFechas()">Quitar</ion-button>
+                <ion-button color="dark" size="small" (click)="openModalFechas()">Cambiar</ion-button>
+                <ion-button color="danger" size="small" fill="outline" (click)="limpiarFechas()">Quitar</ion-button>
               </div>
             </div>
 
@@ -209,8 +209,8 @@
       <p class="mio-modal__msg">Este coche es tuyo.</p>
 
       <div class="mio-modal__actions">
-        <ion-button expand="block" (click)="goToFicha()">Ficha</ion-button>
-        <ion-button expand="block" color="success" (click)="goToDisponibilidad()">Disponibilidad</ion-button>
+        <ion-button expand="block" color="danger" (click)="goToFicha()">Ficha</ion-button>
+        <ion-button expand="block" color="dark" (click)="goToDisponibilidad()">Disponibilidad</ion-button>
       </div>
 
       <ion-button expand="block" fill="solid" class="mio-modal__cancel" (click)="closeModal()">
@@ -223,10 +223,10 @@
 <ion-modal [isOpen]="modalFechasOpen" (didDismiss)="closeModalFechas()" class="modal-calendario" mode="md">
   <ng-template>
     <ion-header translucent="true">
-      <ion-toolbar>
+      <ion-toolbar> 
         <ion-title>Disponibilidad</ion-title>
         <ion-buttons slot="end">
-          <ion-button (click)="closeModalFechas()" aria-label="Cerrar">
+          <ion-button color="danger" (click)="closeModalFechas()" aria-label="Cerrar">
             <ion-icon name="close-outline"></ion-icon>
           </ion-button>
         </ion-buttons>
@@ -237,22 +237,24 @@
       <div class="contenedor-datetime">
         <ion-item class="center-item danger-datetime" lines="none">
           <ion-label class="sr-only">Selecciona fecha(s)</ion-label>
-          <ion-datetime [(ngModel)]="tempFechasSeleccionadas" multiple="true" presentation="date" [min]="minFecha"
-            (ionChange)="onTempRangoChange()" [highlightedDates]="tempHighlightedRange" locale="es-ES"
+
+          <ion-datetime color="danger" [(ngModel)]="tempFechasSeleccionadas" multiple="true" presentation="date"
+            [min]="minFecha" (ionChange)="onTempRangoChange()" [highlightedDates]="tempHighlightedRange" locale="es-ES"
             show-default-buttons="false">
           </ion-datetime>
+
         </ion-item>
       </div>
     </ion-content>
 
     <ion-footer>
-      <ion-toolbar>
+      <ion-toolbar> 
         <ion-buttons slot="start">
-          <ion-button fill="outline" (click)="limpiarTemp()">Limpiar</ion-button>
+          <ion-button fill="outline" color="danger" (click)="limpiarTemp()">Limpiar</ion-button>
         </ion-buttons>
         <ion-buttons slot="end">
-          <ion-button (click)="closeModalFechas()">Cancelar</ion-button>
-          <ion-button color="primary" (click)="aplicarRango()">Aplicar</ion-button>
+          <ion-button color="danger" (click)="closeModalFechas()">Cancelar</ion-button>
+          <ion-button color="dark" (click)="aplicarRango()">Aplicar</ion-button>
         </ion-buttons>
       </ion-toolbar>
     </ion-footer>

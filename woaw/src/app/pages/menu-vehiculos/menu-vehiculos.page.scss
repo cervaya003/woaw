@@ -1,10 +1,9 @@
-.contenedor{
+.contenedor {
 
-max-width: 1800px;
-width: 100%;
-margin: 0px auto;
+  max-width: 1800px;
+  width: 100%;
+  margin: 0px auto;
 }
-
 
 .titulo-seccion-autos {
   width: 100%;
@@ -26,12 +25,6 @@ margin: 0px auto;
   }
 }
 
-
-
-
-
-
-
 .contenedor_cratas_home {
   padding: 13px 20px;
   background: #ffffff;
@@ -46,12 +39,10 @@ margin: 0px auto;
   .cards-grid {
     display: flex;
     flex-direction: column;
-    /* Desktop: columna */
     gap: 24px;
 
-    @media (max-width: 980px) {
+    @media (max-width: 768px) {
       flex-direction: row;
-      /* Móvil: en fila */
       justify-content: space-between;
       align-items: stretch;
       gap: 8px;

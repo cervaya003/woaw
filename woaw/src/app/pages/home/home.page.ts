@@ -68,11 +68,7 @@ export class HomePage implements OnInit {
     // Refleja estado de login y verifica teléfono cuando haya sesión
     this.generalService.tokenExistente$.subscribe((estado) => {
       this.isLoggedIn = estado;
-      if (estado) this.generalService.verificarTelefono();
     });
-
-    // Verificación inmediata al entrar a Home (si ya hay sesión guardada)
-    this.generalService.verificarTelefono();
 
     this.escribirTexto();
     this.generalService.dispositivo$.subscribe((tipo) => {
@@ -83,10 +79,7 @@ export class HomePage implements OnInit {
     }, 10000);
     this.gatTiposVeiculos();
   }
-  // Cada vez que Home vuelve a ser la vista activa
-  ionViewWillEnter() {
-    this.generalService.verificarTelefono();
-  }
+  
 
   ngAfterViewInit(): void {
     this.generalService.aplicarAnimacionPorScroll(
@@ -199,7 +192,7 @@ export class HomePage implements OnInit {
     }
   }
   async cargavideo() {
-    this.videoSrc = 'assets/autos/publicidad/vp1.mp4';
+    this.videoSrc = 'assets/home/vp1.mp4';
     this.generalService.addPreload(this.videoSrc, 'video');
     try {
       await this.generalService.preloadVideo(this.videoSrc, 7000);

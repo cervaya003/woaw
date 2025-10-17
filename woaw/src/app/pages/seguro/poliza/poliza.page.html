@@ -6,14 +6,14 @@
 
 
   <div class="fondo-seguros">
-    <img src="/assets/autos/seg1.webp" alt="">
+    <img src="/assets/autos/seguro_fondo.webp" alt="">
     <span class="fondo-seguros__overlay"></span>
   </div>
 
   <div class="split-woaw-seguros" style="--left: 80%; --right: 20%; --gap: 1px;">
 
     <div class="divicion1">
-      <div class="poliza">
+      <div class="poliza" *ngIf="isLoggedIn">
         <section class="poliza__card">
 
           <ng-container *ngIf="!polizaCreada">
@@ -212,12 +212,62 @@
         </section>
       </div>
       <!-- <app-dynamic-island [refreshKey]="islandKey"></app-dynamic-island> -->
+
+
+
+      <div class="carta-login"  *ngIf="!isLoggedIn">
+
+        <div class="contenedor_texto">
+          <h2>¡Último paso!</h2>
+          <p>
+            Crea tu perfil o inicia sesión para guardar tu cotización, generar tu póliza y enviártela al instante.
+            Tu información está protegida con los más altos estándares de seguridad.
+          </p>
+        </div>
+
+        <div class="container_vidrio">
+          <app-login *ngIf="MostrarLogin && !MostrarRecuperacion && !MostrarRegistro"></app-login>
+          <app-registro *ngIf="!MostrarLogin && !MostrarRecuperacion && MostrarRegistro"></app-registro>
+          <app-resetpassword *ngIf="!MostrarLogin && MostrarRecuperacion && !MostrarRegistro"></app-resetpassword>
+          <p class="link-registro">
+            <span *ngIf="MostrarLogin && !MostrarRecuperacion && !MostrarRegistro">¿No tienes una cuenta? </span>
+            <span *ngIf="!MostrarLogin">¿Ya tienes cuenta? </span>
+            <strong>
+              <span (click)="cambioEstatus('registro')"
+                *ngIf="MostrarLogin && !MostrarRecuperacion && !MostrarRegistro">Registrarme</span>
+              <span (click)="cambioEstatus('login')" *ngIf="!MostrarLogin">Iniciar Sesión</span>
+            </strong>
+          </p>
+          <p class="link-registro" *ngIf="!MostrarRecuperacion">
+            <strong (click)="cambioEstatus('reset')">
+              <ion-icon name="lock-closed-outline" style="vertical-align: middle; margin-right: 6px;"></ion-icon>
+              ¿Olvidaste tu contraseña?
+            </strong>
+          </p>
+          <!-- Línea de separación -->
+          <div *ngIf="MostrarLogin" style="width: 100%; height: 1px; background-color: #ccc; margin: 16px 0;"></div>
+          <p class="link-registro" *ngIf="MostrarLogin">
+            Acepto las
+            <a class="enlace-politica" (click)="mostrarTerminos()">Términos y condiciones</a> y el
+            <a class="enlace-politica" (click)="mostrarAviso()">Aviso de Privacidad</a>.
+          </p>
+        </div>
+
+      </div>
+
     </div>
 
     <div class="divicion2">
       <app-otros-seguros *ngIf="tipoDispocitivo !== 'telefono'" [refreshKey]="islandKey"></app-otros-seguros>
     </div>
   </div>
+  <br *ngIf="tipoDispocitivo === 'telefono'">
+  <br *ngIf="tipoDispocitivo === 'telefono'">
+  <br *ngIf="tipoDispocitivo === 'telefono'">
+  <br *ngIf="tipoDispocitivo === 'telefono'">
+  <br *ngIf="tipoDispocitivo === 'telefono'">
+  <br *ngIf="tipoDispocitivo === 'telefono'">
+  <br *ngIf="tipoDispocitivo === 'telefono'">
 
   <app-footer *ngIf="tipoDispocitivo !== 'telefono'"></app-footer>
 </ion-content>

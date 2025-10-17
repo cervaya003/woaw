@@ -4,7 +4,7 @@
     <button (click)="cerrarModal()">x</button>
   </div>
   <div class="opciones-grid">
-    <div class="card motos" (click)="redireccion('seguros/autos')" [class.card--ok]="cards[0].estatus"
+    <div class="card" (click)="redireccion('seguros/autos')" [class.card--ok]="cards[0].estatus"
       [class.card--off]="!cards[0].estatus">
       <h1 class="pasoTex">Paso 1°</h1>
       <ion-icon [name]="cards[0].icon"></ion-icon>
@@ -29,7 +29,7 @@
         </div>
       </div>
       <ng-template #cotizacionVacia>
-        <div class="card__empty">Sin cotización guardada.</div>
+        <div class="card__empty">Selecciona marca, modelo y versión de tu vehículo</div>
       </ng-template>
     </div>
 
@@ -62,7 +62,7 @@
         </div>
       </div>
       <ng-template #usuarioVacio>
-        <div class="card__empty">Sin datos de usuario.</div>
+        <div class="card__empty">Ingresa tu información básica para personalizar tu cobertura.</div>
       </ng-template>
     </div>
 
@@ -76,7 +76,8 @@
       </div>
 
       <ng-template #polizaVacia>
-        <div class="card__empty">Sin póliza configurada.</div>
+        <div *ngIf="isLoggedIn" class="card__empty">Cotiza y descarga tu polizá al instante.</div>
+        <div *ngIf="!isLoggedIn" class="card__empty">Crea tu cuenta para guardar tu cotización y descarga tu polizá al instante.</div>
       </ng-template>
     </div>
   </div>

@@ -64,8 +64,8 @@
           Arrendamiento
         </ion-button>
 
-        <ion-button fill="clear" [ngClass]="{ 'activo': isActive('renta-ciudades') }"
-          (click)="redirecion('renta-ciudades')">
+        <ion-button fill="clear" [ngClass]="{ 'activo': isActive('renta-coches') }"
+          (click)="redirecion('renta-coches')">
           Renta de coches
         </ion-button>
 
@@ -125,16 +125,16 @@
         </span>
       </ion-button>
 
-      <ion-button fill="clear" class="stack" [ngClass]="{ 'activo': isActive('seguros/disponibles') }"
-        (click)="redirecion('seguros/disponibles')" *ngIf="!mostrarBuscador && esDispositivoMovil">
+      <ion-button fill="clear" class="stack" [ngClass]="{ 'activo': isActive('camiones/todos') }"
+        (click)="redirecion('camiones/todos')" *ngIf="!mostrarBuscador && esDispositivoMovil">
         <span class="vcol">
-          <ion-icon name="shield-checkmark-outline"></ion-icon>
-          <span class="label">Seguros</span>
+          <ion-icon name="bus-outline"></ion-icon>
+          <span class="label">Camiones</span>
         </span>
       </ion-button>
 
-      <ion-button fill="clear" class="stack" [ngClass]="{ 'activo': isActive('renta-ciudades') }"
-        (click)="redirecion('renta-ciudades')" *ngIf="!mostrarBuscador && esDispositivoMovil">
+      <ion-button fill="clear" class="stack" [ngClass]="{ 'activo': isActive('renta-coches') }"
+        (click)="redirecion('renta-coches')" *ngIf="!mostrarBuscador && esDispositivoMovil">
         <span class="vcol">
           <ion-icon name="key-outline"></ion-icon>
           <span class="label">Renta</span>
