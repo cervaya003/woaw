@@ -21,7 +21,6 @@ import { NavbarComponent } from '../../components/navbar/navbar.component';
     FooterComponent,
     NavbarComponent
 ],
- 
   declarations: [AutenticacionUserPage]
 })
 export class AutenticacionUserPageModule { }

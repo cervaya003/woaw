@@ -1,16 +1,20 @@
 <app-navbar></app-navbar>
 
 <ion-content class="home-wrap" [fullscreen]="true">
-
-  <h1 class="header_titulo">Explora, compara y estrena</h1>
-
   <ion-grid class="contenedor">
     <ion-row>
-      <ion-col size="12" size-md="3">
+      <ion-col size="12" size-md="4">
         <section class="contenedor_cratas_home">
           <div class="cards-grid">
-            <article class="car-card car-card-usados" (click)="redirecion('/usados')">
-              <img src="/assets/home/cartasHome3.webp" alt="Auto nuevo" class="bg-card" />
+            <article
+              class="car-card car-card-usados"
+              (click)="redirecion('/usados')"
+            >
+              <img
+                src="/assets/home/cartasHome3.webp"
+                alt="Auto nuevo"
+                class="bg-card"
+              />
               <header class="card-head">
                 <h3><span>Autos</span> Usados</h3>
                 <p>Listos para una nueva historia.</p>

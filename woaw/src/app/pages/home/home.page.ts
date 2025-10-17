@@ -180,9 +180,7 @@ export class HomePage implements OnInit {
     localStorage.setItem('historialBusqueda', JSON.stringify(historial));
   } 
   async cargaimagen() {
- 
-    this.imgenPrincipal = '/assets/home/angel.webp';
- 
+    this.imgenPrincipal = '/assets/autos/publicidad/angel.webp';
     this.generalService.addPreload(this.imgenPrincipal, 'image');
     this.overlayLoaded = false;
     try {
