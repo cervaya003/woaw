@@ -1,3 +1,5 @@
+
+
 import { Component, OnInit, ViewChild, OnDestroy, ChangeDetectionStrategy, } from "@angular/core";
 import { IonContent, PopoverController } from "@ionic/angular";
 import { Router, NavigationStart } from "@angular/router";
@@ -688,8 +690,8 @@ export class RentaCochesPage implements OnInit, OnDestroy {
     return this.esMio(c);
   }
 
-  trackCar = (_: number, c: any) =>
-    c?._id ?? c?.id ?? `${c?.marca}-${c?.modelo}-${c?.anio}`;
+  trackCar = (_: number, c: any) =>`
+    c?._id ?? c?.id ?? ${c?.marca}-${c?.modelo}-${c?.anio}`;
 
   refrescar(ev: CustomEvent) {
     const done = () =>
@@ -882,7 +884,7 @@ export class RentaCochesPage implements OnInit, OnDestroy {
 
   private toRgba(hexOrRgb: string, alpha = 1) {
     if (hexOrRgb.startsWith('rgb')) {
-      return hexOrRgb.replace(')', `, ${alpha})`).replace('rgb(', 'rgba(');
+      return `hexOrRgb.replace(')', , ${alpha})).replace('rgb(', 'rgba(')`;
     }
     const hex = hexOrRgb.replace('#', '');
     const h = hex.length === 3 ? hex.split('').map(c => c + c).join('') : hex.padEnd(6, '0');
@@ -890,4 +892,3 @@ export class RentaCochesPage implements OnInit, OnDestroy {
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
   }
 }
-

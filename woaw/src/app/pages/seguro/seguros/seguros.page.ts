@@ -45,9 +45,7 @@ export class SegurosPage implements OnInit {
 
   steps = [
     'Marca',
-    'Modelo',
-    'Año',
-    'Versión',
+    'Vehículo',
     'Edad',
     'Datos',
     'Cotizar'
@@ -103,6 +101,8 @@ export class SegurosPage implements OnInit {
     return m[code] ?? code;
   }
 
+  ultimaCotizacion: any = null;
+
   constructor(
     private popoverCtrl: PopoverController,
     private alertCtrl: AlertController,
@@ -118,6 +118,7 @@ export class SegurosPage implements OnInit {
   }
 
   ngOnInit() {
+    this.islandKey++;
     this.verificaStorage();
     this.generalService.tokenExistente$.subscribe((estado) => {
       this.isLoggedIn = estado;
@@ -127,6 +128,10 @@ export class SegurosPage implements OnInit {
     });
     this.buildAniosNacimiento();
     this.cargaimagen();
+    this.cargarUltimaCotizacion();
+  }
+  ionViewWillEnter() {
+    this.islandKey++;
   }
   private verificaStorage() {
     const raw = localStorage.getItem('cotizacion');
@@ -142,7 +147,7 @@ export class SegurosPage implements OnInit {
 
     if (this.quote?.plans?.length) {
       this.selectedPaymentByPlan = {};
-      
+
       this.quote.plans.forEach((pl: any) => {
         const firstId = pl?.payment_plans?.[0]?.id ?? null;
         if (firstId) this.selectedPaymentByPlan[pl.id] = firstId;
@@ -238,12 +243,8 @@ export class SegurosPage implements OnInit {
   }
 
   // ---------- Helpers para crear controles por paso ----------
-  private ensurePaso4() {
-    if (!this.form.get('version')) {
-      this.form.addControl('version', this.fb.control(null, Validators.required));
-    }
-  }
-  private ensurePaso5() {
+
+  private ensurePaso3() {
     if (!this.form.get('nacDia')) {
       this.form.addControl('nacDia', this.fb.control(null, Validators.required));
     }
@@ -256,7 +257,7 @@ export class SegurosPage implements OnInit {
     this.form.setValidators(this.fechaNacimientoValida());
     this.form.updateValueAndValidity({ emitEvent: false });
   }
-  private ensurePaso6() {
+  private ensurePaso4() {
     if (!this.form.get('cp')) {
       this.form.addControl('cp', this.fb.control(null, [
         Validators.required,
@@ -286,64 +287,53 @@ export class SegurosPage implements OnInit {
       if (!this.form.get('modelo')) {
         this.form.addControl('modelo', this.fb.control(null, Validators.required));
       }
+      if (!this.form.get('anio')) {
+        this.form.addControl('anio', this.fb.control(null, Validators.required));
+      }
+      if (!this.form.get('version')) {
+        this.form.addControl('version', this.fb.control(null, Validators.required));
+      }
+
+
+      this.form.get('anio')?.disable({ emitEvent: false });
+      this.form.get('version')?.disable({ emitEvent: false });
+
       this.currentStep = 2;
       return;
     }
 
     // 2 
     if (this.currentStep === 2) {
-      if (this.form.get('modelo')?.invalid) return;
-      this.selectedModeloId = Number(this.form.get('modelo')?.value);
-      this.obtenerAnios(this.selectedMarcaId!, this.selectedModeloId);
-      if (!this.form.get('anio')) {
-        this.form.addControl('anio', this.fb.control(null, Validators.required));
-      }
+      if (this.form.get('version')?.invalid && this.form.get('anio')?.invalid && this.form.get('version')?.invalid) return;
+      this.ensurePaso3();
       this.currentStep = 3;
       return;
     }
 
-    // 3 
+
+    // 3
     if (this.currentStep === 3) {
-      if (this.form.get('anio')?.invalid) return;
-      this.selectedAnioId = Number(this.form.get('anio')?.value);
-      this.obtenerVersion(this.selectedMarcaId!, this.selectedModeloId!, this.selectedAnioId);
+      if (this.form.errors) return;
       this.ensurePaso4();
       this.currentStep = 4;
       return;
     }
 
-    // 4 
+    // 4
     if (this.currentStep === 4) {
-      if (this.form.get('version')?.invalid) return;
-      this.ensurePaso5();
-      this.currentStep = 5;
-      return;
-    }
-
-    // 5 
-    if (this.currentStep === 5) {
-      if (this.form.errors) return;
-      this.ensurePaso6();
-      this.currentStep = 6;
-      return;
-    }
-
-    // 6 
-    if (this.currentStep === 6) {
       if (
         this.form.get('cp')?.invalid ||
         this.form.get('genero')?.invalid ||
         this.form.get('estadoCivil')?.invalid
-        // this.form.get('duracion')?.invalid
       ) return;
 
-      this.currentStep = 7;
+      this.currentStep = 5;
       return;
 
     }
 
-    // 8 -> finalizar (cotizar)
-    if (this.currentStep === 7) {
+    // 5 -> finalizar (cotizar)
+    if (this.currentStep === 5) {
       const payload = {
         marcaId: Number(this.form.get('marca')?.value),
         modeloId: Number(this.form.get('modelo')?.value),
@@ -379,35 +369,25 @@ export class SegurosPage implements OnInit {
         this.form.setErrors(null);
         break;
       case (2):
-        this.form.get('modelo')?.reset(null);
+        ['modelo', 'anio', 'version'].forEach(k => { if (this.form.get(k)) this.form.removeControl(k); });
         this.currentStep = 1;
         this.modelos = [];
-        this.form.setErrors(null);
-        break;
-      case (3):
-        this.form.get('anio')?.reset(null);
-        this.currentStep = 2;
         this.anios = [];
-        this.form.setErrors(null);
-        break;
-      case (4):
-        this.form.get('version')?.reset(null);
-        this.currentStep = 3;
         this.versions = [];
         this.form.setErrors(null);
         break;
-      case (5):
+      case (3):
         ['nacDia', 'nacMes', 'nacAnio'].forEach(k => { if (this.form.get(k)) this.form.removeControl(k); });
-        this.currentStep = 4;
+        this.currentStep = 2;
         this.form.setErrors(null);
         break;
-      case (6):
+      case (4):
         ['cp', 'genero', 'estadoCivil'].forEach(k => { if (this.form.get(k)) this.form.removeControl(k); });
-        this.currentStep = 5;
+        this.currentStep = 3;
         this.form.setErrors(null);
         break;
-      case (7):
-        this.currentStep = 6;
+      case (5):
+        this.currentStep = 4;
         break;
       default:
         break;
@@ -509,12 +489,10 @@ export class SegurosPage implements OnInit {
       'Cotizar nuevo coche',
       async () => {
         this.islandKey++;
+        this.guardarHistorialCotizacion();
         this.getMarcas_cohes();
         this.obtenerMarcas();
-        localStorage.removeItem('datosCoche');
-        localStorage.removeItem('cotizacion');
-        localStorage.removeItem('datosPolizaVin_Respuesta');
-        localStorage.removeItem('datosPolizaVin');
+
         this.cotizacion = false;
         this.quote = null;
         this.selectedPaymentByPlan = {};
@@ -538,8 +516,76 @@ export class SegurosPage implements OnInit {
         this.form.setErrors(null);
 
         try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch { }
+
+        window.location.reload();
       }
     );
+  }
+  guardarHistorialCotizacion() {
+    const datosCoche = localStorage.getItem('datosCoche');
+    const cotizacion = localStorage.getItem('cotizacion');
+
+    // === Guarda por separado ===
+    if (datosCoche) {
+      localStorage.setItem('historialDatosCoche', datosCoche);
+    }
+
+    if (cotizacion) {
+      localStorage.setItem('historialCotizacion', cotizacion);
+    }
+
+    // === Limpieza de los actuales ===
+    localStorage.removeItem('datosCoche');
+    localStorage.removeItem('cotizacion');
+    localStorage.removeItem('datosPolizaVin_Respuesta');
+    localStorage.removeItem('datosPolizaVin');
+  }
+  cargarUltimaCotizacion() {
+    try {
+      const datosCocheRaw = localStorage.getItem('historialDatosCoche');
+      const cotizacionRaw = localStorage.getItem('historialCotizacion');
+
+      const datosCoche = datosCocheRaw ? JSON.parse(datosCocheRaw) : null;
+      const cotizacion = cotizacionRaw ? JSON.parse(cotizacionRaw) : null;
+
+      if (!datosCoche && !cotizacion) {
+        this.ultimaCotizacion = null;
+        return;
+      }
+
+      this.ultimaCotizacion = {
+        fecha: new Date().toISOString(),
+        datosCoche,
+        cotizacion,
+      };
+
+    } catch (error) {
+      console.error('❌ Error al cargar la última cotización:', error);
+      this.ultimaCotizacion = null;
+    }
+  }
+  private swapKey(currentKey: string, historyKey: string) {
+    const curr = localStorage.getItem(currentKey);
+    const hist = localStorage.getItem(historyKey);
+
+    // Si no hay nada en ninguna, no hacemos nada
+    if (curr === null && hist === null) return;
+
+    // Pasa el historial a actual (si existe) o limpia actual
+    if (hist !== null) localStorage.setItem(currentKey, hist);
+    else localStorage.removeItem(currentKey);
+
+    // Pasa el actual previo a historial (si existía) o limpia historial
+    if (curr !== null) localStorage.setItem(historyKey, curr);
+    else localStorage.removeItem(historyKey);
+  }
+  public restaurarOIntercambiarCotizacion() {
+    this.swapKey('datosCoche', 'historialDatosCoche');
+    this.swapKey('cotizacion', 'historialCotizacion');
+    this.cargarUltimaCotizacion();
+
+    console.log('🔁 Intercambio realizado entre actual ↔ historial.');
+    window.location.reload();
   }
 
   // ---------- COTIZACION ----------
@@ -935,5 +981,30 @@ export class SegurosPage implements OnInit {
   }
   selectOtherBrand(): void {
     this.router.navigateByUrl('/seguros/cotizar-manual');
+  }
+
+
+
+
+
+  public onModeloSeleccionado(event: any) {
+    const modeloId: number = event.detail.value;
+    if (modeloId) {
+      this.selectedModeloId = modeloId;
+      this.obtenerAnios(this.selectedMarcaId!, this.selectedModeloId);
+      this.form.get('anio')?.enable({ emitEvent: false });
+    } else {
+      this.form.get('anio')?.disable({ emitEvent: false });
+    }
+  }
+  public onAnioSeleccionado(event: any) {
+    const anio: number = event.detail.value;
+    if (anio) {
+      this.form.get('version')?.enable({ emitEvent: false });
+      this.selectedAnioId = anio;
+      this.obtenerVersion(this.selectedMarcaId!, this.selectedModeloId!, this.selectedAnioId);
+    } else {
+      this.form.get('version')?.disable({ emitEvent: false });
+    }
   }
 }

@@ -9,6 +9,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { SeguroService } from '../../../services/seguro.service';
 import { Location } from '@angular/common';
 
+import { PoliticasComponent } from '../../../components/modal/politicas/politicas.component';
+import { AvisoPrivasidadComponent } from '../../../components/modal/aviso-privasidad/aviso-privasidad.component';
+
 import { Browser } from '@capacitor/browser';
 import { Capacitor } from '@capacitor/core';
 import { environment } from "../../../../environments/environment";
@@ -32,8 +35,11 @@ export class PolizaPage implements OnInit {
   currentStepform: 1 | 2 | 3 | 4 = 1;
   form_poliza: FormGroup;
 
-  private branchId = environment.crabi_branchId; 
+  private branchId = environment.crabi_branchId;
 
+  public isLoggedIn: boolean = false;
+
+  esDispositivoMovil: boolean = false;
   public tipoDispocitivo: 'computadora' | 'telefono' | 'tablet' = 'computadora';
 
   placasEnTramite: boolean = false;
@@ -51,6 +57,10 @@ export class PolizaPage implements OnInit {
   selectedPaymentId: string | null = null;
 
   islandKey = 0;
+
+  MostrarLogin: boolean = true;
+  MostrarRegistro: boolean = false;
+  MostrarRecuperacion: boolean = false;
 
   colorOpts = [
     { value: 'blanco', label: 'Blanco' },
@@ -118,8 +128,21 @@ export class PolizaPage implements OnInit {
     this.generalService.dispositivo$.subscribe((tipo) => {
       this.tipoDispocitivo = tipo;
     });
+    this.generalService.dispositivo$.subscribe((tipo) => {
+      this.esDispositivoMovil = tipo === 'telefono' || tipo === 'tablet';
+    });
+    this.verificarAuth();
     this.mostrarPresouestaPoliza();
     this.getPosition();
+  }
+
+  async verificarAuth(): Promise<boolean> {
+    return new Promise((resolve) => {
+      this.generalService.tokenExistente$.subscribe((estado) => {
+        this.isLoggedIn = estado;
+        resolve(estado);
+      });
+    });
   }
   // ====== Correos dinámicos ======
   get correos(): FormArray<FormControl<string | null>> {
@@ -450,6 +473,7 @@ export class PolizaPage implements OnInit {
       this.form_poliza.get('placas')?.setValue(norm, { emitEvent: false });
     }
   }
+
   // private placasMxValidator = (ctrl: AbstractControl) => {
   //   const raw = String(ctrl.value || '')
   //     .toUpperCase()
@@ -463,6 +487,7 @@ export class PolizaPage implements OnInit {
   //   const ok = raw.length === 7 && patterns.some(r => r.test(raw));
   //   return ok ? null : { placaFormato: true };
   // };
+
   // 1) ÚNICO switch centralizado
   private formatPaymentLabel(rawName: string, count: number): string {
     const raw = (rawName ?? '').toString().toUpperCase();
@@ -473,6 +498,7 @@ export class PolizaPage implements OnInit {
       default: return raw;
     }
   }
+
   private getPosition(): number {
     const posStr = localStorage.getItem('posicionSeleccionada');
     const pos = Number(posStr);
@@ -537,6 +563,94 @@ export class PolizaPage implements OnInit {
   get coverUrl(): string | null {
     const files = this.datosPolizaCreada?.response?.files || [];
     return files.find((f: any) => f?.name === 'cover')?.url ?? null;
+  }
+
+  // Login ------ 
+  cambioEstatus(dato: string) {
+    switch (dato) {
+      case 'registro':
+        this.MostrarLogin = false;
+        this.MostrarRegistro = true;
+        this.MostrarRecuperacion = false;
+        break;
+      case 'login':
+        this.MostrarLogin = true;
+        this.MostrarRegistro = false;
+        this.MostrarRecuperacion = false;
+        break;
+      case 'reset':
+        this.MostrarLogin = false;
+        this.MostrarRegistro = false;
+        this.MostrarRecuperacion = true;
+        break;
+      default:
+        break;
+    }
+  }
+
+  // ## ------ POLITICAS Y AVISO DE PRIVACIDAD ------ ##
+  async mostrarTerminos() {
+    const modal = await this.modalCtrl.create({
+      component: PoliticasComponent,
+      componentProps: {
+        onAceptar: () => this.setAceptado('terminos', true),
+        onCancelar: () => this.setAceptado('terminos', false),
+      },
+      backdropDismiss: true,
+      showBackdrop: true,
+      ...(!this.esDispositivoMovil && {
+        cssClass: 'modal-consentimiento',
+      }),
+      ...(this.esDispositivoMovil && {
+        breakpoints: [0, 0.7, 1],
+        initialBreakpoint: 1,
+        handle: true,
+      }),
+    });
+    await modal.present();
+  }
+  async mostrarAviso() {
+    const modal = await this.modalCtrl.create({
+      component: AvisoPrivasidadComponent,
+      componentProps: {
+        onAceptar: () => this.setAceptado('aviso', true),
+        onCancelar: () => this.setAceptado('aviso', false),
+      },
+      backdropDismiss: true,
+      showBackdrop: true,
+      ...(!this.esDispositivoMovil && {
+        cssClass: 'modal-consentimiento',
+      }),
+      ...(this.esDispositivoMovil && {
+        breakpoints: [0, 0.7, 1],
+        initialBreakpoint: 1,
+        handle: true,
+      }),
+    });
+    await modal.present();
+  }
+
+  setAceptado(tipo: 'aviso' | 'terminos', valor: boolean) {
+    if (valor === true) {
+      localStorage.setItem(tipo, 'true');
+    } else {
+      localStorage.setItem(tipo, 'false');
+      const titulos: Record<typeof tipo, string> = {
+        aviso: 'Aviso de Privacidad',
+        terminos: 'Términos y Condiciones',
+      };
+
+      const mensajes: Record<typeof tipo, string> = {
+        aviso:
+          'Por tu seguridad y protección de datos, es necesario aceptar el Aviso de Privacidad.',
+        terminos:
+          'Debes aceptar los Términos y Condiciones para usar este servicio de forma segura y responsable.',
+      };
+
+      this.generalService.alert(titulos[tipo], mensajes[tipo], 'info');
+
+      localStorage.removeItem(tipo);
+    }
   }
 }
 

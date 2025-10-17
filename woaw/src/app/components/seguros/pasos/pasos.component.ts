@@ -39,6 +39,8 @@ export class PasosComponent implements OnInit {
     { nombre: 'Póliza', estatus: false, icon: 'document-text-outline', key: 'poliza' }
   ];
 
+  public isLoggedIn: boolean = false;
+
   usuarioVM: Maybe<{
     nombre: string;
     rfc: string;
@@ -66,6 +68,11 @@ export class PasosComponent implements OnInit {
     this.generalService.dispositivo$.subscribe((tipo) => {
       this.tipoDispocitivo = tipo;
     });
+
+    this.generalService.tokenExistente$.subscribe((estado) => {
+      this.isLoggedIn = estado;
+    });
+
     this.updateFromStorage();
   }
 

@@ -2,12 +2,13 @@
 
 
 <ion-content [fullscreen]="true">
+  
   <app-spinner *ngIf="mostrar_spinnet"></app-spinner>
   <app-otros-seguros [refreshKey]="islandKey" *ngIf="tipoDispocitivo === 'telefono'"></app-otros-seguros>
 
 
   <div class="fondo-seguros">
-    <img src="/assets/autos/seg1.webp" alt="">
+    <img src="/assets/autos/seguro.png" alt="">
     <span class="fondo-seguros__overlay"></span>
   </div>
 
@@ -45,7 +46,13 @@
 
           <div class="contenedos_info" *ngIf="UsuarioRespuesta && statusUserDtos && !statusBuscar">
             <div class="info-card">
-              <button type="button" class="edit-btn" aria-label="Editar" (click)="editarUser()">Nuevo &#43;</button>
+              <div class="botones-acciones">
+                <button type="button" class="edit-btn btn-add" (click)="editarUser()">Nuevo &#43;</button>
+                <button type="button" class="edit-btn btn-delete" (click)="olvidarUser()">
+                  Olvidar usuario &#10005;
+                </button>
+              </div>
+
               <div class="row">
                 <div class="label">Nombre</div>
                 <div class="value">
@@ -200,7 +207,7 @@
             <div class="field field-grid" *ngIf="currentStepform === 3">
 
               <div>
-                <label *ngIf="tipoPersonaSeleccionada === 'fisica'" for="nombre">Nombre completo <span>*</span></label>
+                <label *ngIf="tipoPersonaSeleccionada === 'fisica'" for="nombre">Nombre(s)<span>*</span></label>
                 <label *ngIf="tipoPersonaSeleccionada === 'moral'" for="nombre">Nombre de la
                   empresa<span>*</span></label>
                 <div class="control">

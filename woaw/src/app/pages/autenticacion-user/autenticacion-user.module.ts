@@ -8,6 +8,7 @@ import { AutenticacionUserPageRoutingModule } from './autenticacion-user-routing
 
 import { AutenticacionUserPage } from './autenticacion-user.page';
 import { FooterComponent } from "src/app/components/footer/footer.component";
+import { NavbarComponent } from "src/app/components/navbar/navbar.component";
 
 @NgModule({
   imports: [
@@ -16,8 +17,11 @@ import { FooterComponent } from "src/app/components/footer/footer.component";
     IonicModule,
     ReactiveFormsModule,
     AutenticacionUserPageRoutingModule,
-    FooterComponent
-  ],
+    FooterComponent,
+ 
+    NavbarComponent
+],
+ 
   declarations: [AutenticacionUserPage]
 })
 export class AutenticacionUserPageModule { }
