@@ -9,6 +9,8 @@ import { AutenticacionUserPageRoutingModule } from './autenticacion-user-routing
 import { AutenticacionUserPage } from './autenticacion-user.page';
 import { FooterComponent } from "src/app/components/footer/footer.component";
 
+import { NavbarComponent } from '../../components/navbar/navbar.component';
+
 @NgModule({
   imports: [
     CommonModule,
@@ -17,7 +19,6 @@ import { FooterComponent } from "src/app/components/footer/footer.component";
     ReactiveFormsModule,
     AutenticacionUserPageRoutingModule,
     FooterComponent,
- 
     NavbarComponent
 ],
  
