@@ -181,7 +181,7 @@ export class HomePage implements OnInit {
   } 
   async cargaimagen() {
  
-    this.imgenPrincipal = '/assets/autos/publicidad/angel.webp';
+    this.imgenPrincipal = '/assets/home/angel.webp';
  
     this.generalService.addPreload(this.imgenPrincipal, 'image');
     this.overlayLoaded = false;

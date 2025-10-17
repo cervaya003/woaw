@@ -186,10 +186,10 @@ export class PersonaPage implements OnInit {
     // setTimeout(async () => {
     //   this.mostrar_spinnet = false;
 
-      // const autorizado = await this.verificarAuth();
+    // const autorizado = await this.verificarAuth();
 
-      // if (autorizado) {
-        this.router.navigate(['/seguros/poliza']);
+    // if (autorizado) {
+    this.router.navigate(['/seguros/poliza']);
     //   } else {
     //     this.generalService.alert(
     //       `Para crear tu póliza, es necesario que inicies sesión.`,
@@ -483,7 +483,6 @@ export class PersonaPage implements OnInit {
 
       this.mostrar_spinnet = false;
 
-      if (autorizado) {
         this.generalService.alert(
           `¡Listo! ${nombre} quedó registrado correctamente.`,
           'Registro exitoso',
@@ -491,14 +490,7 @@ export class PersonaPage implements OnInit {
         );
         localStorage.setItem('UsuarioRespuesta', JSON.stringify(data));
         this.router.navigate(['/seguros/poliza']);
-      } else {
-        this.generalService.alert(
-          `Para crear tu póliza, es necesario que inicies sesión.`,
-          'Regístrate o inicia sesión',
-          'danger'
-        );
-        this.router.navigate(['/inicio']);
-      }
+     
     } catch (error: any) {
       this.mostrar_spinnet = false;
       console.error('Error al crear persona:', error);

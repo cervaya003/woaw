@@ -8,13 +8,8 @@ ion-content {
   display: flex;
   justify-content: center;
   text-align: center;
-  margin-top: 4rem !important;
   position: relative;
   z-index: 2;
-
-  @media (max-width: 768px) {
-    margin-top: 2rem !important;
-  }
 
 
   .contenedor-app-mensaje {

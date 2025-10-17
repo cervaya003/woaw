@@ -62,8 +62,14 @@ export class LoginComponent implements OnInit, AfterViewInit {
     this.navDone = true;
 
     this.generalService.guardarCredenciales(token, user);
-    this.router.navigate(['/home']);
-    this.generalService.alert('Bienvenido a WOAW', 'Inicio de sesión exitoso', 'success');
+    let respuesta: boolean = this.verificaStorage();
+
+    if (respuesta) {
+      setTimeout(() => this.router.navigate(['/seguros/poliza']), 1200);
+    } else {
+      setTimeout(() => this.router.navigate(['/home']), 1200);
+      this.generalService.alert('Bienvenido a WOAW', 'Inicio de sesión exitoso', 'success');
+    }
   }
 
   ngOnInit(): void {
