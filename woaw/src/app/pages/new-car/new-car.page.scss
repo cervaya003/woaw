@@ -2,30 +2,32 @@
   min-height: 85svh;
 }
 
+/* ====== CONTENEDOR DE CARTAS ====== */
 .contenedor-categorias {
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start; // cartas pegadas arriba
   flex-wrap: wrap;
   gap: 20px;
   max-width: 650px;
-  margin: 2rem auto;
-  padding: 1.5rem 0;
+  margin: 1rem auto 0 auto;
+  padding: 1rem 0;
+  transition: all 0.3s ease;
 
   @media (max-width: 820px) {
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    gap: 10px;
+    gap: 12px;
     max-width: 480px;
-    padding: 12px 14px;
+    padding: 10px 14px;
     margin: 0 auto;
   }
 
   @media (max-width: 380px) {
     max-width: 100%;
     gap: 8px;
-    padding: 10px;
+    padding: 8px;
   }
 
   .categoria-card {
@@ -41,7 +43,7 @@
     justify-content: center;
     cursor: pointer;
     position: relative;
-    transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease;
+    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease, opacity 0.3s ease;
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
 
@@ -55,6 +57,8 @@
       border: 2px solid #ff3d00;
       background: #fff7f5;
       box-shadow: 0 6px 18px rgba(255, 61, 0, 0.18);
+      transform: scale(1.05);
+      z-index: 2;
     }
 
     @media (max-width: 820px) {
@@ -102,21 +106,134 @@
       }
     }
 
-    .etiqueta-proximamente {
+    .check-icono {
       position: absolute;
       top: 6px;
       right: 6px;
       background: #ff3d00;
       color: #fff;
-      font-size: 10px;
-      padding: 2px 6px;
-      border-radius: 6px;
-      text-transform: uppercase;
-      opacity: .95;
+      font-size: 12px;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+
+  /* Ocultar cartas que no están activas */
+  &.seleccion-activa .categoria-card:not(.activa) {
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.8);
+  }
+}
+
+/* ====== CONTENEDOR DEL FORMULARIO ====== */
+/* ====== CONTENEDOR DE CARTAS ====== */
+.contenedor-categorias {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; // cartas pegadas arriba
+  flex-wrap: wrap;
+  gap: 20px;
+  max-width: 650px;
+  margin: 1rem auto 0 auto;
+  padding: 1rem 0;
+  transition: all 0.3s ease;
+
+  @media (max-width: 820px) {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    max-width: 480px;
+    padding: 10px 14px;
+    margin: 0 auto;
+  }
+
+  @media (max-width: 380px) {
+    max-width: 100%;
+    gap: 8px;
+    padding: 8px;
+  }
+
+  .categoria-card {
+    width: 110px;
+    height: 110px;
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px solid #e2e2e2;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease, opacity 0.3s ease;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    padding: 12px;
+    box-sizing: border-box;
+
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+      border-color: #ff3d00;
+    }
+
+    &.activa {
+      border: 2px solid #ff3d00;
+      background: #fff7f5;
+      box-shadow: 0 6px 18px rgba(255, 61, 0, 0.18);
+      transform: scale(1.05);
+      z-index: 2;
+    }
+
+    @media (max-width: 820px) {
+      width: 100%;
+      height: 72px;
+      border-radius: 14px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+      padding: 10px 12px;
+      display: grid;
+      grid-template-columns: 32px 1fr;
+      align-items: center;
+      column-gap: 10px;
+
+      &:active {
+        transform: scale(.985);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.14);
+      }
+    }
+
+    img {
+      width: 42px;
+      height: 42px;
+      object-fit: contain;
 
       @media (max-width: 820px) {
-        font-size: 8px;
-        padding: 2px 5px;
+        width: 28px;
+        height: 28px;
+        justify-self: center;
+      }
+    }
+
+    .label {
+      margin-top: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #1e1e1e;
+      text-align: center;
+
+      @media (max-width: 820px) {
+        margin-top: 0;
+        text-align: left;
+        font-size: 13px;
+        letter-spacing: .1px;
+        line-height: 1.1;
       }
     }
 
@@ -133,25 +250,61 @@
       display: flex;
       align-items: center;
       justify-content: center;
+    }
+  }
 
-      @media (max-width: 820px) {
-        width: 18px;
-        height: 18px;
-        font-size: 11px;
+  /* Ocultar cartas que no están activas (móvil).
+     Usamos display:none para evitar huecos y mantener sólo la activa. */
+  &.seleccion-activa {
+    @media (max-width: 820px) {
+      .categoria-card {
+        display: none;
+        opacity: 0;
+        transform: scale(0.95);
+        pointer-events: none;
+      }
+
+      /* Mantener visible sólo la activa y darle margen para el formulario */
+      .categoria-card.activa {
+        display: grid;
+        grid-template-columns: 32px 1fr;
+        align-items: center;
+        column-gap: 10px;
+        height: 72px;
+        border-radius: 14px;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+        transform: none;
+        opacity: 1;
+        pointer-events: auto;
+        z-index: 20;
+        margin-bottom: 8px;
+        /* separación garantizada antes del formulario */
       }
     }
   }
 }
 
-
+/* ====== CONTENEDOR DEL FORMULARIO ====== */
+/* Nota: conservé exactamente la clase .contenedor_form tal como pediste */
 .contenedor_form {
   max-width: 1200px;
-  width: 100%;
-  margin: 10px auto 0 auto;
-  padding: 1rem;
+  width: 90%;
+  padding: 1.5rem;
   background-color: #efefefee;
   border: solid 1px #9d9d9d55;
+  border-radius: 10px;
+  margin: 40px auto 0 auto; // desktop: igual que antes
+  position: relative;
+  transition: all 0.4s ease;
+  transform: translateY(-20px);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  box-sizing: border-box;
 
+  &.activo {
+    transform: translateY(0);
+  }
 
   .fila-inputs {
     display: flex;
@@ -176,13 +329,16 @@
     color: red;
   }
 
-  .campo select {
+  .campo select,
+  .campo input,
+  .input-otro-anio {
     padding: 8px 12px;
     border: 1px solid #ccc;
     border-radius: 6px;
     background-color: #fff;
     font-size: 14px;
     transition: border 0.2s ease;
+    box-sizing: border-box;
   }
 
   .campo select:focus {
@@ -190,27 +346,9 @@
     outline: none;
   }
 
-  .campo input {
-    padding: 8px 12px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    background-color: #fff;
-    font-size: 14px;
-    transition: border 0.2s ease;
-  }
-
   .campo input:focus {
     border-color: #ff0000;
     outline: none;
-  }
-
-  .input-otro-anio {
-    margin-top: 8px;
-    padding: 8px 12px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 14px;
-    background: #fff;
   }
 
   .btn-guardar {
@@ -248,7 +386,23 @@
     font-size: 12px;
   }
 
+  /*  Ajustes solo para móvil: formulario pegadito debajo de la tarjeta seleccionada */
+  @media (max-width: 820px) {
+    width: 95%;
+    padding: 1rem;
+    margin-top: -10px; //  más arriba que antes
+    transform: translateY(-5px); //  subido máximo para pegar a la tarjeta
+  }
+
+  @media (max-width: 480px) {
+    width: 100%;
+    padding: 0.8rem;
+    margin-top: -5px; //  máximo pegado al top
+    transform: translateY(-5px); //  subido máximo en móvil
+  }
 }
+
+
 
 .fila_select {
   display: flex;
