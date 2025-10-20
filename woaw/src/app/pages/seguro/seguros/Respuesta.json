@@ -1,0 +1,785 @@
+{
+    "ok": true,
+    "source": "crabi",
+    "code": 200,
+    "response": {
+        "coupon": "",
+        "duration": 12,
+        "id": "d3eac7a9-f0e4-44e6-bf0a-58d9aaf7862f",
+        "plans": [
+            {
+                "id": "df3193c6-cf7c-44ae-a034-be5edc633a46",
+                "name": "Plan Personalizado",
+                "policies": [
+                    {
+                        "id": "d596b4f6-b6e5-4d15-9ba7-fb1ae0236d71",
+                        "policy_type": {
+                            "id": "ef6c655c-2cac-45fa-8e1a-4144d7c5e70c",
+                            "name": "FACTURA_ANUAL"
+                        },
+                        "net_premium": 16634.33,
+                        "subtotal": 17134.33,
+                        "taxes": 2741.49,
+                        "total": 19875.82,
+                        "coverages": [
+                            {
+                                "id": "40025e5f-e415-475f-bb0e-d6186762dd55",
+                                "coverage_type": {
+                                    "id": "1310b08b-57d5-406b-b1c6-f72f89ab4820",
+                                    "name": "EXTREP"
+                                },
+                                "premium": 4178.15
+                            },
+                            {
+                                "id": "f3e4ac92-ff11-439f-87a5-7a93e51bd9fe",
+                                "coverage_type": {
+                                    "id": "42d81165-f6f7-4c0d-b33b-999a3f3ee905",
+                                    "name": "RCP"
+                                },
+                                "sum_assured": {
+                                    "amount": 1500000
+                                },
+                                "premium": 1070.94
+                            },
+                            {
+                                "id": "a77a90f0-a5e0-46da-8195-606bbe9b66a4",
+                                "coverage_type": {
+                                    "id": "6c434f2a-d0f3-4442-b4c5-6680ec0fda6d",
+                                    "name": "GM"
+                                },
+                                "sum_assured": {
+                                    "amount": 200000
+                                },
+                                "premium": 473.76
+                            },
+                            {
+                                "id": "7e3a6c89-908d-4306-be7d-d37e5bd97a03",
+                                "coverage_type": {
+                                    "id": "89e4c857-4f9f-49be-a069-f499afef6332",
+                                    "name": "PEXT"
+                                },
+                                "premium": 200
+                            },
+                            {
+                                "id": "ae796be5-f392-4581-9d60-69ccdf5848fe",
+                                "coverage_type": {
+                                    "id": "c2b3cdd7-2c89-4d92-aa04-6b343ad91425",
+                                    "name": "DM"
+                                },
+                                "deductible": 0.03,
+                                "sum_assured": {
+                                    "vehicle_value": "Valor factura"
+                                },
+                                "premium": 7737.33
+                            },
+                            {
+                                "id": "7d0efd81-3003-487c-bd0a-e181af7d630c",
+                                "coverage_type": {
+                                    "id": "ca2ead83-5b81-4480-9a0b-744ba31601c0",
+                                    "name": "AL"
+                                },
+                                "sum_assured": {
+                                    "amount": 200000
+                                },
+                                "premium": 469.81
+                            },
+                            {
+                                "id": "f27be514-c3a6-421e-a51d-066fc0a9c506",
+                                "coverage_type": {
+                                    "id": "ed22aeaf-8623-4d4d-ad59-106a774ed9a5",
+                                    "name": "AV"
+                                },
+                                "sum_assured": {
+                                    "amount": 200000
+                                },
+                                "premium": 279.25
+                            },
+                            {
+                                "id": "914598ab-6964-4eb0-ae18-b6ed999639fa",
+                                "coverage_type": {
+                                    "id": "fa67b067-ffdf-431b-aef5-53e60dfe6be6",
+                                    "name": "RCB"
+                                },
+                                "sum_assured": {
+                                    "amount": 1500000
+                                },
+                                "premium": 1070.94
+                            },
+                            {
+                                "id": "2c69081f-2520-4327-9f86-54bd6fd6014c",
+                                "coverage_type": {
+                                    "id": "fc9e6248-5746-4480-a9d0-d683cb6a6c10",
+                                    "name": "RT"
+                                },
+                                "deductible": 0.15,
+                                "sum_assured": {
+                                    "vehicle_value": "Valor factura"
+                                },
+                                "premium": 1154.15
+                            }
+                        ],
+                        "expedition_rights": 500
+                    },
+                    {
+                        "id": "c1d34609-c1b3-43ee-8f03-022bcecc365d",
+                        "policy_type": {
+                            "id": "b6bee0c5-15ae-4ad9-8f6e-c7a0ed021103",
+                            "name": "RCO"
+                        },
+                        "net_premium": 150,
+                        "subtotal": 150,
+                        "taxes": 24,
+                        "total": 174,
+                        "coverages": [
+                            {
+                                "id": "cc138e43-6dd2-4ada-9e0d-51181e962769",
+                                "coverage_type": {
+                                    "id": "538aa337-349f-4436-8d45-e70687628951",
+                                    "name": "RCPO"
+                                },
+                                "sum_assured": {
+                                    "amount": 100000
+                                },
+                                "premium": 100
+                            },
+                            {
+                                "id": "6e0669b0-a64a-4ec9-856a-c0c3440c50ff",
+                                "coverage_type": {
+                                    "id": "b691ceae-c137-493b-825e-c7b22fff40cd",
+                                    "name": "RCBO"
+                                },
+                                "sum_assured": {
+                                    "amount": 50000
+                                },
+                                "premium": 50
+                            }
+                        ]
+                    }
+                ],
+                "subtotal": 17284.33,
+                "taxes": 2765.49,
+                "total": 20049.82,
+                "net_premium": 16784.33,
+                "expedition_rights": 500,
+                "payment_plans": [
+                    {
+                        "id": "109c2bbe-41d2-4f33-a092-50dd45058ab5",
+                        "name": "ANNUAL",
+                        "subtotal": 17284.33,
+                        "taxes": 2765.49,
+                        "total": 20049.82,
+                        "net_premium": 16784.33,
+                        "expedition_rights": 500,
+                        "payments": [
+                            {
+                                "number": 1,
+                                "net_premium": 16784.33,
+                                "subtotal": 17284.33,
+                                "taxes": 2765.49,
+                                "total": 20049.82,
+                                "policies": [
+                                    {
+                                        "policy_type": {
+                                            "id": "ef6c655c-2cac-45fa-8e1a-4144d7c5e70c",
+                                            "name": "FACTURA_ANUAL"
+                                        },
+                                        "net_premium": 16634.33,
+                                        "subtotal": 17134.33,
+                                        "taxes": 2741.49,
+                                        "total": 19875.82,
+                                        "expedition_rights": 500
+                                    },
+                                    {
+                                        "policy_type": {
+                                            "id": "b6bee0c5-15ae-4ad9-8f6e-c7a0ed021103",
+                                            "name": "RCO"
+                                        },
+                                        "net_premium": 150,
+                                        "subtotal": 150,
+                                        "taxes": 24,
+                                        "total": 174
+                                    }
+                                ],
+                                "expedition_rights": 500
+                            }
+                        ]
+                    },
+                    {
+                        "id": "abac7f47-a656-437f-b22d-70d359a27a17",
+                        "name": "SUBSCRIPTION",
+                        "subtotal": 20641.16,
+                        "taxes": 3302.6,
+                        "total": 23943.76,
+                        "net_premium": 16784.28,
+                        "expedition_rights": 500,
+                        "fee": 3356.88,
+                        "payments": [
+                            {
+                                "number": 1,
+                                "net_premium": 1536.19,
+                                "subtotal": 2343.43,
+                                "taxes": 374.95,
+                                "total": 2718.38,
+                                "policies": [
+                                    {
+                                        "policy_type": {
+                                            "id": "ef6c655c-2cac-45fa-8e1a-4144d7c5e70c",
+                                            "name": "FACTURA_ANUAL"
+                                        },
+                                        "subtotal": 2163.43,
+                                        "taxes": 346.15,
+                                        "total": 2509.58,
+                                        "expedition_rights": 500,
+                                        "fee": 277.24
+                                    },
+                                    {
+                                        "policy_type": {
+                                            "id": "b6bee0c5-15ae-4ad9-8f6e-c7a0ed021103",
+                                            "name": "RCO"
+                                        },
+                                        "subtotal": 180,
+                                        "taxes": 28.8,
+                                        "total": 208.8,
+                                        "fee": 30
+                                    }
+                                ],
+                                "fee": 307.24,
+                                "expedition_rights": 500
+                            },
+                            {
+                                "number": 2,
+                                "net_premium": 1386.19,
+                                "subtotal": 1663.43,
+                                "taxes": 266.15,
+                                "total": 1929.58,
+                                "policies": [
+                                    {
+                                        "policy_type": {
+                                            "id": "ef6c655c-2cac-45fa-8e1a-4144d7c5e70c",
+                                            "name": "FACTURA_ANUAL"
+                                        },
+                                        "subtotal": 1663.43,
+                                        "taxes": 266.15,
+                                        "total": 1929.58,
+                                        "fee": 277.24
+                                    }
+                                ],
+                                "fee": 277.24
+                            },
+                            {
+                                "number": 3,
+                                "net_premium": 1386.19,
+                                "subtotal": 1663.43,
+                                "taxes": 266.15,
+                                "total": 1929.58,
+                                "policies": [
+                                    {
+                                        "policy_type": {
+                                            "id": "ef6c655c-2cac-45fa-8e1a-4144d7c5e70c",
+                                            "name": "FACTURA_ANUAL"
+                                        },
+                                        "subtotal": 1663.43,
+                                        "taxes": 266.15,
+                                        "total": 1929.58,
+                                        "fee": 277.24
+                                    }
+                                ],
+                                "fee": 277.24
+                            },
+                            {
+                                "number": 4,
+                                "net_premium": 1386.19,
+                                "subtotal": 1663.43,
+                                "taxes": 266.15,
+                                "total": 1929.58,
+                                "policies": [
+                                    {
+                                        "policy_type": {
+                                            "id": "ef6c655c-2cac-45fa-8e1a-4144d7c5e70c",
+                                            "name": "FACTURA_ANUAL"
+                                        },
+                                        "subtotal": 1663.43,
+                                        "taxes": 266.15,
+                                        "total": 1929.58,
+                                        "fee": 277.24
+                                    }
+                                ],
+                                "fee": 277.24
+                            },
+                            {
+                                "number": 5,
+                                "net_premium": 1386.19,
+                                "subtotal": 1663.43,
+                                "taxes": 266.15,
+                                "total": 1929.58,
+                                "policies": [
+                                    {
+                                        "policy_type": {
+                                            "id": "ef6c655c-2cac-45fa-8e1a-4144d7c5e70c",
+                                            "name": "FACTURA_ANUAL"
+                                        },
+                                        "subtotal": 1663.43,
+                                        "taxes": 266.15,
+                                        "total": 1929.58,
+                                        "fee": 277.24
+                                    }
+                                ],
+                                "fee": 277.24
+                            },
+                            {
+                                "number": 6,
+                                "net_premium": 1386.19,
+                                "subtotal": 1663.43,
+                                "taxes": 266.15,
+                                "total": 1929.58,
+                                "policies": [
+                                    {
+                                        "policy_type": {
+                                            "id": "ef6c655c-2cac-45fa-8e1a-4144d7c5e70c",
+                                            "name": "FACTURA_ANUAL"
+                                        },
+                                        "subtotal": 1663.43,
+                                        "taxes": 266.15,
+                                        "total": 1929.58,
+                                        "fee": 277.24
+                                    }
+                                ],
+                                "fee": 277.24
+                            },
+                            {
+                                "number": 7,
+                                "net_premium": 1386.19,
+                                "subtotal": 1663.43,
+                                "taxes": 266.15,
+                                "total": 1929.58,
+                                "policies": [
+                                    {
+                                        "policy_type": {
+                                            "id": "ef6c655c-2cac-45fa-8e1a-4144d7c5e70c",
+                                            "name": "FACTURA_ANUAL"
+                                        },
+                                        "subtotal": 1663.43,
+                                        "taxes": 266.15,
+                                        "total": 1929.58,
+                                        "fee": 277.24
+                                    }
+                                ],
+                                "fee": 277.24
+                            },
+                            {
+                                "number": 8,
+                                "net_premium": 1386.19,
+                                "subtotal": 1663.43,
+                                "taxes": 266.15,
+                                "total": 1929.58,
+                                "policies": [
+                                    {
+                                        "policy_type": {
+                                            "id": "ef6c655c-2cac-45fa-8e1a-4144d7c5e70c",
+                                            "name": "FACTURA_ANUAL"
+                                        },
+                                        "subtotal": 1663.43,
+                                        "taxes": 266.15,
+                                        "total": 1929.58,
+                                        "fee": 277.24
+                                    }
+                                ],
+                                "fee": 277.24
+                            },
+                            {
+                                "number": 9,
+                                "net_premium": 1386.19,
+                                "subtotal": 1663.43,
+                                "taxes": 266.15,
+                                "total": 1929.58,
+                                "policies": [
+                                    {
+                                        "policy_type": {
+                                            "id": "ef6c655c-2cac-45fa-8e1a-4144d7c5e70c",
+                                            "name": "FACTURA_ANUAL"
+                                        },
+                                        "subtotal": 1663.43,
+                                        "taxes": 266.15,
+                                        "total": 1929.58,
+                                        "fee": 277.24
+                                    }
+                                ],
+                                "fee": 277.24
+                            },
+                            {
+                                "number": 10,
+                                "net_premium": 1386.19,
+                                "subtotal": 1663.43,
+                                "taxes": 266.15,
+                                "total": 1929.58,
+                                "policies": [
+                                    {
+                                        "policy_type": {
+                                            "id": "ef6c655c-2cac-45fa-8e1a-4144d7c5e70c",
+                                            "name": "FACTURA_ANUAL"
+                                        },
+                                        "subtotal": 1663.43,
+                                        "taxes": 266.15,
+                                        "total": 1929.58,
+                                        "fee": 277.24
+                                    }
+                                ],
+                                "fee": 277.24
+                            },
+                            {
+                                "number": 11,
+                                "net_premium": 1386.19,
+                                "subtotal": 1663.43,
+                                "taxes": 266.15,
+                                "total": 1929.58,
+                                "policies": [
+                                    {
+                                        "policy_type": {
+                                            "id": "ef6c655c-2cac-45fa-8e1a-4144d7c5e70c",
+                                            "name": "FACTURA_ANUAL"
+                                        },
+                                        "subtotal": 1663.43,
+                                        "taxes": 266.15,
+                                        "total": 1929.58,
+                                        "fee": 277.24
+                                    }
+                                ],
+                                "fee": 277.24
+                            },
+                            {
+                                "number": 12,
+                                "net_premium": 1386.19,
+                                "subtotal": 1663.43,
+                                "taxes": 266.15,
+                                "total": 1929.58,
+                                "policies": [
+                                    {
+                                        "policy_type": {
+                                            "id": "ef6c655c-2cac-45fa-8e1a-4144d7c5e70c",
+                                            "name": "FACTURA_ANUAL"
+                                        },
+                                        "subtotal": 1663.43,
+                                        "taxes": 266.15,
+                                        "total": 1929.58,
+                                        "fee": 277.24
+                                    }
+                                ],
+                                "fee": 277.24
+                            }
+                        ]
+                    },
+                    {
+                        "id": "2e3fc391-49f0-43ec-abf9-8f9f116c08d5",
+                        "name": "MSI",
+                        "subtotal": 17284.35,
+                        "taxes": 2765.49,
+                        "total": 20049.84,
+                        "net_premium": 16784.34,
+                        "expedition_rights": 500.01,
+                        "payments": [
+                            {
+                                "number": 1,
+                                "net_premium": 5594.78,
+                                "subtotal": 5761.45,
+                                "taxes": 921.83,
+                                "total": 6683.28,
+                                "policies": [
+                                    {
+                                        "policy_type": {
+                                            "id": "ef6c655c-2cac-45fa-8e1a-4144d7c5e70c",
+                                            "name": "FACTURA_ANUAL"
+                                        },
+                                        "subtotal": 5711.45,
+                                        "taxes": 913.83,
+                                        "total": 6625.28,
+                                        "expedition_rights": 166.67
+                                    },
+                                    {
+                                        "policy_type": {
+                                            "id": "b6bee0c5-15ae-4ad9-8f6e-c7a0ed021103",
+                                            "name": "RCO"
+                                        },
+                                        "subtotal": 50,
+                                        "taxes": 8,
+                                        "total": 58
+                                    }
+                                ],
+                                "expedition_rights": 166.67
+                            },
+                            {
+                                "number": 2,
+                                "net_premium": 5594.78,
+                                "subtotal": 5761.45,
+                                "taxes": 921.83,
+                                "total": 6683.28,
+                                "policies": [
+                                    {
+                                        "policy_type": {
+                                            "id": "ef6c655c-2cac-45fa-8e1a-4144d7c5e70c",
+                                            "name": "FACTURA_ANUAL"
+                                        },
+                                        "subtotal": 5711.45,
+                                        "taxes": 913.83,
+                                        "total": 6625.28,
+                                        "expedition_rights": 166.67
+                                    },
+                                    {
+                                        "policy_type": {
+                                            "id": "b6bee0c5-15ae-4ad9-8f6e-c7a0ed021103",
+                                            "name": "RCO"
+                                        },
+                                        "subtotal": 50,
+                                        "taxes": 8,
+                                        "total": 58
+                                    }
+                                ],
+                                "expedition_rights": 166.67
+                            },
+                            {
+                                "number": 3,
+                                "net_premium": 5594.78,
+                                "subtotal": 5761.45,
+                                "taxes": 921.83,
+                                "total": 6683.28,
+                                "policies": [
+                                    {
+                                        "policy_type": {
+                                            "id": "ef6c655c-2cac-45fa-8e1a-4144d7c5e70c",
+                                            "name": "FACTURA_ANUAL"
+                                        },
+                                        "subtotal": 5711.45,
+                                        "taxes": 913.83,
+                                        "total": 6625.28,
+                                        "expedition_rights": 166.67
+                                    },
+                                    {
+                                        "policy_type": {
+                                            "id": "b6bee0c5-15ae-4ad9-8f6e-c7a0ed021103",
+                                            "name": "RCO"
+                                        },
+                                        "subtotal": 50,
+                                        "taxes": 8,
+                                        "total": 58
+                                    }
+                                ],
+                                "expedition_rights": 166.67
+                            }
+                        ]
+                    },
+                    {
+                        "id": "9fe9eb39-8fe9-4d2d-af8f-39e7dc5e34bc",
+                        "name": "MSI",
+                        "subtotal": 17284.32,
+                        "taxes": 2765.52,
+                        "total": 20049.84,
+                        "net_premium": 16784.34,
+                        "expedition_rights": 499.98,
+                        "payments": [
+                            {
+                                "number": 1,
+                                "net_premium": 2797.39,
+                                "subtotal": 2880.72,
+                                "taxes": 460.92,
+                                "total": 3341.64,
+                                "policies": [
+                                    {
+                                        "policy_type": {
+                                            "id": "ef6c655c-2cac-45fa-8e1a-4144d7c5e70c",
+                                            "name": "FACTURA_ANUAL"
+                                        },
+                                        "subtotal": 2855.72,
+                                        "taxes": 456.92,
+                                        "total": 3312.64,
+                                        "expedition_rights": 83.33
+                                    },
+                                    {
+                                        "policy_type": {
+                                            "id": "b6bee0c5-15ae-4ad9-8f6e-c7a0ed021103",
+                                            "name": "RCO"
+                                        },
+                                        "subtotal": 25,
+                                        "taxes": 4,
+                                        "total": 29
+                                    }
+                                ],
+                                "expedition_rights": 83.33
+                            },
+                            {
+                                "number": 2,
+                                "net_premium": 2797.39,
+                                "subtotal": 2880.72,
+                                "taxes": 460.92,
+                                "total": 3341.64,
+                                "policies": [
+                                    {
+                                        "policy_type": {
+                                            "id": "ef6c655c-2cac-45fa-8e1a-4144d7c5e70c",
+                                            "name": "FACTURA_ANUAL"
+                                        },
+                                        "subtotal": 2855.72,
+                                        "taxes": 456.92,
+                                        "total": 3312.64,
+                                        "expedition_rights": 83.33
+                                    },
+                                    {
+                                        "policy_type": {
+                                            "id": "b6bee0c5-15ae-4ad9-8f6e-c7a0ed021103",
+                                            "name": "RCO"
+                                        },
+                                        "subtotal": 25,
+                                        "taxes": 4,
+                                        "total": 29
+                                    }
+                                ],
+                                "expedition_rights": 83.33
+                            },
+                            {
+                                "number": 3,
+                                "net_premium": 2797.39,
+                                "subtotal": 2880.72,
+                                "taxes": 460.92,
+                                "total": 3341.64,
+                                "policies": [
+                                    {
+                                        "policy_type": {
+                                            "id": "ef6c655c-2cac-45fa-8e1a-4144d7c5e70c",
+                                            "name": "FACTURA_ANUAL"
+                                        },
+                                        "subtotal": 2855.72,
+                                        "taxes": 456.92,
+                                        "total": 3312.64,
+                                        "expedition_rights": 83.33
+                                    },
+                                    {
+                                        "policy_type": {
+                                            "id": "b6bee0c5-15ae-4ad9-8f6e-c7a0ed021103",
+                                            "name": "RCO"
+                                        },
+                                        "subtotal": 25,
+                                        "taxes": 4,
+                                        "total": 29
+                                    }
+                                ],
+                                "expedition_rights": 83.33
+                            },
+                            {
+                                "number": 4,
+                                "net_premium": 2797.39,
+                                "subtotal": 2880.72,
+                                "taxes": 460.92,
+                                "total": 3341.64,
+                                "policies": [
+                                    {
+                                        "policy_type": {
+                                            "id": "ef6c655c-2cac-45fa-8e1a-4144d7c5e70c",
+                                            "name": "FACTURA_ANUAL"
+                                        },
+                                        "subtotal": 2855.72,
+                                        "taxes": 456.92,
+                                        "total": 3312.64,
+                                        "expedition_rights": 83.33
+                                    },
+                                    {
+                                        "policy_type": {
+                                            "id": "b6bee0c5-15ae-4ad9-8f6e-c7a0ed021103",
+                                            "name": "RCO"
+                                        },
+                                        "subtotal": 25,
+                                        "taxes": 4,
+                                        "total": 29
+                                    }
+                                ],
+                                "expedition_rights": 83.33
+                            },
+                            {
+                                "number": 5,
+                                "net_premium": 2797.39,
+                                "subtotal": 2880.72,
+                                "taxes": 460.92,
+                                "total": 3341.64,
+                                "policies": [
+                                    {
+                                        "policy_type": {
+                                            "id": "ef6c655c-2cac-45fa-8e1a-4144d7c5e70c",
+                                            "name": "FACTURA_ANUAL"
+                                        },
+                                        "subtotal": 2855.72,
+                                        "taxes": 456.92,
+                                        "total": 3312.64,
+                                        "expedition_rights": 83.33
+                                    },
+                                    {
+                                        "policy_type": {
+                                            "id": "b6bee0c5-15ae-4ad9-8f6e-c7a0ed021103",
+                                            "name": "RCO"
+                                        },
+                                        "subtotal": 25,
+                                        "taxes": 4,
+                                        "total": 29
+                                    }
+                                ],
+                                "expedition_rights": 83.33
+                            },
+                            {
+                                "number": 6,
+                                "net_premium": 2797.39,
+                                "subtotal": 2880.72,
+                                "taxes": 460.92,
+                                "total": 3341.64,
+                                "policies": [
+                                    {
+                                        "policy_type": {
+                                            "id": "ef6c655c-2cac-45fa-8e1a-4144d7c5e70c",
+                                            "name": "FACTURA_ANUAL"
+                                        },
+                                        "subtotal": 2855.72,
+                                        "taxes": 456.92,
+                                        "total": 3312.64,
+                                        "expedition_rights": 83.33
+                                    },
+                                    {
+                                        "policy_type": {
+                                            "id": "b6bee0c5-15ae-4ad9-8f6e-c7a0ed021103",
+                                            "name": "RCO"
+                                        },
+                                        "subtotal": 25,
+                                        "taxes": 4,
+                                        "total": 29
+                                    }
+                                ],
+                                "expedition_rights": 83.33
+                            }
+                        ]
+                    }
+                ]
+            }
+        ],
+        "region": {
+            "postal_code": "76148",
+            "state": {
+                "code": 22,
+                "name": "Querétaro"
+            }
+        },
+        "validity": {
+            "end": "2025-12-04T16:49:15-06:00",
+            "start": "2025-10-20T16:49:15-06:00"
+        },
+        "vehicle": {
+            "brand": {
+                "name": "acura"
+            },
+            "model": {
+                "name": "adx"
+            },
+            "version": {
+                "code": 222265,
+                "name": "advance, l4, 1.5t, 190 cp, 5 puertas, aut"
+            },
+            "year": {
+                "name": "2025"
+            }
+        }
+    },
+    "status": "success"
+}

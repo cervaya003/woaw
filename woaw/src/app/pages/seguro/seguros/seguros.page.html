@@ -400,27 +400,111 @@
 
           </div>
 
-          <aside class="qp-right" *ngIf="activePlan && getPlanCoverages(activePlan) as covs">
 
+
+
+          <aside class="qp-right" *ngIf="activePlan && getPlanCoverages(activePlan) as covs">
             <header class="qp-right__head">
               <h3>Coberturas incluidas</h3>
               <span class="tiny-pill">Paquete recomendado</span>
             </header>
 
             <ul class="cov-list">
-              <li class="cov-row" *ngFor="let c of covs; trackBy: trackByCov">
+
+              <!-- EXTREP siempre se muestra manualmente -->
+              <li class="cov-row">
                 <div class="left">
-                  <span class="label">{{ c.label }}</span>
+                  <span class="label">Extensión de reparación en agencia</span>
                 </div>
                 <div class="right">
-                  <span class="val" *ngIf="c.amountText; else incT">{{ c.amountText }}</span>
-                  <ng-template #incT><span class="val inc">Incluida</span></ng-template>
-                  <span class="ded" *ngIf="c.deductible != null">· Deducible {{ (c.deductible * 100) | number:'1.0-0'
-                    }}%</span>
+                  <div class="extrep-container">
+                    <span class="val" *ngIf="extrepStatus">{{ getEXTREPAmount() }}</span>
+                    <div class="toggle-switch">
+                      <label class="toggle">
+                        <input type="checkbox" [checked]="extrepStatus" (change)="toggleExtrep()">
+                        <span class="slider">
+                          <span class="slider-text-off">OFF</span>
+                          <span class="slider-text-on">ON</span>
+                        </span>
+                      </label>
+                    </div>
+                  </div>
                 </div>
+              </li>
+
+              <!-- Las demás coberturas del array -->
+              <li class="cov-row" *ngFor="let c of covs">
+                <ng-container *ngIf="hasValidCoverageInfo(c)">
+                  <div class="left">
+                    <span class="label">{{ c.label }}</span>
+                  </div>
+                  <div class="right">
+                    
+                    <!-- Switch para Daños Materiales -->
+                    <div class="deductible-switch" *ngIf="c.label === 'Daños Materiales'">
+                      <div class="deductible-content">
+                        <div class="deductible-info">
+                          <span class="val">{{ getDAMount() }}</span>
+                        </div>
+                        <div class="deductible-controls">
+                          <span class="deductible-label">Deducible:</span>
+                          <div class="deductible-buttons">
+                            <button type="button" class="deductible-option" [class.active]="selectDM_valor === 3"
+                              (click)="selectDeductible(3)">
+                              3%
+                            </button>
+                            <button type="button" class="deductible-option" [class.active]="selectDM_valor === 5"
+                              (click)="selectDeductible(5)">
+                              5%
+                            </button>
+                            <button type="button" class="deductible-option" [class.active]="selectDM_valor === 10"
+                              (click)="selectDeductible(10)">
+                              10%
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Switch para Robo Total -->
+                    <div class="deductible-switch" *ngIf="c.label === 'Robo Total'">
+                      <div class="deductible-content">
+                        <div class="deductible-info">
+                          <span class="val">{{ getRTAmount() }}</span>
+                        </div>
+                        <div class="deductible-controls">
+                          <span class="deductible-label">Deducible:</span>
+                          <div class="deductible-buttons">
+                            <button type="button" class="deductible-option" [class.active]="selectRT_valor === 5"
+                              (click)="selectRTDeductible(5)">
+                              5%
+                            </button>
+                            <button type="button" class="deductible-option" [class.active]="selectRT_valor === 10"
+                              (click)="selectRTDeductible(10)">
+                              10%
+                            </button>
+                            <button type="button" class="deductible-option" [class.active]="selectRT_valor === 15"
+                              (click)="selectRTDeductible(15)">
+                              15%
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Para las demás coberturas normales -->
+                    <div *ngIf="c.label !== 'Daños Materiales' && c.label !== 'Robo Total'">
+                      <span class="val" *ngIf="c.amountText">{{ c.amountText }}</span>
+                      <span class="ded" *ngIf="c.deductible != null">· Deducible {{ (c.deductible * 100) |
+                        number:'1.0-0' }}%</span>
+                    </div>
+                  </div>
+                </ng-container>
               </li>
             </ul>
           </aside>
+
+
 
         </section>
 

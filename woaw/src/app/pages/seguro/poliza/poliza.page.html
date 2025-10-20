@@ -323,7 +323,7 @@
   <app-footer *ngIf="tipoDispocitivo !== 'telefono'"></app-footer>
 </ion-content>
 
-<ion-footer class="safe-footer footer_css_seguros">
+<ion-footer class="safe-footer footer_css_seguros"  *ngIf="tipoDispocitivo === 'telefono'">
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-button fill="clear" (click)="regresarPage()">

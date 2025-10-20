@@ -499,3 +499,41 @@ ion-popover.select-popover[class*="pop-"] {
 .safe-footer ion-toolbar {
   padding-bottom: env(safe-area-inset-bottom);
 }
+
+
+.footer_css_seguros {
+  ion-toolbar {
+    --background: #000;
+    --color: #fff;
+    border-top: none;
+    padding-bottom: env(safe-area-inset-bottom);
+
+    ion-button {
+      --color: #fff;
+      font-weight: 600;
+
+      &.ion-color-danger {
+        --background: #e53935;
+      }
+
+      ion-icon {
+        color: #fff;
+      }
+    }
+  }
+
+  ion-button[color="danger"] {
+    --background: #e53935;
+    --border-radius: 12px;
+    --padding-start: 22px;
+    --padding-end: 22px;
+    --padding-top: 14px;
+    --padding-bottom: 14px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+}
+
+
+
