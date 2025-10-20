@@ -13,6 +13,7 @@
   <div class="split-woaw-seguros" style="--left: 80%; --right: 20%; --gap: 1px;">
 
     <div class="divicion1">
+
       <div class="poliza" *ngIf="isLoggedIn">
         <section class="poliza__card">
 
@@ -21,119 +22,172 @@
               <h1>Crear póliza</h1>
             </div>
 
-            <form [formGroup]="form_poliza" (ngSubmit)="siguiente()">
+            <form [formGroup]="form_poliza">
 
-              <div class="field field-grid">
-                <!-- VIN -->
-                <div>
-                  <label for="vin">
-                    <ion-icon name="car-sport-outline"></ion-icon>
-                    VIN del auto
-                  </label>
-                  <div class="control">
-                    <input id="vin" type="text" class="form-input" placeholder="XX17XFSF" formControlName="vin"
-                      maxlength="17" (input)="onVinInput($event)" />
-                  </div>
-                  <p *ngIf="analizaForm('vin')" class="error">El VIN es obligatorio</p>
-                </div>
+              <ion-grid>
+                <ion-row>
+                  <ion-col size="12" size-md="8">
+                    <div class="field field-grid">
+                      <!-- VIN -->
+                      <div>
+                        <label for="vin">
+                          <ion-icon name="car-sport-outline"></ion-icon>
+                          VIN del auto
+                        </label>
+                        <div class="control">
+                          <input id="vin" type="text" class="form-input" placeholder="XX17XFSF" formControlName="vin"
+                            maxlength="17" (input)="onVinInput($event)" />
+                        </div>
+                        <p *ngIf="analizaForm('vin')" class="error">El VIN es obligatorio</p>
+                      </div>
 
-                <!-- Placas -->
-                <div>
-                  <label for="placas">
-                    <ion-icon name="card-outline"></ion-icon>
-                    Placas del auto
-                  </label>
-                  <div class="toggle-container">
-                    <ion-toggle [(ngModel)]="placasEnTramite" [ngModelOptions]="{ standalone: true }"
-                      (ionChange)="togglePlacasTramite()">
-                    </ion-toggle>
-                    <span>Placas en trámite</span>
-                  </div>
+                      <!-- Placas -->
+                      <div>
+                        <label for="placas">
+                          <ion-icon name="card-outline"></ion-icon>
+                          Placas del auto
+                        </label>
+                        <div class="toggle-container">
+                          <ion-toggle [(ngModel)]="placasEnTramite" [ngModelOptions]="{ standalone: true }"
+                            (ionChange)="togglePlacasTramite()">
+                          </ion-toggle>
+                          <span>Placas en trámite</span>
+                        </div>
 
-                  <div class="control">
-                    <input id="placas" type="text" class="form-input" placeholder="UQTWRBS" formControlName="placas"
-                      maxlength="7" [readonly]="placasEnTramite" (input)="onPlacasInput($event)" />
-                  </div>
-                  <p *ngIf="analizaForm('placas')" class="error">Las placas son obligatorias</p>
-                </div>
+                        <div class="control">
+                          <input id="placas" type="text" class="form-input" placeholder="UQTWRBS"
+                            formControlName="placas" maxlength="7" [readonly]="placasEnTramite"
+                            (input)="onPlacasInput($event)" />
+                        </div>
+                        <p *ngIf="analizaForm('placas')" class="error">Las placas son obligatorias</p>
+                      </div>
 
-                <!-- Color -->
-                <div>
-                  <label for="color">
-                    <ion-icon name="color-palette-outline"></ion-icon>
-                    Color del auto
-                  </label>
-                  <div class="control">
-                    <select id="color" class="form-input" formControlName="color">
-                      <option value="" disabled selected>Selecciona un color</option>
-                      <option *ngFor="let opt of colorOpts" [value]="opt.value">
-                        {{ opt.label }}
-                      </option>
-                    </select>
-                  </div>
-                  <p *ngIf="analizaForm('color')" class="error">
-                    El color es obligatorio
-                  </p>
-                </div>
+                      <!-- Color -->
+                      <div>
+                        <label for="color">
+                          <ion-icon name="color-palette-outline"></ion-icon>
+                          Color del auto
+                        </label>
+                        <div class="control">
+                          <select id="color" class="form-input" formControlName="color">
+                            <option value="" disabled selected>Selecciona un color</option>
+                            <option *ngFor="let opt of colorOpts" [value]="opt.value">
+                              {{ opt.label }}
+                            </option>
+                          </select>
+                        </div>
+                        <p *ngIf="analizaForm('color')" class="error">
+                          El color es obligatorio
+                        </p>
+                      </div>
 
-                <!-- Plan de pago -->
-                <div>
-                  <label for="pago">
-                    <ion-icon name="wallet-outline"></ion-icon>
-                    Selecciona tu plan
-                  </label>
-                  <div class="control">
-                    <ion-select interface="popover" formControlName="pago" placeholder="Elige un plan de pago..."
-                      aria-label="Plan de pago" class="pay-select" [(ngModel)]="selectedPaymentId"
-                      (ionChange)="onSelectPayment($event.detail.value)">
+                      <!-- Plan de pago -->
+                      <div>
+                        <label for="pago">
+                          <ion-icon name="wallet-outline"></ion-icon>
+                          Selecciona tu plan
+                        </label>
+                        <div class="control">
+                          <ion-select interface="popover" formControlName="pago" placeholder="Elige un plan de pago..."
+                            aria-label="Plan de pago" class="pay-select" [(ngModel)]="selectedPaymentId"
+                            (ionChange)="onSelectPayment($event.detail.value)">
 
-                      <ion-select-option *ngFor="let opt of datoscotizacion?.plans?.[0]?.payment_plans"
-                        [value]="opt.id">
-                        {{ paymentPlanLabel(opt) }} — {{ fmtMoney(opt.total) }}
-                      </ion-select-option>
+                            <ion-select-option *ngFor="let opt of datoscotizacion?.plans?.[0]?.payment_plans"
+                              [value]="opt.id">
+                              {{ paymentPlanLabel(opt) }} — {{ fmtMoney(opt.total) }}
+                            </ion-select-option>
 
-                    </ion-select>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Correos dinámicos -->
-              <div class="field field-grid">
-                <label>
-                  <ion-icon name="mail-outline"></ion-icon>
-                  Correos de contacto (opcional)
-                </label>
-
-                <div formArrayName="correos">
-                  <div class="correo-item" *ngFor="let ctrl of correos.controls; let i = index;">
-                    <div class="control">
-                      <input class="form-input" type="email" [formControlName]="i" placeholder="correo@ejemplo.com"
-                        inputmode="email" autocomplete="email" (input)="normalizeCorreo(i)" />
+                          </ion-select>
+                        </div>
+                      </div>
                     </div>
-                    <button type="button" class="btn-ghost danger" (click)="removeCorreo(i)"
-                      aria-label="Eliminar correo">
-                      <ion-icon name="trash"></ion-icon>
-                    </button>
-                    <p *ngIf="ctrl.invalid && (ctrl.dirty || ctrl.touched)" class="error">
-                      {{ getCorreoError(ctrl.errors) }}
-                    </p>
-                  </div>
-                </div>
 
-                <div class="correos-actions">
-                  <button type="button" class="btn-outline" (click)="addCorreo()" [disabled]="!canAddCorreo">
-                    <ion-icon name="add-circle-outline"></ion-icon>
-                    Agregar correo <small *ngIf="correos.length>0">({{correos.length}}/2)</small>
-                  </button>
-                </div>
+                  </ion-col>
 
-                <p *ngIf="correos.hasError('duplicated') && (correos.dirty || correos.touched)" class="error">
-                  No repitas el mismo correo.
-                </p>
-              </div>
+                  <ion-col size="12" size-md="4">
+                    <div class="cal">
+                      <div class="cal__head">
+                        <button class="cal__nav" (click)="calInitOrChange(-1)" [disabled]="!_calCanPrev"
+                          aria-label="Mes anterior">
+                          <ion-icon name="chevron-back-outline"></ion-icon>
+                        </button>
+                        <div class="cal__title">{{ _calHeader }}</div>
+                        <button class="cal__nav" (click)="calInitOrChange(1)" [disabled]="!_calCanNext"
+                          aria-label="Mes siguiente">
+                          <ion-icon name="chevron-forward-outline"></ion-icon>
+                        </button>
+                      </div>
 
-              <!-- CTA -->
-              <div class="paybox__cta">
+                      <div class="cal__grid cal__dow">
+                        <div>Lun</div>
+                        <div>Mar</div>
+                        <div>Mié</div>
+                        <div>Jue</div>
+                        <div>Vie</div>
+                        <div>Sáb</div>
+                        <div>Dom</div>
+                      </div>
+
+                      <div class="cal__grid">
+                        <ng-container *ngFor="let wk of _calWeeks">
+                          <ng-container *ngFor="let c of wk">
+                            <button class="cal__cell" [class.is-outside]="c.outside" [class.is-today]="c.today"
+                              [class.is-selected]="c.selected" [disabled]="c.disabled || !c.date"
+                              (click)="_calPick(c.date)">
+                              <span *ngIf="c.date">{{ c.date | date:'d' }}</span>
+                            </button>
+                          </ng-container>
+                        </ng-container>
+                      </div>
+
+                      <div class="cal__foot" *ngIf="_startDateISO">
+                        <ion-icon name="calendar-outline"></ion-icon>
+                        <span>Inicio: {{ _startDateISO | date:'EEEE d \'de\' MMMM, y':'':'es-MX' }}</span>
+                      </div>
+                    </div>
+
+                    <!-- Correos dinámicos -->
+                    <div class="field field-grid">
+                      <label>
+                        <ion-icon name="mail-outline"></ion-icon>
+                        Correos de contacto (opcional)
+                      </label>
+
+                      <div formArrayName="correos">
+                        <div class="correo-item" *ngFor="let ctrl of correos.controls; let i = index;">
+                          <div class="control">
+                            <input class="form-input" type="email" [formControlName]="i"
+                              placeholder="correo@ejemplo.com" inputmode="email" autocomplete="email"
+                              (input)="normalizeCorreo(i)" />
+                          </div>
+                          <button type="button" class="btn-ghost danger" (click)="removeCorreo(i)"
+                            aria-label="Eliminar correo">
+                            <ion-icon name="trash"></ion-icon>
+                          </button>
+                          <p *ngIf="ctrl.invalid && (ctrl.dirty || ctrl.touched)" class="error">
+                            {{ getCorreoError(ctrl.errors) }}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div class="correos-actions">
+                        <button type="button" class="btn-outline" (click)="addCorreo()" [disabled]="!canAddCorreo">
+                          <ion-icon name="add-circle-outline"></ion-icon>
+                          Agregar correo <small *ngIf="correos.length>0">({{correos.length}}/2)</small>
+                        </button>
+                      </div>
+
+                      <p *ngIf="correos.hasError('duplicated') && (correos.dirty || correos.touched)" class="error">
+                        No repitas el mismo correo.
+                      </p>
+                    </div>
+                  </ion-col>
+
+                </ion-row>
+              </ion-grid>
+
+               <!-- CTA -->
+              <div class="paybox__cta" *ngIf="tipoDispocitivo !== 'telefono'">
                 <button type="button" class="btn-secondary" (click)="regresarPage()">
                   <ion-icon name="arrow-back-outline"></ion-icon>
                   Regresar
@@ -144,6 +198,7 @@
               </div>
 
             </form>
+
           </ng-container>
 
           <ng-container *ngIf="polizaCreada && datosPolizaCreada as d">
@@ -208,14 +263,10 @@
               </ion-grid>
             </section>
           </ng-container>
-
         </section>
       </div>
-      <!-- <app-dynamic-island [refreshKey]="islandKey"></app-dynamic-island> -->
 
-
-
-      <div class="carta-login"  *ngIf="!isLoggedIn">
+      <div class="carta-login" *ngIf="!isLoggedIn">
 
         <div class="contenedor_texto">
           <h2>¡Último paso!</h2>
@@ -256,10 +307,10 @@
       </div>
 
     </div>
-
     <div class="divicion2">
       <app-otros-seguros *ngIf="tipoDispocitivo !== 'telefono'" [refreshKey]="islandKey"></app-otros-seguros>
     </div>
+
   </div>
   <br *ngIf="tipoDispocitivo === 'telefono'">
   <br *ngIf="tipoDispocitivo === 'telefono'">
@@ -271,3 +322,21 @@
 
   <app-footer *ngIf="tipoDispocitivo !== 'telefono'"></app-footer>
 </ion-content>
+
+<ion-footer class="safe-footer footer_css_seguros">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button fill="clear" (click)="regresarPage()">
+        <ion-icon slot="start" name="arrow-back-outline"></ion-icon>
+        Atrás
+      </ion-button>
+    </ion-buttons>
+
+    <ion-buttons slot="end">
+      <ion-button color="danger" fill="solid" type="submit" (click)="siguiente()">
+        Continuar
+        <ion-icon slot="end" name="arrow-forward-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>

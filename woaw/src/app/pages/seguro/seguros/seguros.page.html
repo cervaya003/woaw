@@ -155,7 +155,7 @@
                     <ion-select #lista class="sync-pop" formControlName="version" interface="popover"
                       placeholder="Elige una versión..." aria-label="Versión"
                       [interfaceOptions]="{ cssClass: 'select-popover pop-version', side: 'bottom', alignment: 'start' }"
-                      data-key="version" (ionFocus)="syncPopoverWidths()" >
+                      data-key="version" (ionFocus)="syncPopoverWidths()">
 
                       <ion-select-option [value]="null" disabled>Elige una versión...</ion-select-option>
                       <ion-select-option *ngFor="let v of versions" [value]="v.id">
@@ -216,19 +216,13 @@
 
               <div class="field" *ngIf="currentStep === 4">
 
-                <label for="cp">Código Postal <span>*</span></label>
-                <div class="control">
-                  <input id="cp" type="text" class="form-input" maxlength="5" placeholder="Ej. 76000"
-                    formControlName="cp" />
-                </div>
-
                 <label for="genero" style="margin-top:12px;">Género <span>*</span></label>
                 <div class="control control--select">
 
                   <ion-select #lista class="sync-pop" formControlName="genero" interface="popover"
                     placeholder="Selecciona..." aria-label="Género"
                     [interfaceOptions]="{ cssClass: 'select-popover pop-genero', side: 'bottom', alignment: 'start' }"
-                    data-key="genero" (ionFocus)="syncPopoverWidths()">
+                    data-key="genero" (ionFocus)="syncPopoverWidths()" (ionChange)="checkEnableCP($event)">
 
                     <ion-select-option [value]="null" disabled>Selecciona...</ion-select-option>
                     <ion-select-option *ngFor="let g of generoOpts" [value]="g.value">
@@ -242,12 +236,18 @@
                   <ion-select formControlName="estadoCivil" interface="popover" placeholder="Selecciona..."
                     aria-label="Estado civil"
                     [interfaceOptions]="{ cssClass: 'select-popover pop-estadoCivil', side: 'bottom', alignment: 'start' }"
-                    data-key="estadoCivil" (ionFocus)="syncPopoverWidths()">
+                    data-key="estadoCivil" (ionFocus)="syncPopoverWidths()" (ionChange)="checkEnableCP($event)">
                     <ion-select-option [value]="null" disabled>Selecciona...</ion-select-option>
                     <ion-select-option *ngFor="let e of estadoCivilOpts" [value]="e.value">
                       {{ e.label }}
                     </ion-select-option>
                   </ion-select>
+                </div>
+
+                <label for="cp">Código Postal <span>*</span></label>
+                <div class="control">
+                  <input id="cp" type="text" class="form-input" maxlength="5" placeholder="Ej. 76000"
+                    formControlName="cp" />
                 </div>
 
               </div>
@@ -462,33 +462,35 @@
   <app-footer *ngIf="tipoDispocitivo !== 'telefono'"></app-footer>
 </ion-content>
 
-<ion-footer class="black-footer" [translucent]="false" *ngIf="tipoDispocitivo === 'telefono'">
-  <ion-toolbar class="black-footer__tb">
+<ion-footer class="safe-footer footer_css_seguros" *ngIf="tipoDispocitivo === 'telefono'">
+  <ion-toolbar>
 
-    <div class="footer-buttons" *ngIf="!cotizacion">
-      <ion-button fill="solid" class="btn-secondary" *ngIf="currentStep !== 1" (click)="ClearRegrasar()">
-        &#x2B05;
+    <ion-buttons slot="start">
+      <ion-button fill="clear" *ngIf="currentStep !== 1 && !cotizacion" (click)="ClearRegrasar()">
+        <ion-icon slot="start" name="arrow-back-outline"></ion-icon>
+        Atrás
       </ion-button>
+      <!-- -----  -->
+      <ion-button fill="clear" *ngIf="cotizacion" (click)="nuevoSeguro()">
+        <ion-icon slot="start" name="sync"></ion-icon>
+        Nueva cotización
+      </ion-button>
+    </ion-buttons>
 
-      <ion-button fill="solid" class="btn-primary" (click)="siguiente()" [disabled]="
+    <ion-buttons slot="end">
+      <ion-button color="danger" *ngIf="cotizacion" fill="solid" type="button" (click)="confirmarCrearPersona()">
+        Continuar
+        <ion-icon slot="end" name="arrow-forward-outline"></ion-icon>
+      </ion-button>
+      <ion-button color="danger" *ngIf="!cotizacion" fill="solid" type="button" (click)="siguiente()" [disabled]="
         (currentStep===1 && form.get('marca')?.invalid) ||
-        (currentStep===2 && form.get('modelo')?.invalid) ||
-        (currentStep===3 && form.get('anio')?.invalid) ||
-        (currentStep===4 && form.get('version')?.invalid) ||
-        (currentStep===5 && (form.get('nacDia')?.invalid || form.get('nacMes')?.invalid || form.get('nacAnio')?.invalid)) ||
-        (currentStep===6 && (form.get('cp')?.invalid || form.get('genero')?.invalid || form.get('estadoCivil')?.invalid))
+        (currentStep===2 && (form.get('modelo')?.invalid || form.get('anio')?.invalid || form.get('version')?.invalid)) ||
+        (currentStep===3 && form.get('nacDia')?.invalid || form.get('nacMes')?.invalid || form.get('nacAnio')?.invalid) ||
+        (currentStep===4 && (form.get('cp')?.invalid || form.get('genero')?.invalid || form.get('estadoCivil')?.invalid))
       ">
-        {{ currentStep < 7 ? 'Siguiente' : 'Cotizar' }} &#x27A1; </ion-button>
-    </div>
-
-    <div class="footer-buttons" *ngIf="cotizacion">
-      <ion-button fill="solid" class="btn-secondary" (click)="nuevoSeguro()">
-        Nueva cotización ↻
+        {{ currentStep < 7 ? 'Siguiente' : 'Cotizar' }} <ion-icon slot="end" name="arrow-forward-outline"></ion-icon>
       </ion-button>
-      <ion-button fill="solid" class="btn-primary" (click)="confirmarCrearPersona()">
-        Continuar ➜
-      </ion-button>
-    </div>
+    </ion-buttons>
 
   </ion-toolbar>
 </ion-footer>

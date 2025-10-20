@@ -129,9 +129,22 @@ export class SegurosPage implements OnInit {
     this.buildAniosNacimiento();
     this.cargaimagen();
     this.cargarUltimaCotizacion();
+
   }
   ionViewWillEnter() {
     this.islandKey++;
+  }
+  public checkEnableCP(event: any)  {
+    const genero = this.form.get('genero')?.value;
+    const estadoCivil = this.form.get('estadoCivil')?.value;
+    const cpControl = this.form.get('cp');
+
+    if (genero && estadoCivil) {
+      cpControl?.enable({ emitEvent: false });
+    } else {
+      cpControl?.disable({ emitEvent: false });
+      cpControl?.reset(null, { emitEvent: false });
+    }
   }
   private verificaStorage() {
     const raw = localStorage.getItem('cotizacion');
@@ -259,7 +272,8 @@ export class SegurosPage implements OnInit {
   }
   private ensurePaso4() {
     if (!this.form.get('cp')) {
-      this.form.addControl('cp', this.fb.control(null, [
+      this.form.addControl('cp', this.fb.control(
+        { value: null, disabled: true }, [
         Validators.required,
         Validators.pattern(/^\d{5}$/),
       ]));

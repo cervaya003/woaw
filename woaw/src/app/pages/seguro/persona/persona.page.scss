@@ -332,7 +332,7 @@
 
         p {
             margin: 0;
-            font-size: clamp(8px, 2vw, 13px);
+            font-size: clamp(10px, 2vw, 13px);
             line-height: 1.6;
             color: #000000;
             opacity: 0.95;
@@ -536,12 +536,6 @@ app-dynamic-island {
 }
 
 
-
-
-
-
-
-
 .header-row {
     display: flex;
     align-items: center;
@@ -580,23 +574,6 @@ app-dynamic-island {
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -710,3 +687,12 @@ app-dynamic-island {
         }
     }
 }
+
+
+
+
+
+
+
+
+

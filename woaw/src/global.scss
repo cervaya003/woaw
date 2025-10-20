@@ -494,3 +494,8 @@ ion-popover.select-popover[class*="pop-"] {
     pointer-events: none;
   }
 }
+
+
+.safe-footer ion-toolbar {
+  padding-bottom: env(safe-area-inset-bottom);
+}

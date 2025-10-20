@@ -82,7 +82,9 @@ export class AppComponent {
 
   }
   get mostrarTabs(): boolean {
-    const rutasSinTabs = ['/update-car/', '/new-car', '/usados', '/nuevos', '/seminuevos', '/m-nuevos', '/mis-motos', '/mis-autos', '/seguros/autos', '/seguros/cotiza/', '/seguros/cotizar-manual'];
+    const rutasSinTabs = 
+    ['/update-car/', '/new-car', '/usados', '/nuevos', '/seminuevos', '/m-nuevos', '/seguros/poliza',
+      '/mis-motos', '/mis-autos', '/seguros/autos', '/seguros/cotiza/', '/seguros/cotizar-manual', '/seguros/persona'];
     return (
       this.esDispositivoMovil &&
       !rutasSinTabs.some((r) => this.currentUrl.startsWith(r))

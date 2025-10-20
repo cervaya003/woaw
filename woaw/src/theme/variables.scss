@@ -788,14 +788,50 @@ img.oculta {
     object-fit: cover;
     object-position: 50% 100%;
     display: block;
-    opacity: 0.9;
+    opacity: 1;
   }
 
   .fondo-seguros__overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(120deg, rgba(255, 255, 255, 0.588)  40%, #0000005f 40% 80%);
+    background: linear-gradient(120deg, rgba(255, 255, 255, 0.639) 40%, #0000006e 40% 80%);
     pointer-events: none;
+  }
+}
+
+
+
+.footer_css_seguros {
+  ion-toolbar {
+    --background: #000;
+    --color: #fff;
+    border-top: none;
+    padding-bottom: env(safe-area-inset-bottom);
+
+    ion-button {
+      --color: #fff;
+      font-weight: 600;
+
+      &.ion-color-danger {
+        --background: #e53935;
+      }
+
+      ion-icon {
+        color: #fff;
+      }
+    }
+  }
+
+  ion-button[color="danger"] {
+    --background: #e53935;
+    --border-radius: 12px;
+    --padding-start: 22px;
+    --padding-end: 22px;
+    --padding-top: 14px;
+    --padding-bottom: 14px;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
   }
 }
 
@@ -819,14 +855,20 @@ img.oculta {
 
   ion-button,
   ion-icon,
-  h1, h2, h3, h4, h5, h6,
-  p, span {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p,
+  span {
     color: #ffffff !important;
   }
 
   .card {
     background: #111 !important;
-    border: 1px solid rgba(255,255,255,0.12);
+    border: 1px solid rgba(255, 255, 255, 0.12);
     color: #fff;
   }
 
