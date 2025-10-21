@@ -12,6 +12,7 @@ import { Capacitor } from '@capacitor/core';
 import { Browser } from '@capacitor/browser';
 import { App, URLOpenListenerEvent } from '@capacitor/app';
 import { PluginListenerHandle } from '@capacitor/core';
+import { SignInWithApple } from '@capacitor-community/apple-sign-in';
 
 declare const google: any;
 
@@ -31,6 +32,9 @@ export class LoginComponent implements OnInit, AfterViewInit {
 
   isNative = Capacitor.isNativePlatform();
   deepLink = 'woaw://auth/google';
+  isIOS = Capacitor.getPlatform() === 'ios';
+isAndroid = Capacitor.getPlatform() === 'android';
+loadingApple = false;
 
   private urlListener?: PluginListenerHandle;
   private deepLinkHandled = false;
@@ -116,6 +120,35 @@ export class LoginComponent implements OnInit, AfterViewInit {
       })();
     }
   }
+
+
+// === APPLE: utils ===
+private async sha256Base64Url(input: string): Promise<string> {
+  const enc = new TextEncoder().encode(input);
+  const buf = await crypto.subtle.digest('SHA-256', enc);
+  const bytes = new Uint8Array(buf);
+  let bin = '';
+  bytes.forEach(b => (bin += String.fromCharCode(b)));
+  const b64 = btoa(bin);
+  // base64-url sin padding
+  return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+private genRawNonce(length = 32): string {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let out = '';
+  const array = new Uint8Array(length);
+  crypto.getRandomValues(array);
+  array.forEach(n => (out += chars[n % chars.length]));
+  return out;
+}
+
+
+
+
+
+
+
 
   async ngAfterViewInit(): Promise<void> {
     if (!this.isNative) {
@@ -245,6 +278,58 @@ export class LoginComponent implements OnInit, AfterViewInit {
     const url = this.registroService.getGoogleMobileRedirectUrl(platform);
     await Browser.open({ url });
   }
+  // === APPLE: login ===
+async loginWithApple() {
+  if (!this.isNative || !this.isIOS) return;
+
+  try {
+    this.loadingApple = true;
+    this.generalService.loading('Verificando...');
+
+    // 1) Nonce crudo para backend
+    const rawNonce = this.genRawNonce(32);
+    // 2) Apple requiere nonce SHA-256 en base64url
+    const nonceHashed = await this.sha256Base64Url(rawNonce);
+
+    // 3) Autorizar con Apple (Capacitor iOS)
+   const res: any = await SignInWithApple.authorize({
+  clientId: 'com.woaw.woaw', // tu bundleId (el mismo que en backend)
+  redirectURI: 'https://appleid.apple.com/auth/callback', // solo por tipo, iOS nativo no lo usa
+  scopes: 'FULL_NAME EMAIL',
+  nonce: nonceHashed,
+});
+
+    const idToken: string | undefined = res?.response?.identityToken;
+    if (!idToken) throw new Error('No se recibió id_token de Apple');
+
+    const fullName = {
+      givenName: res?.response?.givenName || null,
+      familyName: res?.response?.familyName || null,
+    };
+
+    // 4) Enviar a tu backend EXACTO como lo espera
+    const r = await this.http
+      .post<{ token: string; user: any }>(
+        `${environment.api_key}/auth/apple/login`,
+        { idToken, platform: 'ios', fullName, rawNonce }
+      )
+      .toPromise();
+
+    this.generalService.loadingDismiss();
+
+    if (!r?.token || !r?.user) throw new Error('Respuesta inválida del backend');
+
+    // 5) Guardar y navegar con tu misma lógica
+    this.saveAndNavigate(r.token, r.user);
+  } catch (e: any) {
+    this.generalService.loadingDismiss();
+    console.error('[Apple Login] error:', e?.message || e);
+    this.generalService.alert('No se pudo iniciar sesión con Apple', e?.message || 'Intenta de nuevo', 'danger');
+  } finally {
+    this.loadingApple = false;
+  }
+}
+
   ngOnDestroy(): void {
     this.urlListener?.remove();
     this.urlListener = undefined;

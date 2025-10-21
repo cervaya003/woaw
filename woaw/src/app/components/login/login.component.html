@@ -3,7 +3,7 @@
   <h1 class="titulo">Inicia sesión</h1>
 
   <form class="login-form" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-
+ 
     <ion-item lines="none" class="input-wrapper">
       <ion-input formControlName="email" type="email" placeholder="Correo">
       </ion-input>
@@ -42,7 +42,23 @@
       <span>Continuar con Google</span>
     </div>
 
+<!-- ios -->
+    <ion-button
+  *ngIf="isNative && isIOS"
+  expand="block"
+  color="dark"
+  (click)="loginWithApple()"
+  [disabled]="loadingApple"
+  class="apple-btn"
+>
+  <ion-icon slot="start" name="logo-apple"></ion-icon>
+  {{ loadingApple ? 'Conectando...' : 'Continuar con Apple' }}
+</ion-button>
+<small *ngIf="isNative && isIOS" class="muted">Disponible en iPhone/iPad (iOS 13+)</small>
+
   </form>
+
+  
 
 </div>
 
