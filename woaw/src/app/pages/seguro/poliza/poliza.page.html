@@ -186,13 +186,13 @@
                 </ion-row>
               </ion-grid>
 
-               <!-- CTA -->
+              <!-- CTA -->
               <div class="paybox__cta" *ngIf="tipoDispocitivo !== 'telefono'">
                 <button type="button" class="btn-secondary" (click)="regresarPage()">
                   <ion-icon name="arrow-back-outline"></ion-icon>
                   Regresar
                 </button>
-                <button type="submit" class="btn-primary">
+                <button type="submit" class="btn-primary" (click)="siguiente()">
                   Siguiente <ion-icon name="arrow-forward-outline"></ion-icon>
                 </button>
               </div>
@@ -323,7 +323,7 @@
   <app-footer *ngIf="tipoDispocitivo !== 'telefono'"></app-footer>
 </ion-content>
 
-<ion-footer class="safe-footer footer_css_seguros"  *ngIf="tipoDispocitivo === 'telefono'">
+<ion-footer class="safe-footer footer_css_seguros" *ngIf="tipoDispocitivo === 'telefono'">
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-button fill="clear" (click)="regresarPage()">

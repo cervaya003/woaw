@@ -83,7 +83,7 @@ export class PolizaPage implements OnInit {
   _calViewMonth = new Date().getMonth(); // 0-11
   _calMin!: Date; // mañana
   _calMax!: Date; // fin del próximo mes
-  _startDateISO: string | null = localStorage.getItem('start_date_override') || null;
+  _startDateISO: string | null = null;
   _calCanPrev = false;
   _calCanNext = true;
   get _calHeader(): string {
@@ -150,7 +150,9 @@ export class PolizaPage implements OnInit {
     this.verificarAuth();
     this.mostrarPresouestaPoliza();
     this.getPosition();
-    this.calInitOrChange()
+    this.calInitOrChange();
+
+    localStorage.removeItem('start_date_override');
   }
 
   async verificarAuth(): Promise<boolean> {
@@ -207,9 +209,16 @@ export class PolizaPage implements OnInit {
     return !!(control && control.invalid && (control.dirty || control.touched));
   }
   siguiente() {
+    if (!this._startDateISO) {
+      this.generalService.alert(
+        'Por favor selecciona una fecha de inicio para tu póliza',
+        'Fecha requerida',
+        'warning'
+      );
+      return;
+    }
     if (this.form_poliza.invalid) {
-      this.form_poliza.markAllAsTouched();
-      console.log('heyyyy ')
+      this.form_poliza.markAllAsTouched()
       return;
     }
     this.mostrarPresouestaPoliza();
@@ -224,9 +233,10 @@ export class PolizaPage implements OnInit {
     //   .toISOString()
     //   .slice(0, 10);
 
-    const start_date = new Date(Date.now() + 24 * 60 * 60 * 1000 - new Date().getTimezoneOffset() * 60000)
+    const start_date = this._startDateISO || new Date(Date.now() + 24 * 60 * 60 * 1000 - new Date().getTimezoneOffset() * 60000)
       .toISOString()
       .slice(0, 10);
+
 
     const receivers = ((this.correos?.value as Array<string | null>) ?? [])
       .filter((v): v is string => !!v && v.trim().length > 0)
@@ -673,10 +683,15 @@ export class PolizaPage implements OnInit {
   // CALENDARIO -----
   public calInitOrChange(dir: -1 | 0 | 1 = 0) {
     const today = new Date();
+
+    // Mañana (fecha mínima)
     const mañana = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
-    const finProx = new Date(today.getFullYear(), today.getMonth() + 2, 0);
+
+    // 8 días a partir de mañana (fecha máxima)
+    const ochoDiasDespues = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 8);
+
     this._calMin = new Date(mañana.getFullYear(), mañana.getMonth(), mañana.getDate());
-    this._calMax = new Date(finProx.getFullYear(), finProx.getMonth(), finProx.getDate());
+    this._calMax = new Date(ochoDiasDespues.getFullYear(), ochoDiasDespues.getMonth(), ochoDiasDespues.getDate());
 
     if (dir !== 0) {
       const y = this._calViewYear, m = this._calViewMonth + dir;
@@ -712,14 +727,16 @@ export class PolizaPage implements OnInit {
         date,
         outside: !inMonth,
         disabled: true,
-        selected: false,
+        selected: false, // Siempre false por defecto
         today: false
       };
       if (date) {
-        const sel = this._startDateISO && iso(date) === this._startDateISO;
-        cell.today = at0(date).getTime() === at0(today).getTime();
-        cell.disabled = !inRange(date);
-        cell.selected = !!sel;
+        const at0Date = at0(date);
+        const at0Today = at0(today);
+
+        cell.today = at0Date.getTime() === at0Today.getTime(); // Marcar como "hoy"
+        cell.disabled = !inRange(date); // Solo habilitado si está en el rango de 8 días
+        cell.selected = false; // Nunca seleccionado por defecto
       }
       cells.push(cell);
     }
@@ -743,9 +760,17 @@ export class PolizaPage implements OnInit {
     this._startDateISO = iso;
     localStorage.setItem('start_date_override', iso);
 
+    // Resetear todas las selecciones primero
     for (const wk of this._calWeeks) {
       for (const c of wk) {
-        if (!c.date) { c.selected = false; continue; }
+        c.selected = false;
+      }
+    }
+
+    // Marcar solo la celda seleccionada
+    for (const wk of this._calWeeks) {
+      for (const c of wk) {
+        if (!c.date) continue;
         const ci = `${c.date.getFullYear()}-${String(c.date.getMonth() + 1).padStart(2, '0')}-${String(c.date.getDate()).padStart(2, '0')}`;
         c.selected = ci === iso;
       }
