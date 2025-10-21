@@ -4,7 +4,6 @@ import { RentaService } from '../../services/renta.service';
 import { GeneralService } from '../../services/general.service';
 import { take } from 'rxjs/operators';
 import { FooterComponent } from '../../components/footer/footer.component';
-
 interface Ventana { inicio: string; fin: string; nota?: string; }
 interface Excepcion { inicio: string; fin: string; motivo?: string; }
 interface Ubicacion { ciudad: string; estado: string; }
@@ -46,7 +45,6 @@ interface Rental {
     vigenciaHasta: string;
     urlPoliza?: string;
   };
-
   politicaCombustible?: string;
   politicaLimpieza?: string;
   propietarioId?: string;
@@ -205,7 +203,6 @@ export class RentaFichaPage implements OnInit {
   cargar(id: string) {
     this.loading = true;
     this.cdr.markForCheck();
-
     this.rentaService.cochePorId(id).pipe(take(1)).subscribe({
       next: (res: any) => {
         const cast: Rental = { ...res };
@@ -213,6 +210,9 @@ export class RentaFichaPage implements OnInit {
         this.galeria = this.buildGaleria(cast);
         this.imagenSeleccionada = this.galeria[0] || null;
         this.fillBlockedFromExcepciones(cast?.excepcionesNoDisponibles || []);
+        const userRaw = localStorage.getItem('user');
+        const user = userRaw ? JSON.parse(userRaw) : null;
+        const rol = user?.rol || user?.role || null;
         this.rentaService.diasNoDisponibles(cast._id)
           .pipe(take(1))
           .subscribe((dias: string[]) => {
@@ -226,7 +226,7 @@ export class RentaFichaPage implements OnInit {
             this.cdr.markForCheck();
           });
 
-        if (this.isLoggedIn) {
+        if (this.isLoggedIn && rol !== 'cliente') {
           this.rentaService.misCoches().pipe(take(1)).subscribe({
             next: (mis) => {
               const idActual = this.obtenerIdActual();
@@ -234,7 +234,6 @@ export class RentaFichaPage implements OnInit {
               const esPorOwnerEnFicha = this.soyPropietarioDeAuto(cast);
               this.esDueno = esPorListado || esPorOwnerEnFicha;
               this.loading = false;
-
               if (this.fechasSeleccionadas.length >= 1) this.calcularTotal();
               this.buildHighlightedRange();
               this.cdr.markForCheck();
@@ -242,7 +241,6 @@ export class RentaFichaPage implements OnInit {
             error: () => {
               this.esDueno = this.soyPropietarioDeAuto(cast);
               this.loading = false;
-
               if (this.fechasSeleccionadas.length >= 1) this.calcularTotal();
               this.buildHighlightedRange();
               this.cdr.markForCheck();
@@ -251,7 +249,6 @@ export class RentaFichaPage implements OnInit {
         } else {
           this.esDueno = this.soyPropietarioDeAuto(cast);
           this.loading = false;
-
           if (this.fechasSeleccionadas.length >= 1) this.calcularTotal();
           this.buildHighlightedRange();
           this.cdr.markForCheck();
@@ -305,6 +302,7 @@ export class RentaFichaPage implements OnInit {
     try { if (window.history.length > 2) return history.back(); } catch { }
     this.router.navigate(['/renta-coches']);
   }
+
   cerrar() { this.volver(); }
 
   cambiarImagen(dir: 'siguiente' | 'anterior') {
