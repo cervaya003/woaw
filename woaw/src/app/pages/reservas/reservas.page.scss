@@ -2,28 +2,19 @@
     --borde: #e5e7eb;
     --bg: #fff;
     --ok: #10b981;
-    /* compat */
     --borde-suave: #e5e7eb;
     --bg-claro: #ffffff;
-
-    /* ====== Tema Negro & Rojo (page-scope) ====== */
     --negro: #0f0f10;
     --negro-2: #161718;
     --rojo: #e11d2f;
-    /* rojo principal */
     --rojo-600: #c81628;
-    /* hover */
     --rojo-700: #a31221;
-    /* pressed */
-
-    /* Mapear tokens Ionic a esta página */
     --ion-color-primary: var(--rojo);
     --ion-color-primary-contrast: #fff;
     --ion-color-danger: var(--rojo);
     --ion-color-dark: var(--negro);
 }
 
-/* Toolbar negro */
 ion-header ion-toolbar[color="dark"] {
     --background: var(--negro);
     --color: #fff;
@@ -31,13 +22,11 @@ ion-header ion-toolbar[color="dark"] {
     --border-color: rgba(255, 255, 255, .08);
 }
 
-/* Header compacto con logo */
 .perfil-header {
     display: flex;
     align-items: center;
     gap: 10px;
     min-width: 0;
-    /* elipsis del título */
 
     .btn-regresar {
         background: transparent;
@@ -71,7 +60,6 @@ ion-header ion-toolbar[color="dark"] {
     }
 }
 
-/* ======= HERO ======= */
 .hero {
     display: flex;
     flex-direction: column;
@@ -119,16 +107,13 @@ ion-header ion-toolbar[color="dark"] {
     }
 }
 
-/* ======= GRID: calendario (izq) | media (der) ======= */
 .grid-cal-img {
     display: grid;
     grid-template-columns: 1fr;
-    /* móvil apilado */
     gap: 16px;
     margin: 0 12px 12px;
 }
 
-/* Dentro del grid, usa sólo el gap para espaciar (sin márgenes propios) */
 .grid-cal-img ion-card {
     margin: 0;
 }
@@ -136,27 +121,21 @@ ion-header ion-toolbar[color="dark"] {
 @media (min-width: 768px) {
     .grid-cal-img {
         grid-template-columns: 1fr 1fr;
-        /* dos columnas iguales */
         align-items: start;
-        /* evita “estirar” la imagen */
     }
 
-    /* Si mueves el Resumen FUERA de .col-media y le pones esta clase, ocupará ambas columnas */
     .grid-cal-img .card-resumen {
         grid-column: 1 / -1;
     }
 }
 
-/* Columna derecha (título+chips+imagen+resumen si lo dejas dentro) */
 .col-media {
     display: flex;
     flex-direction: column;
     gap: 16px;
-    /* separación consistente vertical */
     min-height: 100%;
 }
 
-/* Imagen: card centrada y SIN height 100% */
 .grid-cal-img .card-media {
     display: flex;
     align-items: center;
@@ -166,15 +145,11 @@ ion-header ion-toolbar[color="dark"] {
 .grid-cal-img .card-media img {
     width: 100%;
     height: auto;
-    /* evita crecer por altura del contenedor */
     max-height: clamp(260px, 60vh, 560px);
-    /* límite visual */
     object-fit: contain;
-    /* no recorta */
     display: block;
 }
 
-/* ======= CARDS Y FORM ======= */
 ion-card {
     margin: 12px;
     border: 1px solid var(--borde);
@@ -222,7 +197,6 @@ ion-note[color="danger"] {
     font-size: 12.5px;
 }
 
-/* ======= FECHAS ======= */
 .fechas-grid {
     display: flex;
     justify-content: center;
@@ -231,7 +205,6 @@ ion-note[color="danger"] {
     gap: 8px;
 }
 
-/* Contenedor del calendario (acepta .danger-datetime y compat con .center-item) */
 ion-item.danger-datetime,
 ion-item.center-item.danger-datetime {
     width: auto;
@@ -249,7 +222,6 @@ ion-item.center-item.danger-datetime .input-wrapper {
     justify-content: center;
 }
 
-/* Calendario full width */
 ion-item.danger-datetime ion-datetime,
 ion-item.center-item.danger-datetime ion-datetime {
     max-width: none;
@@ -263,7 +235,6 @@ ion-item.center-item.danger-datetime ion-datetime {
     padding-bottom: 6px;
 }
 
-/* aro rojo suave (cuando hay error/invalid) */
 ion-item.danger-datetime ion-datetime,
 ion-item.center-item.danger-datetime ion-datetime {
 
@@ -273,13 +244,11 @@ ion-item.center-item.danger-datetime ion-datetime {
     }
 }
 
-/* Cabecera del mes */
 ion-item.danger-datetime ion-datetime::part(calendar-month-year),
 ion-item.center-item.danger-datetime ion-datetime::part(calendar-month-year) {
     padding: 8px 10px;
 }
 
-/* Celdas -> barra continua */
 ion-item.danger-datetime ion-datetime::part(calendar-day),
 ion-item.center-item.danger-datetime ion-datetime::part(calendar-day) {
     border-radius: 6px;
@@ -292,7 +261,6 @@ ion-item.center-item.danger-datetime ion-datetime::part(calendar-day):hover {
     box-shadow: inset 0 0 0 2px rgba(0, 0, 0, .06);
 }
 
-/* Día seleccionado (activo) en rojo */
 ion-item.danger-datetime ion-datetime::part(calendar-day-active),
 ion-item.center-item.danger-datetime ion-datetime::part(calendar-day-active) {
     border-radius: 6px;
@@ -301,13 +269,11 @@ ion-item.center-item.danger-datetime ion-datetime::part(calendar-day-active) {
     box-shadow: 0 0 0 2px rgba(225, 29, 47, .18);
 }
 
-/* Rango en rojo tenue */
 ion-item.danger-datetime ion-datetime::part(calendar-day-in-range),
 ion-item.center-item.danger-datetime ion-datetime::part(calendar-day-in-range) {
     background: rgba(225, 29, 47, .10);
 }
 
-/* Inicio/fin del rango */
 ion-item.danger-datetime ion-datetime::part(calendar-day-start),
 ion-item.danger-datetime ion-datetime::part(calendar-day-end),
 ion-item.center-item.danger-datetime ion-datetime::part(calendar-day-start),
@@ -317,7 +283,6 @@ ion-item.center-item.danger-datetime ion-datetime::part(calendar-day-end) {
     box-shadow: 0 0 0 2px rgba(225, 29, 47, .24);
 }
 
-/* Hoy marcado (borde rojo) */
 ion-item.danger-datetime ion-datetime::part(calendar-day-today),
 ion-item.center-item.danger-datetime ion-datetime::part(calendar-day-today) {
     outline: 2px solid rgba(225, 29, 47, .35);
@@ -325,14 +290,12 @@ ion-item.center-item.danger-datetime ion-datetime::part(calendar-day-today) {
     border-radius: 6px;
 }
 
-/* Deshabilitados */
 ion-item.danger-datetime ion-datetime::part(calendar-day-disabled),
 ion-item.center-item.danger-datetime ion-datetime::part(calendar-day-disabled) {
     opacity: .35;
     filter: grayscale(.2);
 }
 
-/* ======= RESUMEN ======= */
 .resumen {
     display: grid;
     grid-template-columns: 1fr auto;
@@ -351,10 +314,8 @@ ion-item.center-item.danger-datetime ion-datetime::part(calendar-day-disabled) {
     }
 }
 
-/* ======= ACTION BAR (sin fondo negro) ======= */
 .action-bar ion-toolbar {
     --background: transparent;
-    /* fuera el fondo negro */
     --border-color: var(--borde);
     --border-style: solid;
     --border-width: 1px 0 0 0;
@@ -383,7 +344,6 @@ ion-item.center-item.danger-datetime ion-datetime::part(calendar-day-disabled) {
     color: var(--negro);
 }
 
-/* Botón reservar en rojo (fuerte) */
 .action-bar ion-button {
     min-width: 150px;
     --background: var(--rojo) !important;
@@ -394,14 +354,12 @@ ion-item.center-item.danger-datetime ion-datetime::part(calendar-day-disabled) {
     --box-shadow: 0 6px 14px rgba(225, 29, 47, .25);
 }
 
-/* Label bajo el calendario (si lo usas) */
 ion-item.center-item ion-label {
     margin-bottom: 6px;
     font-weight: 600;
     color: var(--ion-color-medium);
 }
 
-/* ======= FOCUS (accesible) ======= */
 ion-item:focus-within {
     outline: 2px solid rgba(225, 29, 47, .35);
     border-radius: 10px;
@@ -409,4 +367,13 @@ ion-item:focus-within {
 
 ion-button:focus-visible {
     box-shadow: 0 0 0 3px rgba(225, 29, 47, .35);
+}
+
+:host .grid-cal-img .media-head .titulo {
+    font-weight: 800;
+}
+
+.car-name {
+    color: var(--ion-color-danger);
+    font-weight: 900;
 }

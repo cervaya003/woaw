@@ -9,7 +9,7 @@
         <img src="/assets/icon/logo4.png" alt="WOAW" class="logo" />
 
         <span *ngIf="coche" class="titulo-perfil">
-          Reservar — {{ coche.marca }} {{ coche.modelo }} {{ coche.anio }}
+          Reservar — {{ coche.marca }} {{ coche.modelo }}
         </span>
       </div>
     </ion-buttons>
@@ -24,6 +24,24 @@
 
 <ion-content [fullscreen]="true">
   <section class="grid-cal-img" *ngIf="coche">
+    <div class="col-media">
+      <div class="media-head">
+        <h1 class="titulo truncate">{{ coche?.marca }} <span class="car-name">{{ coche?.modelo }}</span></h1>
+        <div class="chips">
+          <ion-badge color="danger">
+            {{ (coche?.precio?.porDia ?? coche?.precioPorDia) | currency:(coche?.precio?.moneda || 'MXN'):'symbol'
+            }}/día
+          </ion-badge>
+          <ion-badge color="dark">{{ coche?.ubicacion?.ciudad || '—' }}</ion-badge>
+          <ion-badge color="danger" *ngIf="coche?.minDias">mín. {{ coche?.minDias }} día(s)</ion-badge>
+        </div>
+      </div>
+
+      <ion-card class="card-media">
+        <img [src]="coche?.imagenPrincipalUrl || coche?.imagenPrincipal || '/assets/placeholder-car.jpg'" alt="Auto" />
+      </ion-card>
+    </div>
+
     <ion-card class="card-fechas">
       <ion-card-header>
         <ion-card-title>Datos de la reserva</ion-card-title>
@@ -63,24 +81,6 @@
         </form>
       </ion-card-content>
     </ion-card>
-
-    <div class="col-media">
-      <div class="media-head">
-        <h1 class="titulo truncate">{{ coche?.marca }} {{ coche?.modelo }}</h1>
-        <div class="chips">
-          <ion-badge color="danger">
-            {{ (coche?.precio?.porDia ?? coche?.precioPorDia) | currency:(coche?.precio?.moneda || 'MXN'):'symbol'
-            }}/día
-          </ion-badge>
-          <ion-badge color="dark">{{ coche?.ubicacion?.ciudad || '—' }}</ion-badge>
-          <ion-badge color="danger" *ngIf="coche?.minDias">mín. {{ coche?.minDias }} día(s)</ion-badge>
-        </div>
-      </div>
-
-      <ion-card class="card-media">
-        <img [src]="coche?.imagenPrincipalUrl || coche?.imagenPrincipal || '/assets/placeholder-car.jpg'" alt="Auto" />
-      </ion-card>
-    </div>
 
     <ion-card class="card-resumen">
       <ion-card-header>
