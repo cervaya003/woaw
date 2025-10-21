@@ -5,7 +5,6 @@ import { RentaService } from '../../services/renta.service';
 
 type EstadoRenta = 'disponible' | 'inactivo';
 type Preset = 'none' | 'week' | 'month' | 'weekdays';
-
 interface ExcepcionNoDisponible {
   inicio: string; // ISO
   fin: string;    // ISO
@@ -47,13 +46,16 @@ export class DisponibilidadCarPage implements OnInit {
     { label: 'Sábado', value: 6 },
     { label: 'Domingo', value: 0 },
   ];
-
+  isWeekdayMenuOpen = false;
+  weekdayMenuEvent: any = null;
   blockedWeekdays: Set<number> = new Set();
   cargando = false;
   guardando = false;
   private currentUserId: string | null = null;
   private lastSnapshot = '';
   private backupExcepciones: ExcepcionNoDisponible[] = [];
+  private backupBlockedWeekdays: number[] = [];
+  private backupActivePreset: Preset = 'none';
 
   constructor(
     private route: ActivatedRoute,
@@ -74,7 +76,6 @@ export class DisponibilidadCarPage implements OnInit {
   private async loadCar() {
     this.cargando = true; this.cdr.markForCheck();
     const loading = await this.loading('Cargando vehículo…');
-
     this.rentaService.cochePorId(this.carId).subscribe({
       next: async (car) => {
         await loading.dismiss(); this.cargando = false;
@@ -499,27 +500,25 @@ export class DisponibilidadCarPage implements OnInit {
     return out;
   }
 
-  /* ==== NUEVO: limpiar sin confirm y permitir DESHACER ==== */
   async clearExcepciones() {
     if (!this.esPropietario) return;
 
-    // backup para deshacer
     this.backupExcepciones = [...this.excepciones];
-
-    // limpia directo
+    this.backupBlockedWeekdays = Array.from(this.blockedWeekdays);
+    this.backupActivePreset = this.activePreset;
     this.excepciones = [];
+    this.blockedWeekdays.clear();     // << deselecciona los chips
     this.activePreset = 'none';
+    this.resetSelection();            // opcional: limpia selección del calendario
     this.rebuildCalendarHighlights();
     this.recalcularErrores();
     this.cdr.markForCheck();
-
-    // toast con acción de deshacer
     await this.showUndoToast();
   }
 
   private async showUndoToast() {
     const t = await this.toastCtrl.create({
-      message: 'Excepciones limpiadas',
+      message: 'Calendario limpiado',
       duration: 4000,
       color: 'dark',
       buttons: [
@@ -529,6 +528,8 @@ export class DisponibilidadCarPage implements OnInit {
           text: 'Deshacer',
           handler: () => {
             this.excepciones = [...this.backupExcepciones];
+            this.blockedWeekdays = new Set(this.backupBlockedWeekdays); // << restaura chips
+            this.activePreset = this.backupActivePreset;
             this.rebuildCalendarHighlights();
             this.recalcularErrores();
             this.cdr.markForCheck();
@@ -553,9 +554,29 @@ export class DisponibilidadCarPage implements OnInit {
     return `${y}-${m}-${day}`;
   }
 
-
-
   get hasChanges(): boolean {
     return this.snapshotKey() !== this.lastSnapshot;
+  }
+
+  get mainImage(): string | null {
+    const c = this.coche;
+    if (!c) return null;
+
+    if (typeof c.imagenPrincipal === 'string' && c.imagenPrincipal.trim()) {
+      return c.imagenPrincipal.trim();
+    }
+
+    if (Array.isArray(c.imagenes) && c.imagenes.length) {
+      const first = c.imagenes.find((x: any) => typeof x === 'string' && x.trim());
+      if (first) return first.trim();
+    }
+
+    return null;
+  }
+  
+  openWeekdayMenu(ev: Event) {
+    if (!this.esPropietario) return;
+    this.weekdayMenuEvent = ev;
+    this.isWeekdayMenuOpen = true;
   }
 }
