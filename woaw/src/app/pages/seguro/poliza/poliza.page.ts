@@ -76,6 +76,22 @@ export class PolizaPage implements OnInit {
     { value: 'dorado', label: 'Dorado' },
   ];
 
+
+  // CALENDARIO -----
+  _calWeeks: Array<Array<{ date: Date | null; disabled: boolean; outside: boolean; selected: boolean; today: boolean }>> = [];
+  _calViewYear = new Date().getFullYear();
+  _calViewMonth = new Date().getMonth(); // 0-11
+  _calMin!: Date; // mañana
+  _calMax!: Date; // fin del próximo mes
+  _startDateISO: string | null = null;
+  _calCanPrev = false;
+  _calCanNext = true;
+  get _calHeader(): string {
+    const d = new Date(this._calViewYear, this._calViewMonth, 1);
+    return new Intl.DateTimeFormat('es-MX', { month: 'long', year: 'numeric' }).format(d);
+  }
+  // ------ 
+
   constructor(
     private menu: MenuController,
     public generalService: GeneralService,
@@ -134,6 +150,9 @@ export class PolizaPage implements OnInit {
     this.verificarAuth();
     this.mostrarPresouestaPoliza();
     this.getPosition();
+    this.calInitOrChange();
+
+    localStorage.removeItem('start_date_override');
   }
 
   async verificarAuth(): Promise<boolean> {
@@ -190,9 +209,16 @@ export class PolizaPage implements OnInit {
     return !!(control && control.invalid && (control.dirty || control.touched));
   }
   siguiente() {
+    if (!this._startDateISO) {
+      this.generalService.alert(
+        'Por favor selecciona una fecha de inicio para tu póliza',
+        'Fecha requerida',
+        'warning'
+      );
+      return;
+    }
     if (this.form_poliza.invalid) {
-      this.form_poliza.markAllAsTouched();
-      console.log('heyyyy ')
+      this.form_poliza.markAllAsTouched()
       return;
     }
     this.mostrarPresouestaPoliza();
@@ -207,9 +233,10 @@ export class PolizaPage implements OnInit {
     //   .toISOString()
     //   .slice(0, 10);
 
-    const start_date = new Date(Date.now() + 24 * 60 * 60 * 1000 - new Date().getTimezoneOffset() * 60000)
+    const start_date = this._startDateISO || new Date(Date.now() + 24 * 60 * 60 * 1000 - new Date().getTimezoneOffset() * 60000)
       .toISOString()
       .slice(0, 10);
+
 
     const receivers = ((this.correos?.value as Array<string | null>) ?? [])
       .filter((v): v is string => !!v && v.trim().length > 0)
@@ -652,6 +679,104 @@ export class PolizaPage implements OnInit {
       localStorage.removeItem(tipo);
     }
   }
+
+  // CALENDARIO -----
+  public calInitOrChange(dir: -1 | 0 | 1 = 0) {
+    const today = new Date();
+
+    // Mañana (fecha mínima)
+    const mañana = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
+
+    // 8 días a partir de mañana (fecha máxima)
+    const ochoDiasDespues = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 8);
+
+    this._calMin = new Date(mañana.getFullYear(), mañana.getMonth(), mañana.getDate());
+    this._calMax = new Date(ochoDiasDespues.getFullYear(), ochoDiasDespues.getMonth(), ochoDiasDespues.getDate());
+
+    if (dir !== 0) {
+      const y = this._calViewYear, m = this._calViewMonth + dir;
+      const nuevo = new Date(y, m, 1);
+      const minYM = { y: this._calMin.getFullYear(), m: this._calMin.getMonth() };
+      const maxYM = { y: this._calMax.getFullYear(), m: this._calMax.getMonth() };
+      const viewYM = { y: nuevo.getFullYear(), m: nuevo.getMonth() };
+      const cmpPrev = (a: any, b: any) => (a.y !== b.y ? a.y - b.y : a.m - b.m);
+      if (cmpPrev(viewYM, minYM) < 0 || cmpPrev(viewYM, maxYM) > 0) {
+        // fuera de rango: ignora
+      } else {
+        this._calViewYear = nuevo.getFullYear();
+        this._calViewMonth = nuevo.getMonth();
+      }
+    }
+
+    const first = new Date(this._calViewYear, this._calViewMonth, 1);
+    const startWeekday = ((first.getDay() + 6) % 7); // L=0..D=6
+    const daysInMonth = new Date(this._calViewYear, this._calViewMonth + 1, 0).getDate();
+    const totalCells = Math.ceil((startWeekday + daysInMonth) / 7) * 7;
+
+    const weeks: typeof this._calWeeks = [];
+    const cells: any[] = [];
+    const at0 = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    const inRange = (d: Date) => at0(d).getTime() >= at0(this._calMin).getTime() && at0(d).getTime() <= at0(this._calMax).getTime();
+    const iso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
+    for (let i = 0; i < totalCells; i++) {
+      const dayNum = i - startWeekday + 1;
+      const inMonth = dayNum >= 1 && dayNum <= daysInMonth;
+      const date = inMonth ? new Date(this._calViewYear, this._calViewMonth, dayNum) : null;
+      const cell = {
+        date,
+        outside: !inMonth,
+        disabled: true,
+        selected: false, // Siempre false por defecto
+        today: false
+      };
+      if (date) {
+        const at0Date = at0(date);
+        const at0Today = at0(today);
+
+        cell.today = at0Date.getTime() === at0Today.getTime(); // Marcar como "hoy"
+        cell.disabled = !inRange(date); // Solo habilitado si está en el rango de 8 días
+        cell.selected = false; // Nunca seleccionado por defecto
+      }
+      cells.push(cell);
+    }
+    for (let i = 0; i < cells.length; i += 7) weeks.push(cells.slice(i, i + 7));
+    this._calWeeks = weeks;
+
+    const minYM = { y: this._calMin.getFullYear(), m: this._calMin.getMonth() };
+    const maxYM = { y: this._calMax.getFullYear(), m: this._calMax.getMonth() };
+    const viewYM = { y: this._calViewYear, m: this._calViewMonth };
+    const cmp = (a: any, b: any) => (a.y !== b.y ? a.y - b.y : a.m - b.m);
+    this._calCanPrev = cmp(viewYM, minYM) > 0;
+    this._calCanNext = cmp(viewYM, maxYM) < 0;
+  }
+  public _calPick(d: Date | null) {
+    if (!d) return;
+    const at0 = (x: Date) => new Date(x.getFullYear(), x.getMonth(), x.getDate());
+    const inRange = (x: Date) => at0(x).getTime() >= at0(this._calMin).getTime() && at0(x).getTime() <= at0(this._calMax).getTime();
+    if (!inRange(d)) return;
+
+    const iso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    this._startDateISO = iso;
+    localStorage.setItem('start_date_override', iso);
+
+    // Resetear todas las selecciones primero
+    for (const wk of this._calWeeks) {
+      for (const c of wk) {
+        c.selected = false;
+      }
+    }
+
+    // Marcar solo la celda seleccionada
+    for (const wk of this._calWeeks) {
+      for (const c of wk) {
+        if (!c.date) continue;
+        const ci = `${c.date.getFullYear()}-${String(c.date.getMonth() + 1).padStart(2, '0')}-${String(c.date.getDate()).padStart(2, '0')}`;
+        c.selected = ci === iso;
+      }
+    }
+  }
+
 }
 
 function resolvePolicyId(

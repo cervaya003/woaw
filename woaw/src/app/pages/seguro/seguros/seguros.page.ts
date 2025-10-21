@@ -30,6 +30,14 @@ export class SegurosPage implements OnInit {
   currentStep = 1;
   islandKey = 0;
 
+  public selectDM_valor: number = 5;
+  public selectDM_status: boolean = false;
+
+  public selectRT_valor: number = 10;
+  public selectRT_status: boolean = false;
+
+  public extrepStatus: boolean = false;
+
   // --- propiedades auxiliares ---
   marcas: Array<{ id: number; name: string }> = [];
   opciones: Array<{ key: string; nombre: string; imageUrl: string | null }> = [];
@@ -96,7 +104,7 @@ export class SegurosPage implements OnInit {
       DM: 'Daños Materiales',
       AL: 'Asistencia Legal',
       AV: 'Asistencia Vial',
-      RT: 'Robo Total'
+      RT: 'Robo Total',
     };
     return m[code] ?? code;
   }
@@ -133,8 +141,40 @@ export class SegurosPage implements OnInit {
   ionViewWillEnter() {
     this.islandKey++;
   }
+  public checkEnableCP(event: any) {
+    const genero = this.form.get('genero')?.value;
+    const estadoCivil = this.form.get('estadoCivil')?.value;
+    const cpControl = this.form.get('cp');
+
+    if (genero && estadoCivil) {
+      cpControl?.enable({ emitEvent: false });
+    } else {
+      cpControl?.disable({ emitEvent: false });
+      cpControl?.reset(null, { emitEvent: false });
+    }
+  }
   private verificaStorage() {
     const raw = localStorage.getItem('cotizacion');
+    const datosCocheStorage = localStorage.getItem('datosCoche');
+    if (datosCocheStorage) {
+      try {
+        const datos = JSON.parse(datosCocheStorage);
+        console.log(datos)
+
+        if (datos.DM !== undefined) {
+          this.selectDM_valor = datos.DM;
+        }
+        if (datos.RT !== undefined) {
+          this.selectRT_valor = datos.RT;
+        }
+        if (datos.EXTREP !== undefined) {
+          this.extrepStatus = datos.EXTREP;
+        }
+      } catch (error) {
+        console.error('Error al cargar datos del coche:', error);
+      }
+    }
+
     if (!raw) {
       this.getMarcas_cohes();
       this.obtenerMarcas();
@@ -259,7 +299,8 @@ export class SegurosPage implements OnInit {
   }
   private ensurePaso4() {
     if (!this.form.get('cp')) {
-      this.form.addControl('cp', this.fb.control(null, [
+      this.form.addControl('cp', this.fb.control(
+        { value: null, disabled: true }, [
         Validators.required,
         Validators.pattern(/^\d{5}$/),
       ]));
@@ -329,27 +370,11 @@ export class SegurosPage implements OnInit {
 
       this.currentStep = 5;
       return;
-
     }
 
     // 5 -> finalizar (cotizar)
     if (this.currentStep === 5) {
-      const payload = {
-        marcaId: Number(this.form.get('marca')?.value),
-        modeloId: Number(this.form.get('modelo')?.value),
-        anio: Number(this.form.get('anio')?.value),
-        versionId: Number(this.form.get('version')?.value),
-        nacimiento: {
-          dia: Number(this.form.get('nacDia')?.value),
-          mes: Number(this.form.get('nacMes')?.value),
-          anio: Number(this.form.get('nacAnio')?.value),
-        },
-        cp: String(this.form.get('cp')?.value),
-        genero: String(this.form.get('genero')?.value),
-        estadoCivil: String(this.form.get('estadoCivil')?.value),
-        // duracionMeses: Number(this.form.get('duracion')?.value),
-      };
-      this.HacerCotizacion(this.buildCotizacionDTO(payload));
+      this.HacerCotizacion(this.buildCotizacionDTO());
       return;
     }
 
@@ -429,60 +454,7 @@ export class SegurosPage implements OnInit {
     // redondeo a 2 decimales para evitar gaps por subpíxeles
     return Math.round(pct * 100) / 100;
   }
-  buildCotizacionDTO(payload: {
-    marcaId: number;
-    modeloId: number;
-    anio: number;
-    versionId: number;
-    nacimiento: { dia: number; mes: number; anio: number; };
-    cp: string;
-    genero: string;
-    estadoCivil: string;
-  }) {
-    const pad2 = (n: number) => String(n).padStart(2, '0');
 
-    const genderMap: Record<string, number> = { hombre: 1, mujer: 2 };
-    const civilMap: Record<string, number> = { soltero: 1, casado: 2, divorciado: 4 };
-
-    const gender_code = genderMap[(payload.genero || '').toLowerCase()] ?? null;
-    const civil_status_code = civilMap[(payload.estadoCivil || '').toLowerCase()] ?? null;
-
-    const birthdate = `${payload.nacimiento.anio}-${pad2(payload.nacimiento.mes)}-${pad2(payload.nacimiento.dia)}`;
-
-    const dto = {
-      vehicle: {
-        version: { code: Number(payload.versionId) }
-      },
-      region: {
-        postal_code: String(payload.cp)
-      },
-      person: {
-        gender_code,
-        birthdate,
-        civil_status_code
-      },
-      duration: 12
-    };
-
-    const datosCoche = {
-      marca: this.getMarcaLabel(),
-      marcaId: payload.marcaId,
-      modelo: this.getModeloLabel(),
-      modeloId: payload.modeloId,
-      version: this.getVersionLabel(),
-      versionId: payload.versionId,
-      anio: payload.anio,
-      cp: payload.cp,
-      genero: payload.genero,
-      estadoCivil: payload.estadoCivil,
-      nacimiento: payload.nacimiento,
-      gender_code,
-      civil_status_code,
-      birthdate
-    };
-    localStorage.setItem('datosCoche', JSON.stringify(datosCoche));
-    return dto;
-  }
   nuevoSeguro() {
     this.generalService.confirmarAccion(
       '¿Estás seguro en cotizar un nuevo coche?',
@@ -984,9 +956,6 @@ export class SegurosPage implements OnInit {
   }
 
 
-
-
-
   public onModeloSeleccionado(event: any) {
     const modeloId: number = event.detail.value;
     if (modeloId) {
@@ -1006,5 +975,223 @@ export class SegurosPage implements OnInit {
     } else {
       this.form.get('version')?.disable({ emitEvent: false });
     }
+  }
+
+
+  // ----- Cotizador dinamico -----
+  public selectDeductible(n: number) {
+    this.mostrar_spinnet = true;
+    this.selectDM_status = true;
+    this.selectDM_valor = n;
+    setTimeout(() => {
+      this.HacerCotizacion(this.buildCotizacionDTO());
+    }, 1000);
+  }
+  hasValidCoverageInfo(c: any): boolean {
+    if (c.label === 'Daños Materiales' || c.label === 'Robo Total') {
+      return true;
+    }
+
+    return !!(c.amountText || c.deductible != null);
+  }
+  public selectRTDeductible(n: number) {
+    this.mostrar_spinnet = true;
+    this.selectRT_status = true;
+    this.selectRT_valor = n;
+    setTimeout(() => {
+      this.HacerCotizacion(this.buildCotizacionDTO());
+    }, 1000);
+  }
+  public toggleExtrep() {
+    this.extrepStatus = !this.extrepStatus;
+    this.mostrar_spinnet = true;
+    setTimeout(() => {
+      this.HacerCotizacion(this.buildCotizacionDTO());
+    }, 1000);
+  }
+
+
+  private buildCotizacionDTO() {
+    const pad2 = (n: number) => String(n).padStart(2, '0');
+
+    const genderMap: Record<string, number> = { hombre: 1, mujer: 2 };
+    const civilMap: Record<string, number> = { soltero: 1, casado: 2, divorciado: 4 };
+
+    // Verificar si existen datos en localStorage
+    const datosCocheStorage = localStorage.getItem('datosCoche');
+    let marcaId, modeloId, anio, versionId, genero, estadoCivil, cp, nacimiento, gender_code, civil_status_code, birthdate;
+
+    let datosCoche: any = {};
+
+    if (datosCocheStorage) {
+      // Usar datos del localStorage como base
+      datosCoche = JSON.parse(datosCocheStorage);
+      marcaId = datosCoche.marcaId;
+      modeloId = datosCoche.modeloId;
+      anio = datosCoche.anio;
+      versionId = datosCoche.versionId;
+      genero = datosCoche.genero;
+      estadoCivil = datosCoche.estadoCivil;
+      cp = datosCoche.cp;
+      nacimiento = datosCoche.nacimiento;
+      gender_code = datosCoche.gender_code;
+      civil_status_code = datosCoche.civil_status_code;
+      birthdate = datosCoche.birthdate;
+    } else {
+      // Obtener valores directamente del formulario
+      marcaId = Number(this.form.get('marca')?.value);
+      modeloId = Number(this.form.get('modelo')?.value);
+      anio = Number(this.form.get('anio')?.value);
+      versionId = Number(this.form.get('version')?.value);
+      genero = String(this.form.get('genero')?.value);
+      estadoCivil = String(this.form.get('estadoCivil')?.value);
+      cp = String(this.form.get('cp')?.value);
+
+      nacimiento = {
+        dia: Number(this.form.get('nacDia')?.value),
+        mes: Number(this.form.get('nacMes')?.value),
+        anio: Number(this.form.get('nacAnio')?.value),
+      };
+
+      gender_code = genderMap[(genero || '').toLowerCase()] ?? null;
+      civil_status_code = civilMap[(estadoCivil || '').toLowerCase()] ?? null;
+      birthdate = `${nacimiento.anio}-${pad2(nacimiento.mes)}-${pad2(nacimiento.dia)}`;
+
+      datosCoche = {
+        marca: this.getMarcaLabel(),
+        marcaId: marcaId,
+        modelo: this.getModeloLabel(),
+        modeloId: modeloId,
+        version: this.getVersionLabel(),
+        versionId: versionId,
+        anio: anio,
+        cp: cp,
+        genero: genero,
+        estadoCivil: estadoCivil,
+        nacimiento: nacimiento,
+        gender_code,
+        civil_status_code,
+        birthdate,
+      };
+    }
+
+    datosCoche.EXTREP = this.extrepStatus;
+    datosCoche.DM = this.selectDM_valor;
+    datosCoche.RT = this.selectRT_valor;
+
+    localStorage.setItem('datosCoche', JSON.stringify(datosCoche));
+
+    const coveragesArray: any[] = [
+      {
+        coverage_type: {
+          name: "DM"
+        },
+        deductible: this.selectDM_valor / 100
+      },
+      {
+        coverage_type: {
+          name: "RT"
+        },
+        deductible: this.selectRT_valor / 100
+      },
+      {
+        coverage_type: {
+          name: "AV"
+        },
+        sum_assured: 200000
+      },
+      {
+        coverage_type: {
+          name: "AL"
+        },
+        sum_assured: 200000
+      },
+      {
+        coverage_type: {
+          name: "GM"
+        },
+        sum_assured: 200000
+      },
+      {
+        coverage_type: {
+          name: "RCBP"
+        },
+        sum_assured: 3000000
+      },
+      {
+        coverage_type: {
+          name: "PEXT"
+        }
+      }
+    ];
+
+    // Solo agregar EXTREP si está activo
+    if (this.extrepStatus) {
+      coveragesArray.push({
+        coverage_type: {
+          name: "EXTREP"
+        }
+      });
+    }
+
+    const dto: any = {
+      vehicle: {
+        version: { code: Number(versionId) }
+      },
+      region: {
+        postal_code: String(cp)
+      },
+      person: {
+        gender_code,
+        birthdate,
+        civil_status_code
+      },
+      plans: [
+        {
+          name: "Plan Personalizado",
+          policies: [{
+            coverages: coveragesArray
+          }]
+        }
+      ],
+      duration: 12
+    };
+
+    return dto;
+  }
+
+  getDAMount(): string {
+    if (!this.quote || !this.quote.plans || !this.quote.plans[0]) return '';
+
+    const plan = this.quote.plans[0];
+    if (!plan.policies || !plan.policies[0] || !plan.policies[0].coverages) return '';
+
+    const daCoverage = plan.policies[0].coverages.find((c: any) =>
+      c.coverage_type?.name === 'DM' || c.coverage_type?.name === 'DAÑOS MATERIALES'
+    );
+    return daCoverage?.premium ? this.fmtMoney(daCoverage.premium) : '';
+  }
+
+  getRTAmount(): string {
+    if (!this.quote || !this.quote.plans || !this.quote.plans[0]) return '';
+
+    const plan = this.quote.plans[0];
+    if (!plan.policies || !plan.policies[0] || !plan.policies[0].coverages) return '';
+
+    const rtCoverage = plan.policies[0].coverages.find((c: any) =>
+      c.coverage_type?.name === 'RT' || c.coverage_type?.name === 'ROBO TOTAL'
+    );
+    return rtCoverage?.premium ? this.fmtMoney(rtCoverage.premium) : '';
+  }
+  getEXTREPAmount(): string {
+    if (!this.quote || !this.quote.plans || !this.quote.plans[0]) return '';
+
+    const plan = this.quote.plans[0];
+    if (!plan.policies || !plan.policies[0] || !plan.policies[0].coverages) return '';
+
+    const extrepCoverage = plan.policies[0].coverages.find((c: any) =>
+      c.coverage_type?.name === 'EXTREP' || c.coverage_type?.name === 'EXTENSION REPARACION'
+    );
+    return extrepCoverage?.premium ? this.fmtMoney(extrepCoverage.premium) : '';
   }
 }

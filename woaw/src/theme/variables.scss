@@ -788,18 +788,16 @@ img.oculta {
     object-fit: cover;
     object-position: 50% 100%;
     display: block;
-    opacity: 0.9;
+    opacity: 1;
   }
 
   .fondo-seguros__overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(120deg, rgba(255, 255, 255, 0.588)  40%, #0000005f 40% 80%);
+    background: linear-gradient(120deg, rgba(255, 255, 255, 0.639) 40%, #0000006e 40% 80%);
     pointer-events: none;
   }
 }
-
-
 
 
 
@@ -819,14 +817,20 @@ img.oculta {
 
   ion-button,
   ion-icon,
-  h1, h2, h3, h4, h5, h6,
-  p, span {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p,
+  span {
     color: #ffffff !important;
   }
 
   .card {
     background: #111 !important;
-    border: 1px solid rgba(255,255,255,0.12);
+    border: 1px solid rgba(255, 255, 255, 0.12);
     color: #fff;
   }
 

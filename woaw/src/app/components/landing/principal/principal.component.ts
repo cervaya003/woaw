@@ -52,10 +52,10 @@ export class PrincipalComponent implements OnInit {
     this.generalService.dispositivo$.subscribe((tipo) => {
       this.esDispositivoMovil = tipo === 'telefono' || tipo === 'tablet';
     });
-    this.getCarsNews();
-    this.getCarsSeminuevos();
-    this.getCarsUsados();
-    this.getMotos();
+    // this.getCarsNews();
+    // this.getCarsSeminuevos();
+    // this.getCarsUsados();
+    // this.getMotos();
     this.cargaimagen(); 
   }
 

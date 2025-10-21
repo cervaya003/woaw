@@ -1,0 +1,78 @@
+{
+    "vehicle": {
+        "version": {
+            "code": 127
+        }
+    },
+    "person": {
+        "birthdate": "2007-10-20",
+        "civil_status_code": 1,
+        "gender_code": 0
+    },
+    "region": {
+        "postal_code": "76148"
+    },
+    "duration": 12,
+    "plans": [
+        {
+            "name": "Plan Personalizado",
+            "policies": [
+                {
+                    "coverages": [
+                        {
+                            "coverage_type": {
+                                "name": "RT"
+                            },
+                            "deductible": 0.1
+                        },
+                        {
+                            "coverage_type": {
+                                "name": "DM"
+                            },
+                            "deductible": 0.05
+                        },
+                        {
+                            "coverage_type": {
+                                "name": "AV"
+                            },
+                            "sum_assured": 200000
+                        },
+                        {
+                            "coverage_type": {
+                                "name": "AL"
+                            },
+                            "sum_assured": 200000
+                        },
+                        {
+                            "coverage_type": {
+                                "name": "GM"
+                            },
+                            "sum_assured": 200000
+                        },
+                        {
+                            "coverage_type": {
+                                "name": "RCBP"
+                            },
+                            "sum_assured": 3000000
+                        },
+                        {
+                            "coverage_type": {
+                                "name": "PEXT"
+                            }
+                        },
+                        {
+                            "coverage_type": {
+                                "name": "EXTREP"
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "use_type_code": "particular"
+}
+
+
+
+

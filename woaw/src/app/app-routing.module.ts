@@ -34,6 +34,7 @@ const routes: Routes = [
         path: "seguros",
         redirectTo: "seguros/disponibles",
         pathMatch: "full",
+        data: { title: "seguros | woaw" },
       },
       {
         path: "nuevos",
@@ -41,7 +42,7 @@ const routes: Routes = [
           import("./pages/coches/nuevos/nuevos.module").then(
             (m) => m.NuevosPageModule
           ),
-        data: { title: "Autos nuevos arrenda y compra | woaw" },
+        data: { title: "Autos nuevos | woaw" },
       },
       {
         path: "seminuevos",
@@ -49,7 +50,15 @@ const routes: Routes = [
           import("./pages/coches/seminuevos/seminuevos.module").then(
             (m) => m.SeminuevosPageModule
           ),
-        data: { title: "Autos seminuevos compra y venta | woaw" },
+        data: { title: "Autos seminuevos | woaw" },
+      },
+      {
+        path: "usados",
+        loadChildren: () =>
+          import("./pages/coches/usados/usados.module").then(
+            (m) => m.UsadosPageModule
+          ),
+        data: { title: "Autos usados | woaw" },
       },
       {
         path: "favoritos",
@@ -74,14 +83,6 @@ const routes: Routes = [
         loadChildren: () =>
           import("./pages/ficha/ficha.module").then((m) => m.FichaPageModule),
         data: { title: "Detalle del vehículo | woaw" },
-      },
-      {
-        path: "usados",
-        loadChildren: () =>
-          import("./pages/coches/usados/usados.module").then(
-            (m) => m.UsadosPageModule
-          ),
-        data: { title: "Autos usados compra y venta | woaw" },
       },
       {
         path: "mis-autos",
