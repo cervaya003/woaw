@@ -43,7 +43,7 @@
           <ion-segment-button value="todos">
             <ion-label>Todos ({{ totalTodos }})</ion-label>
           </ion-segment-button>
-          <ion-segment-button value="mios" *ngIf="isLoggedIn">
+          <ion-segment-button value="mios" *ngIf="isLoggedIn && userRol !== 'cliente'">
             <ion-label>Mis coches ({{ totalMios }})</ion-label>
           </ion-segment-button>
         </ion-segment>
@@ -223,7 +223,7 @@
 <ion-modal [isOpen]="modalFechasOpen" (didDismiss)="closeModalFechas()" class="modal-calendario" mode="md">
   <ng-template>
     <ion-header translucent="true">
-      <ion-toolbar> 
+      <ion-toolbar>
         <ion-title>Disponibilidad</ion-title>
         <ion-buttons slot="end">
           <ion-button color="danger" (click)="closeModalFechas()" aria-label="Cerrar">
@@ -248,7 +248,7 @@
     </ion-content>
 
     <ion-footer>
-      <ion-toolbar> 
+      <ion-toolbar>
         <ion-buttons slot="start">
           <ion-button fill="outline" color="danger" (click)="limpiarTemp()">Limpiar</ion-button>
         </ion-buttons>
