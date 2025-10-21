@@ -80,9 +80,9 @@ export class PolizaPage implements OnInit {
   // CALENDARIO -----
   _calWeeks: Array<Array<{ date: Date | null; disabled: boolean; outside: boolean; selected: boolean; today: boolean }>> = [];
   _calViewYear = new Date().getFullYear();
-  _calViewMonth = new Date().getMonth(); // 0-11
-  _calMin!: Date; // mañana
-  _calMax!: Date; // fin del próximo mes
+  _calViewMonth = new Date().getMonth();
+  _calMin!: Date;
+  _calMax!: Date;
   _startDateISO: string | null = null;
   _calCanPrev = false;
   _calCanNext = true;
@@ -229,14 +229,20 @@ export class PolizaPage implements OnInit {
     const idPlanEspesifico = this.datoscotizacion.plans?.[0].payment_plans?.[pos].id;
     const idPlan = this.datoscotizacion.plans[0]?.id;
 
-    // const start_date = new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
-    //   .toISOString()
-    //   .slice(0, 10);
+    const getNextDayISO = (isoDate?: string): string => {
+      if (isoDate && /^\d{4}-\d{2}-\d{2}$/.test(isoDate)) {
+        const [y, m, d] = isoDate.split('-').map(Number);
+        const dt = new Date(y, m - 1, d);
+        dt.setDate(dt.getDate() + 1);
+        return dt.toISOString().slice(0, 10);
+      }
 
-    const start_date = this._startDateISO || new Date(Date.now() + 24 * 60 * 60 * 1000 - new Date().getTimezoneOffset() * 60000)
-      .toISOString()
-      .slice(0, 10);
+      const now = new Date();
+      now.setDate(now.getDate() + 1);
+      return now.toISOString().slice(0, 10);
+    };
 
+    const start_date = getNextDayISO(this._startDateISO);
 
     const receivers = ((this.correos?.value as Array<string | null>) ?? [])
       .filter((v): v is string => !!v && v.trim().length > 0)
@@ -451,13 +457,17 @@ export class PolizaPage implements OnInit {
       '¿Estás seguro en cotizar un nuevo coche?',
       'Salir de proceso',
       async () => {
+        this.islandKey++;
         localStorage.removeItem('datosCoche');
         localStorage.removeItem('cotizacion');
         localStorage.removeItem('datosPolizaVin_Respuesta');
         localStorage.removeItem('datosPolizaVin');
+
+        localStorage.removeItem('posicionSeleccionada');
+        localStorage.removeItem('UsuarioRespuesta')
         this.polizaCreada = false;
-        this.islandKey++;
         this.router.navigate(['/seguros/autos']);
+        window.location.reload();
       }
     );
   }
@@ -684,13 +694,13 @@ export class PolizaPage implements OnInit {
   public calInitOrChange(dir: -1 | 0 | 1 = 0) {
     const today = new Date();
 
-    // Mañana (fecha mínima)
-    const mañana = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
+    // Fecha mínima: HOY
+    const fechaMinima = new Date(today.getFullYear(), today.getMonth(), today.getDate());
 
-    // 8 días a partir de mañana (fecha máxima)
-    const ochoDiasDespues = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 8);
+    // 8 días a partir de hoy (fecha máxima)
+    const ochoDiasDespues = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 4);
 
-    this._calMin = new Date(mañana.getFullYear(), mañana.getMonth(), mañana.getDate());
+    this._calMin = new Date(fechaMinima.getFullYear(), fechaMinima.getMonth(), fechaMinima.getDate());
     this._calMax = new Date(ochoDiasDespues.getFullYear(), ochoDiasDespues.getMonth(), ochoDiasDespues.getDate());
 
     if (dir !== 0) {
@@ -719,29 +729,44 @@ export class PolizaPage implements OnInit {
     const inRange = (d: Date) => at0(d).getTime() >= at0(this._calMin).getTime() && at0(d).getTime() <= at0(this._calMax).getTime();
     const iso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
+    // Fecha de HOY para selección automática (en lugar de mañana)
+    const fechaHoy = at0(today);
+
     for (let i = 0; i < totalCells; i++) {
       const dayNum = i - startWeekday + 1;
       const inMonth = dayNum >= 1 && dayNum <= daysInMonth;
       const date = inMonth ? new Date(this._calViewYear, this._calViewMonth, dayNum) : null;
+
       const cell = {
         date,
         outside: !inMonth,
         disabled: true,
-        selected: false, // Siempre false por defecto
+        selected: false,
         today: false
       };
+
       if (date) {
         const at0Date = at0(date);
         const at0Today = at0(today);
 
-        cell.today = at0Date.getTime() === at0Today.getTime(); // Marcar como "hoy"
-        cell.disabled = !inRange(date); // Solo habilitado si está en el rango de 8 días
-        cell.selected = false; // Nunca seleccionado por defecto
+        cell.today = at0Date.getTime() === at0Today.getTime();
+        cell.disabled = !inRange(date);
+
+        // SELECCIÓN AUTOMÁTICA: Marcar como seleccionado si es la fecha de HOY
+        cell.selected = at0Date.getTime() === fechaHoy.getTime();
       }
+
       cells.push(cell);
     }
+
     for (let i = 0; i < cells.length; i += 7) weeks.push(cells.slice(i, i + 7));
     this._calWeeks = weeks;
+
+    // Establecer la fecha de inicio ISO como HOY
+    if (!this._startDateISO) {
+      this._startDateISO = iso(fechaHoy);
+      localStorage.setItem('start_date_override', this._startDateISO);
+    }
 
     const minYM = { y: this._calMin.getFullYear(), m: this._calMin.getMonth() };
     const maxYM = { y: this._calMax.getFullYear(), m: this._calMax.getMonth() };
@@ -803,3 +828,4 @@ function resolvePolicyId(
 
   return coPolicies[0]?.policy_id ?? null;
 }
+

@@ -12,11 +12,11 @@ export const environment = {
   public_key: 'b419fcf4-2a3a-4d69-b731-81cefc2a7bb0',
 
   // ----- Prueba -----
-  // crabi_branchId: 'ded09658-50cd-4637-8390-31a8f39fe9a1',
-  // crabi_status: 'prueba',
+  crabi_branchId: 'ded09658-50cd-4637-8390-31a8f39fe9a1',
+  crabi_status: 'prueba',
   // ----- Praducion -----
-  crabi_branchId: 'e283bb8b-28d8-4445-a5e7-80036981841d',
-  crabi_status: 'production',
+  // crabi_branchId: 'e283bb8b-28d8-4445-a5e7-80036981841d',
+  // crabi_status: 'production',
   // ----- -----
 
   telefonoFijo: '+524427706776', // Telefono secundario de joel

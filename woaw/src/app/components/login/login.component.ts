@@ -166,7 +166,6 @@ export class LoginComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    this.generalService.loading('Verificando...');
     const { email, password } = this.loginForm.value;
 
     this.registroService.login({ email, password }).subscribe({
@@ -194,7 +193,6 @@ export class LoginComponent implements OnInit, AfterViewInit {
   }
 
   procesarLoginGoogle(idToken: string) {
-    this.generalService.loading('Verificando...');
     this.registroService.loginConGoogle(idToken).subscribe({
       next: (res: any) => {
         this.generalService.loadingDismiss();

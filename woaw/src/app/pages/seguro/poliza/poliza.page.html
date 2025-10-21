@@ -31,8 +31,7 @@
                       <!-- VIN -->
                       <div>
                         <label for="vin">
-                          <ion-icon name="car-sport-outline"></ion-icon>
-                          VIN del auto
+                          VIN del auto <span>*</span>
                         </label>
                         <div class="control">
                           <input id="vin" type="text" class="form-input" placeholder="XX17XFSF" formControlName="vin"
@@ -44,8 +43,7 @@
                       <!-- Placas -->
                       <div>
                         <label for="placas">
-                          <ion-icon name="card-outline"></ion-icon>
-                          Placas del auto
+                          Placas del auto <span>*</span>
                         </label>
                         <div class="toggle-container">
                           <ion-toggle [(ngModel)]="placasEnTramite" [ngModelOptions]="{ standalone: true }"
@@ -65,8 +63,7 @@
                       <!-- Color -->
                       <div>
                         <label for="color">
-                          <ion-icon name="color-palette-outline"></ion-icon>
-                          Color del auto
+                          Color del auto <span>*</span>
                         </label>
                         <div class="control">
                           <select id="color" class="form-input" formControlName="color">
@@ -84,8 +81,7 @@
                       <!-- Plan de pago -->
                       <div>
                         <label for="pago">
-                          <ion-icon name="wallet-outline"></ion-icon>
-                          Selecciona tu plan
+                          Selecciona tu plan <span>*</span>
                         </label>
                         <div class="control">
                           <ion-select interface="popover" formControlName="pago" placeholder="Elige un plan de pago..."

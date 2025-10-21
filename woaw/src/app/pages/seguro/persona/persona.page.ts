@@ -412,7 +412,6 @@ export class PersonaPage implements OnInit {
       basePerson.legal_representative = this.form_poliza.get('nmRepLegal')?.value;
     }
     const payload = { person: basePerson };
-    // localStorage.setItem('datosUsuario', JSON.stringify(payload));
     this.enviarDatosCrearPersona(payload);
   }
   private toISODate(input: any): string | null {

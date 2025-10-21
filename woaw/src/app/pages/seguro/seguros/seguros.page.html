@@ -244,7 +244,7 @@
                   </ion-select>
                 </div>
 
-                <label for="cp">Código Postal <span>*</span></label>
+                <label for="cp" style="margin-top:12px;">Código Postal <span>*</span></label>
                 <div class="control">
                   <input id="cp" type="text" class="form-input" maxlength="5" placeholder="Ej. 76000"
                     formControlName="cp" />
@@ -343,28 +343,61 @@
               </header>
 
               <div class="price" *ngIf="getSelectedPayment(p) as sel">
-                <ng-container *ngIf="paymentSummary(sel) as s">
-                  <div class="price__total">{{ fmtMoney(s.total) }}</div>
-                  <div class="price__note" *ngIf="s.isOneShot">Pago único</div>
-                  <div class="price__note" *ngIf="!s.isOneShot && s.variable">1er pago {{ fmtMoney(s.first) }} · {{
-                    s.restCount }} pagos de {{ fmtMoney(s.rest) }}</div>
-                  <div class="price__note" *ngIf="!s.isOneShot && !s.variable">{{ s.count }} pagos de {{ fmtMoney(s.per)
-                    }}</div>
-                </ng-container>
+                <!-- parte 1 -->
+                <div class="price__info">
+                  <ng-container *ngIf="paymentSummary(sel) as s">
+                    <div class="price__total">{{ fmtMoney(s.total) }}</div>
+                    <div class="price__note" *ngIf="s.isOneShot">Pago único</div>
+                    <div class="price__note" *ngIf="!s.isOneShot && s.variable">
+                      1er pago <strong>{{ fmtMoney(s.first) }}</strong> <br> {{ s.restCount }} pagos de <strong>{{
+                        fmtMoney(s.rest) }}</strong>
+                    </div>
+                    <div class="price__note" *ngIf="!s.isOneShot && !s.variable">
+                      {{ s.count }} pagos de <strong>{{ fmtMoney(s.per) }}</strong>
+                    </div>
+                  </ng-container>
+                </div>
+
+                <!-- parte 2 -->
+                <div class="input_cupon">
+                  <div class="field ">
+                    <!-- <label for="paySel">Plan de pago</label> -->
+                    <div class="control control--select" style="margin-top: -15px;">
+                      <ion-select #lista class="sync-pop" id="paySel" [(ngModel)]="selectedPaymentByPlan[p.id]"
+                        (ionChange)="onSelectPayment(p.id)" interface="popover" placeholder="Elige un plan…"
+                        aria-label="Plan de pago">
+                        <ion-select-option *ngFor="let opt of p.payment_plans; trackBy: trackByPayment"
+                          [value]="opt.id">
+                          {{ paymentPlanLabel(opt) }} — {{ fmtMoney(opt.total) }}
+                        </ion-select-option>
+                      </ion-select>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <div class="divider"></div>
 
               <!-- Selector de plan -->
               <div class="plan-picker">
-                <label for="paySel">Plan de pago</label>
-                <ion-select id="paySel" class="pay__select" [(ngModel)]="selectedPaymentByPlan[p.id]"
-                  (ionChange)="onSelectPayment(p.id)" interface="popover" placeholder="Elige un plan…"
-                  aria-label="Plan de pago">
-                  <ion-select-option *ngFor="let opt of p.payment_plans; trackBy: trackByPayment" [value]="opt.id">
-                    {{ paymentPlanLabel(opt) }} — {{ fmtMoney(opt.total) }}
-                  </ion-select-option>
-                </ion-select>
+
+                <div class="input_cupon">
+                  <div class="field">
+                    <div class="control">
+
+                      <input id="cupon" type="text" class="form-input" placeholder="Ingresa tu cupón"
+                        [(ngModel)]="cupon" maxlength="20" (input)="validarCupon()" [class.invalid]="cuponInvalido" />
+                      <button class="btn_seearch_cupon" type="button" (click)="aplicarCupon()">
+                        Aplicar
+                      </button>
+
+                    </div>
+                    <div *ngIf="cuponInvalido" class="error_messages">
+                      <small class="error">{{ mensajeErrorCupon }}</small>
+                    </div>
+                  </div>
+                </div>
+
               </div>
 
               <!-- Desglose compacto -->
@@ -399,9 +432,6 @@
             </article>
 
           </div>
-
-
-
 
           <aside class="qp-right" *ngIf="activePlan && getPlanCoverages(activePlan) as covs">
             <header class="qp-right__head">
@@ -439,7 +469,7 @@
                     <span class="label">{{ c.label }}</span>
                   </div>
                   <div class="right">
-                    
+
                     <!-- Switch para Daños Materiales -->
                     <div class="deductible-switch" *ngIf="c.label === 'Daños Materiales'">
                       <div class="deductible-content">
@@ -503,8 +533,6 @@
               </li>
             </ul>
           </aside>
-
-
 
         </section>
 

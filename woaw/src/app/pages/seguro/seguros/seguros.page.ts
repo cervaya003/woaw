@@ -32,11 +32,13 @@ export class SegurosPage implements OnInit {
 
   public selectDM_valor: number = 5;
   public selectDM_status: boolean = false;
-
   public selectRT_valor: number = 10;
   public selectRT_status: boolean = false;
+  public extrepStatus: true | false | null = null;
 
-  public extrepStatus: boolean = false;
+  public cupon: string = '';
+  cuponInvalido: boolean = false;
+  mensajeErrorCupon: string = '';
 
   // --- propiedades auxiliares ---
   marcas: Array<{ id: number; name: string }> = [];
@@ -454,7 +456,6 @@ export class SegurosPage implements OnInit {
     // redondeo a 2 decimales para evitar gaps por subpíxeles
     return Math.round(pct * 100) / 100;
   }
-
   nuevoSeguro() {
     this.generalService.confirmarAccion(
       '¿Estás seguro en cotizar un nuevo coche?',
@@ -464,6 +465,8 @@ export class SegurosPage implements OnInit {
         this.guardarHistorialCotizacion();
         this.getMarcas_cohes();
         this.obtenerMarcas();
+
+        this.extrepStatus = null;
 
         this.cotizacion = false;
         this.quote = null;
@@ -552,12 +555,17 @@ export class SegurosPage implements OnInit {
     else localStorage.removeItem(historyKey);
   }
   public restaurarOIntercambiarCotizacion() {
-    this.swapKey('datosCoche', 'historialDatosCoche');
-    this.swapKey('cotizacion', 'historialCotizacion');
-    this.cargarUltimaCotizacion();
+    this.generalService.confirmarAccion(
+      '¿Quieres usar esta cotización?',
+      'Cotización anterior',
+      async () => {
 
-    console.log('🔁 Intercambio realizado entre actual ↔ historial.');
-    window.location.reload();
+        this.swapKey('datosCoche', 'historialDatosCoche');
+        this.swapKey('cotizacion', 'historialCotizacion');
+        this.cargarUltimaCotizacion();
+        window.location.reload();
+      }
+    )
   }
 
   // ---------- COTIZACION ----------
@@ -594,9 +602,18 @@ export class SegurosPage implements OnInit {
       },
       error: (err) => {
         this.mostrar_spinnet = false;
-        console.error('Error al cotizar:', err)
+        console.error('Error al cotizar:', err);
+        this.mostrarAlertaError(err);
       }
     });
+  }
+  private mostrarAlertaError(err: any) {
+    const errorMessage = err?.error?.error || 'Error en la cotización';
+    this.generalService.alert(
+      'Error',
+      errorMessage,
+      'danger'
+    );
   }
   public onSelectPayment(planId: string) {
     if (!this.quote?.plans?.length) return;
@@ -979,6 +996,13 @@ export class SegurosPage implements OnInit {
 
 
   // ----- Cotizador dinamico -----
+  hasValidCoverageInfo(c: any): boolean {
+    if (c.label === 'Daños Materiales' || c.label === 'Robo Total') {
+      return true;
+    }
+
+    return !!(c.amountText || c.deductible != null);
+  }
   public selectDeductible(n: number) {
     this.mostrar_spinnet = true;
     this.selectDM_status = true;
@@ -986,13 +1010,6 @@ export class SegurosPage implements OnInit {
     setTimeout(() => {
       this.HacerCotizacion(this.buildCotizacionDTO());
     }, 1000);
-  }
-  hasValidCoverageInfo(c: any): boolean {
-    if (c.label === 'Daños Materiales' || c.label === 'Robo Total') {
-      return true;
-    }
-
-    return !!(c.amountText || c.deductible != null);
   }
   public selectRTDeductible(n: number) {
     this.mostrar_spinnet = true;
@@ -1003,59 +1020,84 @@ export class SegurosPage implements OnInit {
     }, 1000);
   }
   public toggleExtrep() {
-    this.extrepStatus = !this.extrepStatus;
+    if (this.extrepStatus === true) {
+      this.extrepStatus = false
+    } else if (this.extrepStatus === false) {
+      this.extrepStatus = true
+    }
     this.mostrar_spinnet = true;
     setTimeout(() => {
       this.HacerCotizacion(this.buildCotizacionDTO());
     }, 1000);
   }
+  validarCupon() {
+    if (!this.cupon) {
+      this.cuponInvalido = false;
+      this.mensajeErrorCupon = '';
+      return;
+    }
 
-
+    if (this.cupon.length < 5) {
+      this.cuponInvalido = true;
+      this.mensajeErrorCupon = 'El cupón debe tener al menos 5 caracteres';
+    } else if (this.cupon.length > 20) {
+      this.cuponInvalido = true;
+      this.mensajeErrorCupon = 'El cupón no puede tener más de 20 caracteres';
+    } else if (!/^[A-Za-z0-9\-_]+$/.test(this.cupon)) {
+      this.cuponInvalido = true;
+      this.mensajeErrorCupon = 'Solo se permiten letras, números, guiones y guiones bajos';
+    } else {
+      this.cuponInvalido = false;
+      this.mensajeErrorCupon = '';
+    }
+  }
+  aplicarCupon() {
+    if (this.cupon.trim()) {
+      this.cupon = this.cupon;
+      this.HacerCotizacion(this.buildCotizacionDTO());
+    } else {
+      this.generalService.alert(
+        'Ingresa tu Cupón',
+        'Ingresa tu cupon para aplicarlo',
+        'warning'
+      );
+    }
+  }
   private buildCotizacionDTO() {
+    const datosCoche = this.obtenerDatosCoche();
+    const dto = this.construirDTO(datosCoche);
+    return dto;
+  }
+  private obtenerDatosCoche() {
     const pad2 = (n: number) => String(n).padStart(2, '0');
-
     const genderMap: Record<string, number> = { hombre: 1, mujer: 2 };
     const civilMap: Record<string, number> = { soltero: 1, casado: 2, divorciado: 4 };
 
     // Verificar si existen datos en localStorage
     const datosCocheStorage = localStorage.getItem('datosCoche');
-    let marcaId, modeloId, anio, versionId, genero, estadoCivil, cp, nacimiento, gender_code, civil_status_code, birthdate;
-
     let datosCoche: any = {};
 
     if (datosCocheStorage) {
-      // Usar datos del localStorage como base
       datosCoche = JSON.parse(datosCocheStorage);
-      marcaId = datosCoche.marcaId;
-      modeloId = datosCoche.modeloId;
-      anio = datosCoche.anio;
-      versionId = datosCoche.versionId;
-      genero = datosCoche.genero;
-      estadoCivil = datosCoche.estadoCivil;
-      cp = datosCoche.cp;
-      nacimiento = datosCoche.nacimiento;
-      gender_code = datosCoche.gender_code;
-      civil_status_code = datosCoche.civil_status_code;
-      birthdate = datosCoche.birthdate;
     } else {
       // Obtener valores directamente del formulario
-      marcaId = Number(this.form.get('marca')?.value);
-      modeloId = Number(this.form.get('modelo')?.value);
-      anio = Number(this.form.get('anio')?.value);
-      versionId = Number(this.form.get('version')?.value);
-      genero = String(this.form.get('genero')?.value);
-      estadoCivil = String(this.form.get('estadoCivil')?.value);
-      cp = String(this.form.get('cp')?.value);
+      const marcaId = Number(this.form.get('marca')?.value);
+      const modeloId = Number(this.form.get('modelo')?.value);
+      const anio = Number(this.form.get('anio')?.value);
+      const versionId = Number(this.form.get('version')?.value);
+      const genero = String(this.form.get('genero')?.value);
+      const estadoCivil = String(this.form.get('estadoCivil')?.value);
+      const cp = String(this.form.get('cp')?.value);
 
-      nacimiento = {
+      const nacimiento = {
         dia: Number(this.form.get('nacDia')?.value),
         mes: Number(this.form.get('nacMes')?.value),
         anio: Number(this.form.get('nacAnio')?.value),
       };
 
-      gender_code = genderMap[(genero || '').toLowerCase()] ?? null;
-      civil_status_code = civilMap[(estadoCivil || '').toLowerCase()] ?? null;
-      birthdate = `${nacimiento.anio}-${pad2(nacimiento.mes)}-${pad2(nacimiento.dia)}`;
+      const gender_code = genderMap[(genero || '').toLowerCase()] ?? null;
+      const civil_status_code = civilMap[(estadoCivil || '').toLowerCase()] ?? null;
+      const birthdate = `${nacimiento.anio}-${pad2(nacimiento.mes)}-${pad2(nacimiento.dia)}`;
 
       datosCoche = {
         marca: this.getMarcaLabel(),
@@ -1071,80 +1113,74 @@ export class SegurosPage implements OnInit {
         nacimiento: nacimiento,
         gender_code,
         civil_status_code,
-        birthdate,
+        birthdate
       };
     }
 
+    // Agregar datos adicionales
     datosCoche.EXTREP = this.extrepStatus;
     datosCoche.DM = this.selectDM_valor;
     datosCoche.RT = this.selectRT_valor;
+    datosCoche.coupon = this.cupon
 
     localStorage.setItem('datosCoche', JSON.stringify(datosCoche));
-
+    return datosCoche;
+  }
+  private construirDTO(datosCoche: any) {
     const coveragesArray: any[] = [
       {
-        coverage_type: {
-          name: "DM"
-        },
-        deductible: this.selectDM_valor / 100
+        coverage_type: { name: "DM" },
+        deductible: datosCoche.DM / 100
       },
       {
-        coverage_type: {
-          name: "RT"
-        },
-        deductible: this.selectRT_valor / 100
+        coverage_type: { name: "RT" },
+        deductible: datosCoche.RT / 100
       },
       {
-        coverage_type: {
-          name: "AV"
-        },
+        coverage_type: { name: "AV" },
         sum_assured: 200000
       },
       {
-        coverage_type: {
-          name: "AL"
-        },
+        coverage_type: { name: "AL" },
         sum_assured: 200000
       },
       {
-        coverage_type: {
-          name: "GM"
-        },
+        coverage_type: { name: "GM" },
         sum_assured: 200000
       },
       {
-        coverage_type: {
-          name: "RCBP"
-        },
+        coverage_type: { name: "RCBP" },
         sum_assured: 3000000
       },
       {
-        coverage_type: {
-          name: "PEXT"
-        }
+        coverage_type: { name: "PEXT" }
       }
     ];
 
-    // Solo agregar EXTREP si está activo
-    if (this.extrepStatus) {
+    if (datosCoche.anio >= 2021 && this.extrepStatus === null) {
+      this.extrepStatus = true;
       coveragesArray.push({
-        coverage_type: {
-          name: "EXTREP"
-        }
+        coverage_type: { name: "EXTREP" }
+      });
+    }
+
+    if (datosCoche.EXTREP) {
+      coveragesArray.push({
+        coverage_type: { name: "EXTREP" }
       });
     }
 
     const dto: any = {
       vehicle: {
-        version: { code: Number(versionId) }
+        version: { code: Number(datosCoche.versionId) }
       },
       region: {
-        postal_code: String(cp)
+        postal_code: String(datosCoche.cp)
       },
       person: {
-        gender_code,
-        birthdate,
-        civil_status_code
+        gender_code: datosCoche.gender_code,
+        birthdate: datosCoche.birthdate,
+        civil_status_code: datosCoche.civil_status_code
       },
       plans: [
         {
@@ -1157,9 +1193,14 @@ export class SegurosPage implements OnInit {
       duration: 12
     };
 
+    if (this.cupon && this.cupon.trim()) {
+      dto.coupon = this.cupon.trim();
+    }
+
     return dto;
   }
 
+  // --------- 
   getDAMount(): string {
     if (!this.quote || !this.quote.plans || !this.quote.plans[0]) return '';
 
@@ -1171,7 +1212,6 @@ export class SegurosPage implements OnInit {
     );
     return daCoverage?.premium ? this.fmtMoney(daCoverage.premium) : '';
   }
-
   getRTAmount(): string {
     if (!this.quote || !this.quote.plans || !this.quote.plans[0]) return '';
 

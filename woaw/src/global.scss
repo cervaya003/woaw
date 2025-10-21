@@ -351,7 +351,7 @@ ion-popover.select-popover {
 
     ion-item {
       --min-height: 33px;
-      font-size: clamp(10px, 1vw, 13px);
+      font-size: clamp(14px, 1vw, 17px); // letra de la lsita del select 
       white-space: normal;
       line-height: 1.35;
 
@@ -373,7 +373,6 @@ ion-popover.select-popover {
   transform-origin: top left;
 }
 
-/* regla genérica: si existe la var, úsala */
 ion-popover.select-popover[class*="pop-"] {
   --width: var(--pop-width, auto);
   --max-width: var(--pop-width, none);
@@ -388,16 +387,20 @@ ion-popover.select-popover[class*="pop-"] {
   position: relative;
   display: flex;
   align-items: center;
-  border: 1px solid var(--line);
-  border-radius: 12px;
+  border: 1px solid #0000004e;
+  border-radius: 7px;
   padding: 0 10px;
   background: #fff;
   transition: box-shadow .2s ease, border-color .2s ease;
 
+  @media(max-width: 820px) {
+    box-shadow: 0 4px 5px rgba(0, 0, 0, 0);
+  }
+
   height: clamp(46px, 5vh, 92px);
 
   &:focus-within {
-    border-color: rgba(52, 165, 4, 0.558);
+    border-color: rgba(66, 189, 12, 0.814);
   }
 
   :is(input, select) {
@@ -406,7 +409,7 @@ ion-popover.select-popover[class*="pop-"] {
     width: 100%;
     height: 44px;
     line-height: 44px;
-    font-size: clamp(11px, 0.9vw, 14px);
+    font-size: clamp(14px, 2vw, 17px);
     color: #000000;
     border: 0;
     outline: none;
@@ -421,7 +424,7 @@ ion-popover.select-popover[class*="pop-"] {
   }
 
   input::placeholder {
-    font-size: clamp(14px, 0.9vw, 16px);
+    font-size: clamp(14px, 2vw, 16px);
     color: #c2c2c2;
     opacity: .9;
   }
@@ -435,7 +438,7 @@ ion-popover.select-popover[class*="pop-"] {
     position: absolute;
     right: 10px;
     top: 50%;
-    transform: translateY(-50%);
+    // transform: translateY(-50%);
     font-size: 14px;
     color: #7c7c7c;
     pointer-events: none;
@@ -446,9 +449,9 @@ ion-popover.select-popover[class*="pop-"] {
   position: relative;
   display: flex;
   align-items: center;
-  background: #fff;
-  border: 1.5px solid var(--line);
-  border-radius: 14px;
+  background: #ffffff;
+  border: 1px solid #0000004e;
+  border-radius: 7px;
   padding: 0 5px;
   transition: box-shadow .2s ease, border-color .2s ease;
 
@@ -464,15 +467,14 @@ ion-popover.select-popover[class*="pop-"] {
     --min-height: 56px;
     --padding-start: 4px;
     --padding-end: 0px;
-    font-size: clamp(12px, 1vw, 12px);
-    font-weight:400;
+    font-size: clamp(12px, 1vw, 18px); //Tamaño de la letra select 
+    font-weight: 400;
   }
 
   ion-select::part(text),
   ion-select::part(placeholder) {
     display: -webkit-box;
     -webkit-box-orient: vertical;
-    // -webkit-line-clamp: 2;
     overflow: hidden;
     white-space: normal;
     line-height: 1.25;
@@ -534,6 +536,3 @@ ion-popover.select-popover[class*="pop-"] {
     letter-spacing: 0.5px;
   }
 }
-
-
-
