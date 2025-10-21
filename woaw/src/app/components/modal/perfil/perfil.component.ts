@@ -1,13 +1,9 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
 import { CommonModule } from "@angular/common";
-import { IonicModule } from "@ionic/angular";
-import { CUSTOM_ELEMENTS_SCHEMA } from "@angular/core";
-import { MenuController } from "@ionic/angular";
-import { Router, NavigationStart } from "@angular/router";
+import { IonicModule, MenuController, AlertController, ModalController } from "@ionic/angular";
+import { Router, RouterModule } from "@angular/router";
 import { RegistroService } from "../../../services/registro.service";
-import { AlertController } from "@ionic/angular";
 import { GeneralService } from "../../../services/general.service";
-import { ModalController } from "@ionic/angular";
 import {
   FormBuilder,
   FormGroup,
@@ -20,12 +16,12 @@ import {
   templateUrl: "./perfil.component.html",
   styleUrls: ["./perfil.component.scss"],
   standalone: true,
-  imports: [IonicModule, CommonModule, ReactiveFormsModule],
+  imports: [IonicModule, CommonModule, ReactiveFormsModule, RouterModule], // ⟵ agregado RouterModule
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class PerfilComponent implements OnInit {
   usuario: any;
-  fotoPerfil: string | null = null; // ← NUEVO
+  fotoPerfil: string | null = null;
   formCambio: FormGroup;
   mostrarCambio: boolean = false;
 
@@ -37,7 +33,8 @@ export class PerfilComponent implements OnInit {
     private registroService: RegistroService,
     private generalService: GeneralService,
     private fb: FormBuilder,
-    private alertCtrl: AlertController
+    private alertCtrl: AlertController,
+    private router: Router // ⟵ inyectado Router
   ) {
     this.formCambio = this.fb.group({
       password: ["", [Validators.required]],
@@ -51,7 +48,7 @@ export class PerfilComponent implements OnInit {
     if (storage) {
       try {
         this.usuario = JSON.parse(storage);
-        this.fotoPerfil = this.getFotoFromUser(this.usuario); // ← NUEVO
+        this.fotoPerfil = this.getFotoFromUser(this.usuario);
       } catch {
         this.usuario = null;
         this.fotoPerfil = null;
@@ -59,7 +56,20 @@ export class PerfilComponent implements OnInit {
     }
   }
 
-  // ← NUEVO: detecta la URL de foto en distintas claves posibles
+  // ⟵ NUEVO: usar en (click) del ion-card de "Eliminar cuenta"
+ async goEliminarCuenta() {
+    try {
+      // Si el modal está abierto, lo cerramos con pequeña espera
+      await this.modalCtrl.dismiss();
+      setTimeout(() => {
+        this.router.navigateByUrl("/eliminacion-cuenta");
+      }, 150); // 🔹 pequeño delay para transición limpia
+    } catch (err) {
+      // Si no hay modal, igual navega
+      this.router.navigateByUrl("/eliminacion-cuenta");
+    }
+  }
+
   private getFotoFromUser(u: any): string | null {
     const candidatos: any[] = [
       u?.foto, u?.picture, u?.photoURL, u?.photoUrl, u?.image, u?.imageUrl,

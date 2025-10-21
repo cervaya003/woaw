@@ -20,7 +20,12 @@
     <ion-list class="perfil-grid" lines="none">
       <ion-item>
         <ion-avatar *ngIf="fotoPerfil" slot="start">
-          <img [src]="fotoPerfil" alt="Foto de perfil" referrerpolicy="no-referrer" (error)="fotoPerfil = null" />
+          <img
+            [src]="fotoPerfil"
+            alt="Foto de perfil"
+            referrerpolicy="no-referrer"
+            (error)="fotoPerfil = null"
+          />
         </ion-avatar>
 
         <ion-label>
@@ -68,6 +73,7 @@
           Cambiar contraseña
           <ion-icon name="lock-closed-outline"></ion-icon>
         </div>
+
         <ion-icon
           [name]="mostrarCambio ? 'chevron-up-outline' : 'chevron-down-outline'"
         ></ion-icon>
@@ -90,11 +96,9 @@
             [name]="verActual ? 'eye-off-outline' : 'eye-outline'"
             (click)="verActual = !verActual"
             class="icono-ojito"
-          >
-          </ion-icon>
+          ></ion-icon>
         </ion-item>
 
-        <!-- Nueva contraseña -->
         <ion-item>
           <ion-label position="stacked">Nueva contraseña</ion-label>
           <ion-input
@@ -107,18 +111,17 @@
             [name]="verNuevas ? 'eye-off-outline' : 'eye-outline'"
             (click)="verNuevas = !verNuevas"
             class="icono-ojito"
-          >
-          </ion-icon>
+          ></ion-icon>
         </ion-item>
 
         <ion-text
           color="danger"
           *ngIf="formCambio.get('newPassword')?.hasError('passwordInvalida') && formCambio.get('newPassword')?.touched"
         >
-          <small
-            >La contraseña debe tener mínimo 8 caracteres, una mayúscula, un
-            número y un carácter especial.</small
-          >
+          <small>
+            La contraseña debe tener mínimo 8 caracteres, una mayúscula, un
+            número y un carácter especial.
+          </small>
         </ion-text>
 
         <ion-item>
@@ -141,4 +144,19 @@
       </form>
     </ion-card-content>
   </ion-card>
+
+  <!-- CARD: Eliminar cuenta (idéntico diseño, actúa como botón/link) -->
+  <ion-card class="card-cambio" (click)="goEliminarCuenta()">
+  <ion-card-header class="cabecera-acordeon">
+    
+    <ion-card-title class="ion-align-items-center ion-justify-content-between">
+      <div class="titulo-acordeon">
+        Eliminar cuenta
+        <ion-icon name="trash-outline"></ion-icon>
+      </div>
+      <ion-icon name="chevron-forward-outline"></ion-icon>
+    </ion-card-title>
+  </ion-card-header>
+</ion-card>
+
 </ion-content>
