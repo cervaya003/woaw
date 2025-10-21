@@ -118,4 +118,17 @@ export class RegistroService {
       catchError((error) => this.headersService.handleError(error))
     );
   }
+
+  
+  deleteAccount(): Observable<any> {
+    return from(this.headersService.obtenerToken()).pipe(
+      switchMap((token) => {
+        const headers = this.headersService.getJsonHeaders(token);
+        return this.http.request("DELETE", `${this.baseUrl}/account`, {
+          headers,
+        });
+      }),
+      catchError((error) => this.headersService.handleError(error))
+    );
+  }
 }
