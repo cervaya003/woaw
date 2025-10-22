@@ -521,6 +521,9 @@ export class PolizaPage implements OnInit {
     }
   }
 
+
+
+  
   private getPosition(): number {
     const posStr = localStorage.getItem('posicionSeleccionada');
     const pos = Number(posStr);
