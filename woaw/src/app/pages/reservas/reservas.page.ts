@@ -59,23 +59,12 @@ export class ReservasPage implements OnInit {
   total = 0;
   dias = 1;
   enviando = false;
-
-  // Días bloqueados (YYYY-MM-DD)
   ocupadasISO = new Set<string>();
-
-  // Rango elegido por el usuario (highlight rojo)
   rangeValue: string[] = [];
   highlightedRange: Array<{ date: string; textColor?: string; backgroundColor?: string }> = [];
-
-  // Highlights grises para días bloqueados
   highlightedDisabled: Array<{ date: string; textColor?: string; backgroundColor?: string }> = [];
-
-  // Para forzar re-montaje del ion-datetime
   showCalendar = true;
-
-  // 🔒 Nuevo: sólo calculamos cuando el usuario toque el calendario aquí
   private userInteracted = false;
-
   private prevRendered = new Set<string>();
   private suppressDupUntil = 0;
 
@@ -94,13 +83,6 @@ export class ReservasPage implements OnInit {
   ngOnInit(): void {
     this.carId = this.route.snapshot.paramMap.get('id') || '';
     this.initForm();
-
-    // ❌ Ignoramos params de renta-ficha para arrancar en blanco
-    // const qp = this.route.snapshot.queryParamMap;
-    // if (qp.get('inicio')) this.form.patchValue({ fechaInicio: qp.get('inicio') });
-    // if (qp.get('fin')) this.form.patchValue({ fechaFin: qp.get('fin') });
-
-    // Suscripción gateada: no calcula hasta interacción local
     this.form.valueChanges.subscribe(() => {
       if (!this.userInteracted) return;
       this.recalc();
@@ -109,12 +91,10 @@ export class ReservasPage implements OnInit {
       this.buildHighlightedRange();
     });
 
-    // Arranca limpio
     this.form.reset({ fechaInicio: null, fechaFin: null, notasCliente: '' }, { emitEvent: false });
     this.rangeValue = [];
     this.highlightedRange = [];
     this.prevRendered = new Set(this.rangeValue);
-
     this.buildDisabledHighlights(); // inicial
     this.loadCar();                 // carga coche y bloqueos
   }
@@ -137,8 +117,6 @@ export class ReservasPage implements OnInit {
     this.rentaService.cochePorId(this.carId).subscribe({
       next: async (coche) => {
         this.coche = coche;
-
-        // Excepciones -> bloqueados
         this.rentaService
           .diasNoDisponibles(this.carId)
           .pipe(take(1))
@@ -146,13 +124,10 @@ export class ReservasPage implements OnInit {
             const nuevo = new Set(this.ocupadasISO);
             for (const ymd of dias) nuevo.add(ymd);
             this.ocupadasISO = nuevo;
-
             this.buildDisabledHighlights();
-            // NO calculamos nada del resumen hasta interacción local
             this.forceCalendarRerender();
           });
 
-        // (opcional) Días ocupados por reservas si tu servicio los provee
         try {
           const maybe$ = (this.rentaService as any)?.fechasOcupadas?.(this.carId);
           if (maybe$?.subscribe) {
@@ -170,7 +145,6 @@ export class ReservasPage implements OnInit {
         } catch {/* noop */ }
 
         await loading.dismiss();
-        // NO recalc aquí (evitamos influir el resumen sin interacción)
       },
       error: async () => {
         await loading.dismiss();
@@ -184,7 +158,6 @@ export class ReservasPage implements OnInit {
     return toYMDLocal(new Date());
   }
 
-  // Deshabilita días bloqueados
   isDateEnabled = (isoDateString: string): boolean => {
     try {
       const ymd = (isoDateString || '').slice(0, 10);
@@ -194,7 +167,6 @@ export class ReservasPage implements OnInit {
     }
   };
 
-  // Highlights grises para días bloqueados
   private buildDisabledHighlights(): void {
     const bg = '#e5e7eb'; // gris claro
     const fg = '#6b7280'; // texto gris medio
@@ -205,7 +177,6 @@ export class ReservasPage implements OnInit {
     }));
   }
 
-  // Combinar bloqueados (gris) + rango seleccionado (rojo)
   get mergedHighlights() {
     return [...this.highlightedDisabled, ...this.highlightedRange];
   }
@@ -262,7 +233,6 @@ export class ReservasPage implements OnInit {
     const ini = this.form.get('fechaInicio')?.value as string | null;
     const fin = (this.form.get('fechaFin')?.value as string | null) ?? ini;
     const minDias = Number(this.coche?.minDias || 1);
-
     const errors = { ...(this.form.errors || {}) } as any;
     delete errors.minDias;
     delete errors.rangoOcupado;
@@ -280,13 +250,11 @@ export class ReservasPage implements OnInit {
   }
 
   onRangeChange(ev: CustomEvent) {
-    // 👇 marca interacción local
     this.userInteracted = true;
     this.handlePick(ev?.detail?.value);
   }
 
   onRangeValueChange(ev: any) {
-    // 👇 marca interacción local
     this.userInteracted = true;
     this.handlePick(Array.isArray(ev) ? ev : (ev?.detail?.value ?? ev));
   }
@@ -405,7 +373,6 @@ export class ReservasPage implements OnInit {
       }
     }
 
-    // A partir de aquí (interacción local) sí calculamos
     this.form.patchValue({ fechaInicio: newStart, fechaFin: newEnd ?? null }, { emitEvent: true });
   }
 
@@ -422,7 +389,6 @@ export class ReservasPage implements OnInit {
 
     const bg = '#e11d2f';
     const fg = '#ffffff';
-
     const cur = new Date(i);
     while (cur <= f) {
       this.highlightedRange.push({
@@ -435,7 +401,6 @@ export class ReservasPage implements OnInit {
   }
 
   async reservar() {
-    // 🚫 Hasta que el usuario interactúe aquí
     if (!this.userInteracted) {
       this.toast('Selecciona las fechas de tu reserva.');
       return;
@@ -473,7 +438,6 @@ export class ReservasPage implements OnInit {
     await loading.present();
     const fechaInicioISO = ymdToUtcNoonISO(fechaInicio);
     const fechaFinISO = ymdToUtcNoonISO(fechaFin!);
-
     this.reservaService
       .createBookingV2({
         rentalCar: this.coche._id,
@@ -499,7 +463,6 @@ export class ReservasPage implements OnInit {
         error: async (_e: any) => {
           await loading.dismiss();
           this.enviando = false;
-          // El service ya muestra la alerta con el detalle del backend.
         },
       });
   }
@@ -510,7 +473,6 @@ export class ReservasPage implements OnInit {
   }
 
   get canSubmit(): boolean {
-    // 🚫 No habilitar hasta interacción local
     if (!this.userInteracted) return false;
 
     const ini = this.form.value.fechaInicio as string | null;
@@ -520,14 +482,13 @@ export class ReservasPage implements OnInit {
     const i = parseYMDLocal(ini);
     const f = parseYMDLocal(fin!);
     const hoy = parseYMDLocal(toYMDLocal(new Date()));
-
     const inicioOk = i.getTime() >= hoy.getTime();
     const rangoOk = f.getTime() >= i.getTime();
     const extraOk = !this.form.hasError('minDias') && !this.form.hasError('rangoOcupado');
-
     return inicioOk && rangoOk && extraOk;
   }
 
   volver() { history.back(); }
+
   cerrar() { this.router.navigateByUrl('/'); }
 }
