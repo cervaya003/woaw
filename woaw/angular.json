@@ -19,6 +19,8 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
+             "optimization": false,
+            "buildOptimizer": false,
             "assets": [
               {
                 "glob": "**/*",

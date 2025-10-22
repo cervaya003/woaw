@@ -340,8 +340,11 @@
               <header>
                 <h2>Monto estimado</h2>
                 <small>Plan seleccionado</small>
+                <!-- Mostrar mensaje de descuento si existe -->
+                <div *ngIf="p.discount?.marketing_text?.default" class="discount-message">
+                  🎉 {{ p.discount.marketing_text.default }}
+                </div>
               </header>
-
               <div class="price" *ngIf="getSelectedPayment(p) as sel">
                 <!-- parte 1 -->
                 <div class="price__info">
@@ -360,20 +363,19 @@
 
                 <!-- parte 2 -->
                 <div class="input_cupon">
-                  <div class="field ">
-                    <!-- <label for="paySel">Plan de pago</label> -->
-                    <div class="control control--select" style="margin-top: -15px;">
-                      <ion-select #lista class="sync-pop" id="paySel" [(ngModel)]="selectedPaymentByPlan[p.id]"
-                        (ionChange)="onSelectPayment(p.id)" interface="popover" placeholder="Elige un plan…"
-                        aria-label="Plan de pago">
-                        <ion-select-option *ngFor="let opt of p.payment_plans; trackBy: trackByPayment"
-                          [value]="opt.id">
-                          {{ paymentPlanLabel(opt) }} — {{ fmtMoney(opt.total) }}
-                        </ion-select-option>
-                      </ion-select>
-                    </div>
+                  <div class="control control--select" style="margin-top: -5px;">
+                    <ion-select #lista class="sync-pop" id="paySel" [(ngModel)]="selectedPaymentByPlan[p.id]"
+                      (ionChange)="onSelectPayment(p.id)" interface="popover" aria-label="Plan de pago">
+                      <!-- REMOVED: placeholder="Elige un plan…" -->
+                      <ion-select-option
+                        *ngFor="let opt of (p.discount?.payment_plans || p.payment_plans); trackBy: trackByPayment"
+                        [value]="opt.id">
+                        {{ paymentPlanLabel(opt) }} — {{ fmtMoney(opt.total) }}
+                      </ion-select-option>
+                    </ion-select>
                   </div>
                 </div>
+
               </div>
 
               <div class="divider"></div>

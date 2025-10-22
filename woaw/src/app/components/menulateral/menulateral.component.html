@@ -116,15 +116,16 @@
           <ion-label>Perfil</ion-label>
         </ion-item>
 
+        <ion-item (click)="redirecion('eliminacion-cuenta')" button lines="none">
+          <ion-icon name="trash"></ion-icon>
+          <ion-label>Eliminar cuenta</ion-label>
+        </ion-item>
+
         <ion-item (click)="logout()" button lines="none">
           <ion-icon name="log-out-outline" color="danger"></ion-icon>
           <ion-label>Cerrar sesión</ion-label>
         </ion-item>
 
-    <ion-item routerLink="/eliminacion-cuenta" button lines="none">
-  <ion-icon name="tash" color="danger"></ion-icon>
-  <ion-label>Eliminar cuenta</ion-label>
-</ion-item>
 
       </div>
     </ion-list>

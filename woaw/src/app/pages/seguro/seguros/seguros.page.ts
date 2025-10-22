@@ -158,6 +158,7 @@ export class SegurosPage implements OnInit {
   private verificaStorage() {
     const raw = localStorage.getItem('cotizacion');
     const datosCocheStorage = localStorage.getItem('datosCoche');
+
     if (datosCocheStorage) {
       try {
         const datos = JSON.parse(datosCocheStorage);
@@ -191,8 +192,12 @@ export class SegurosPage implements OnInit {
       this.selectedPaymentByPlan = {};
 
       this.quote.plans.forEach((pl: any) => {
-        const firstId = pl?.payment_plans?.[0]?.id ?? null;
-        if (firstId) this.selectedPaymentByPlan[pl.id] = firstId;
+        // SIEMPRE seleccionar la primera opción disponible
+        const paymentPlans = pl?.discount?.payment_plans || pl?.payment_plans;
+        const firstId = paymentPlans?.[0]?.id ?? null;
+        if (firstId) {
+          this.selectedPaymentByPlan[pl.id] = firstId;
+        }
       });
 
       this.activePlan = this.quote.plans[0] ?? null;
@@ -202,6 +207,7 @@ export class SegurosPage implements OnInit {
       this.activePlan = null;
     }
   }
+
   async cargaimagen() {
     this.imgenPrincipal = '/assets/autos/seguro.webp';
     this.generalService.addPreload(this.imgenPrincipal, 'image');
@@ -586,9 +592,14 @@ export class SegurosPage implements OnInit {
 
           if (this.quote.plans.length) {
             this.selectedPaymentByPlan = {};
+
+            // SIEMPRE seleccionar la primera opción para cada plan
             this.quote.plans.forEach((pl: any) => {
-              const firstId = pl?.payment_plans?.[0]?.id ?? null;
-              if (firstId) this.selectedPaymentByPlan[pl.id] = firstId;
+              const paymentPlans = pl?.discount?.payment_plans || pl?.payment_plans;
+              const firstId = paymentPlans?.[0]?.id ?? null;
+              if (firstId) {
+                this.selectedPaymentByPlan[pl.id] = firstId;
+              }
             });
 
             this.activePlan = this.quote.plans[0] ?? null;
@@ -619,18 +630,33 @@ export class SegurosPage implements OnInit {
     if (!this.quote?.plans?.length) return;
 
     const plan = this.quote.plans.find((pl: any) => pl.id === planId);
-    if (!plan || !Array.isArray(plan.payment_plans) || !plan.payment_plans.length) return;
+    if (!plan) return;
 
-    const chosenId = this.selectedPaymentByPlan?.[planId] ?? plan.payment_plans[0].id;
+    const paymentPlans = plan?.discount?.payment_plans || plan?.payment_plans;
 
-    const idx = plan.payment_plans.findIndex((pp: any) => pp.id === chosenId);
+    if (!Array.isArray(paymentPlans) || !paymentPlans.length) return;
+
+    let chosenId = this.selectedPaymentByPlan?.[planId];
+
+    // Si no hay selección o la selección no es válida, usar la primera opción
+    if (!chosenId || !paymentPlans.find((pp: any) => pp.id === chosenId)) {
+      chosenId = paymentPlans[0].id;
+      this.selectedPaymentByPlan[planId] = chosenId;
+    }
+
+    const idx = paymentPlans.findIndex((pp: any) => pp.id === chosenId);
     if (idx === -1) return;
 
-    this.selectedPaymentByPlan[planId] = chosenId;
     localStorage.setItem('posicionSeleccionada', String(idx));
-    // console.log(`[${idx}] payment_plan.id =`, chosenId);
   }
   getSelectedPayment(pl: any) {
+    // Si hay descuento, usar los payment_plans del discount
+    if (pl?.discount?.payment_plans?.length) {
+      const id = this.selectedPaymentByPlan[pl.id];
+      return pl.discount.payment_plans.find((pp: any) => pp.id === id) ?? pl.discount.payment_plans[0];
+    }
+
+    // Caso normal sin descuento
     const id = this.selectedPaymentByPlan[pl.id];
     return pl?.payment_plans?.find((pp: any) => pp.id === id) ?? pl?.payment_plans?.[0];
   }
@@ -690,6 +716,7 @@ export class SegurosPage implements OnInit {
     const payments = Array.isArray(pp?.payments) ? pp.payments : [];
     const count = payments.length || 1;
 
+    // Usar los datos del payment plan directamente (ya sea de discount o normal)
     const subtotal = Number(pp?.subtotal ?? 0);
     const taxes = Number(pp?.taxes ?? 0);
     const total = Number(pp?.total ?? 0);

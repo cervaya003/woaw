@@ -34,7 +34,7 @@ export class PersonaPage implements OnInit {
   mostrarMasOpciones: boolean = false;
 
   public tipoDispocitivo: 'computadora' | 'telefono' | 'tablet' = 'computadora';
-
+  private idActividadExtra: string = '8944098'
   buscarForm!: FormGroup;
 
   public isLoggedIn: boolean = false;
@@ -91,7 +91,6 @@ export class PersonaPage implements OnInit {
       this.datosCoche = JSON.parse(stored);
     } else {
       this.datosCoche = null;
-      // this.router.navigate(['/seguros/atuos']);
     }
     const cotizacion = localStorage.getItem('cotizacion');
     if (cotizacion) {
@@ -104,6 +103,7 @@ export class PersonaPage implements OnInit {
       //   'warning'
       // );
     }
+    this.obtenerActEconomicas();
   }
   onBuscar(status: boolean = true, val: string = ''): Promise<boolean> {
     return new Promise((resolve, reject) => {
@@ -213,26 +213,26 @@ export class PersonaPage implements OnInit {
       this.tipoPersonaSeleccionada = tipo;
       this.currentStepform = 2;
       this.form_poliza.addControl('telefono', this.fb.control('', [Validators.required, Validators.pattern(/^\d{10}$/)]));
-      this.form_poliza.addControl('calle', this.fb.control('', [Validators.required, Validators.minLength(4)]));
-      this.form_poliza.addControl('int', this.fb.control('', [Validators.required, Validators.minLength(1)]));
+      this.form_poliza.addControl('calle', this.fb.control('', [Validators.required, Validators.minLength(1)]));
+      this.form_poliza.addControl('int', this.fb.control(''));
       this.form_poliza.addControl('ext', this.fb.control('', [Validators.required, Validators.minLength(1)]));
-      this.form_poliza.addControl('col', this.fb.control('', [Validators.required, Validators.minLength(5)]));
+      this.form_poliza.addControl('col', this.fb.control('', [Validators.required, Validators.minLength(1)]));
     } else if (this.currentStepform === 2) {
       this.currentStepform = 3;
       // siempre se creaen estos 
-      this.form_poliza.addControl('nombre', this.fb.control('', [Validators.required, Validators.minLength(4)]));
+      this.form_poliza.addControl('nombre', this.fb.control('', [Validators.required, Validators.minLength(1)]));
       this.form_poliza.addControl('email', this.fb.control('', [Validators.required, Validators.email]));
       this.form_poliza.addControl('rfc', this.fb.control('', [Validators.required, Validators.minLength(10)]));
       if (this.tipoPersonaSeleccionada === 'fisica') {
         // solo si es fisico 
-        this.form_poliza.addControl('apellidoP', this.fb.control('', [Validators.required, Validators.minLength(4)]));
-        this.form_poliza.addControl('apellidoM', this.fb.control('', [Validators.required, Validators.minLength(4)]));
+        this.form_poliza.addControl('apellidoP', this.fb.control('', [Validators.required, Validators.minLength(1)]));
+        this.form_poliza.addControl('apellidoM', this.fb.control('', [Validators.required, Validators.minLength(1)]));
         this.form_poliza.addControl('curp', this.fb.control('', [Validators.required, Validators.minLength(10)]));
       }
       if (this.tipoPersonaSeleccionada === 'moral') {
         // solo si es moral 
         this.form_poliza.addControl('folio', this.fb.control('', [Validators.required, Validators.minLength(5)]));
-        this.form_poliza.addControl('nmRepLegal', this.fb.control('', [Validators.required, Validators.minLength(5)]));
+        this.form_poliza.addControl('nmRepLegal', this.fb.control('', [Validators.required, Validators.minLength(3)]));
       }
     } else if (this.currentStepform === 3) {
       const email = String(this.form_poliza.value.email || '').trim();
@@ -309,6 +309,7 @@ export class PersonaPage implements OnInit {
       ];
     } else if (this.currentStepform === 4) {
       this.currentStepform = 3;
+      this.mostrarMasOpciones = false;
       controlesAEliminar = [
         'pais', 'estado', 'actE', 'actEextra'
       ];
@@ -330,7 +331,8 @@ export class PersonaPage implements OnInit {
   }
   onActividadChange(event: Event) {
     const selectedValue = (event.target as HTMLSelectElement).value;
-    if (selectedValue === "0") {
+    console.log(this.form_poliza.get('actE')?.value, selectedValue)
+    if (selectedValue === "8944098") {
       this.mostrarMasOpciones = true;
       if (!this.form_poliza.contains('actEextra')) {
         this.form_poliza.addControl('actEextra', this.fb.control('', [Validators.required]));
@@ -344,7 +346,7 @@ export class PersonaPage implements OnInit {
   }
   async prepararDatos() {
     const actE = this.form_poliza.get('actE')?.value;
-    if (actE === '0') {
+    if (actE === this.idActividadExtra) {
       const actEextraCtrl = this.form_poliza.get('actEextra');
       if (!actEextraCtrl || !actEextraCtrl.value) {
         actEextraCtrl?.markAsTouched();
@@ -376,7 +378,7 @@ export class PersonaPage implements OnInit {
     const country_of_origin_code = Number(this.form_poliza.get('pais')?.value ?? 1);
     const state_of_origin_code = Number(this.form_poliza.get('estado')?.value ?? 0);
     const economic_activity_code = Number(
-      actE === '0'
+      actE === this.idActividadExtra
         ? this.form_poliza.get('actEextra')?.value
         : this.form_poliza.get('actE')?.value
     );
@@ -387,9 +389,9 @@ export class PersonaPage implements OnInit {
       email: this.form_poliza.get('email')?.value,
       phone: this.form_poliza.get('telefono')?.value,
       address: {
-        street: this.form_poliza.get('calle')?.value,
+        street: this.form_poliza.get('calle')?.value, 
         external_number: this.form_poliza.get('ext')?.value,
-        internal_number: this.form_poliza.get('int')?.value,
+        internal_number: this.form_poliza.get('int')?.value?.trim() || 'SN',
         neighborhood: this.form_poliza.get('col')?.value,
         postal_code
       },
@@ -461,6 +463,7 @@ export class PersonaPage implements OnInit {
     this.seguros.optenerActEcon().subscribe({
       next: (data) => {
         this.ActEconomicas = data;
+        console.log(this.ActEconomicas)
       },
       error: (error) => console.error('Error al obtener actividades economicas:', error),
     });
@@ -482,14 +485,14 @@ export class PersonaPage implements OnInit {
 
       this.mostrar_spinnet = false;
 
-        this.generalService.alert(
-          `¡Listo! ${nombre} quedó registrado correctamente.`,
-          'Registro exitoso',
-          'success'
-        );
-        localStorage.setItem('UsuarioRespuesta', JSON.stringify(data));
-        this.router.navigate(['/seguros/poliza']);
-     
+      this.generalService.alert(
+        `¡Listo! ${nombre} quedó registrado correctamente.`,
+        'Registro exitoso',
+        'success'
+      );
+      localStorage.setItem('UsuarioRespuesta', JSON.stringify(data));
+      this.router.navigate(['/seguros/poliza']);
+
     } catch (error: any) {
       this.mostrar_spinnet = false;
       console.error('Error al crear persona:', error);

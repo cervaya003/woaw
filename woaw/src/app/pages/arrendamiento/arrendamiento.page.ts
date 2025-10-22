@@ -82,6 +82,8 @@ export class ArrendamientoPage implements OnInit {
       correo: ['', [Validators.required, Validators.email]],
       tipoPersona: ['', Validators.required],
       plazo: ['', Validators.required],
+      rfc: ['', Validators.required],
+      cp: ['', Validators.required]
     });
   }
   seleccionarMarca(marca: Marca): void {
@@ -278,6 +280,8 @@ export class ArrendamientoPage implements OnInit {
       correo: this.formArrendamiento.value.correo,
       tipoPersona: this.formArrendamiento.value.tipoPersona,
       plazo: this.formArrendamiento.value.plazo,
+      rfc: this.formArrendamiento.value.rfc,
+      cp: this.formArrendamiento.value.cp,
       vehiculos: vehiculos
     };
     if (tipo === 'Email') {
@@ -291,7 +295,6 @@ export class ArrendamientoPage implements OnInit {
       '¿Deseas enviar estos datos?',
       '¿Estás seguro?',
       async () => {
-        await this.generalService.loading('Enviando Email...');
         this.contactosService.Enviar_Datos_email(body).subscribe({
           next: (ret) => {
             this.generalService.loadingDismiss();

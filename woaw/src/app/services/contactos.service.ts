@@ -567,6 +567,8 @@ export class ContactosService {
       } catch (error) {
         console.warn('❌ Error al parsear el usuario del storage:', error);
       }
+    }else{
+      nombreCompleto = body.nombre;
     }
 
     // 🧩 Formatear versiones por modelo
@@ -585,6 +587,8 @@ export class ContactosService {
       `${vehiculosTexto}` +
       `\n\n📧 Correo: ${body.correo}` +
       `\n👤 Tipo de persona: ${body.tipoPersona}` +
+      `\n📑 RFC: ${body.rfc}` +
+      `\n📍 CP: ${body.cp}` +
       `\n📅 Plazo deseado: ${body.plazo} meses`
     );
 

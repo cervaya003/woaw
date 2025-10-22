@@ -510,21 +510,6 @@ export class PolizaPage implements OnInit {
       this.form_poliza.get('placas')?.setValue(norm, { emitEvent: false });
     }
   }
-
-  // private placasMxValidator = (ctrl: AbstractControl) => {
-  //   const raw = String(ctrl.value || '')
-  //     .toUpperCase()
-  //     .replace(/[^A-Z0-9]/g, '');
-  //   if (!raw) return { required: true };
-  //   const patterns = [
-  //     /^[A-Z]{3}\d{4}$/,
-  //     /^[A-Z]{3}\d{3}[A-Z]$/,
-  //     /^[A-Z]{3}\d[A-Z]\d{2}$/
-  //   ];
-  //   const ok = raw.length === 7 && patterns.some(r => r.test(raw));
-  //   return ok ? null : { placaFormato: true };
-  // };
-
   // 1) ÚNICO switch centralizado
   private formatPaymentLabel(rawName: string, count: number): string {
     const raw = (rawName ?? '').toString().toUpperCase();

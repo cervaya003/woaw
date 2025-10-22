@@ -188,15 +188,13 @@
                 <div class="control">
                   <input id="ext" type="text" class="form-input" placeholder="Ext" formControlName="ext" />
                 </div>
-                <p *ngIf="analizaForm('int')" class="error">Ingresa tu número exterior</p>
+                <p *ngIf="analizaForm('ext')" class="error">Ingresa tu número exterior</p>
               </div>
               <div>
-                <label for="int">Num. Interior<span>*</span></label>
+                <label for="int" style="margin-top: 4px;">Num. Interior (opcional)</label>
                 <div class="control">
                   <input id="int" type="text" class="form-input" placeholder="Int" formControlName="int" />
-                </div>
-                <p *ngIf="analizaForm('int')" class="error">Ingresa tu número interior</p>
-              </div>
+                </div> </div>
               <div>
                 <label for="col">Colonia<span>*</span></label>
                 <div class="control">
@@ -368,7 +366,11 @@
 <ion-footer *ngIf="tipoDispocitivo === 'telefono'" class="safe-footer footer_css_seguros">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-button fill="clear" (click)="regresarInicio()">
+      <ion-button fill="clear"   *ngIf="statusUserDtos && statusBuscar"  (click)="regresarInicio()" >
+        <ion-icon slot="start" name="arrow-back-outline"></ion-icon>
+        Atrás
+      </ion-button>
+      <ion-button fill="clear"  *ngIf="!statusUserDtos && !statusBuscar"  (click)="regresar()">
         <ion-icon slot="start" name="arrow-back-outline"></ion-icon>
         Atrás
       </ion-button>
