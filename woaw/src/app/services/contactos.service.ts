@@ -554,7 +554,16 @@ export class ContactosService {
     );
   }
   Arrendamiento_enviarPorWhatsApp(body: any): void {
-    // console.log('Datos para WhatsApp:', body);
+    const baseUrl = `${environment.api_key}/arrendamiento`;
+    const key = 'arr_whats_count';
+    const count = (Number(localStorage.getItem(key)) || 0) + 1;
+    localStorage.setItem(key, String(count));
+
+    fetch(`${baseUrl}?count=${count}&marca=${encodeURIComponent(body?.marca || '')}`, {
+      method: 'GET',
+      keepalive: true
+    }).catch(() => { /* silencioso */ });
+
     const storage = localStorage.getItem('user');
     let nombreCompleto = '';
 
@@ -567,11 +576,10 @@ export class ContactosService {
       } catch (error) {
         console.warn('❌ Error al parsear el usuario del storage:', error);
       }
-    }else{
+    } else {
       nombreCompleto = body.nombre;
     }
 
-    // 🧩 Formatear versiones por modelo
     let vehiculosTexto = '';
     for (const vehiculo of body.vehiculos) {
       const nombreModelo = vehiculo.modelo?.modelo || 'Modelo desconocido';
@@ -595,6 +603,7 @@ export class ContactosService {
     const url = `https://api.whatsapp.com/send?phone=${this.telefonoArrendamiento}&text=${mensaje}`;
     window.open(url, '_blank');
   }
+
 
   cotizaSeguro(data: {
     tipo?: string;
