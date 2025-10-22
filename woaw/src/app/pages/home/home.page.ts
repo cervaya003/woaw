@@ -113,7 +113,7 @@ export class HomePage implements OnInit {
   }
 
   // ----- -----
-  async abrirHistorial(ev: Event) {
+  private async abrirHistorial(ev: Event) {
     if (this.popoverRef) return;
 
     this.popoverRef = await this.popoverCtrl.create({
@@ -140,13 +140,7 @@ export class HomePage implements OnInit {
   onInputChange(ev: any) {
     const value = ev.detail.value;
     this.terminoBusqueda = value;
-    if (this.popoverRef) {
-      this.popoverRef.componentProps = {
-        termino: value,
-      };
-    } else {
-      this.abrirHistorial(ev);
-    }
+    
   }
 
   irABusqueda(sugerencia: string) {
@@ -155,10 +149,7 @@ export class HomePage implements OnInit {
     this.terminoBusqueda = termino;
     this.guardarStorage(termino);
     this.generalService.setTerminoBusqueda('search');
-    if (this.popoverRef) {
-      this.popoverRef.dismiss();
-      this.popoverRef = null;
-    }
+   
     this.router.navigate(['/search/vehiculos', termino]);
   }
 

@@ -84,15 +84,15 @@
                           Selecciona tu plan <span>*</span>
                         </label>
                         <div class="control">
-                          <ion-select interface="popover" formControlName="pago" placeholder="Elige un plan de pago..."
-                            aria-label="Plan de pago" class="pay-select" [(ngModel)]="selectedPaymentId"
-                            (ionChange)="onSelectPayment($event.detail.value)">
+                          <!-- En tu template -->
+                          <ion-select [(ngModel)]="selectedPaymentId" (ionChange)="onSelectPayment($event.detail.value)"
+                            interface="popover" placeholder="Selecciona tu plan de pago" formControlName="pago">
 
-                            <ion-select-option *ngFor="let opt of datoscotizacion?.plans?.[0]?.payment_plans"
-                              [value]="opt.id">
-                              {{ paymentPlanLabel(opt) }} — {{ fmtMoney(opt.total) }}
+                            <ion-select-option
+                              *ngFor="let plan of (datoscotizacion?.plans?.[0]?.discount?.payment_plans || datoscotizacion?.plans?.[0]?.payment_plans || [])"
+                              [value]="plan.id">
+                              {{ paymentPlanLabel(plan) }} — {{ fmtMoney(plan.total) }}
                             </ion-select-option>
-
                           </ion-select>
                         </div>
                       </div>

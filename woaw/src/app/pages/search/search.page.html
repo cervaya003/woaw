@@ -1,3 +1,4 @@
+<!-- search.page.html -->
 <app-navbar></app-navbar>
 
 <ion-content #pageContent [fullscreen]="true">
@@ -5,15 +6,38 @@
   <app-acomodo [totalAutos]="totalVehiculos" [titulo]="terminoBusqueda" (ordenCambio)="ordenarAutos($event)">
   </app-acomodo>
 
-  <ion-grid>
+
+
+  <ion-grid *ngIf="tieneResultadosPaginados">
     <ion-row>
 
       <!-- Columna lateral de filtros -->
       <ion-col size="12" size-md="3">
-
         <app-menu [filtros]="filtros" [filtrosAplicados]="filtrosAplicados"
           (mostrarOpciones)="mostrarOpciones($event.event, $event.tipo)" (limpiarFiltros)="resetearFiltros()">
         </app-menu>
+
+        <div class="line"></div>
+
+        <div class="servicios-container" *ngIf="mostrarServicios">
+          <div class="lista-servicios">
+            <ion-item *ngFor="let servicio of serviciosEncontrados" button detail="false"
+              (click)="navegarAServicio(servicio.ruta)" class="item-servicio">
+              <ion-icon [name]="servicio.icono || 'help-circle'" slot="start"
+                [color]="servicio.tipo === 'servicio' ? 'danger' : 'success'"></ion-icon>
+
+              <ion-label class="contenido-servicio">
+                <h4 class="titulo-servicio">{{ servicio.titulo }}</h4>
+                <p class="descripcion-servicio">{{ servicio.descripcion }}</p>
+                <ion-badge [color]="servicio.tipo === 'servicio' ? 'danger' : 'success'" class="badge-tipo">
+                  {{ servicio.tipo }}
+                </ion-badge>
+              </ion-label>
+
+              <ion-icon name="chevron-forward" slot="end" color="medium"></ion-icon>
+            </ion-item>
+          </div>
+        </div>
 
       </ion-col>
 
@@ -29,7 +53,6 @@
 
         <!-- Paginación -->
         <div class="contenedor-paginacion" *ngIf="totalPaginas > 1">
-          <p class="titulo-paginacion">más</p>
           <div class="paginacion-scroll">
             <div class="paginacion">
               <!-- Flecha anterior -->
@@ -52,14 +75,44 @@
           </div>
         </div>
 
+        <div *ngIf="resultados.length === 0" class="mensaje-vacio">
+          <p>No se encontraron <span>Autos</span> resultados para tu búsqueda.</p>
+        </div>
+
       </ion-col>
     </ion-row>
   </ion-grid>
 
+  <ng-container *ngIf="mostrarServicios && !tieneResultadosPaginados">
+    <div class="contenedor_servicios">
+      <div class="servicios_container">
+        <div class="grid-servicios">
+          <div class="card-servicio" *ngFor="let servicio of serviciosEncontrados"
+            (click)="navegarAServicio(servicio.ruta)">
+            <div class="card-header">
+              <ion-icon [name]="servicio.icono || 'help-circle'"
+                [class]="servicio.tipo === 'servicio' ? 'icono-servicio' : 'icono-categoria'"></ion-icon>
+              <ion-badge [class]="servicio.tipo === 'servicio' ? 'badge-servicio' : 'badge-categoria'">
+                {{ servicio.tipo }}
+              </ion-badge>
+            </div>
 
-  <div *ngIf="resultados.length === 0" class="mensaje-vacio">
-    <p>No se encontraron resultados para tu búsqueda.</p>
-  </div>
+            <div class="card-content">
+              <h4 class="titulo-servicio">{{ servicio.titulo }}</h4>
+              <p class="descripcion-servicio">{{ servicio.descripcion }}</p>
+            </div>
+
+            <div class="card-footer">
+              <ion-icon name="chevron-forward" class="icono-flecha"></ion-icon>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+
+  <br><br><br><br><br>
 
   <app-footer></app-footer>
 </ion-content>

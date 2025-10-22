@@ -174,7 +174,7 @@ throw new Error('Method not implemented.');
     this.router.navigate(["/menu-vehiculos", tipo.toLowerCase()]);
   }
 
-  async abrirHistorial(ev: Event) {
+  private async abrirHistorial(ev: Event) {
     if (this.popoverRef) return;
 
     this.popoverRef = await this.popoverCtrl.create({
@@ -204,11 +204,6 @@ throw new Error('Method not implemented.');
   onInputChange(ev: any) {
     const value = ev.detail.value;
     this.terminoBusqueda = value;
-    if (this.popoverRef) {
-      this.popoverRef.componentProps = { termino: value };
-    } else {
-      this.abrirHistorial(ev);
-    }
   }
 
   irABusqueda(sugerencia: string) {
@@ -217,10 +212,6 @@ throw new Error('Method not implemented.');
     this.terminoBusqueda = termino;
     this.guardarStorage(termino);
     this.generalService.setTerminoBusqueda("search");
-    if (this.popoverRef) {
-      this.popoverRef.dismiss();
-      this.popoverRef = null;
-    }
     this.router.navigate(["/search/vehiculos", termino]);
   }
 

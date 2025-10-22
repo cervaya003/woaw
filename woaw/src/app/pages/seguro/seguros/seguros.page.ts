@@ -187,16 +187,27 @@ export class SegurosPage implements OnInit {
     this.currentStep = 7;
     this.quote = JSON.parse(raw);
     this.cotizacion = !!this.quote;
-
     if (this.quote?.plans?.length) {
       this.selectedPaymentByPlan = {};
 
       this.quote.plans.forEach((pl: any) => {
-        // SIEMPRE seleccionar la primera opción disponible
+        const posStr = localStorage.getItem('posicionSeleccionada');
+        const savedPosition = posStr ? parseInt(posStr, 10) : 0;
+
         const paymentPlans = pl?.discount?.payment_plans || pl?.payment_plans;
-        const firstId = paymentPlans?.[0]?.id ?? null;
-        if (firstId) {
-          this.selectedPaymentByPlan[pl.id] = firstId;
+
+        let selectedId = null;
+
+        if (savedPosition >= 0 && savedPosition < paymentPlans.length) {
+          selectedId = paymentPlans[savedPosition]?.id;
+        }
+
+        if (!selectedId && paymentPlans.length > 0) {
+          selectedId = paymentPlans[0].id;
+        }
+
+        if (selectedId) {
+          this.selectedPaymentByPlan[pl.id] = selectedId;
         }
       });
 
@@ -638,15 +649,26 @@ export class SegurosPage implements OnInit {
 
     let chosenId = this.selectedPaymentByPlan?.[planId];
 
-    // Si no hay selección o la selección no es válida, usar la primera opción
+    // Si no hay selección o la selección no es válida, buscar en localStorage
     if (!chosenId || !paymentPlans.find((pp: any) => pp.id === chosenId)) {
-      chosenId = paymentPlans[0].id;
+      const posStr = localStorage.getItem('posicionSeleccionada');
+      const savedPosition = posStr ? parseInt(posStr, 10) : 0;
+
+      // Verificar que la posición guardada sea válida
+      if (savedPosition >= 0 && savedPosition < paymentPlans.length) {
+        chosenId = paymentPlans[savedPosition].id;
+      } else {
+        // Si no es válida, usar la primera opción
+        chosenId = paymentPlans[0].id;
+      }
+
       this.selectedPaymentByPlan[planId] = chosenId;
     }
 
     const idx = paymentPlans.findIndex((pp: any) => pp.id === chosenId);
     if (idx === -1) return;
 
+    // Guardar la posición seleccionada en localStorage
     localStorage.setItem('posicionSeleccionada', String(idx));
   }
   getSelectedPayment(pl: any) {
@@ -706,9 +728,9 @@ export class SegurosPage implements OnInit {
     const count = Array.isArray(pp?.payments) ? pp.payments.length : 1;
     switch (raw) {
       case 'ANNUAL': return 'Pago de contado';
-      case 'SUBSCRIPTION': return count > 1 ? `${count} pagos (suscripción)` : 'Suscripción';
-      case 'FLAT_FEE': return count > 1 ? `${count} pagos fijos` : 'Pago fijo';
-      case 'MSI': return count > 1 ? `${count} pagos Meses sin intereses` : 'Pago fijo';
+      case 'SUBSCRIPTION': return count > 1 ? `${count} Suscripción` : 'Suscripción';
+      case 'FLAT_FEE': return count > 1 ? `${count} Pijos` : 'Pago fijo';
+      case 'MSI': return count > 1 ? `${count} Meses sin intereses` : 'Pago fijo';
       default: return raw;
     }
   }

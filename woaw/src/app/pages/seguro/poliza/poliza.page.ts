@@ -149,9 +149,10 @@ export class PolizaPage implements OnInit {
     });
     this.verificarAuth();
     this.mostrarPresouestaPoliza();
-    this.getPosition();
     this.calInitOrChange();
-
+    setTimeout(() => {
+      this.getPosition();
+    }, 100);
     localStorage.removeItem('start_date_override');
   }
 
@@ -222,11 +223,14 @@ export class PolizaPage implements OnInit {
       return;
     }
     this.mostrarPresouestaPoliza();
+
     const rfc = this.UsuarioRespuesta.response.rfc;
     const id = this.datoscotizacion.id;
 
     const pos = this.getPosition();
-    const idPlanEspesifico = this.datoscotizacion.plans?.[0].payment_plans?.[pos].id;
+    const plan = this.datoscotizacion?.plans?.[0];
+    const paymentPlans = plan?.discount?.payment_plans || plan?.payment_plans;
+    const idPlanEspesifico = paymentPlans?.[pos]?.id;
     const idPlan = this.datoscotizacion.plans[0]?.id;
 
     const getNextDayISO = (isoDate?: string): string => {
@@ -511,58 +515,90 @@ export class PolizaPage implements OnInit {
     }
   }
   // 1) ÚNICO switch centralizado
-  private formatPaymentLabel(rawName: string, count: number): string {
-    const raw = (rawName ?? '').toString().toUpperCase();
+  private formatPaymentLabel(name: string, count: number): string {
+    const raw = (name || '').toString().toUpperCase();
+
     switch (raw) {
       case 'ANNUAL': return 'Pago de contado';
-      case 'SUBSCRIPTION': return count > 1 ? `${count} pagos (suscripción)` : 'Suscripción';
-      case 'FLAT_FEE': return count > 1 ? `${count} pagos fijos` : 'Pago fijo';
+      case 'SUBSCRIPTION': return count > 1 ? `${count} Suscripción` : 'Suscripción';
+      case 'FLAT_FEE': return count > 1 ? `${count} Pijos` : 'Pago fijo';
+      case 'MSI': return count > 1 ? `${count} Meses sin intereses` : 'Pago fijo';
       default: return raw;
     }
   }
-
-
-
-  
   private getPosition(): number {
     const posStr = localStorage.getItem('posicionSeleccionada');
-    const pos = Number(posStr);
+    let pos = Number(posStr);
 
     const plan = this.datoscotizacion?.plans?.[0];
-    const paymentPlan = plan?.payment_plans?.[pos];
+
+    // VERIFICAR SI HAY CUPÓN (discount) Y USAR ESOS PAYMENT_PLANS
+    const paymentPlans = plan?.discount?.payment_plans || plan?.payment_plans;
+
+    // VALIDAR QUE LA POSICIÓN SEA VÁLIDA
+    if (!paymentPlans || pos >= paymentPlans.length || pos < 0 || isNaN(pos)) {
+      console.warn('Posición inválida, usando posición 0 por defecto');
+      pos = 0;
+      localStorage.setItem('posicionSeleccionada', '0');
+    }
+
+    const paymentPlan = paymentPlans?.[pos];
 
     if (paymentPlan) {
-      const label = this.formatPaymentLabel(paymentPlan.name, paymentPlan.payments?.length ?? 1);
+      const label = this.paymentPlanLabel(paymentPlan);
       const total = this.fmtMoney(paymentPlan.total);
       this.miPlan = `${label} — ${total}`;
-
       this.selectedPaymentId = paymentPlan.id;
+
+    } else {
+      console.error('No se pudo encontrar el payment plan en la posición:', pos);
+      if (paymentPlans?.[0]) {
+        const firstPlan = paymentPlans[0];
+        const label = this.paymentPlanLabel(firstPlan);
+        const total = this.fmtMoney(firstPlan.total);
+        this.miPlan = `${label} — ${total}`;
+        this.selectedPaymentId = firstPlan.id;
+        localStorage.setItem('posicionSeleccionada', '0');
+      }
     }
 
     return pos;
   }
   paymentPlanLabel(pp: any): string {
+    if (!pp) return '';
+
     const raw = (pp?.name ?? '').toString().toUpperCase();
     const count = Array.isArray(pp?.payments) ? pp.payments.length : 1;
+
     switch (raw) {
       case 'ANNUAL': return 'Pago de contado';
       case 'SUBSCRIPTION': return count > 1 ? `${count} pagos (suscripción)` : 'Suscripción';
       case 'FLAT_FEE': return count > 1 ? `${count} pagos fijos` : 'Pago fijo';
-      case 'MSI': return count > 1 ? `${count} pagos Meses sin intereses` : 'Pago fijo';
+      case 'MSI': return count > 1 ? `${count} Meses sin intereses` : 'Pago fijo';
       default: return raw;
     }
   }
   onSelectPayment(paymentPlanId: string) {
-    const arr = this.datoscotizacion?.plans?.[0]?.payment_plans;
-    if (!arr?.length) return;
+    const plan = this.datoscotizacion?.plans?.[0];
+    const paymentPlans = plan?.discount?.payment_plans || plan?.payment_plans;
 
-    const idx = arr.findIndex((pp: any) => pp.id === paymentPlanId);
+    if (!paymentPlans?.length) {
+      console.error('No hay payment plans disponibles');
+      return;
+    }
+
+    const idx = paymentPlans.findIndex((pp: any) => pp.id === paymentPlanId);
+
     if (idx >= 0) {
       localStorage.setItem('posicionSeleccionada', String(idx));
 
-      const pp = arr[idx];
-      const label = this.formatPaymentLabel(pp?.name, Array.isArray(pp?.payments) ? pp.payments.length : 1);
+      const pp = paymentPlans[idx];
+      const label = this.paymentPlanLabel(pp);
       this.miPlan = `${label} — ${this.fmtMoney(pp?.total)}`;
+      this.selectedPaymentId = pp.id;
+
+    } else {
+      console.error('No se encontró el payment plan con ID:', paymentPlanId);
     }
   }
   // === GETTERS derivados DIRECTAMENTE de datosPolizaCreada ===

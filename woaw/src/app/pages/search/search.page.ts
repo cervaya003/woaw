@@ -1,10 +1,12 @@
+// search.page.ts
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CarsService } from '../../services/cars.service';
 import { GeneralService } from '../../services/general.service';
 import { IonContent } from '@ionic/angular';
 import { PopoverController } from '@ionic/angular';
 import { ListComponent } from '../../components/filtos/list/list.component';
+import { SearchService, SearchResult } from '../../services/search.service';
 
 @Component({
   selector: 'app-search',
@@ -21,6 +23,10 @@ export class SearchPage implements OnInit {
   @ViewChild('pageContent') content!: IonContent;
   @ViewChild('pageContent', { static: false }) pageContent!: IonContent;
   resultadosPaginados: any[] = [];
+  
+  // NUEVA VARIABLE - indica si resultadosPaginados tiene datos
+  tieneResultadosPaginados: boolean = false;
+  
   paginaActual = 1;
   elementosPorPagina!: number;
   paginas: number[] = [];
@@ -28,6 +34,10 @@ export class SearchPage implements OnInit {
   autosFavoritosIds: Set<string> = new Set();
   itemsPorPagina!: number;
   idsMisVehiculos: string[] = [];
+
+  // Añade estas propiedades
+  serviciosEncontrados: SearchResult[] = [];
+  mostrarServicios: boolean = false;
 
   filtros = [
     { label: 'Precio', tipo: 'precio' },
@@ -44,7 +54,9 @@ export class SearchPage implements OnInit {
     private route: ActivatedRoute,
     private generalService: GeneralService,
     public carsService: CarsService,
-    private popoverCtrl: PopoverController
+    private popoverCtrl: PopoverController,
+    private searchService: SearchService,
+    private router: Router
   ) { }
 
   ngOnInit() {
@@ -61,9 +73,25 @@ export class SearchPage implements OnInit {
       if (termino) {
         this.terminoBusqueda = termino;
         this.buscarVehiculos(termino);
+        this.buscarServicios(termino);
       }
     });
   }
+
+  // Añade este método
+  buscarServicios(termino: string) {
+    this.serviciosEncontrados = this.searchService.buscarServicios(termino);
+
+    if (this.serviciosEncontrados && this.serviciosEncontrados.length > 0) {
+      this.mostrarServicios = true;
+    }
+  }
+
+  // Añade este método para navegar a servicios
+  navegarAServicio(ruta: string) {
+    this.router.navigateByUrl(ruta);
+  }
+
   buscarVehiculos(termino: string) {
     this.carsService.search(termino, this.tipoBusqueda).subscribe({
       next: (res: any) => {
@@ -101,6 +129,7 @@ export class SearchPage implements OnInit {
       },
     });
   }
+
   calcularPaginacion() {
     const total = this.resultadosFiltrados.length;
     this.totalPaginas = Math.ceil(total / this.itemsPorPagina);
@@ -108,11 +137,16 @@ export class SearchPage implements OnInit {
     this.paginaActual = 1;
     this.actualizarVihiculosPaginadas();
   }
+
   actualizarVihiculosPaginadas() {
     const inicio = (this.paginaActual - 1) * this.itemsPorPagina;
     const fin = inicio + this.itemsPorPagina;
     this.resultadosPaginados = this.resultadosFiltrados.slice(inicio, fin);
+    
+    // ACTUALIZAR LA NUEVA VARIABLE - verifica si hay datos
+    this.tieneResultadosPaginados = this.resultadosPaginados.length > 0;
   }
+
   cambiarPagina(pagina: number) {
     this.paginaActual = pagina;
     this.actualizarVihiculosPaginadas();
@@ -120,6 +154,7 @@ export class SearchPage implements OnInit {
       this.pageContent?.scrollToTop(400);
     }, 100);
   }
+
   ordenarAutos(criterio: string) {
     if (!this.resultadosFiltrados || this.resultadosFiltrados.length === 0)
       return;
@@ -154,12 +189,15 @@ export class SearchPage implements OnInit {
       this.pageContent?.scrollToTop(400);
     }, 100);
   }
+
   handleRefrescarAutos(ubicacion: string) {
     this.buscarVehiculos(this.terminoBusqueda);
   }
+
   esNumero(valor: any): valor is number {
     return typeof valor === 'number';
   }
+
   misAutosid() {
     this.carsService.misAutosId().subscribe({
       next: (res: any) => {
@@ -180,10 +218,11 @@ export class SearchPage implements OnInit {
       },
     });
   }
+
   get paginasReducidas(): (number | string)[] {
     const total = this.totalPaginas;
     const actual = this.paginaActual;
-    const rango = 1; // ±2 alrededor
+    const rango = 1;
 
     if (total <= 2) return this.paginas;
 
@@ -204,7 +243,7 @@ export class SearchPage implements OnInit {
 
     return paginas;
   }
-  // ## ----- Filtro ☢️☢️☢️☢️
+
   async mostrarOpciones(ev: Event, tipo: string) {
     const popover = await this.popoverCtrl.create({
       component: ListComponent,
@@ -217,7 +256,6 @@ export class SearchPage implements OnInit {
     const { data } = await popover.onDidDismiss();
 
     if (data === null) {
-      // Se seleccionó "Quitar filtro"
       this.filtrosAplicados[tipo] = null;
     } else {
       this.filtrosAplicados[tipo] = data;
@@ -225,6 +263,7 @@ export class SearchPage implements OnInit {
 
     this.aplicarFiltros();
   }
+
   aplicarFiltros() {
     this.resultadosFiltrados = this.resultados.filter((vehiculo) => {
       const filtroPrecio = this.filtrosAplicados.precio;
@@ -271,6 +310,7 @@ export class SearchPage implements OnInit {
     this.paginaActual = 1;
     this.calcularPaginacion();
   }
+
   resetearFiltros() {
     this.filtrosAplicados = {
       precio: null,
