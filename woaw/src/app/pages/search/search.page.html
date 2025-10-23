@@ -6,8 +6,6 @@
   <app-acomodo [totalAutos]="totalVehiculos" [titulo]="terminoBusqueda" (ordenCambio)="ordenarAutos($event)">
   </app-acomodo>
 
-
-
   <ion-grid *ngIf="tieneResultadosPaginados">
     <ion-row>
 
@@ -83,10 +81,55 @@
     </ion-row>
   </ion-grid>
 
+
+  <!-- NUEVA SECCIÓN PARA CUANDO NO HAY RESULTADOS -->
+  <div *ngIf="!tieneResultadosPaginados && !mostrarServicios" class="seccion-sin-resultados">
+
+    <div class="contenedor_servicios">
+      <div class="servicios_container">
+          <div class="mensaje-principal">
+            <ion-icon name="search-outline" class="icono-busqueda"></ion-icon>
+            <h2>No encontramos resultados para tu búsqueda</h2>
+            <p>Pero tenemos estas opciones que podrían interesarte:</p>
+          </div>
+
+        <div class="grid-servicios">
+
+
+          <div class="card-servicio" *ngFor="let servicio of serviciosSugeridos"
+            (click)="navegarAServicio(servicio.ruta)">
+            <div class="card-header">
+              <ion-icon [name]="servicio.icono || 'help-circle'"
+                [class]="servicio.tipo === 'servicio' ? 'icono-servicio' : 'icono-categoria'"></ion-icon>
+              <ion-badge [class]="servicio.tipo === 'servicio' ? 'badge-servicio' : 'badge-categoria'">
+                {{ servicio.tipo }}
+              </ion-badge>
+            </div>
+
+            <div class="card-content-sugerido">
+              <h4 class="titulo-servicio-sugerido">{{ servicio.titulo }}</h4>
+              <p class="descripcion-servicio-sugerido">{{ servicio.descripcion }}</p>
+            </div>
+
+            <div class="card-footer-sugerido">
+              <ion-icon name="chevron-forward" class="icono-flecha-sugerido"></ion-icon>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+
+
   <ng-container *ngIf="mostrarServicios && !tieneResultadosPaginados">
+
     <div class="contenedor_servicios">
       <div class="servicios_container">
         <div class="grid-servicios">
+
           <div class="card-servicio" *ngFor="let servicio of serviciosEncontrados"
             (click)="navegarAServicio(servicio.ruta)">
             <div class="card-header">
@@ -106,9 +149,11 @@
               <ion-icon name="chevron-forward" class="icono-flecha"></ion-icon>
             </div>
           </div>
+
         </div>
       </div>
     </div>
+
   </ng-container>
 
 

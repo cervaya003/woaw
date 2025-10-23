@@ -34,7 +34,7 @@ export class PersonaPage implements OnInit {
   mostrarMasOpciones: boolean = false;
 
   public tipoDispocitivo: 'computadora' | 'telefono' | 'tablet' = 'computadora';
-  private idActividadExtra: string = '8944098'
+  private idActividadExtra: string = '0'
   buscarForm!: FormGroup;
 
   public isLoggedIn: boolean = false;
@@ -103,7 +103,6 @@ export class PersonaPage implements OnInit {
       //   'warning'
       // );
     }
-    this.obtenerActEconomicas();
   }
   onBuscar(status: boolean = true, val: string = ''): Promise<boolean> {
     return new Promise((resolve, reject) => {
@@ -143,6 +142,7 @@ export class PersonaPage implements OnInit {
             'Usuario localizado',
             'success'
           );
+          this.seguros.contador('llenoDatos');
           this.form_poliza.reset();
           return resolve(true);
         },
@@ -332,7 +332,7 @@ export class PersonaPage implements OnInit {
   onActividadChange(event: Event) {
     const selectedValue = (event.target as HTMLSelectElement).value;
     console.log(this.form_poliza.get('actE')?.value, selectedValue)
-    if (selectedValue === "8944098") {
+    if (selectedValue === this.idActividadExtra) {
       this.mostrarMasOpciones = true;
       if (!this.form_poliza.contains('actEextra')) {
         this.form_poliza.addControl('actEextra', this.fb.control('', [Validators.required]));
@@ -389,7 +389,7 @@ export class PersonaPage implements OnInit {
       email: this.form_poliza.get('email')?.value,
       phone: this.form_poliza.get('telefono')?.value,
       address: {
-        street: this.form_poliza.get('calle')?.value, 
+        street: this.form_poliza.get('calle')?.value,
         external_number: this.form_poliza.get('ext')?.value,
         internal_number: this.form_poliza.get('int')?.value?.trim() || 'SN',
         neighborhood: this.form_poliza.get('col')?.value,
@@ -463,10 +463,18 @@ export class PersonaPage implements OnInit {
     this.seguros.optenerActEcon().subscribe({
       next: (data) => {
         this.ActEconomicas = data;
-        console.log(this.ActEconomicas)
       },
       error: (error) => console.error('Error al obtener actividades economicas:', error),
     });
+  }
+  getActividadesPrincipales() {
+    const idsRequeridos = [8944098, 9506009, 9411998, 0];
+    return this.ActEconomicas.filter(a => idsRequeridos.includes(a._id));
+  }
+
+  getActividadesSecundarias() {
+    const idsRequeridos = [8944098, 9506009, 9411998, 0];
+    return this.ActEconomicas.filter(a => !idsRequeridos.includes(a._id));
   }
   async enviarDatosCrearPersona(payload: any) {
     this.mostrar_spinnet = true;
@@ -490,6 +498,7 @@ export class PersonaPage implements OnInit {
         'Registro exitoso',
         'success'
       );
+      this.seguros.contador('llenoDatos');
       localStorage.setItem('UsuarioRespuesta', JSON.stringify(data));
       this.router.navigate(['/seguros/poliza']);
 

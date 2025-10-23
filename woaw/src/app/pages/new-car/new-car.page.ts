@@ -240,11 +240,14 @@ export class NewCarPage implements OnInit {
     if (this.seleccion === "renta") return;
 
     this.limpiarDependencias("all");
+
     this.mostrarInputOtroAnio = this.anioSeleccionado === "otro";
 
     const anio = this.obtenerAnioActual();
     this.anioValido =
       tipo === "select" ? this.validarAnio(anio) : this.validarAniOtro(anio);
+
+      console.log(this.anioValido)
 
     if (this.anioValido) {
       this.mansaje_error = "";
@@ -277,12 +280,10 @@ export class NewCarPage implements OnInit {
       }
     }
 
-    // Renta y otros: sin cambios (hasta año actual)
     return !isNaN(anio) && anio >= 1800 && anio <= anioActual;
   }
 
   esAnioAnteriorA2008(): boolean {
-    // En renta NO forzamos input manual: queremos lista de modelos
     if (this.seleccion === "renta") return false;
     const anio = this.obtenerAnioActual();
     return this.anioValido && anio < 2008;
@@ -303,7 +304,7 @@ export class NewCarPage implements OnInit {
     } else if (tipo === "modelo") {
       this.mostrarCarComponent = false;
       this.mansaje_error = "";
-    } else if (tipo === "mios") {
+    } else if (tipo === "all") {
       this.marcaSeleccionada = "";
       this.modeloSeleccionado = "";
       this.modeloEsPersonalizado = false;
@@ -517,7 +518,7 @@ export class NewCarPage implements OnInit {
       case "auto":
         this.PeticionesModelosDeAutos();
         break;
-      case "renta": // traer modelos sin año (backend ya lo ignora)
+      case "renta":
         this.PeticionesModelosParaRenta(this.marcaSeleccionada);
         break;
       case "moto":
@@ -573,10 +574,10 @@ export class NewCarPage implements OnInit {
         const raw: any[] = Array.isArray(data)
           ? data
           : Array.isArray(data?.modelos)
-          ? data.modelos
-          : Array.isArray(data?.data)
-          ? data.data
-          : [];
+            ? data.modelos
+            : Array.isArray(data?.data)
+              ? data.data
+              : [];
 
         // Normaliza a { modelo: string }
         const list = raw
@@ -619,7 +620,7 @@ export class NewCarPage implements OnInit {
 
   PeticionesMarcasDeAutos(anio: number) {
     const anioActual = new Date().getFullYear();
-    if (anio >= 2008 && anio <= anioActual) {
+    if (anio >= 2008 && anio <= anioActual + 1) {
       this.carsService.GetMarcas(anio).subscribe({
         next: (data) => {
           this.marcas = data;

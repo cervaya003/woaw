@@ -23,10 +23,12 @@ export class SearchPage implements OnInit {
   @ViewChild('pageContent') content!: IonContent;
   @ViewChild('pageContent', { static: false }) pageContent!: IonContent;
   resultadosPaginados: any[] = [];
-  
+
+  serviciosSugeridos: any[] = [];
+
   // NUEVA VARIABLE - indica si resultadosPaginados tiene datos
   tieneResultadosPaginados: boolean = false;
-  
+
   paginaActual = 1;
   elementosPorPagina!: number;
   paginas: number[] = [];
@@ -60,6 +62,7 @@ export class SearchPage implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.cargarServiciosSugeridos();
     this.generalService.valorGlobal$.subscribe((valor) => {
       this.itemsPorPagina = valor;
     });
@@ -102,7 +105,6 @@ export class SearchPage implements OnInit {
         this.resultadosFiltrados = [...autos];
         this.totalVehiculos = contador;
 
-        // útil mientras pruebas parser/filtros del back:
         if (res?.debug) console.log('DEBUG filtro back:', res.debug);
 
         this.calcularPaginacion();
@@ -142,7 +144,7 @@ export class SearchPage implements OnInit {
     const inicio = (this.paginaActual - 1) * this.itemsPorPagina;
     const fin = inicio + this.itemsPorPagina;
     this.resultadosPaginados = this.resultadosFiltrados.slice(inicio, fin);
-    
+
     // ACTUALIZAR LA NUEVA VARIABLE - verifica si hay datos
     this.tieneResultadosPaginados = this.resultadosPaginados.length > 0;
   }
@@ -320,4 +322,68 @@ export class SearchPage implements OnInit {
     };
     this.aplicarFiltros();
   }
+
+  cargarServiciosSugeridos() {
+    // Servicios importantes que siempre quieres mostrar
+    this.serviciosSugeridos = [
+      {
+        titulo: 'Publicar Vehículo',
+        descripcion: 'Vende o renta tu vehículo de forma rápida y segura',
+        tipo: 'servicio',
+        icono: 'add-circle',
+        ruta: '/new-car'
+      },
+      {
+        titulo: 'Seguros',
+        descripcion: 'Encuentra el seguro ideal para tu vehículo',
+        tipo: 'servicio',
+        icono: 'shield-checkmark',
+        ruta: '/seguros'
+      },
+      {
+        titulo: 'Arrendar',
+        descripcion: 'Arrendamiento de vehículos a tu medida',
+        tipo: 'servicio',
+        icono: 'business',
+        ruta: '/arrendamiento'
+      },
+      {
+        titulo: 'Autos Nuevos',
+        descripcion: 'Descubre las últimas novedades del mercado',
+        tipo: 'categoria',
+        icono: 'car-sport',
+        ruta: '/nuevos'
+      },
+      {
+        titulo: 'Autos Seminuevos',
+        descripcion: 'Calidad y confianza en vehículos seminuevos',
+        tipo: 'categoria',
+        icono: 'car',
+        ruta: '/seminuevos'
+      },
+      {
+        titulo: 'Autos Usados',
+        descripcion: 'Las mejores opciones en vehículos usados',
+        tipo: 'categoria',
+        icono: 'time',
+        ruta: '/usados'
+      },
+      {
+        titulo: 'Motos',
+        descripcion: 'Amplia variedad de motocicletas',
+        tipo: 'categoria',
+        icono: 'bicycle',
+        ruta: '/m-nuevos'
+      },
+      {
+        titulo: 'Camiones',
+        descripcion: 'Vehículos comerciales y de carga',
+        tipo: 'categoria',
+        icono: 'bus',
+        ruta: '/camiones/todos'
+      }
+    ];
+  }
+
+
 }

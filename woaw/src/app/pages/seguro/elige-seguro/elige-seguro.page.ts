@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { SeguroService } from '../../../services/seguro.service';
 
 @Component({
   selector: 'app-elige-seguro',
@@ -10,13 +11,17 @@ import { Router } from '@angular/router';
 export class EligeSeguroPage implements OnInit {
 
   constructor(
-    private router: Router
+    private router: Router,
+    private seguros: SeguroService
   ) { }
 
   ngOnInit() {
   }
 
   public elegirSeguro(tipo: string, url: string) {
+    if(tipo === 'Auto'){
+      this.seguros.contador('entro');
+    }
     localStorage.setItem('tipo-cotizar-manual', tipo);
     this.router.navigateByUrl(url);
   }

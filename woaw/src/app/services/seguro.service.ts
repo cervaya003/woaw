@@ -23,8 +23,8 @@ export interface CotizacionDTO {
   providedIn: "root",
 })
 export class SeguroService {
- 
- 
+
+
   constructor(
     private http: HttpClient,
     private generalService: GeneralService,
@@ -41,7 +41,7 @@ export class SeguroService {
         });
       }),
       catchError((error) => this.headersService.handleError(error))
-    );  
+    );
     //  return this.http.get(${environment.api_key}/crabi/brands);
   }
   getModelos(marcaId: Number): Observable<any> {
@@ -184,7 +184,7 @@ export class SeguroService {
       catchError((error) => this.headersService.handleError(error))
     );
   }
- 
+
   getPagoPoliza(id: string): Observable<any> {
     return from(this.headersService.obtenerToken()).pipe(
       switchMap((token) => {
@@ -196,7 +196,7 @@ export class SeguroService {
       catchError((error) => this.headersService.handleError(error))
     );
   }
- 
+
 
   descargarRecibo(): Observable<any> {
     return from(this.headersService.obtenerToken()).pipe(
@@ -210,7 +210,7 @@ export class SeguroService {
     );
   }
 
- 
+
   pagoPoliza(id: string): Observable<any> {
     return from(this.headersService.obtenerToken()).pipe(
       switchMap((token) => {
@@ -250,6 +250,35 @@ export class SeguroService {
         return this.http.post(`${environment.api_key}/crabi/seguros`, datos, { headers, observe: 'response' as const });
       }),
       catchError((error) => this.headersService.handleError(error))
+    );
+  }
+
+
+  contador(campo: string) {
+    let usuario;
+    const storage = localStorage.getItem("user");
+    if (storage) {
+      try {
+        usuario = JSON.parse(storage);
+      } catch {
+      }
+    }
+    this.contarSegurosEvento(campo, usuario?.rol).subscribe({
+      next: (data) => {
+      },
+      error: (error) => console.error('Error contador - seguros:', error),
+    });
+  }
+
+  contarSegurosEvento(evento: string, rol?: string): Observable<any> {
+    const body = {
+      evento: evento,
+      rol: rol
+    };
+
+    return this.http.post(
+      `${environment.api_key}/seguros`,
+      body
     );
   }
 }

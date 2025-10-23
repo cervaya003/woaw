@@ -82,7 +82,7 @@ export class SearchService {
       icono: 'albums'
     },
 
-    // Información
+    // Información y Cuenta
     {
       titulo: 'Conócenos',
       descripcion: 'Más información sobre WOAW',
@@ -103,10 +103,141 @@ export class SearchService {
       ruta: '/politicas',
       tipo: 'servicio',
       icono: 'document-lock'
+    },
+    {
+      titulo: 'Eliminar Cuenta',
+      descripcion: 'Eliminación de cuenta de usuario',
+      ruta: '/eliminacion-cuenta',
+      tipo: 'servicio',
+      icono: 'person-remove'
+    },
+    {
+      titulo: 'Mis Pólizas',
+      descripcion: 'Ver mis pólizas de seguros',
+      ruta: '/seguros/ver-polizas',
+      tipo: 'servicio',
+      icono: 'document-text'
+    },
+    {
+      titulo: 'Crear Póliza',
+      descripcion: 'Crear nueva póliza de seguro',
+      ruta: '/seguros/poliza',
+      tipo: 'servicio',
+      icono: 'add-circle'
+    },
+    {
+      titulo: 'Seguros para Autos',
+      descripcion: 'Cotizar seguros para automóviles',
+      ruta: '/seguros/autos',
+      tipo: 'servicio',
+      icono: 'car-sport'
+    },
+    {
+      titulo: 'Seguros para Personas',
+      descripcion: 'Seguros de vida y salud',
+      ruta: '/seguros/persona',
+      tipo: 'servicio',
+      icono: 'person'
+    },
+    {
+      titulo: 'Cotizar Seguro Manual',
+      descripcion: 'Cotización manual de seguros',
+      ruta: '/seguros/cotizar-manual',
+      tipo: 'servicio',
+      icono: 'calculator'
+    },
+    {
+      titulo: 'Cotizar Moto/Camión',
+      descripcion: 'Cotizar seguros para motos y camiones',
+      ruta: '/seguros/cotiza/:tipo',
+      tipo: 'servicio',
+      icono: 'calculator'
+    },
+    {
+      titulo: 'Detalle de Póliza',
+      descripcion: 'Ver detalle de póliza',
+      ruta: '/seguros/detalle-poliza',
+      tipo: 'servicio',
+      icono: 'document'
+    },
+
+    // Rentas y Reservas
+    {
+      titulo: 'Mis Reservas',
+      descripcion: 'Ver mis reservas de renta',
+      ruta: '/mis-reservas',
+      tipo: 'servicio',
+      icono: 'calendar'
+    },
+    {
+      titulo: 'Check-in',
+      descripcion: 'Check-in para renta de autos',
+      ruta: '/checkin/:id',
+      tipo: 'servicio',
+      icono: 'log-in'
+    },
+    {
+      titulo: 'Check-out',
+      descripcion: 'Check-out para renta de autos',
+      ruta: '/checkout/:id',
+      tipo: 'servicio',
+      icono: 'log-out'
+    },
+
+    // Gestión de Vehículos
+    {
+      titulo: 'Mis Autos',
+      descripcion: 'Gestionar mis autos publicados',
+      ruta: '/mis-autos',
+      tipo: 'servicio',
+      icono: 'car'
+    },
+    {
+      titulo: 'Mis Motos',
+      descripcion: 'Gestionar mis motos publicadas',
+      ruta: '/mis-motos',
+      tipo: 'servicio',
+      icono: 'bicycle'
+    },
+    {
+      titulo: 'Mis Camiones',
+      descripcion: 'Gestionar mis camiones publicados',
+      ruta: '/mis-camiones',
+      tipo: 'servicio',
+      icono: 'bus'
+    },
+    {
+      titulo: 'Publicar Auto',
+      descripcion: 'Publicar nuevo vehículo',
+      ruta: '/new-car',
+      tipo: 'servicio',
+      icono: 'add'
+    },
+    {
+      titulo: 'Editar Auto',
+      descripcion: 'Editar vehículo publicado',
+      ruta: '/update-car/:tipo/:id',
+      tipo: 'servicio',
+      icono: 'create'
+    },
+
+    // Favoritos y Mensajes
+    {
+      titulo: 'Favoritos',
+      descripcion: 'Mis vehículos favoritos',
+      ruta: '/favoritos',
+      tipo: 'servicio',
+      icono: 'heart'
+    },
+    {
+      titulo: 'Mensajes',
+      descripcion: 'Mis conversaciones',
+      ruta: '/mensajes',
+      tipo: 'servicio',
+      icono: 'chatbubbles'
     }
   ];
 
-  // search.service.ts
   buscarServicios(termino: string): SearchResult[] {
     if (!termino.trim()) {
       return this.getServiciosDestacados();

@@ -16,13 +16,14 @@ import { FotosVeiculoComponent } from '../../modal/fotos-veiculo/fotos-veiculo.c
 import { Router, NavigationStart } from '@angular/router';
 import { RegistroService } from '../../../services/registro.service';
 import { ContactosService } from './../../../services/contactos.service';
+import { SpinnerComponent } from '../../../components/spinner/spinner.component';
 
 @Component({
   selector: 'app-car',
   templateUrl: './car.component.html',
   styleUrls: ['./car.component.scss'],
   standalone: true, // Si usando componentes independientes (standalone)
-  imports: [IonicModule, CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [IonicModule, CommonModule, FormsModule, ReactiveFormsModule, SpinnerComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA], //esquema personalizado
 })
 export class CarComponent implements OnInit {
@@ -50,6 +51,7 @@ export class CarComponent implements OnInit {
   tipoSeleccionado: 'particular' | 'lote' = 'particular';
 
   ubicacionesLoteLegibles: string[] = [];
+  mostrar_spinnet: boolean = false;
 
   loteSeleccionado: string | null = null;
   direccionSeleccionada: any = null;
@@ -65,7 +67,7 @@ export class CarComponent implements OnInit {
   descripcion: string = '';
   moneda: 'MXN' | 'USD' = 'MXN';
   extrasTexto: string = '';
-  
+
   precioEstimado: number | null = null;
   tipoFactura: string = '';
 
@@ -215,9 +217,6 @@ export class CarComponent implements OnInit {
   }
   continuar() {
     if (!this.tipoSeleccionado) return;
-    // if (this.tipoSeleccionado == 'lote') {
-    //   this.getLotes('mios');
-    // }
     this.Pregunta = 'no';
   }
   definirEstadoVehiculo() {
@@ -242,6 +241,14 @@ export class CarComponent implements OnInit {
 
     this.esUsadoAntiguo =
       this.estadoVehiculo === 'Usado' && this.anio < 2008 && this.anio >= 1800;
+  }
+  public onTipoChange(event: any) {
+    this.mostrar_spinnet = true;
+    setTimeout(() => {
+      this.mostrar_spinnet = false;
+      this.estadoVehiculo = event.detail.value;
+      this.estadoVehiculo_logico = this.estadoVehiculo.toLowerCase();
+    }, 1000);
   }
   obtenerVersiones() {
     if (this.modelo && this.anio && this.marca) {
@@ -287,7 +294,7 @@ export class CarComponent implements OnInit {
         });
     }
   }
-   async seleccionarUbicacion() {
+  async seleccionarUbicacion() {
     const modal = await this.modalController.create({ component: MapaComponent });
     await modal.present();
     const { data } = await modal.onDidDismiss();
@@ -879,7 +886,6 @@ export class CarComponent implements OnInit {
   getLotes(tipo: 'all' | 'mios') {
     this.registroService.allLotes(tipo).subscribe({
       next: async (res) => {
-        console.log(res);
         this.lotes = res.lotes;
         this.totalLotes = this.lotes.length;
 

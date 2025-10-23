@@ -42,20 +42,6 @@
       <span>Continuar con Google</span>
     </div>
 
-<!-- ios -->
-    <ion-button
-  *ngIf="isNative && isIOS"
-  expand="block"
-  color="dark"
-  (click)="loginWithApple()"
-  [disabled]="loadingApple"
-  class="apple-btn"
->
-  <ion-icon slot="start" name="logo-apple"></ion-icon>
-  {{ loadingApple ? 'Conectando...' : 'Continuar con Apple' }}
-</ion-button>
-<small *ngIf="isNative && isIOS" class="muted">Disponible en iPhone/iPad (iOS 13+)</small>
-
   </form>
 
   

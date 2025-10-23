@@ -46,3 +46,10 @@ ionic generate service services/motos
 
 
 firebase hosting:channel:deploy mi-feature
+
+
+
+
+
+             "optimization": false,
+            "buildOptimizer": false,

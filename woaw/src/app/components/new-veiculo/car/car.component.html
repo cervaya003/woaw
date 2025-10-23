@@ -1,3 +1,5 @@
+<app-spinner *ngIf="mostrar_spinnet"></app-spinner>
+
 <section>
 
   <div class="resumen-estado" *ngIf="seccionFormulario == 2 && Pregunta == 'no'">
@@ -12,9 +14,21 @@
       <p>Año: <strong>{{ anio }}</strong></p>
       <p>Marca: <strong>{{ marca }}</strong></p>
       <p>Modelo: <strong>{{ modelo }}</strong></p>
-      <p class="estilo_unico">{{ estadoVehiculo }}</p>
+      <p *ngIf="MyRole !== 'admin'" class="estilo_unico">{{ estadoVehiculo }}</p>
+
+      <div *ngIf="MyRole === 'admin'" class="field">
+        <div class="control control--select">
+          <ion-select #lista class="sync-pop" interface="popover"
+            [interfaceOptions]="{ cssClass: 'select-popover pop-tipo', side: 'bottom', alignment: 'start' }"
+            (ionChange)="onTipoChange($event)" [value]="estadoVehiculo" placeholder="Tipo">
+            <ion-select-option value="Nuevo">Nuevo</ion-select-option>
+            <ion-select-option value="Seminuevo">Seminuevo</ion-select-option>
+            <ion-select-option value="Usado">Usado</ion-select-option>
+          </ion-select>
+        </div>
+      </div>
+
     </div>
-    <!-- <p>{{tipoSeleccionado}}</p> -->
   </div>
 
   <!-- # ------ PREGUNTA COMO SUBIR SI LOTE O PARTICULAR -----  -->
@@ -107,8 +121,6 @@
       </button>
     </div>
   </div>
-
-
 
 
   <!-- # ------ FORMULARIO -----  -->
@@ -325,4 +337,6 @@
     </div> -->
 
   </div>
+
+
 </section>

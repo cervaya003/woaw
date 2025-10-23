@@ -298,6 +298,7 @@ export class PolizaPage implements OnInit {
         localStorage.removeItem('datosCoche');
         localStorage.removeItem('cotizacion');
         this.mostrar_spinnet = false;
+        this.seguros.contador('generoPoliza');
         this.mostrarPresouestaPoliza();
       },
       error: (error) => {

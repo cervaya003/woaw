@@ -620,6 +620,8 @@ export class SegurosPage implements OnInit {
             this.activePlan = null;
           }
 
+          this.seguros.contador('cotizo');
+
         }, 2500);
       },
       error: (err) => {
