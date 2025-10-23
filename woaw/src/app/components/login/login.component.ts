@@ -13,7 +13,11 @@ import { Browser } from '@capacitor/browser';
 import { App, URLOpenListenerEvent } from '@capacitor/app';
 import { PluginListenerHandle } from '@capacitor/core';
 
+// PLUGIN CORRECTO
+import { SignInWithApple } from '@capacitor-community/apple-sign-in';
+
 declare const google: any;
+
 
 @Component({
   selector: 'app-login',
@@ -30,6 +34,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
   googleInitialized = false;
 
   isNative = Capacitor.isNativePlatform();
+  isIOS = Capacitor.getPlatform() === 'ios'; // NUEVO: Detectar iOS
   deepLink = 'woaw://auth/google';
 
 
@@ -253,10 +258,163 @@ export class LoginComponent implements OnInit, AfterViewInit {
     const url = this.registroService.getGoogleMobileRedirectUrl(platform);
     await Browser.open({ url });
   }
- 
+
 
   ngOnDestroy(): void {
     this.urlListener?.remove();
     this.urlListener = undefined;
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ async loginWithApple() {
+    try {
+      console.log('🔵 Iniciando login con Apple...');
+      
+      // Verificación básica - SOLO iOS nativo
+      if (!this.isIOS || !Capacitor.isNativePlatform()) {
+        console.log('❌ No es iOS nativo');
+        this.generalService.alert(
+          'No compatible', 
+          'Sign in with Apple solo está disponible en dispositivos iOS',
+          'warning'
+        );
+        return;
+      }
+
+      this.generalService.loading('Conectando con Apple...');
+
+      // CONFIGURACIÓN MÍNIMA Y FUNCIONAL
+      const result = await SignInWithApple.authorize({
+        clientId: 'com.woaw.woaw', // TU BUNDLE ID EXACTO
+        redirectURI: '', // VACÍO para apps nativas
+        scopes: 'email', // SOLO email (name puede causar problemas)
+        state: 'auth'
+      });
+
+      this.generalService.loadingDismiss();
+      console.log('✅ Respuesta de Apple:', result);
+
+      // Verificar respuesta
+      if (!result?.response?.identityToken) {
+        console.error('❌ No hay identityToken en la respuesta');
+        this.generalService.alert('Error', 'No se recibió token de Apple', 'danger');
+        return;
+      }
+
+      const { identityToken, email, givenName, familyName } = result.response;
+
+      // Enviar al backend
+      this.registroService.loginConApple({
+        idToken: identityToken,
+        platform: 'ios',
+        fullName: {
+          givenName: givenName || '',
+          familyName: familyName || ''
+        },
+        email: email || ''
+      }).subscribe({
+        next: (res: any) => {
+          console.log('✅ Respuesta del servidor:', res);
+          if (res.token && res.user) {
+            this.handleAppleLoginSuccess(res.token, res.user);
+          } else {
+            this.generalService.alert('Error', 'Error en respuesta del servidor', 'danger');
+          }
+        },
+        error: (error) => {
+          console.error('❌ Error del servidor:', error);
+          this.generalService.alert('Error', 'Error en el servidor', 'danger');
+        }
+      });
+
+    } catch (error: any) {
+      this.generalService.loadingDismiss();
+      console.error('❌ Error completo Apple Sign In:', error);
+
+      // Manejo ESPECÍFICO de errores de configuración
+      if (this.isConfigurationError(error)) {
+        console.log('🔧 Error de configuración detectado');
+        this.showConfigurationInstructions();
+        return;
+      }
+
+      // Usuario canceló
+      if (this.isUserCancelled(error)) {
+        console.log('👤 Usuario canceló el login');
+        return;
+      }
+
+      // Error genérico
+      console.error('❌ Error genérico Apple Sign In:', error);
+      this.generalService.alert('Error', 'No se pudo conectar con Apple', 'danger');
+    }
+  }
+
+  private isUserCancelled(error: any): boolean {
+    return (
+      error?.code === '1001' ||
+      error?.message?.includes('canceled') ||
+      error?.message?.includes('1001') ||
+      error?.message?.toLowerCase().includes('user canceled')
+    );
+  }
+
+  private isConfigurationError(error: any): boolean {
+    return (
+      error?.code === '1000' ||
+      error?.code === '-7026' ||
+      error?.message?.includes('1000') ||
+      error?.message?.includes('7026') ||
+      error?.message?.includes('AKAuthenticationError') ||
+      error?.message?.includes('configuration')
+    );
+  }
+
+  private async showConfigurationInstructions() {
+    console.log('🔧 Mostrando instrucciones de configuración');
+    
+    const alert = await this.toastController.create({
+      header: 'Configuración Requerida en Xcode',
+      message: 'Debes configurar "Sign in with Apple" y "Keychain Sharing" en las capabilities de Xcode',
+      duration: 8000,
+      position: 'top',
+      color: 'warning',
+      buttons: [
+        {
+          text: 'Entendido',
+          role: 'cancel'
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  private handleAppleLoginSuccess(token: string, user: any) {
+    console.log('✅ Login con Apple exitoso');
+    this.generalService.guardarCredenciales(token, user);
+    const ruta = this.verificaStorage() ? '/seguros/poliza' : '/home';
+    
+    setTimeout(() => {
+      this.router.navigate([ruta]);
+      this.generalService.alert('¡Bienvenido!', 'Inicio de sesión con Apple exitoso', 'success');
+    }, 1200);
   }
 }

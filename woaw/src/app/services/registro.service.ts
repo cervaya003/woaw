@@ -119,7 +119,6 @@ export class RegistroService {
     );
   }
 
-  
   deleteAccount(): Observable<any> {
     return from(this.headersService.obtenerToken()).pipe(
       switchMap((token) => {
@@ -130,5 +129,9 @@ export class RegistroService {
       }),
       catchError((error) => this.headersService.handleError(error))
     );
+  }
+
+  loginConApple(appleData: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}/auth/apple/login`, appleData);
   }
 }

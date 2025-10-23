@@ -42,10 +42,11 @@
       <span>Continuar con Google</span>
     </div>
 
+    <!-- NUEVO: botón Apple solo para iOS -->
+    <div class="apple-btn" *ngIf="isIOS" (click)="loginWithApple()">
+      <img src="assets/icon/Apple_logo.png" alt="Apple" class="apple-icon" />
+      <span>Continuar con Apple</span>
+    </div>
+
   </form>
-
-  
-
 </div>
-
-<!-- fill="outline" -->

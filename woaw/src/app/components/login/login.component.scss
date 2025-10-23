@@ -196,3 +196,43 @@
     transform: scale(0.98);
   }
 }
+
+.apple-btn {
+  display: flex;
+  margin-top: 10px;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+
+  background: #fff;
+  color: #444;
+  font-weight: 600;
+  font-size: 15px;
+  font-family: 'Poppins', sans-serif;
+  letter-spacing: 0.3px;
+
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  .apple-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  &:hover {
+    background: #f7f7f7;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
