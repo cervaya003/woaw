@@ -1,0 +1,284 @@
+/* ============================
+   Pantalla: Eliminar cuenta
+   Estilo limpio y moderno
+   Modo claro/oscuro adaptable
+   ============================ */
+:root {
+  /* Accentos */
+  --red: #e10600;
+  --red-dark: #b50000;
+
+  /* Base (modo claro por defecto) */
+  --bg: #f7f7f7;
+  --text: #111111;
+  --muted: #444444;
+  --card-bg: #ffffff;
+  --border: #cccccc;
+  --disabled: #bbbbbb;
+  --success: #1b9c57;
+  --placeholder: #9aa0a6;
+
+  /* Decoración */
+  --radius: 14px;
+  --shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  --focus-ring: 0 0 0 3px rgba(225, 6, 0, 0.12);
+  --font-main: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial,
+    sans-serif;
+}
+
+/* Soporte nativo de controles en ambos modos */
+html,
+body {
+  color-scheme: light dark;
+}
+
+ 
+
+
+
+
+
+
+
+
+/* Modo oscuro automático según el sistema */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0b0b0b;
+    --text: #f3f4f6;
+    --muted: #c7c7c7;
+    --card-bg: #121212;
+    --border: #2a2a2a;
+    --disabled: #555555;
+    --placeholder: #8a8f98;
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+    --focus-ring: 0 0 0 3px rgba(225, 6, 0, 0.22);
+  }
+}
+
+/* Fondo general */
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  font-family: var(--font-main);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(14px, 0.9rem + 0.25vw, 16px);
+}
+
+/* Contenedor principal (capado para desktop grande) */
+.delete-container {
+  position: relative;
+  background: var(--card-bg);
+  padding: clamp(1.1rem, 2.2vw, 2rem);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  /* Nunca enorme: 340–440px y 92% en pantallas chicas */
+  width: min(92%, clamp(340px, 46vw, 440px));
+  text-align: center;
+  transition: background 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
+  overflow: hidden;
+
+  display: grid;
+  row-gap: clamp(0.6rem, 1.4vw, 1rem);
+}
+
+/* Franjas decorativas */
+.delete-container::before,
+.delete-container::after {
+  content: "";
+  position: absolute;
+  left: 10%;
+  width: 80%;
+  height: 3px;
+  background: var(--red);
+  border-radius: 10px;
+  transition: background 0.3s ease;
+}
+.delete-container::before {
+  top: clamp(0.6rem, 1.5vw, 0.8rem);
+}
+.delete-container::after {
+  bottom: clamp(0.6rem, 1.5vw, 0.8rem);
+}
+.delete-container:hover::before,
+.delete-container:hover::after {
+  background: var(--red-dark);
+}
+
+/* Título */
+h1 {
+  font-family: "Poppins", var(--font-main);
+  color: var(--red);
+  /* tope para que no crezca de más en desktop */
+  font-size: clamp(1.4rem, 1.1rem + 1.2vw, 1.9rem);
+  margin: 0;
+  letter-spacing: 0.5px;
+}
+
+/* Texto descriptivo */
+p {
+  font-size: clamp(0.92rem, 0.86rem + 0.4vw, 1rem);
+  color: var(--muted);
+  line-height: 1.55;
+  margin: 0;
+  text-wrap: pretty;
+}
+
+/* Inputs */
+input[type="email"] {
+  width: 100%;
+  padding: clamp(0.65rem, 1.2vw, 0.9rem) clamp(0.8rem, 1.6vw, 1rem);
+  font-size: clamp(0.9rem, 0.9rem + 0.2vw, 1rem);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  color: var(--text);
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s, color 0.2s;
+  box-sizing: border-box;
+
+  /* Aire lateral: evita pegado a bordes */
+  max-width: 96%;
+  margin: 0 auto;
+}
+
+input::placeholder {
+  color: var(--placeholder);
+  opacity: 1;
+}
+input[type="email"]:focus {
+  outline: none;
+  border-color: var(--red);
+  box-shadow: var(--focus-ring);
+}
+
+/* Botón */
+button {
+  width: 100%;
+  padding: clamp(0.65rem, 1.2vw, 0.9rem);
+  font-size: clamp(0.9rem, 0.9rem + 0.2vw, 1rem);
+  border: none;
+  border-radius: var(--radius);
+  background: var(--red);
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.1s, opacity 0.2s;
+  font-weight: 600;
+  box-sizing: border-box;
+
+  max-width: 96%;
+  margin: 0 auto;
+}
+button:hover:not(:disabled) {
+  background: var(--red-dark);
+  transform: translateY(-1px);
+}
+button:disabled {
+  background: var(--disabled);
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Mensaje final */
+.message {
+  font-weight: 500;
+  color: var(--success);
+  word-wrap: break-word;
+  opacity: 1;
+  transition: opacity 0.25s ease;
+  font-size: clamp(0.9rem, 0.9rem + 0.15vw, 0.98rem);
+  max-width: 96%;
+  margin: 0.25rem auto 0;
+}
+
+/* Imagen */
+.delete-image {
+  width: clamp(60px, 12vw, 100px);
+  height: auto;
+  margin: clamp(0.4rem, 1vw, 0.8rem) auto clamp(0.8rem, 2vw, 1.1rem);
+  border-radius: 10px;
+  object-fit: contain;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+@media (prefers-color-scheme: dark) {
+  .delete-image {
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.5);
+  }
+}
+
+/* ======== RESPONSIVE ======== */
+
+/* Tablets (481px - 767px) */
+@media (min-width: 481px) and (max-width: 767px) {
+  .delete-container {
+    /* Mantén compacto en tablet */
+    width: min(90%, 460px);
+    padding: 1.6rem 1.9rem;
+    row-gap: 0.9rem;
+  }
+  input[type="email"],
+  button {
+    max-width: 94%;
+    font-size: 0.95rem;
+    padding: 0.78rem 0.95rem;
+  }
+  h1 {
+    font-size: 1.7rem;
+  }
+}
+
+/* Escritorio (≥768px) */
+/* Aquí solo afinamos sin crecerla. Nada de 600px. */
+@media (min-width: 768px) {
+  .delete-container {
+    /* Sigue capada por arriba con clamp: 440px */
+    /* Solo un pelín más de padding para elegancia */
+    padding: clamp(1.4rem, 2vw, 2.1rem);
+    row-gap: 1rem;
+  }
+  input[type="email"],
+  button,
+  .message {
+    max-width: 96%;
+  }
+  h1 {
+    font-size: clamp(1.5rem, 1.1rem + 1vw, 1.9rem);
+  }
+  p {
+    font-size: clamp(0.96rem, 0.92rem + 0.2vw, 1rem);
+  }
+}
+
+/* Móviles pequeños (≤480px) */
+@media (max-width: 480px) {
+  .delete-container {
+    padding: 1.05rem 1.2rem;
+    width: 92%;
+    row-gap: 0.75rem;
+  }
+  input[type="email"] {
+    max-width: 88%;
+    padding: 0.56rem 0.72rem;
+    font-size: 0.88rem;
+    border-radius: 10px;
+  }
+  button {
+    max-width: 88%;
+    padding: 0.6rem;
+    font-size: 0.88rem;
+    border-radius: 10px;
+  }
+  h1 {
+    font-size: 1.42rem;
+  }
+  p {
+    font-size: 0.84rem;
+  }
+  .message {
+    font-size: 0.88rem;
+  }
+}
