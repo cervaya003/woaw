@@ -13,7 +13,6 @@ export class EliminacionCuentaPage implements OnInit {
   usuario: any;
   nombreCompleto: string | null = null;
 
-  // ✅ control de UI
   confirmed = false;
   loading = false;
 
