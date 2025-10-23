@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="./assets/logo1.png" type="image/png" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap"
+      rel="stylesheet"
+    />
+
+    <title>Eliminar cuenta</title>
+
+    <!-- Estilos -->
+    <link rel="stylesheet" href="./delete-cuenta.css" />
+  </head>
+
+  <body>
+    <div class="delete-container">
+      <h1>Eliminar cuenta</h1>
+
+      <!-- Imagen debajo del título -->
+      <img
+        src="./assets/logo1.png"
+        alt="Eliminar cuenta"
+        class="delete-image"
+      />
+
+      <img
+        src="./assets/logo5.png"
+        alt="Eliminar cuenta"
+        class="delete-image"
+      />
+
+     <p>
+  Esta acción es <strong>permanente e irreversible</strong>. Al eliminar tu cuenta, 
+  se eliminarán <strong>todos tus datos personales, pólizas, historial de uso y registros 
+  asociados a tu cuenta</strong> de manera definitiva y segura, conforme a nuestra política de privacidad.  
+  <br><br>
+  Para confirmar la eliminación, escribe tu correo dos veces.
+</p>
+
+
+      <input type="email" id="email" placeholder="Tu correo" required />
+
+      <input
+        type="email"
+        id="confirmEmail"
+        placeholder="Confirma tu correo"
+        required
+      />
+
+      <button id="deleteBtn" disabled>Eliminar cuenta</button>
+
+      <div id="message" class="message"></div>
+    </div>
+
+    <!-- Script externo -->
+    <script src="./delete-cuenta.js"></script>
+  </body>
+</html>
