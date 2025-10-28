@@ -5,7 +5,7 @@ import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors }
 import { CarsService } from '../../../services/cars.service';
 import { GeneralService } from '../../../services/general.service';
 import { SeguroService } from '../../../services/seguro.service';
-
+import { PdfService } from '../../../services/pdf.service';
 
 import { AfterViewInit, ElementRef, QueryList, ViewChildren, ViewChild } from '@angular/core';
 
@@ -121,7 +121,8 @@ export class SegurosPage implements OnInit {
     private generalService: GeneralService,
     public carsService: CarsService,
     private fb: FormBuilder,
-    private seguros: SeguroService
+    private seguros: SeguroService,
+    private pdfService: PdfService
   ) {
     this.form = this.fb.group({
       marca: [null, Validators.required],
@@ -1251,6 +1252,29 @@ export class SegurosPage implements OnInit {
     }
 
     return dto;
+  }
+  // Agrega este método nuevo:
+  descargarCotizacionPDF(): void {
+    if (!this.quote) {
+      this.generalService.alert('Error', 'No hay cotización para descargar', 'warning');
+      return;
+    }
+
+    try {
+      const datosCocheStorage = localStorage.getItem('datosCoche');
+      const datosCoche = datosCocheStorage ? JSON.parse(datosCocheStorage) : {};
+
+      const coberturas = this.activePlan ? this.getPlanCoverages(this.activePlan) : [];
+
+      this.pdfService.generarCotizacionSeguro(this.quote, datosCoche, coberturas);
+
+      // Opcional: Tracking del evento
+      this.seguros.contador('descarga_pdf');
+
+    } catch (error) {
+      console.error('Error al generar PDF:', error);
+      this.generalService.alert('Error', 'No se pudo generar el PDF', 'danger');
+    }
   }
 
   // --------- 

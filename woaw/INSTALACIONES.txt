@@ -1,0 +1,1 @@
+npm install jspdf jspdf-autotable // Poder usar PDFs

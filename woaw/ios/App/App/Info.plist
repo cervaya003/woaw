@@ -37,12 +37,16 @@
 	<string>Necesitamos la camara para tomar imagenes de los coches.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>Necesitamos la ubicación para funcionamientos de la app.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Necesitamos la ubicación para publicar vehículos</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Guardaremos la imagenes en tu galeria.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Necesitamos imagenes de los vehiculos.</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Necesitamos la ubicación para publicar vehículos</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

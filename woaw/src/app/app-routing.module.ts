@@ -257,9 +257,9 @@ const routes: Routes = [
           ),
       },
       {
-        path: "renta-ciudades",
+        path: "renta",
         loadChildren: () =>
-          import("./pages/renta-ciudades/renta-ciudades.module").then(
+          import("./pages/renta/renta-ciudades/renta-ciudades.module").then(
             (m) => m.RentaCiudadesPageModule
           ),
       },

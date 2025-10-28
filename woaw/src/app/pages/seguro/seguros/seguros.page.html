@@ -393,6 +393,13 @@
             <!-- CTA card -->
             <article class="qp-cta" *ngIf="tipoDispocitivo !== 'telefono'">
               <button type="button" class="btn ghost" (click)="nuevoSeguro()">Nueva cotizacion ↻</button>
+              
+              <!-- NUEVO BOTÓN PDF -->
+              <button type="button" class="btn secondary" (click)="descargarCotizacionPDF()">
+                <ion-icon name="document-outline" slot="start"></ion-icon>
+                Descargar PDF
+              </button>
+
               <button type="button" class="btn prime" (click)="confirmarCrearPersona()">Continuar ➜</button>
             </article>
 
