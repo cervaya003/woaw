@@ -1,16 +1,5 @@
 <app-navbar></app-navbar>
 
-<!-- <ion-header *ngIf="esDispositivoMovil">
-  <ion-toolbar color="dark">
-    <ion-buttons slot="start">
-      <ion-back-button text="" routerDirection="back" defaultHref="/"></ion-back-button>
-      <div class="perfil-header">
-        <img src="/assets/icon/logo4.png" alt="Go Autos" class="logo" />
-      </div>
-      <ion-title>Camiones</ion-title>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header> -->
 
 <ion-content #pageContent [fullscreen]="true">
   <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
@@ -53,14 +42,14 @@
           </div>
 
           <ng-container *ngFor="let camion of camionesPaginados">
-            <app-cartas
-              [auto]="camion"
-              [autosFavoritosIds]="camionesFavoritosIds"
-              [ubicacion]="'camiones'"
-              [esMio]="idsMisCamiones.includes(camion._id)"
-            >
-            </app-cartas>
-          </ng-container>
+  <app-cartas
+    [auto]="camion"
+    [autosFavoritosIds]="camionesFavoritosIds"
+    [ubicacion]="'camiones'"
+    [esMio]="idsMisCamiones.includes(camion._id)"
+    (refrescarAutos)="handleRefrescarCamiones($event)">
+  </app-cartas>
+</ng-container>
         </div>
 
         <div class="contenedor-paginacion" *ngIf="totalPaginas > 1">
