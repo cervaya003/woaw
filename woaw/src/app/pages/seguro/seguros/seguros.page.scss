@@ -362,7 +362,7 @@
       background: #f6f8fb;
       border: 1px solid #e9edf3;
     }
-
+    
     .alt {
       background: #fff7f7;
       border-color: #ffe2e2;
@@ -377,8 +377,11 @@
 
     .btn-remove-cupon{
       background-color: #ff0000;
-      padding: 3px;
+      padding: 8px;
       border-radius: 10px;
+      ion-icon{
+        color: #ffffff;
+      }
     }
   }
 
