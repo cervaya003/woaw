@@ -14,6 +14,8 @@ import { fromEvent, merge, Subscription } from 'rxjs';
 import { map, startWith, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { NgZone } from '@angular/core';
 
+import { Capacitor } from '@capacitor/core';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -101,7 +103,7 @@ export class GeneralService {
     const token = localStorage.getItem('token');
     const userStr = localStorage.getItem('user');
     const usuario = localStorage.getItem('sesionActiva');
- //   console.log(usuario)
+    //   console.log(usuario)
 
     if (!token || !userStr) return false;
     try {
@@ -144,7 +146,7 @@ export class GeneralService {
   guardarCredenciales(token: string, user: any): void {
     localStorage.setItem('token', token);
     localStorage.setItem('user', JSON.stringify(user));
-//    localStorage.setItem('sesionActiva', '2025-10-01T17:30:57.727Z');  
+    // localStorage.setItem('sesionActiva', '2025-10-01T17:30:57.727Z');  
     localStorage.setItem('sesionActiva', new Date().toISOString());
 
     this.tokenSubject.next(true);
@@ -166,7 +168,6 @@ export class GeneralService {
       }
     }
   }
-
 
   // === Helper robusto para extraer/validar el teléfono del usuario ===
   private getTelefonoUsuario(rawUser: any): string {
@@ -269,11 +270,60 @@ export class GeneralService {
     });
   }
 
+  //  ----- ALERTAS -----
   async alert(
     header: string,
     message: string,
     type: 'success' | 'danger' | 'warning' | 'info' = 'danger',
     status: boolean = true
+  ) {
+    const isNative = Capacitor.isNativePlatform();
+
+    if (isNative) {
+      await this.showNativeAlert(header, message, type);
+    } else {
+      await this.showPopoverAlert(header, message, type, status);
+    }
+
+    if (status) {
+      await this.loadingDismiss();
+    }
+  }
+
+  private async showNativeAlert(
+    header: string,
+    message: string,
+    type: 'success' | 'danger' | 'warning' | 'info'
+  ) {
+    const colorMap = {
+      'success': 'success',
+      'danger': 'danger',
+      'warning': 'warning',
+      'info': 'primary'
+    };
+
+    const alert = await this.toastController.create({
+      header: header,
+      message: message,
+      duration: 5000, 
+      position: 'bottom',
+      color: colorMap[type] || 'danger',
+      buttons: [
+        {
+          text: 'OK',
+          role: 'cancel'
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  private async showPopoverAlert(
+    header: string,
+    message: string,
+    type: 'success' | 'danger' | 'warning' | 'info',
+    status: boolean
   ) {
     await this.dismissAlert();
 
@@ -287,9 +337,6 @@ export class GeneralService {
     });
 
     await this.popoverActivo.present();
-    if (status) {
-      await this.loadingDismiss();
-    }
   }
 
   async dismissAlert() {
@@ -298,6 +345,7 @@ export class GeneralService {
       this.popoverActivo = undefined;
     }
   }
+  // ----- -----
 
   async confirmarAccion(
     mensaje: string,

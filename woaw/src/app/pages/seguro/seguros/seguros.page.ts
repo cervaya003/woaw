@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { PopoverController, AlertController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
@@ -37,6 +37,7 @@ export class SegurosPage implements OnInit {
   public extrepStatus: true | false | null = null;
 
   public cupon: string = '';
+  public cuponExistente: boolean = false;
   cuponInvalido: boolean = false;
   mensajeErrorCupon: string = '';
 
@@ -162,8 +163,12 @@ export class SegurosPage implements OnInit {
     if (datosCocheStorage) {
       try {
         const datos = JSON.parse(datosCocheStorage);
-        console.log(datos)
+        console.log(datos);
 
+        if (datos.coupon !== undefined) {
+          this.cupon = datos.coupon;
+          this.cuponExistente = true;
+        }
         if (datos.DM !== undefined) {
           this.selectDM_valor = datos.DM;
         }
@@ -1105,6 +1110,7 @@ export class SegurosPage implements OnInit {
   aplicarCupon() {
     if (this.cupon.trim()) {
       this.cupon = this.cupon;
+      this.cuponExistente = true;
       this.HacerCotizacion(this.buildCotizacionDTO());
     } else {
       this.generalService.alert(
@@ -1284,5 +1290,9 @@ export class SegurosPage implements OnInit {
       c.coverage_type?.name === 'EXTREP' || c.coverage_type?.name === 'EXTENSION REPARACION'
     );
     return extrepCoverage?.premium ? this.fmtMoney(extrepCoverage.premium) : '';
+  }
+
+  public removerCuponExistente() {
+    this.cuponExistente = false;
   }
 }
