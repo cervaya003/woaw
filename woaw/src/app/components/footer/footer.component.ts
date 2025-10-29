@@ -179,6 +179,11 @@ export class FooterComponent implements OnInit {
     }
   }
 
+abrirCorreo() {
+  window.location.href = 'mailto:comercial@wo-aw.com';
+}
+
+
   async mostrarAviso() {
     let modal;
     if (this.dispositivo === 'telefono') {
