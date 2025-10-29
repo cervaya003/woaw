@@ -3,9 +3,161 @@
   margin: auto;
   padding: 1px;
   font-family: 'Poppins', sans-serif;
-  padding-bottom: 92px; /* espacio para la barra sticky */
+  padding-bottom: 92px;
 
-  /* ====== ACCIONES ARRIBA ====== */
+  .layout-dos-columnas {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+    align-items: flex-start;
+    margin-top: 10px;
+
+    @media (max-width: 992px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .columna-datos {
+    background-color: #f7f7f7;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 16px;
+  }
+
+  .columna-ubicacion {
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    text-align: center;
+
+    /* 🟥 Título destacado */
+    .titulo-ubicacion {
+      font-weight: 800;
+      color: #e11b22;
+      font-size: 1.4rem;
+      text-align: center;
+      margin-bottom: 14px;
+      letter-spacing: 0.3px;
+      position: relative;
+    }
+
+    /* línea decorativa bajo el título */
+    .titulo-ubicacion::after {
+      content: "";
+      display: block;
+      width: 60px;
+      height: 3px;
+      background: #e11b22;
+      border-radius: 2px;
+      margin: 6px auto 0;
+    }
+
+    .opciones-vehiculo {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 18px;
+
+      .casilla {
+        width: 80px;
+        height: 80px;
+        border-radius: 14px;
+        background: #f9f9f9;
+        border: 2px solid transparent;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        transition: all 0.2s ease;
+        cursor: pointer;
+
+        img {
+          width: 30px;
+          height: 30px;
+          margin-bottom: 6px;
+        }
+
+        p {
+          font-size: 11px;
+          color: #333;
+          margin: 0;
+        }
+
+        &.activa {
+          border-color: #e11b22;
+          background-color: #ffeaea;
+        }
+
+        &:hover {
+          background-color: #fff3f3;
+        }
+      }
+    }
+
+    .btn_ubicacion {
+      width: 100%;
+      background: #e11b22;
+      color: #fff;
+      padding: 12px;
+      border-radius: 8px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: background 0.2s ease;
+
+      &:hover {
+        background: #c91017;
+      }
+
+      ion-icon {
+        font-size: 18px;
+      }
+    }
+
+    .ubicacion-mostrada {
+      margin-top: 14px;
+      font-size: 13px;
+      color: #333;
+      background: #fafafa;
+      border-left: 4px solid #e11b22;
+      padding: 8px 10px;
+      border-radius: 8px;
+      text-align: left;
+    }
+  }
+
+  /* ===== Fix para labels cortados ===== */
+  ion-item {
+    --inner-padding-end: 8px;
+    --inner-padding-start: 8px;
+    --padding-start: 0;
+    --padding-end: 0;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: unset !important;
+  }
+
+  ion-label {
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: unset !important;
+    font-size: 13px;
+    line-height: 1.2;
+  }
+
+  ion-select,
+  ion-input,
+  ion-textarea {
+    width: 100%;
+    min-width: 100%;
+    flex: 1;
+  }
+
   .acciones-auto {
     display: flex;
     flex-wrap: wrap;
@@ -27,14 +179,21 @@
       cursor: pointer;
       transition: background-color 0.3s ease, transform 0.2s ease;
 
-      ion-icon { font-size: 18px; }
+      ion-icon {
+        font-size: 18px;
+      }
 
-      &:hover   { background-color: #a70000; transform: scale(1.03); }
-      &:active  { transform: scale(0.97); }
+      &:hover {
+        background-color: #a70000;
+        transform: scale(1.03);
+      }
+
+      &:active {
+        transform: scale(0.97);
+      }
     }
   }
 
-  /* ====== IMAGEN PRINCIPAL ====== */
   .contenedor-imagen {
     width: 100%;
     max-width: 600px;
@@ -55,16 +214,18 @@
     }
   }
 
-  /* ====== MINI-GALERÍA ====== */
   .galeria-scroll {
     display: flex;
     overflow-x: auto;
     gap: 12px;
     padding: 10px 0;
     max-width: 100%;
-    scrollbar-width: none;        /* Firefox */
-    -ms-overflow-style: none;     /* IE/Edge */
-    &::-webkit-scrollbar { display: none; } /* Chrome, Safari */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
 
     img {
       flex: 0 0 auto;
@@ -77,11 +238,15 @@
       transition: transform 0.2s ease;
     }
 
-    img:hover { transform: scale(1.05); }
-    img.activa { border: 2px solid #2196f3; }
+    img:hover {
+      transform: scale(1.05);
+    }
+
+    img.activa {
+      border: 2px solid #2196f3;
+    }
   }
 
-  /* ====== GALERÍA GRANDE ====== */
   .galeria-scroll-big {
     display: flex;
     overflow-x: auto;
@@ -90,7 +255,10 @@
     flex-wrap: nowrap;
     scrollbar-width: none;
     -ms-overflow-style: none;
-    &::-webkit-scrollbar { display: none; }
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
 
     .img-wrapper {
       position: relative;
@@ -112,83 +280,219 @@
 
       .overlay-botones {
         position: absolute;
-        top: 6px; left: 6px; right: 6px;
-        display: flex; justify-content: space-between;
-        gap: 6px; padding: 0 4px; z-index: 2;
+        top: 6px;
+        left: 6px;
+        right: 6px;
+        display: flex;
+        justify-content: space-between;
+        gap: 6px;
+        padding: 0 4px;
+        z-index: 2;
 
         .btn-accion.eliminar {
-          display: flex; align-items: center; gap: 8px;
+          display: flex;
+          align-items: center;
+          gap: 8px;
           margin-top: 10px;
           background-color: rgba(255, 0, 0, 0.499);
-          color: white; border: none;
-          font-size: 15px; font-weight: bold;
-          padding: 8px 10px; border-radius: 12px;
-          cursor: pointer; transition: background-color 0.3s ease;
+          color: white;
+          border: none;
+          font-size: 15px;
+          font-weight: bold;
+          padding: 8px 10px;
+          border-radius: 12px;
+          cursor: pointer;
+          transition: background-color 0.3s ease;
           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 
-          ion-icon { font-size: 15px; }
-          &:hover { background-color: rgba(220, 0, 0, 0.9); }
+          ion-icon {
+            font-size: 15px;
+          }
+
+          &:hover {
+            background-color: rgba(220, 0, 0, 0.9);
+          }
         }
       }
     }
   }
 
-  /* ====== BOTÓN AGREGAR IMAGEN ====== */
   .btn-agregar {
-    display: flex; align-items: center; gap: 8px;
-    background-color: #70707093; color: white;
-    font-size: 14px; font-weight: bolder;
-    border: 2px dashed #717171; padding: 20px 28px;
-    border-radius: 8px; cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #70707093;
+    color: white;
+    font-size: 14px;
+    font-weight: bolder;
+    border: 2px dashed #717171;
+    padding: 20px 28px;
+    border-radius: 8px;
+    cursor: pointer;
     transition: background-color 0.3s ease;
 
-    @media (max-width: 768px) { padding: 10px 18px; }
-    ion-icon { font-size: 18px; }
-    &:hover { background-color: #8e8e8e88; }
-    &:active { transform: scale(0.97); }
+    @media (max-width: 768px) {
+      padding: 10px 18px;
+    }
+
+    ion-icon {
+      font-size: 18px;
+    }
+
+    &:hover {
+      background-color: #8e8e8e88;
+    }
+
+    &:active {
+      transform: scale(0.97);
+    }
   }
 
   .botons {
-    display: flex; gap: 10px; justify-content: flex-start; margin-bottom: 10px;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-start;
+    margin-bottom: 10px;
 
     .button-restablecer {
-      background-color: #dc8809; color: #fff; border: none;
-      padding: 10px 20px; border-radius: 6px;
-      font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 8px;
+      background-color: #dc8809;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
       transition: background-color 0.3s ease, transform 0.2s ease;
-      ion-icon { font-size: 18px; }
-      &:hover  { background-color: #dc8809d3; transform: scale(1.03); }
-      &:active { transform: scale(0.97); }
+
+      ion-icon {
+        font-size: 18px;
+      }
+
+      &:hover {
+        background-color: #dc8809d3;
+        transform: scale(1.03);
+      }
+
+      &:active {
+        transform: scale(0.97);
+      }
     }
 
     .button-nuevo {
-      background-color: #d50000; color: #fff; border: none;
-      padding: 10px 20px; border-radius: 6px;
-      font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 8px;
+      background-color: #d50000;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
       transition: background-color 0.3s ease, transform 0.2s ease;
-      ion-icon { font-size: 18px; }
-      &:hover  { background-color: #d50000c7; transform: scale(1.03); }
-      &:active { transform: scale(0.97); }
+
+      ion-icon {
+        font-size: 18px;
+      }
+
+      &:hover {
+        background-color: #d50000c7;
+        transform: scale(1.03);
+      }
+
+      &:active {
+        transform: scale(0.97);
+      }
     }
   }
 
   .texto_css {
-    font-size: 10px; color: #333; margin-bottom: 0px;
-    line-height: 1.5; text-align: justify;
+    font-size: 10px;
+    color: #333;
+    margin-bottom: 0px;
+    line-height: 1.5;
+    text-align: justify;
   }
 }
 
-/* ====== BARRA DE ACCIONES “STICKY” (reemplaza al footer) ====== */
+:host ::ng-deep ion-alert.alert-rojo::part(content) {
+  background: #111;
+  color: #fff;
+  border: 1px solid #e11b22;
+  border-radius: 12px;
+  box-shadow: 0 0 22px rgba(225, 17, 34, 0.35);
+}
+
+
+:host ::ng-deep ion-alert.alert-rojo {
+  --background: #1a1a1a !important;
+  --color: #ffffff !important;
+  --backdrop-opacity: 0.95 !important;
+  --border-radius: 14px !important;
+  --width: 90%;
+  --max-width: 400px;
+  border: 1px solid #e11b22 !important;
+  box-shadow: 0 0 25px rgba(225, 17, 34, 0.5) !important;
+}
+
+ion-alert.alert-rojo .alert-head,
+ion-alert.alert-rojo .alert-title,
+ion-alert.alert-rojo .alert-message {
+  color: #ffffff !important;
+  text-align: center;
+}
+
+ion-alert.alert-rojo .alert-radio-label,
+ion-alert.alert-rojo .alert-checkbox-label {
+  color: #ffffff !important;
+}
+
+ion-alert.alert-rojo .alert-radio-icon,
+ion-alert.alert-rojo .alert-checkbox-icon {
+  border-color: #e11b22 !important;
+}
+
+ion-alert.alert-rojo .alert-radio-inner,
+ion-alert.alert-rojo .alert-checkbox-inner {
+  background: #e11b22 !important;
+}
+
+ion-alert.alert-rojo .alert-button-group {
+  border-top: 1px solid #e11b22 !important;
+}
+
+ion-alert.alert-rojo .alert-button {
+  font-weight: 700;
+  text-transform: uppercase;
+  background: transparent !important;
+}
+
+ion-alert.alert-rojo .alert-button.role-cancel {
+  color: #ccc !important;
+}
+
+ion-alert.alert-rojo .alert-button:not(.role-cancel) {
+  color: #fff !important;
+  background: #e11b22 !important;
+  border-radius: 8px;
+  padding: 8px 14px;
+  margin: 4px;
+}
+
+
 .action-bar {
   position: sticky;
   bottom: 0;
   z-index: 100;
   padding: 10px 12px;
-  border-top: 1px solid rgba(0,0,0,0.06);
-  background: rgba(255,255,255,0.75);
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  background: rgba(255, 255, 255, 0.75);
   backdrop-filter: saturate(180%) blur(12px);
   -webkit-backdrop-filter: saturate(180%) blur(12px);
-  box-shadow: 0 -6px 20px rgba(0,0,0,0.08);
+  box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.08);
 
   .action-buttons {
     display: flex;
@@ -197,10 +501,15 @@
     flex-wrap: wrap;
 
     ion-button {
-      min-width: 190px; height: 48px;
-      font-size: 1rem; font-weight: 600; letter-spacing: 0.5px;
+      min-width: 190px;
+      height: 48px;
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
 
-      ion-icon { margin-right: 6px; }
+      ion-icon {
+        margin-right: 6px;
+      }
     }
 
     @media (max-width: 480px) {
@@ -213,192 +522,143 @@
         height: 44px;
         font-size: 12px;
 
-        ion-icon { margin-right: 4px; font-size: 16px; }
+        ion-icon {
+          margin-right: 4px;
+          font-size: 16px;
+        }
       }
     }
   }
 }
 
-/* ====== VERSIONES (AUTOS NUEVOS) ====== */
-.row-versiones { display: flex; flex-wrap: wrap; }
-
-.version-col {
-  flex: 0 0 70%; max-width: 70%; padding: 6px;
-
-  @media (min-width: 768px) {
-    flex: 0 0 33.3333%; max-width: 33.3333%;
-  }
-
-  .contenedor-input-version {
-    background: #fff; border-radius: 8px; padding: 0.75rem; height: 100%;
-
-    .titulo-version { margin-bottom: 0.4rem; font-size: 12px; color: #222; }
-
-    .input-boton-version {
-      display: flex; align-items: center; padding: 0; margin-top: 0.3rem;
-      ion-label { flex: 1 0 auto; }
-      ion-input { flex: 1; }
-      ion-button {
-        margin-left: 8px; font-size: 16px; height: 100%;
-        --padding-start: 0; --padding-end: 0;
-      }
-    }
-  }
-}
-
-/* ====== SELECCIÓN DE LOTE / UBICACIÓN ====== */
-.contenedor_version { padding: 10px; }
-
-ion-item {
-  --background: transparent;
-  --inner-border-width: 0px;
-  --highlight-color-focused: #e53935;
-  --border-color: #c0c0c09f;
-  margin-bottom: 12px;
-  border-bottom: 1px solid #c0c0c09f;
-  border-radius: 0;
-
-  &.item-has-focus { border-bottom: 1px solid #e53935; }
-
-  ion-label {
-    font-weight: 600;
-    font-size: 12px;
-    color: #222;
-  }
-}
-
-ion-input,
-ion-select,
-ion-textarea {
-  --padding-start: 0px;
-  --padding-end: 0px;
-  --background: transparent;
-  font-size: 14px;
-}
-
-ion-textarea { --padding-top: 6px; }
-
-/* Botón de seleccionar ubicación + resultado */
-.bloque-ubicacion {
-  .btn_ubicacion{
-    padding: 12px;
-    background-color: #ffffff;
-    border-radius: 10px;
-    border: 1px solid #222;
-    color: #222;
-  }
-  .ubicacion-mostrada{
-    margin-top:10px;
-  }
-}
-
-/* ====== UI de cambio entre Particular/Lote ====== */
-.contenedor_ubicaciones {
-  text-align: center;
-  margin-top: 8px;
-
-  .titulo-tipo { font-size: 10px; margin-bottom: 10px; color: #222; }
-
-  .opciones-vehiculo {
-    display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;
-  }
-
-  .casilla {
-    width: 70px; height: 70px; border-radius: 16px;
-    background-color: #f7f7f7; border: 2px solid transparent;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    position: relative; transition: all 0.2s ease-in-out; cursor: pointer;
-
-    img { width: 28px; height: 28px; margin-bottom: 8px; }
-    p   { margin: 0; font-size:10px; color: #444; }
-    .icono-check { position: absolute; top: 6px; right: 6px; color: #ff3c00; font-size: 10px; }
-
-    &.activa { border: 2px solid #ff3c00; background-color: #fff0e8; }
-    &:hover  { background-color: #fff7f3; }
-  }
-
-  .contenedor-boton {
-    display: flex; justify-content: center; margin-top: 24px;
-    .btn-continuar {
-      background-color: #ff3c00; color: #fff; padding: 12px 24px; border: none; border-radius: 30px;
-      font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 8px; cursor: pointer;
-      transition: background-color 0.2s ease-in-out;
-      ion-icon { font-size: 18px; }
-      &:hover:not(:disabled) { background-color: #e63300; }
-      &:disabled { background-color: #ccc; cursor: not-allowed; }
-    }
-  }
-}
-
-/* ====== UBICACIÓN MOSTRADA ====== */
-.ubicacion-mostrada {
-  padding: 0.5rem 1rem;
-  background: #f9f9f9;
-  border-left: 4px solid #e41212;
-  border-radius: 8px;
-  font-size: 13px;
-  color: #444;
+.section-title {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 8px;
-
-  @media (max-width: 768px) {
-    font-size: 9px;
-    margin-top: 0.5rem;
-    margin-bottom: 0.5rem;
-  }
+  font-weight: 700;
+  font-size: 14px;
+  color: #222;
+  margin: 6px 8px 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
 
   ion-icon {
-    color: #eb0404;
-    font-size: 18px;
-    margin-top: 2px;
-    margin-bottom: 2px;
+    font-size: 16px;
   }
 }
 
-/* ====== BLOQUE-IMÁGENES reusado ====== */
-.bloque-imagenes {
-  display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 10px;
+ion-item {
+  --min-height: 70px;
+  align-items: flex-start !important;
+  padding-top: 4px;
+  padding-bottom: 6px;
+}
 
-  .btn-limpiar {
-    background: #1f1f1f; font-size: 9px; color: white; border: none;
-    padding: 8px 10px; border-radius: 8px; display: flex; align-items: center; gap: 6px; cursor: pointer;
-    ion-icon { font-size: 9px; }
-  }
+ion-label {
+  display: block !important;
+  white-space: normal !important;
+  line-height: 1.4 !important;
+  margin-bottom: 6px;
+  padding-right: 4px;
+}
 
-  .radio-validacion {
-    display: flex; align-items: center; gap: 6px; font-size: 13px; cursor: default;
+ion-select,
+ion-input,
+ion-textarea {
+  flex: 1;
+  width: 100%;
+  min-height: 40px;
+}
 
-    .radio-custom { width: 16px; height: 16px; border-radius: 50%; border: 3px solid rgb(126, 126, 126); display: inline-block; }
+ion-col ion-item {
+  margin-bottom: 8px;
+}
 
-    &.activo .radio-custom   { border-color: #00ff15; background-color: #40ff00; }
-    &.inactivo .radio-custom { border-color: #909090; background-color: transparent; }
+.barra-secciones {
+  display: flex;
+  justify-content: center;
+  background: #fff;
+  border-bottom: 2px solid #e5e7eb;
+  margin-bottom: 18px;
+  padding: 10px 0;
+  gap: 20px;
+
+  button {
+    background: none;
+    border: none;
+    font-weight: 700;
+    font-size: 15px;
+    color: #555;
+    cursor: pointer;
+    position: relative;
+    transition: color 0.2s ease;
+
+    ion-icon {
+      margin-right: 6px;
+      font-size: 17px;
+      vertical-align: middle;
+    }
+
+    &:hover {
+      color: #e11b22;
+    }
+
+    &.activa {
+      color: #e11b22;
+
+      &::after {
+        content: "";
+        position: absolute;
+        bottom: -6px;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: #e11b22;
+        border-radius: 2px;
+      }
+    }
   }
 }
 
-/* ====== “LOOK REGISTRO” EN GRIDS DE FORMULARIO ====== */
-.contenedor ion-grid {
-  background-color: #f7f7f7;
+.seccion-imagenes {
+  background: #f9f9f9;
+  border-radius: 12px;
   border: 1px solid #ddd;
-  border-radius: 10px;
-  padding: 12px;
-  margin-top: 12px;
+  padding: 18px;
 }
 
-.contenedor ion-grid ion-row > ion-col {
-  padding-left: 8px;
-  padding-right: 8px;
+.titulo-editar {
+  text-align: center;
+  padding: 24px 12px 8px;
+  background: #fff;
+  border-bottom: 2px solid #e5e7eb;
+
+  h1 {
+    font-size: clamp(22px, 4vw, 30px);
+    font-weight: 900;
+    color: #000000;
+    /* rojo WOAW */
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+
+    ion-icon {
+      font-size: 26px;
+      color: #000000;
+    }
+  }
+
+  p {
+    font-size: 14px;
+    color: #555;
+    margin-top: 6px;
+  }
 }
 
-ion-card {
-  box-shadow: 0 2px 8px rgba(0,0,0,.06);
-  border-radius: 10px;
-}
-
-.section-title{
-  display:flex; align-items:center; gap:8px;
-  font-weight:700; font-size:14px; color:#222;
-  margin: 6px 8px 4px;
-  text-transform: uppercase; letter-spacing:.4px;
-  ion-icon{ font-size:16px; }
+.car-name {
+    color: var(--ion-color-danger);
+    font-weight: 900;
 }

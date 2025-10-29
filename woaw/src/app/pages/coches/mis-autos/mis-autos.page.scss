@@ -10,24 +10,84 @@
   }
 }
 
-.buscador-escritorio {
-  width: 100%;
-  max-width: 520px;       // ajusta a gusto (ej. 600px)
-  margin-left: auto;      // empuja a la derecha
+.buscador-navbar {
   --border-radius: 12px;
   --background: #1e1e1e;
   --color: #fff;
   --placeholder-color: #a0a0a0;
   --icon-color: #a0a0a0;
+  width: 100%;
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: 8px;
 }
 
-.buscador-movil {
-  --border-radius: 12px;
+@media (max-width: 768px) {
+  .buscador-navbar {
+    max-width: 260px;
+    height: 38px;
+    --min-height: 36px;
+    --padding-start: 8px;
+    --padding-end: 8px;
+    font-size: 14px;
+  }
+
+  ion-toolbar[color='dark'] {
+    min-height: 52px;
+  }
+
+  .perfil-header img {
+    width: 64px;
+  }
+
+  .perfil-header button {
+    scale: 0.9;
+  }
 }
 
-/* Por si necesitas que el contenedor del start no “coma” demasiado espacio */
 .perfil-header {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+ion-segment {
+  --background: transparent;
+  --color: #000;
+  --color-checked: #e11b22;
+  --indicator-color: #e11b22;
+  --indicator-height: 4px;
+  margin-top: 12px;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  padding: 6px 0;
+}
+
+ion-segment-button {
+  font-weight: 800;
+  font-size: 1.05rem;
+  letter-spacing: 0.5px;
+  color: #000;
+  background: transparent;
+  border: none;
+  transition: color 0.25s ease, transform 0.2s ease;
+
+  &.segment-button-checked {
+    color: #e11b22;
+    transform: scale(1.04);
+  }
+
+  &:hover {
+    color: #e11b22;
+  }
+
+  &:focus-visible {
+    outline: none;
+  }
+}
+
+ion-segment-button,
+ion-segment-button * {
+  --ion-color-primary: #e11b22 !important;
 }
