@@ -3,336 +3,370 @@ import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root'
 })
 export class PdfService {
 
-  constructor() { }
+    constructor() { }
 
-  async generarCotizacionSeguro(quote: any, datosCoche: any, coberturas: any[]): Promise<void> {
-    const doc = new jsPDF();
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const margin = 20;
-    
-    // --- HEADER CON COLORES WOAW (ROJO Y NEGRO) ---
-    doc.setFillColor(220, 53, 69); // Rojo Woaw
-    doc.rect(0, 0, pageWidth, 80, 'F');
-    
-    // Logo - Intentar cargar la imagen
-    try {
-      const logoResponse = await fetch('/assets/icon/logo3.png');
-      const logoBlob = await logoResponse.blob();
-      const logoUrl = URL.createObjectURL(logoBlob);
-      
-      doc.addImage(logoUrl, 'PNG', margin, 5, 20, 20);
-    } catch (error) {
-      console.warn('No se pudo cargar el logo, continuando sin él');
-      // Si falla el logo, mostrar texto
-      doc.setTextColor(255, 255, 255);
-      doc.setFontSize(20);
-      doc.setFont('helvetica', 'bold');
-      doc.text('WOAW', margin, 35);
-    }
-    
-    // Título
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(24);
-    doc.setFont('helvetica', 'bold');
-    doc.text('COTIZACIÓN DE SEGURO', pageWidth / 2, 40, { align: 'center' });
-    
-    doc.setFontSize(12);
-    doc.setFont('helvetica', 'normal');
-    doc.text('Woaw Seguros - Tu protección en camino', pageWidth / 2, 50, { align: 'center' });
-    
-    // Fecha
-    doc.text(`Generado: ${new Date().toLocaleDateString('es-MX')}`, pageWidth - margin, 70, { align: 'right' });
+    // Función principal para crear el PDF (retorna el Blob)
+    async crearPDF(quote: any, datosCoche: any, coberturas: any[]): Promise<Blob> {
+        const doc = new jsPDF();
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
+        const margin = 20;
+        let yPosition = 5;
 
-    let yPosition = 100;
+        try {
+            // Cargar imagen de encabezado como fondo
+            const headerResponse = await fetch('/assets/pdf/ENCABEZADO_COTIZACION.png');
+            const headerBlob = await headerResponse.blob();
+            const headerUrl = URL.createObjectURL(headerBlob);
 
-    // --- INFORMACIÓN DEL VEHÍCULO ---
-    doc.setTextColor(0, 0, 0);
-    doc.setFontSize(16);
-    doc.setFont('helvetica', 'bold');
-    doc.text('INFORMACIÓN DEL VEHÍCULO', margin, yPosition);
-    yPosition += 4;
+            // Agregar imagen de encabezado como fondo (ocupando todo el ancho)
+            doc.addImage(headerUrl, 'PNG', 0, 0, pageWidth, 250);
 
-    const vehicleInfo = [
-      ['Marca:', quote.vehicle?.brand?.name || datosCoche.marca],
-      ['Modelo:', quote.vehicle?.model?.name || datosCoche.modelo],
-      ['Año:', quote.vehicle?.year?.name || datosCoche.anio],
-      ['Versión:', quote.vehicle?.version?.name || datosCoche.version],
-      ['Código Postal:', quote.region?.postal_code || datosCoche.cp]
-    ];
+            // Cargar y agregar logo sobre el encabezado
+            const logoResponse = await fetch('/assets/pdf/LOGO.png');
+            const logoBlob = await logoResponse.blob();
+            const logoUrl = URL.createObjectURL(logoBlob);
+            doc.addImage(logoUrl, 'PNG', margin, 5, 30, 25);
 
-    autoTable(doc, {
-      startY: yPosition,
-      head: [['Campo', 'Valor']],
-      body: vehicleInfo,
-      theme: 'grid',
-      headStyles: { 
-        fillColor: [220, 53, 69], // Rojo Woaw
-        textColor: [255, 255, 255],
-        fontStyle: 'bold'
-      },
-      margin: { left: margin, right: margin }
-    });
+            // Cargar y agregar logo sobre el encabezado - LADO DERECHO
+            const logoCrabi = await fetch('/assets/pdf/LOGO-CRABI.png');
+            const logoBlobCrabi = await logoCrabi.blob();
+            const logoUrlCrabi = URL.createObjectURL(logoBlobCrabi);
+            doc.addImage(logoUrlCrabi, 'PNG', pageWidth - margin - 30, 33, 30, 25);
 
-    yPosition = (doc as any).lastAutoTable.finalY + 15;
+        } catch (error) {
+            // Fallback si hay error cargando las imágenes
+            doc.setFillColor(220, 53, 69);
+            doc.rect(0, 0, pageWidth, 25, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(16);
+            doc.setFont('helvetica', 'bold');
+            doc.text('WOAW SEGUROS', margin, 15);
+            doc.text('COTIZACIÓN DE SEGURO', pageWidth / 2, 15, { align: 'center' });
+        }
 
-    // --- INFORMACIÓN PERSONAL ---
-    doc.setFontSize(16);
-    doc.setFont('helvetica', 'bold');
-    doc.text('INFORMACIÓN PERSONAL', margin, yPosition);
-    yPosition += 4;
+        // Fecha (siempre visible)
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'normal');
+        doc.setTextColor(255, 255, 255);
+        doc.text(`Generado: ${new Date().toLocaleDateString('es-MX')}`, pageWidth - margin, 22, { align: 'right' });
 
-    const personalInfo = [
-      ['Fecha de Nacimiento:', this.formatFecha(datosCoche.nacimiento)],
-      ['Género:', datosCoche.genero || 'No especificado'],
-      ['Estado Civil:', datosCoche.estadoCivil || 'No especificado']
-    ];
+        yPosition = 45;
 
-    autoTable(doc, {
-      startY: yPosition,
-      head: [['Campo', 'Valor']],
-      body: personalInfo,
-      theme: 'grid',
-      headStyles: { 
-        fillColor: [220, 53, 69], // Rojo Woaw
-        textColor: [255, 255, 255],
-        fontStyle: 'bold'
-      },
-      margin: { left: margin, right: margin }
-    });
+        // --- VIGENCIA ---
+        doc.setTextColor(0, 0, 0);
+        doc.setFontSize(10);
+        doc.setFont('helvetica');
 
-    yPosition = (doc as any).lastAutoTable.finalY + 15;
+        const vigenciaDesde = new Date();
+        const vigenciaHasta = new Date();
+        vigenciaHasta.setFullYear(vigenciaHasta.getFullYear() + 1);
 
-    // --- RESUMEN DE COBERTURAS ---
-    doc.setFontSize(16);
-    doc.setFont('helvetica', 'bold');
-    doc.text('COBERTURAS INCLUIDAS', margin, yPosition);
-    yPosition += 4;
+        doc.text(`Vigencia: ${vigenciaDesde.toLocaleDateString('es-MX')} - ${vigenciaHasta.toLocaleDateString('es-MX')} (1 año)`, margin, yPosition);
+        yPosition += 15;
 
-    const coverageData = coberturas.map(cov => [
-      cov.label,
-      cov.amountText || 'Incluido',
-      cov.deductible ? `${(cov.deductible * 100)}%` : 'N/A'
-    ]);
 
-    autoTable(doc, {
-      startY: yPosition,
-      head: [['Cobertura', 'Suma Asegurada', 'Deducible']],
-      body: coverageData,
-      theme: 'grid',
-      headStyles: { 
-        fillColor: [33, 37, 41], // Negro Woaw
-        textColor: [255, 255, 255],
-        fontStyle: 'bold'
-      },
-      margin: { left: margin, right: margin }
-    });
+        // --- DATOS DEL VEHÍCULO Y CLIENTE UNO AL LADO DEL OTRO ---
+        const columnaIzquierda = margin;
+        const columnaDerecha = pageWidth / 2 + 10;
 
-    yPosition = (doc as any).lastAutoTable.finalY + 15;
-
-    // --- TODOS LOS PLANES DE PAGO DISPONIBLES ---
-    if (quote.plans?.[0]) {
-      const plan = quote.plans[0];
-      const paymentPlans = plan?.discount?.payment_plans || plan?.payment_plans;
-      
-      if (paymentPlans && paymentPlans.length > 0) {
-        doc.setFontSize(16);
+        // Título VEHÍCULO (ROJO)
+        doc.setTextColor(220, 53, 69);
+        doc.setFontSize(12);
         doc.setFont('helvetica', 'bold');
-        doc.text('PLANES DE PAGO DISPONIBLES', margin, yPosition);
-        yPosition += 4;
+        doc.text('Datos del vehículo:', columnaIzquierda, yPosition);
 
-        // Crear tabla con TODOS los planes
-        const allPlansData = paymentPlans.map((pp: any, index: number) => [
-          this.getPaymentPlanLabel(pp),
-          this.formatMoney(pp.total),
-          this.getPaymentDetails(pp)
+        // Título CLIENTE (ROJO)
+        doc.text('Datos del cliente:', columnaDerecha, yPosition);
+        yPosition += 6;
+
+        // Datos del VEHÍCULO (NEGRO)
+        doc.setTextColor(0, 0, 0);
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+
+        const vehicleLines = [
+            `Marca: ${quote.vehicle?.brand?.name || datosCoche.marca}`,
+            `Modelo: ${quote.vehicle?.model?.name || datosCoche.modelo}`,
+            `Año: ${quote.vehicle?.year?.name || datosCoche.anio}`,
+            `Versión: ${quote.vehicle?.version?.name || datosCoche.version}`
+        ];
+
+        let tempY = yPosition;
+        vehicleLines.forEach(line => {
+            doc.text(line, columnaIzquierda, tempY);
+            tempY += 5;
+        });
+
+        // Datos del CLIENTE (NEGRO)
+        const clientLines = [
+            `Fecha de nacimiento: ${this.formatFecha(datosCoche.nacimiento)}`,
+            `Código postal: ${quote.region?.postal_code || datosCoche.cp}`,
+            `Género: ${datosCoche.genero || 'No especificado'}`,
+            `Estado civil: ${datosCoche.estadoCivil || 'No especificado'}`
+        ];
+
+        tempY = yPosition;
+        clientLines.forEach(line => {
+            doc.text(line, columnaDerecha, tempY);
+            tempY += 5;
+        });
+
+        // Ajustar yPosition al final de la columna más larga
+        yPosition = Math.max(
+            yPosition + (vehicleLines.length * 5),
+            yPosition + (clientLines.length * 5)
+        ) + 10;
+
+        // --- COBERTURAS INCLUIDAS (TÍTULO EN ROJO) ---
+
+        doc.setFillColor(220, 53, 69);
+        doc.rect(margin, yPosition - 4.5, pageWidth - (2 * margin), 6, 'F');
+
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'bold');
+        doc.text('COBERTURAS INCLUIDAS', pageWidth / 2, yPosition, { align: 'center' });
+        yPosition += 7;
+
+        // Tabla de coberturas SIN líneas
+        const coverageData = coberturas.map(cov => [
+            this.truncateText(cov.label, 40),
+            cov.amountText || 'Incluido',
+            cov.deductible ? `${(cov.deductible * 100)}%` : '--'
         ]);
 
         autoTable(doc, {
-          startY: yPosition,
-          head: [['Plan de Pago', 'Total', 'Detalles']],
-          body: allPlansData,
-          theme: 'grid',
-          headStyles: { 
-            fillColor: [220, 53, 69], // Rojo Woaw
-            textColor: [255, 255, 255],
-            fontStyle: 'bold'
-          },
-          margin: { left: margin, right: margin },
-          styles: { 
-            fontSize: 9,
-            cellPadding: 3
-          }
+            startY: yPosition,
+            head: [['Cobertura', 'Suma Asegurada', 'Deducible']],
+            body: coverageData,
+            theme: 'plain',
+            styles: {
+                fontSize: 10,
+                cellPadding: 1,
+                minCellHeight: 5,
+                lineColor: [255, 255, 255],
+                lineWidth: 0
+            },
+            headStyles: {
+                fillColor: [255, 255, 255],
+                textColor: [220, 53, 69],
+                fontStyle: 'bold',
+                lineColor: [255, 255, 255],
+                lineWidth: 0
+            },
+            bodyStyles: {
+                fillColor: [255, 255, 255],
+                textColor: [0, 0, 0],
+                lineColor: [255, 255, 255],
+                lineWidth: 0
+            },
+            margin: { left: margin, right: margin }
         });
 
-        yPosition = (doc as any).lastAutoTable.finalY + 15;
-      }
+        yPosition = (doc as any).lastAutoTable.finalY + 12;
 
-      // --- DETALLE DEL PLAN SELECCIONADO ---
-      const selectedPayment = this.getSelectedPaymentFromPlan(plan);
-      
-      doc.setFontSize(16);
-      doc.setFont('helvetica', 'bold');
-      doc.text('DETALLE DEL PLAN SELECCIONADO', margin, yPosition);
-      yPosition += 4;
+        // --- OPCIONES DE PAGO ---
+        if (quote.plans?.[0]) {
+            const plan = quote.plans[0];
+            const paymentPlans = plan?.discount?.payment_plans || plan?.payment_plans;
 
-      const paymentData = [
-        ['Plan Seleccionado:', plan.name || 'Plan Personalizado'],
-        ['Forma de Pago:', this.getPaymentPlanLabel(selectedPayment)],
-        ['Prima Neta:', this.formatMoney(selectedPayment?.net_premium)],
-        ['Derechos (Expedición):', this.formatMoney(selectedPayment?.expedition_rights)],
-        ['Comisión/Recargos:', this.formatMoney(selectedPayment?.fee)],
-        ['Subtotal:', this.formatMoney(selectedPayment?.subtotal)],
-        ['IVA:', this.formatMoney(selectedPayment?.taxes)],
-        ['TOTAL:', this.formatMoney(selectedPayment?.total)]
-      ];
+            if (paymentPlans && paymentPlans.length > 0) {
+                doc.setFillColor(220, 53, 69);
+                doc.rect(margin, yPosition - 4.5, pageWidth - (2 * margin), 6, 'F');
 
-      autoTable(doc, {
-        startY: yPosition,
-        body: paymentData,
-        theme: 'grid',
-        headStyles: { 
-          fillColor: [220, 53, 69], // Rojo Woaw
-          textColor: [255, 255, 255],
-          fontStyle: 'bold'
-        },
-        margin: { left: margin, right: margin },
-        styles: { 
-          fontStyle: 'bold',
-          textColor: [0, 0, 0]
-        },
-        bodyStyles: {
-          fillColor: [255, 255, 255]
-        },
-      });
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'bold');
+                doc.text('OPCIONES DE PAGO', pageWidth / 2, yPosition, { align: 'center' });
+                yPosition += 7;
 
-      yPosition = (doc as any).lastAutoTable.finalY + 20;
+                const plansData = paymentPlans.map((pp: any) => [
+                    this.getPaymentPlanLabelSimple(pp),
+                    this.formatMoney(pp.total),
+                    this.getPaymentDetailsSimple(pp)
+                ]);
 
-      // --- DESCUENTOS Y PROMOCIONES ---
-      if (plan.discount) {
-        doc.setFontSize(14);
-        doc.setFont('helvetica', 'bold');
-        doc.setTextColor(220, 53, 69); // Rojo Woaw
-        doc.text('DESCUENTOS APLICADOS', margin, yPosition);
-        yPosition += 10;
+                autoTable(doc, {
+                    startY: yPosition,
+                    head: [['Plan', 'Total', 'Detalles']],
+                    body: plansData,
+                    theme: 'plain',
+                    styles: {
+                        fontSize: 10,
+                        cellPadding: 1,
+                        minCellHeight: 1,
+                        lineColor: [255, 255, 255],
+                        lineWidth: 0
+                    },
+                    headStyles: {
+                        fillColor: [255, 255, 255],
+                        textColor: [220, 53, 69],
+                        fontStyle: 'bold',
+                        lineColor: [255, 255, 255],
+                        lineWidth: 0
+                    },
+                    bodyStyles: {
+                        fillColor: [255, 255, 255],
+                        textColor: [0, 0, 0],
+                        lineColor: [255, 255, 255],
+                        lineWidth: 0
+                    },
+                    margin: { left: margin, right: margin }
+                });
 
-        doc.setFontSize(10);
+                yPosition = (doc as any).lastAutoTable.finalY + 20;
+
+                // --- DESCUENTO ---
+                if (plan.discount) {
+                    doc.setFontSize(15);
+                    doc.setFont('helvetica', 'bold');
+                    doc.setTextColor(255, 0, 0);
+
+                    let discountText = '';
+                    if (plan.discount.percentage) {
+                        discountText = `¡${plan.discount.percentage}% DE DESCUENTO APLICADO!`;
+                    } else if (plan.discount.marketing_text?.default) {
+                        discountText = plan.discount.marketing_text.default;
+                    }
+
+                    if (discountText) {
+                        doc.text(discountText, pageWidth / 2, yPosition, { align: 'center' });
+                        yPosition += 8;
+                    }
+                }
+            }
+        }
+
+        // --- FOOTER ---
+        let footerY = 270;
+        if (yPosition > 250) {
+            footerY = Math.min(280, yPosition + 15);
+            if (footerY > 280) {
+                doc.addPage();
+                footerY = 20;
+            }
+        }
+
+        // --- NOTAS FINALES ---
+        doc.setFontSize(7);
+        doc.setTextColor(100, 100, 100);
         doc.setFont('helvetica', 'normal');
-        doc.setTextColor(0, 0, 0);
-        
-        if (plan.discount.marketing_text?.default) {
-          doc.text(`• ${plan.discount.marketing_text.default}`, margin + 5, yPosition);
-          yPosition += 6;
-        }
-        
-        if (plan.discount.amount) {
-          doc.text(`• Descuento: ${this.formatMoney(plan.discount.amount)}`, margin + 5, yPosition);
-          yPosition += 6;
-        }
-        
-        if (plan.discount.percentage) {
-          doc.text(`• Porcentaje de descuento: ${plan.discount.percentage}%`, margin + 5, yPosition);
-          yPosition += 6;
-        }
 
-        yPosition += 4;
-      }
+        const notes = [
+            '• Cotización válida por 30 días • Precios en MXN • Deducible por evento',
+            'Woaw Seguros - www.woaw.com.mx - Tel: +52 (442) 77 06 776'
+        ];
 
-      // --- NOTAS IMPORTANTES ---
-      doc.setFontSize(12);
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(220, 53, 69); // Rojo Woaw para títulos
-      doc.text('NOTAS IMPORTANTES:', margin, yPosition);
-      yPosition += 10;
+        notes.forEach((note, index) => {
+            doc.text(note, pageWidth / 2, footerY + (index * 3), { align: 'center' });
+        });
 
-      doc.setFontSize(10);
-      doc.setFont('helvetica', 'normal');
-      doc.setTextColor(0, 0, 0); // Negro para el contenido
-      const notes = [
-        '• Esta cotización es válida por 30 días a partir de la fecha de generación.',
-        '• Los precios están expresados en pesos mexicanos (MXN).',
-        '• El deducible aplica por evento siniestrado.',
-        '• La póliza está sujeta a términos y condiciones establecidos en el contrato.',
-        '• Para activar tu seguro, completa el proceso de contratación en nuestra plataforma.',
-        '• Woaw Seguros - Confianza y protección en cada kilómetro.'
-      ];
-
-      notes.forEach(note => {
-        if (yPosition > 270) {
-          doc.addPage();
-          yPosition = 20;
-        }
-        doc.text(note, margin + 5, yPosition);
-        yPosition += 4;
-      });
+        // Convertir a Blob
+        const pdfBlob = doc.output('blob');
+        return pdfBlob;
     }
 
-    // --- FOOTER ---
-    const footerY = doc.internal.pageSize.getHeight() - 20;
-    doc.setFontSize(8);
-    doc.setTextColor(100, 100, 100);
-    doc.text('Woaw Seguros - www.woaw.com.mx - Tel:  +52 (442) 77 06 776', pageWidth / 2, footerY, { align: 'center' });
+    // Función para previsualizar el PDF en nueva pestaña
+    async previsualizarPDF(quote: any, datosCoche: any, coberturas: any[]): Promise<void> {
+        try {
+            const pdfBlob = await this.crearPDF(quote, datosCoche, coberturas);
+            const pdfUrl = URL.createObjectURL(pdfBlob);
 
-    // Guardar PDF
-    const fileName = `Cotizacion_Woaw_Seguros_${quote.vehicle?.brand?.name || 'Auto'}_${new Date().getTime()}.pdf`;
-    doc.save(fileName);
-  }
+            // Abrir en nueva pestaña
+            window.open(pdfUrl, '_blank');
 
-  private formatFecha(nacimiento: any): string {
-    if (!nacimiento) return 'No especificado';
-    return `${nacimiento.dia}/${nacimiento.mes}/${nacimiento.anio}`;
-  }
+            // Limpiar la URL después de un tiempo
+            setTimeout(() => {
+                URL.revokeObjectURL(pdfUrl);
+            }, 1000);
 
-  private formatMoney(amount: number): string {
-    if (!amount) return '$0.00';
-    return new Intl.NumberFormat('es-MX', {
-      style: 'currency',
-      currency: 'MXN'
-    }).format(amount);
-  }
-
-  private getSelectedPaymentFromPlan(plan: any): any {
-    const paymentPlans = plan?.discount?.payment_plans || plan?.payment_plans;
-    return paymentPlans?.[0] || null;
-  }
-
-  private getPaymentPlanLabel(payment: any): string {
-    if (!payment) return 'No especificado';
-    
-    const name = (payment?.name || '').toUpperCase();
-    const count = Array.isArray(payment?.payments) ? payment.payments.length : 1;
-    
-    switch (name) {
-      case 'ANNUAL': return 'Pago de contado';
-      case 'SUBSCRIPTION': return count > 1 ? `${count} Suscripción` : 'Suscripción';
-      case 'FLAT_FEE': return count > 1 ? `${count} Pagos fijos` : 'Pago fijo';
-      case 'MSI': return count > 1 ? `${count} Meses sin intereses` : 'Pago fijo';
-      default: return name;
+        } catch (error) {
+            console.error('Error al previsualizar PDF:', error);
+            throw error;
+        }
     }
-  }
 
-  private getPaymentDetails(payment: any): string {
-    if (!payment) return '';
-    
-    const payments = Array.isArray(payment?.payments) ? payment.payments : [];
-    
-    if (payments.length === 1) {
-      return `1 pago de ${this.formatMoney(payments[0]?.total)}`;
-    } else if (payments.length > 1) {
-      const first = payments[0]?.total;
-      const rest = payments.slice(1);
-      const allEqual = rest.every((p: any) => p.total === rest[0]?.total);
-      
-      if (allEqual) {
-        return `1er pago: ${this.formatMoney(first)} + ${rest.length} pagos de ${this.formatMoney(rest[0]?.total)}`;
-      } else {
-        return `${payments.length} pagos variables`;
-      }
+    // Función para descargar el PDF directamente
+    async descargarPDF(quote: any, datosCoche: any, coberturas: any[]): Promise<void> {
+        try {
+            const pdfBlob = await this.crearPDF(quote, datosCoche, coberturas);
+            const pdfUrl = URL.createObjectURL(pdfBlob);
+
+            // Crear enlace de descarga
+            const link = document.createElement('a');
+            link.href = pdfUrl;
+            link.download = `Cotizacion_Woaw_${quote.vehicle?.brand?.name || 'Auto'}_${new Date().getTime()}.pdf`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            // Limpiar la URL
+            setTimeout(() => {
+                URL.revokeObjectURL(pdfUrl);
+            }, 1000);
+
+        } catch (error) {
+            console.error('Error al descargar PDF:', error);
+            throw error;
+        }
     }
-    
-    return 'Detalles no disponibles';
-  }
+
+    // Métodos auxiliares (sin cambios)
+    private truncateText(text: string, maxLength: number): string {
+        if (!text) return '';
+        return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+    }
+
+    private formatFecha(nacimiento: any): string {
+        if (!nacimiento) return 'No especificado';
+        return `${nacimiento.dia}/${nacimiento.mes}/${nacimiento.anio}`;
+    }
+
+    private formatMoney(amount: number): string {
+        if (!amount) return '$0.00';
+        return new Intl.NumberFormat('es-MX', {
+            style: 'currency',
+            currency: 'MXN'
+        }).format(amount);
+    }
+
+    private getPaymentPlanLabelSimple(payment: any): string {
+        if (!payment) return 'Pago único';
+
+        const name = (payment?.name || '').toUpperCase();
+        const count = Array.isArray(payment?.payments) ? payment.payments.length : 1;
+
+        switch (name) {
+            case 'ANNUAL': return 'Contado';
+            case 'SUBSCRIPTION': return `${count} Pagos`;
+            case 'FLAT_FEE': return `${count} Pagos`;
+            case 'MSI': return `${count} MSI`;
+            default: return this.truncateText(name, 10);
+        }
+    }
+
+    private getPaymentDetailsSimple(payment: any): string {
+        if (!payment) return '';
+
+        const payments = Array.isArray(payment?.payments) ? payment.payments : [];
+
+        if (payments.length === 1) {
+            return this.formatMoney(payments[0]?.total);
+        } else if (payments.length > 1) {
+            const first = payments[0]?.total;
+            const rest = payments.slice(1);
+            const allEqual = rest.every((p: any) => p.total === rest[0]?.total);
+
+            if (allEqual) {
+                return `${this.formatMoney(first)} + ${rest.length}×${this.formatMoney(rest[0]?.total)}`;
+            }
+        }
+
+        return this.formatMoney(payment.total);
+    }
 }

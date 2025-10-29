@@ -16,6 +16,7 @@
 		50B271D11FEDC1A000F3C39B /* public in Resources */ = {isa = PBXBuildFile; fileRef = 50B271D01FEDC1A000F3C39B /* public */; };
 		7C6A810B2EB1356100D1546D /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 7C6A810A2EB1356100D1546D /* GoogleService-Info.plist */; };
 		7C6A810E2EB1391B00D1546D /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 7C6A810D2EB1391B00D1546D /* FirebaseAnalytics */; };
+		7CCC36532EB271B100A38C42 /* BuscarVehiculoIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCC36522EB271A400A38C42 /* BuscarVehiculoIntent.swift */; };
 		9AF664E2685933649D9A6CF3 /* Pods_App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D0A8FB6925B0D2C30BAEB780 /* Pods_App.framework */; };
 /* End PBXBuildFile section */
 
@@ -33,6 +34,7 @@
 		7C2660312EAAE25400482C9A /* AppRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AppRelease.entitlements; sourceTree = "<group>"; };
 		7C2660322EAAE26100482C9A /* App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = App.entitlements; sourceTree = "<group>"; };
 		7C6A810A2EB1356100D1546D /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		7CCC36522EB271A400A38C42 /* BuscarVehiculoIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuscarVehiculoIntent.swift; sourceTree = "<group>"; };
 		A14FFC34E4E2613A01B204AD /* Pods-App.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App.debug.xcconfig"; path = "Target Support Files/Pods-App/Pods-App.debug.xcconfig"; sourceTree = "<group>"; };
 		D0A8FB6925B0D2C30BAEB780 /* Pods_App.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_App.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -79,6 +81,7 @@
 		504EC3061FED79650016851F /* App */ = {
 			isa = PBXGroup;
 			children = (
+				7CCC36522EB271A400A38C42 /* BuscarVehiculoIntent.swift */,
 				7C2660322EAAE26100482C9A /* App.entitlements */,
 				7C2660312EAAE25400482C9A /* AppRelease.entitlements */,
 				50379B222058CBB4000EE86E /* capacitor.config.json */,
@@ -224,6 +227,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7CCC36532EB271B100A38C42 /* BuscarVehiculoIntent.swift in Sources */,
 				504EC3081FED79650016851F /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

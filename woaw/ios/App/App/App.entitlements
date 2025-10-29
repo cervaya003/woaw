@@ -4,6 +4,13 @@
 <dict>
 	<key>aps-environment</key>
 	<string>development</string>
+	<key>com.apple.developer.associated-domains</key>
+	<array>
+		<string>applinks:wo-aw.com</string>
+		<string>applinks:www.wo-aw.com</string>
+		<string>applinks:peppy-aileron-468716-e5.web.app</string>
+		<string>applinks:peppy-aileron-468716-e5.firebaseapp.com</string>
+	</array>
 	<key>keychain-access-groups</key>
 	<array>
 		<string>$(AppIdentifierPrefix)com.woaw.woaw</string>

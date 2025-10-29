@@ -393,15 +393,26 @@
             <!-- CTA card -->
             <article class="qp-cta" *ngIf="tipoDispocitivo !== 'telefono'">
               <button type="button" class="btn ghost" (click)="nuevoSeguro()">Nueva cotizacion ↻</button>
-              
-              <!-- NUEVO BOTÓN PDF -->
-              <button type="button" class="btn secondary" (click)="descargarCotizacionPDF()">
+
+              <button type="button" class="btn secondary" (click)="previsualizarPDF()">
                 <ion-icon name="document-outline" slot="start"></ion-icon>
-                Descargar PDF
+                PDF
               </button>
 
               <button type="button" class="btn prime" (click)="confirmarCrearPersona()">Continuar ➜</button>
             </article>
+
+            <!-- <article class="pdf-preview-auto" *ngIf="pdfUrl">
+              <header>
+                <h3>Cotización Woaw Seguros</h3>
+                <small>Vista previa del documento</small>
+              </header>
+              <div class="pdf-preview-content">
+                <iframe [src]="pdfUrl" width="100%" height="500" style="border: 1px solid #e0e0e0; border-radius: 8px;"
+                  title="Vista previa de la cotización">
+                </iframe>
+              </div>
+            </article> -->
 
           </div>
 
@@ -413,26 +424,7 @@
 
             <ul class="cov-list">
 
-              <!-- EXTREP siempre se muestra manualmente -->
-              <li class="cov-row">
-                <div class="left">
-                  <span class="label">Extensión de reparación en agencia</span>
-                </div>
-                <div class="right">
-                  <div class="extrep-container">
-                    <span class="val" *ngIf="extrepStatus">{{ getEXTREPAmount() }}</span>
-                    <div class="toggle-switch">
-                      <label class="toggle">
-                        <input type="checkbox" [checked]="extrepStatus" (change)="toggleExtrep()">
-                        <span class="slider">
-                          <span class="slider-text-off">OFF</span>
-                          <span class="slider-text-on">ON</span>
-                        </span>
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              </li>
+             
 
               <!-- Las demás coberturas del array -->
               <li class="cov-row" *ngFor="let c of covs">
@@ -555,9 +547,13 @@
         Atrás
       </ion-button>
       <!-- -----  -->
-      <ion-button fill="clear" *ngIf="cotizacion" (click)="nuevoSeguro()">
+      <ion-button fill="solid" color="medium" *ngIf="cotizacion" (click)="nuevoSeguro()">
         <ion-icon slot="start" name="sync"></ion-icon>
-        Nueva cotización
+        Cotización
+      </ion-button>
+
+      <ion-button fill="solid" color="warning" *ngIf="cotizacion" (click)="descargarCotizacionPDF()">
+        <ion-icon slot="start" name="cloud-download"></ion-icon>
       </ion-button>
     </ion-buttons>
 

@@ -656,16 +656,13 @@ export class SegurosPage implements OnInit {
 
     let chosenId = this.selectedPaymentByPlan?.[planId];
 
-    // Si no hay selección o la selección no es válida, buscar en localStorage
     if (!chosenId || !paymentPlans.find((pp: any) => pp.id === chosenId)) {
       const posStr = localStorage.getItem('posicionSeleccionada');
       const savedPosition = posStr ? parseInt(posStr, 10) : 0;
 
-      // Verificar que la posición guardada sea válida
       if (savedPosition >= 0 && savedPosition < paymentPlans.length) {
         chosenId = paymentPlans[savedPosition].id;
       } else {
-        // Si no es válida, usar la primera opción
         chosenId = paymentPlans[0].id;
       }
 
@@ -675,7 +672,6 @@ export class SegurosPage implements OnInit {
     const idx = paymentPlans.findIndex((pp: any) => pp.id === chosenId);
     if (idx === -1) return;
 
-    // Guardar la posición seleccionada en localStorage
     localStorage.setItem('posicionSeleccionada', String(idx));
   }
   getSelectedPayment(pl: any) {
@@ -841,7 +837,6 @@ export class SegurosPage implements OnInit {
       for (const c of covs) {
         const item = this.normalizeCoverage(c);
         if (!item.code) continue;
-        // Si ya existe esa cobertura, conserva la primera o agrega lógica de “mejor dato”
         if (!out[item.code]) out[item.code] = item;
       }
     }
@@ -1253,7 +1248,7 @@ export class SegurosPage implements OnInit {
 
     return dto;
   }
-  // Agrega este método nuevo:
+
   descargarCotizacionPDF(): void {
     if (!this.quote) {
       this.generalService.alert('Error', 'No hay cotización para descargar', 'warning');
@@ -1266,10 +1261,26 @@ export class SegurosPage implements OnInit {
 
       const coberturas = this.activePlan ? this.getPlanCoverages(this.activePlan) : [];
 
-      this.pdfService.generarCotizacionSeguro(this.quote, datosCoche, coberturas);
+      this.pdfService.descargarPDF(this.quote, datosCoche, coberturas);
 
-      // Opcional: Tracking del evento
-      this.seguros.contador('descarga_pdf');
+    } catch (error) {
+      console.error('Error al generar PDF:', error);
+      this.generalService.alert('Error', 'No se pudo generar el PDF', 'danger');
+    }
+  }
+  previsualizarPDF(): void {
+    if (!this.quote) {
+      this.generalService.alert('Error', 'No hay cotización para descargar', 'warning');
+      return;
+    }
+
+    try {
+      const datosCocheStorage = localStorage.getItem('datosCoche');
+      const datosCoche = datosCocheStorage ? JSON.parse(datosCocheStorage) : {};
+
+      const coberturas = this.activePlan ? this.getPlanCoverages(this.activePlan) : [];
+
+      this.pdfService.previsualizarPDF(this.quote, datosCoche, coberturas);
 
     } catch (error) {
       console.error('Error al generar PDF:', error);

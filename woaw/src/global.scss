@@ -511,7 +511,7 @@ ion-popover.select-popover[class*="pop-"] {
 
     ion-button {
       --color: #fff;
-      font-weight: 600;
+      font-weight: 400;
 
       &.ion-color-danger {
         --background: #e53935;
@@ -524,13 +524,32 @@ ion-popover.select-popover[class*="pop-"] {
   }
 
   ion-button[color="danger"] {
-    --background: #e53935;
     --border-radius: 12px;
     --padding-start: 22px;
     --padding-end: 22px;
     --padding-top: 14px;
     --padding-bottom: 14px;
-    font-size: 13px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  ion-button[color="warning"] {
+    --border-radius: 12px;
+    --padding-start: 22px;
+    --padding-end: 22px;
+    --padding-top: 14px;
+    --padding-bottom: 14px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  ion-button[color="medium"] {
+    --border-radius: 12px;
+    --padding-start: 22px;
+    --padding-end: 22px;
+    --padding-top: 14px;
+    --padding-bottom: 14px;
+    font-size: 10px;
     font-weight: 600;
     letter-spacing: 0.5px;
   }
