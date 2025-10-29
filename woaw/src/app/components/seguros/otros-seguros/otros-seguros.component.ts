@@ -9,12 +9,13 @@ import { AppRoutingModule } from "src/app/app-routing.module";
 import { Location } from '@angular/common';
 import { ModalController } from '@ionic/angular';
 import { PasosComponent } from '../pasos/pasos.component';
+import { NgZone } from '@angular/core';
 
 type Maybe<T> = T | null | undefined;
 
 interface CotizacionVM {
   plan?: string;
-  total?: number; // opcional
+  total?: number; // opcional 
   pagos?: string;
   vigencia?: { start?: string; end?: string };
   vehiculo?: string; // opcional
@@ -60,44 +61,52 @@ export class OtrosSegurosComponent implements OnInit, OnChanges {
     inicio?: string;
   }> = null;
 
-  constructor(private cdr: ChangeDetectorRef, private router: Router,
+  constructor(
+    private cdr: ChangeDetectorRef, private router: Router,
     public generalService: GeneralService,
     public modalCtrl: ModalController,
-    private location: Location) { }
+    private location: Location,
+    private ngZone: NgZone
+  ) {
+
+  }
 
   ngOnInit() {
     this.generalService.dispositivo$.subscribe((tipo) => {
       this.tipoDispocitivo = tipo;
     });
   }
-
   ngOnChanges(): void {
 
-  }
-  formatMXN(n?: number): string {
-    if (!n || isNaN(n)) return '—';
-    return n.toLocaleString('es-MX', { style: 'currency', currency: 'MXN', maximumFractionDigits: 2 });
   }
   redireccion(url: string) {
     if (!url) return;
     this.router.navigate([`/${url}`]);
   }
   async abrirModalPasos() {
-    const modal = await this.modalCtrl.create({
-      component: PasosComponent,
-      componentProps: {
-        cards: this.cards,
-        cotizacionVM: this.cotizacionVM,
-        usuarioVM: this.usuarioVM,
-        polizaVM: this.polizaVM,
-      },
-      breakpoints: [0, 0.5, 0.7, 0.8],
-      initialBreakpoint: 0.7,
-      cssClass: 'modal-pasos-seguros',
-      handle: true,
-      showBackdrop: true,
+
+    this.ngZone.runOutsideAngular(async () => {
+      try {
+        const modalPasos = await this.modalCtrl.create({
+          component: PasosComponent,
+          componentProps: {
+            cards: this.cards,
+            cotizacionVM: this.cotizacionVM,
+            usuarioVM: this.usuarioVM,
+            polizaVM: this.polizaVM,
+          },
+          breakpoints: [0, 0.5, 0.7, 0.8],
+          initialBreakpoint: 0.7,
+          cssClass: 'modal-pasos-seguros',
+          handle: true,
+          showBackdrop: true,
+        });
+        await modalPasos.present();
+
+      } catch (error) {
+        console.error('❌ Error en abrirModalPasos:', error);
+      }
     });
-    await modal.present();
   }
   public atras() {
     this.location.back();

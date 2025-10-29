@@ -1,7 +1,7 @@
 // ====== Config API ======
 const BASE_API = "https://woaw-backend-507962515113.us-central1.run.app/api";
-const PRE_DELETE_URL = `${BASE_API}/account/pre-delete`; // POST -> { email }
-const CONFIRM_DELETE_URL = `${BASE_API}/account/confirm-delete`; // POST -> { email, code }
+const PRE_DELETE_URL = `${BASE_API}/account/pre-delete`; 
+const CONFIRM_DELETE_URL = `${BASE_API}/account/confirm-delete`;
 // `  `
 // ====== Selección de elementos ======
 const emailInput = document.getElementById("email");

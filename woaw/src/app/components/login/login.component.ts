@@ -34,7 +34,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
   googleInitialized = false;
 
   isNative = Capacitor.isNativePlatform();
-  isIOS = Capacitor.getPlatform() === 'ios'; // NUEVO: Detectar iOS
+  isIOS = Capacitor.getPlatform() === 'ios';
   deepLink = 'woaw://auth/google';
 
 
@@ -284,15 +284,15 @@ export class LoginComponent implements OnInit, AfterViewInit {
 
 
 
- async loginWithApple() {
+  async loginWithApple() {
     try {
       console.log('🔵 Iniciando login con Apple...');
-      
+
       // Verificación básica - SOLO iOS nativo
       if (!this.isIOS || !Capacitor.isNativePlatform()) {
         console.log('❌ No es iOS nativo');
         this.generalService.alert(
-          'No compatible', 
+          'No compatible',
           'Sign in with Apple solo está disponible en dispositivos iOS',
           'warning'
         );
@@ -310,7 +310,6 @@ export class LoginComponent implements OnInit, AfterViewInit {
       });
 
       this.generalService.loadingDismiss();
-      console.log('✅ Respuesta de Apple:', result);
 
       // Verificar respuesta
       if (!result?.response?.identityToken) {
@@ -389,29 +388,17 @@ export class LoginComponent implements OnInit, AfterViewInit {
   }
 
   private async showConfigurationInstructions() {
-    console.log('🔧 Mostrando instrucciones de configuración');
-    
-    const alert = await this.toastController.create({
-      header: 'Configuración Requerida en Xcode',
-      message: 'Debes configurar "Sign in with Apple" y "Keychain Sharing" en las capabilities de Xcode',
-      duration: 8000,
-      position: 'top',
-      color: 'warning',
-      buttons: [
-        {
-          text: 'Entendido',
-          role: 'cancel'
-        }
-      ]
-    });
-    await alert.present();
+    this.generalService.alert(
+      'Configuración Requerida en Xcode',
+      'Debes configurar "Sign in with Apple" y "Keychain Sharing" en las capabilities de Xcode',
+      'warning'
+    );
   }
 
   private handleAppleLoginSuccess(token: string, user: any) {
-    console.log('✅ Login con Apple exitoso');
     this.generalService.guardarCredenciales(token, user);
     const ruta = this.verificaStorage() ? '/seguros/poliza' : '/home';
-    
+
     setTimeout(() => {
       this.router.navigate([ruta]);
       this.generalService.alert('¡Bienvenido!', 'Inicio de sesión con Apple exitoso', 'success');

@@ -6,8 +6,8 @@ import { IonicModule } from '@ionic/angular';
 
 import { RentaCiudadesPageRoutingModule } from './renta-ciudades-routing.module';
 import { RentaCiudadesPage } from './renta-ciudades.page';
-import { NavbarComponent } from '../../components/navbar/navbar.component';
-import { FooterComponent } from '../../components/footer/footer.component';
+import { NavbarComponent } from '../../../components/navbar/navbar.component';
+import { FooterComponent } from '../../../components/footer/footer.component';
 
 @NgModule({
   imports: [

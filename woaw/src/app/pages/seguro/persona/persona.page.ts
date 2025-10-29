@@ -301,7 +301,6 @@ export class PersonaPage implements OnInit {
         'telefono', 'calle', 'int', 'ext', 'col'
       ];
     } else if (this.currentStepform === 3) {
-      this.tipoPersonaSeleccionada = null;
       this.currentStepform = 2;
       controlesAEliminar = [
         'nombre', 'email', 'rfc',

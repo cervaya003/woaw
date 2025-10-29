@@ -256,50 +256,88 @@ export class ContactosService {
   llamar() {
     window.location.href = `tel:${this.telefonoFijo}`;
   }
-  async compartirAuto(auto: any, tipo: string) {
-    const esNuevo = auto.tipoVenta === 'nuevo';
 
-    let versionesTexto = '';
-    if (Array.isArray(auto.version) && auto.version.length > 1) {
-      versionesTexto = auto.version
-        .map(
-          (v: { Name: string; Precio: number }) =>
-            `- ${v.Name}: $${v.Precio.toLocaleString()}`
-        )
-        .join('\n');
-    } else if (Array.isArray(auto.version) && auto.version.length === 1) {
-      versionesTexto = auto.version[0].Name;
+  // Añade estas helpers dentro de la clase ContactosService (arriba del método compartirAuto)
+private hasWebShare(): boolean {
+  return typeof navigator !== 'undefined' 
+    && 'share' in navigator 
+    && typeof (navigator as any).share === 'function';
+}
+
+private async copyToClipboardSafe(text: string): Promise<boolean> {
+  try {
+    if (typeof navigator !== 'undefined' 
+        && 'clipboard' in navigator 
+        && typeof navigator.clipboard?.writeText === 'function') {
+      await navigator.clipboard.writeText(text);
+      return true;
     }
+  } catch { /* noop */ }
+  return false;
+}
 
-    const precioTexto =
-      auto.precioDesde && auto.precioHasta
-        ? esNuevo
-          ? `💰 Precio: desde $${auto.precioDesde.toLocaleString()} hasta $${auto.precioHasta.toLocaleString()}`
-          : `💰 Precio: $${auto.precioDesde.toLocaleString()}`
-        : `💰 Precio: $${auto.precio?.toLocaleString() || 'N/D'}`;
+// --- COMPARTIR (nativo iOS/Android + Web + fallback) ---
+async compartirAuto(auto: any, tipo: string) {
+  const url = `https://wo-aw.com/ficha/${tipo}/${auto._id}`;
+  const esNuevo = auto?.tipoVenta === 'nuevo';
 
-    const texto =
-      `🚗 *${auto.marca} ${auto.modelo} ${auto.anio}*\n` +
-      (versionesTexto ? `🧩 Versiones:\n${versionesTexto}\n` : '') +
-      `${precioTexto}\n` +
-      `🔗 Ver en WOAW: https://wo-aw.com/ficha/${tipo}/${auto._id}`;
-
-    try {
-      await Share.share({
-        title: `${auto.marca} ${auto.modelo} ${auto.anio}`,
-        text: texto,
-        dialogTitle: 'Compartir vehículo',
-      });
-    } catch (err) {
-      console.error('Error al compartir:', err);
-      // this.generalService.alert(
-      //   'Error',
-      //   'No se pudo compartir la información.',
-      //   'danger'
-      // );
-    }
+  let versionesTexto = '';
+  if (Array.isArray(auto?.version) && auto.version.length > 1) {
+    versionesTexto = auto.version
+      .map((v: { Name: string; Precio?: number }) =>
+        v?.Precio != null ? `- ${v.Name}: $${v.Precio.toLocaleString('es-MX')}` : `- ${v.Name}`
+      )
+      .join('\n');
+  } else if (Array.isArray(auto?.version) && auto.version.length === 1) {
+    versionesTexto = auto.version[0].Name;
   }
 
+  const precioTexto =
+    auto?.precioDesde && auto?.precioHasta
+      ? esNuevo
+        ? `💰 Precio: desde $${auto.precioDesde.toLocaleString('es-MX')} hasta $${auto.precioHasta.toLocaleString('es-MX')}`
+        : `💰 Precio: $${auto.precioDesde.toLocaleString('es-MX')}`
+      : `💰 Precio: $${(auto?.precio ?? 0).toLocaleString('es-MX')}`;
+
+  const titulo = `${auto?.marca ?? ''} ${auto?.modelo ?? ''} ${auto?.anio ?? ''}`.trim();
+  const texto =
+    `🚗 *${titulo}*\n` +
+    (versionesTexto ? `🧩 Versiones:\n${versionesTexto}\n` : '') +
+    `${precioTexto}\n` +
+    `🔗 Ver en WOAW: ${url}`;
+
+  try {
+    // 1) App nativa (Capacitor) — iOS/Android
+    const can = await Share.canShare();
+    if (can?.value) {
+      await Share.share({
+        title: titulo || 'Woaw',
+        text: texto,
+        url,
+        dialogTitle: 'Compartir vehículo',
+      });
+      return;
+    }
+
+    // 2) Web Share API (Safari/Chrome móviles, PWA) — evita TS2774
+    if (this.hasWebShare()) {
+      await (navigator as any).share({ title: titulo || 'Woaw', text: texto, url });
+      return;
+    }
+
+    // 3) Fallback web: copiar al portapapeles (blindeado)
+    const copied = await this.copyToClipboardSafe(`${titulo}\n${texto}`);
+    if (copied) {
+      this.generalService?.presentToast?.('Enlace copiado al portapapeles', 'info');
+    } else {
+      // último recurso: abrir la URL para que el usuario la comparta manualmente
+      window.open(url, '_blank');
+    }
+  } catch (err) {
+    console.error('[Share] compartirAuto error', err);
+    this.generalService?.alert?.('Error', 'No se pudo abrir el panel de compartir.', 'danger');
+  }
+}
 
   contactarPorPublicacionParticular(
     anioAuto: number | string,

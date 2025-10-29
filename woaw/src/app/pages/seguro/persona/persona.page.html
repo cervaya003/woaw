@@ -368,8 +368,9 @@
 
 <ion-footer *ngIf="tipoDispocitivo === 'telefono'" class="safe-footer footer_css_seguros">
   <ion-toolbar>
+
     <ion-buttons slot="start">
-      <ion-button fill="clear" *ngIf="statusUserDtos && statusBuscar" (click)="regresarInicio()">
+      <ion-button fill="clear" *ngIf="statusUserDtos" (click)="regresarInicio()">
         <ion-icon slot="start" name="arrow-back-outline"></ion-icon>
         Atrás
       </ion-button>
@@ -381,7 +382,7 @@
 
     <ion-buttons slot="end">
       <ion-button *ngIf="statusUserDtos" color="danger" fill="solid" type="button" (click)="nuevosDatos()">
-        Continuar
+        Poliza
         <ion-icon slot="end" name="arrow-forward-outline"></ion-icon>
       </ion-button>
       <ion-button *ngIf="!statusUserDtos" [disabled]="form_poliza.invalid" color="danger" fill="solid" type="submit"
@@ -390,5 +391,6 @@
         <ion-icon slot="end" name="arrow-forward-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
+    
   </ion-toolbar>
 </ion-footer>

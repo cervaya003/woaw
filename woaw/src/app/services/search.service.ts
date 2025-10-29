@@ -70,7 +70,7 @@ export class SearchService {
     {
       titulo: 'Renta de Autos',
       descripcion: 'Renta de autos por días',
-      ruta: '/renta-ciudades',
+      ruta: '/renta',
       tipo: 'servicio',
       icono: 'calendar'
     },
@@ -112,6 +112,34 @@ export class SearchService {
       icono: 'person-remove'
     },
     {
+      titulo: 'Seguros para Autos',
+      descripcion: 'Cotizar seguros para automóviles',
+      ruta: '/seguros/autos',
+      tipo: 'servicio',
+      icono: 'car-sport'
+    },
+    {
+      titulo: 'Cotizar Camión',
+      descripcion: 'Cotizar seguros para camiones',
+      ruta: '/seguros/cotiza/camiones',
+      tipo: 'servicio',
+      icono: 'calculator'
+    },
+    {
+      titulo: 'Cotizar Moto',
+      descripcion: 'Cotizar seguros para motos',
+      ruta: '/seguros/cotiza/motos',
+      tipo: 'servicio',
+      icono: 'calculator'
+    },
+    {
+      titulo: 'Cotizar Uber/DiDi',
+      descripcion: 'Cotizar seguros para ERT',
+      ruta: '/seguros/cotiza/ert',
+      tipo: 'servicio',
+      icono: 'calculator'
+    },
+    {
       titulo: 'Mis Pólizas',
       descripcion: 'Ver mis pólizas de seguros',
       ruta: '/seguros/ver-polizas',
@@ -121,44 +149,9 @@ export class SearchService {
     {
       titulo: 'Crear Póliza',
       descripcion: 'Crear nueva póliza de seguro',
-      ruta: '/seguros/poliza',
+      ruta: '/seguros',
       tipo: 'servicio',
       icono: 'add-circle'
-    },
-    {
-      titulo: 'Seguros para Autos',
-      descripcion: 'Cotizar seguros para automóviles',
-      ruta: '/seguros/autos',
-      tipo: 'servicio',
-      icono: 'car-sport'
-    },
-    {
-      titulo: 'Seguros para Personas',
-      descripcion: 'Seguros de vida y salud',
-      ruta: '/seguros/persona',
-      tipo: 'servicio',
-      icono: 'person'
-    },
-    {
-      titulo: 'Cotizar Seguro Manual',
-      descripcion: 'Cotización manual de seguros',
-      ruta: '/seguros/cotizar-manual',
-      tipo: 'servicio',
-      icono: 'calculator'
-    },
-    {
-      titulo: 'Cotizar Moto/Camión',
-      descripcion: 'Cotizar seguros para motos y camiones',
-      ruta: '/seguros/cotiza/:tipo',
-      tipo: 'servicio',
-      icono: 'calculator'
-    },
-    {
-      titulo: 'Detalle de Póliza',
-      descripcion: 'Ver detalle de póliza',
-      ruta: '/seguros/detalle-poliza',
-      tipo: 'servicio',
-      icono: 'document'
     },
 
     // Rentas y Reservas

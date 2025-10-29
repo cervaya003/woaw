@@ -152,9 +152,6 @@ export class MenulateralComponent implements OnInit, OnDestroy {
   }
 
   async abrirModalPerfil() {
-    // this.mostrar_spinnet = true;
-    setTimeout(async () => {
-      // this.mostrar_spinnet = false;
       const modal = await this.modalCtrl.create({
         component: PerfilComponent,
         breakpoints: [0, 0.5, 0.8, 1],
@@ -165,8 +162,6 @@ export class MenulateralComponent implements OnInit, OnDestroy {
       });
       await modal.present();
       await this.menuCtrl.close("menuLateral");
-
-    }, 1000);
   }
 
   abrirmodal() {

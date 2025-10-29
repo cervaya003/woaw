@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { PopoverController, AlertController } from '@ionic/angular';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { CarsService } from '../../../services/cars.service';
 import { GeneralService } from '../../../services/general.service';
 import { SeguroService } from '../../../services/seguro.service';
-
+import { PdfService } from '../../../services/pdf.service';
 
 import { AfterViewInit, ElementRef, QueryList, ViewChildren, ViewChild } from '@angular/core';
 
@@ -37,6 +37,7 @@ export class SegurosPage implements OnInit {
   public extrepStatus: true | false | null = null;
 
   public cupon: string = '';
+  public cuponExistente: boolean = false;
   cuponInvalido: boolean = false;
   mensajeErrorCupon: string = '';
 
@@ -120,7 +121,8 @@ export class SegurosPage implements OnInit {
     private generalService: GeneralService,
     public carsService: CarsService,
     private fb: FormBuilder,
-    private seguros: SeguroService
+    private seguros: SeguroService,
+    private pdfService: PdfService
   ) {
     this.form = this.fb.group({
       marca: [null, Validators.required],
@@ -162,8 +164,11 @@ export class SegurosPage implements OnInit {
     if (datosCocheStorage) {
       try {
         const datos = JSON.parse(datosCocheStorage);
-        console.log(datos)
 
+        if (datos.coupon !== undefined) {
+          this.cupon = datos.coupon;
+          this.cuponExistente = true;
+        }
         if (datos.DM !== undefined) {
           this.selectDM_valor = datos.DM;
         }
@@ -1023,7 +1028,6 @@ export class SegurosPage implements OnInit {
     this.router.navigateByUrl('/seguros/cotizar-manual');
   }
 
-
   public onModeloSeleccionado(event: any) {
     const modeloId: number = event.detail.value;
     if (modeloId) {
@@ -1044,7 +1048,6 @@ export class SegurosPage implements OnInit {
       this.form.get('version')?.disable({ emitEvent: false });
     }
   }
-
 
   // ----- Cotizador dinamico -----
   hasValidCoverageInfo(c: any): boolean {
@@ -1105,6 +1108,7 @@ export class SegurosPage implements OnInit {
   aplicarCupon() {
     if (this.cupon.trim()) {
       this.cupon = this.cupon;
+      this.cuponExistente = true;
       this.HacerCotizacion(this.buildCotizacionDTO());
     } else {
       this.generalService.alert(
@@ -1131,7 +1135,6 @@ export class SegurosPage implements OnInit {
     if (datosCocheStorage) {
       datosCoche = JSON.parse(datosCocheStorage);
     } else {
-      // Obtener valores directamente del formulario
       const marcaId = Number(this.form.get('marca')?.value);
       const modeloId = Number(this.form.get('modelo')?.value);
       const anio = Number(this.form.get('anio')?.value);
@@ -1250,6 +1253,29 @@ export class SegurosPage implements OnInit {
 
     return dto;
   }
+  // Agrega este método nuevo:
+  descargarCotizacionPDF(): void {
+    if (!this.quote) {
+      this.generalService.alert('Error', 'No hay cotización para descargar', 'warning');
+      return;
+    }
+
+    try {
+      const datosCocheStorage = localStorage.getItem('datosCoche');
+      const datosCoche = datosCocheStorage ? JSON.parse(datosCocheStorage) : {};
+
+      const coberturas = this.activePlan ? this.getPlanCoverages(this.activePlan) : [];
+
+      this.pdfService.generarCotizacionSeguro(this.quote, datosCoche, coberturas);
+
+      // Opcional: Tracking del evento
+      this.seguros.contador('descarga_pdf');
+
+    } catch (error) {
+      console.error('Error al generar PDF:', error);
+      this.generalService.alert('Error', 'No se pudo generar el PDF', 'danger');
+    }
+  }
 
   // --------- 
   getDAMount(): string {
@@ -1284,5 +1310,21 @@ export class SegurosPage implements OnInit {
       c.coverage_type?.name === 'EXTREP' || c.coverage_type?.name === 'EXTENSION REPARACION'
     );
     return extrepCoverage?.premium ? this.fmtMoney(extrepCoverage.premium) : '';
+  }
+  public removerCuponExistente() {
+    this.mostrar_spinnet = true;
+    this.cuponExistente = false;
+    this.cupon = '';
+    const datosCocheStorage = localStorage.getItem('datosCoche');
+
+    if (datosCocheStorage) {
+      const datosCoche = JSON.parse(datosCocheStorage);
+
+      delete datosCoche.coupon;
+      localStorage.setItem('datosCoche', JSON.stringify(datosCoche));
+      setTimeout(() => {
+        this.HacerCotizacion(this.buildCotizacionDTO());
+      }, 1000);
+    }
   }
 }
