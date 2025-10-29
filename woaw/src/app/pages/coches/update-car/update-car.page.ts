@@ -11,6 +11,8 @@ import { MapaComponent } from "../../../components/modal/mapa/mapa.component";
 import { CamionesService } from "../../../services/camiones.service";
 import { firstValueFrom } from "rxjs";
 import { filter } from "rxjs/operators";
+import { AfterViewInit, ViewChildren, QueryList } from '@angular/core';
+import { IonSelect } from '@ionic/angular';
 
 @Component({
   selector: "app-update-car",
@@ -20,6 +22,7 @@ import { filter } from "rxjs/operators";
 })
 export class UpdateCarPage implements OnInit {
   auto: any = null;
+  seccionActiva: 'datos' | 'imagenes' = 'datos';
   urlsImagenes: string[] = [];
   imagenes: File[] = [];
   urlsImagenesExistentes: string[] = [];
@@ -40,13 +43,9 @@ export class UpdateCarPage implements OnInit {
   autoMarker!: google.maps.Marker;
   direccionCompleta: string = "Obteniendo ubicación...";
   public tipo_veiculo: string = "";
-
   ubicacionesLoteLegibles: string[] = [];
-
   imagenPrincipal_sinFondo: File | string | null = null;
   imagenPrincipalMostrada: string = "";
-
-  // opciones de color para el ion-select
   opciones = [
     { label: "Blanco" },
     { label: "Negro" },
@@ -87,8 +86,6 @@ export class UpdateCarPage implements OnInit {
   ubicacionesLoteSeleccionado: any[] = [];
   tipoSeleccionado: "particular" | "lote" = "particular";
   @ViewChild("inputArchivo", { static: false }) inputArchivo!: ElementRef;
-
-  // 🔒 Control de inicialización y snapshot
   private initializing = true;
   private initialComparable: any = null;
 
@@ -102,9 +99,22 @@ export class UpdateCarPage implements OnInit {
     public motosService: MotosService,
     public camionesService: CamionesService,
     private registroService: RegistroService
-  ) {}
+  ) { }
 
-  // === Nuevo: helper para saber si el vehículo es "nuevo"
+  @ViewChildren(IonSelect) private selects!: QueryList<IonSelect>;
+
+  ngAfterViewInit(): void {
+    const applyAlertStyle = (select: IonSelect) => {
+      (select as any).interface = 'alert';
+      (select as any).interfaceOptions = {
+        cssClass: 'alert-rojo'
+      };
+    };
+
+    queueMicrotask(() => this.selects.forEach(applyAlertStyle));
+    this.selects.changes.subscribe(list => list.forEach(applyAlertStyle));
+  }
+
   get isNuevo(): boolean {
     return (this.auto?.tipoVenta || "").toLowerCase() === "nuevo";
   }
@@ -134,9 +144,6 @@ export class UpdateCarPage implements OnInit {
     }
   }
 
-  // =========================
-  // Helpers de tracking cambios
-  // =========================
   private normColor(value: any): string {
     if (Array.isArray(value)) return value.join(", ");
     return (value ?? "").toString();
@@ -145,62 +152,60 @@ export class UpdateCarPage implements OnInit {
   private buildComparableState() {
     const ubicSel = this.ubicacionSeleccionada
       ? {
-          lat: this.ubicacionSeleccionada[2],
-          lng: this.ubicacionSeleccionada[3],
-        }
+        lat: this.ubicacionSeleccionada[2],
+        lng: this.ubicacionSeleccionada[3],
+      }
       : null;
 
     const dirSel = this.direccionSeleccionada
       ? {
-          lat: Number(this.direccionSeleccionada.lat ?? 0),
-          lng: Number(this.direccionSeleccionada.lng ?? 0),
-        }
+        lat: Number(this.direccionSeleccionada.lat ?? 0),
+        lng: Number(this.direccionSeleccionada.lng ?? 0),
+      }
       : null;
 
     const motoExtras =
       this.tipo_veiculo === "motos"
         ? {
-            tipoMotor: String(this.auto?.tipoMotor ?? ""),
-            cilindrada: String(this.auto?.cilindrada ?? ""),
-            transmision: String(this.auto?.transmision ?? ""),
-            combustible: String(this.auto?.combustible ?? ""),
-            frenos: String(this.auto?.frenos ?? ""),
-            suspension: String(this.auto?.suspension ?? ""),
-            precioMoto: Number(this.precioMoto ?? 0),
-          }
+          tipoMotor: String(this.auto?.tipoMotor ?? ""),
+          cilindrada: String(this.auto?.cilindrada ?? ""),
+          transmision: String(this.auto?.transmision ?? ""),
+          combustible: String(this.auto?.combustible ?? ""),
+          frenos: String(this.auto?.frenos ?? ""),
+          suspension: String(this.auto?.suspension ?? ""),
+          precioMoto: Number(this.precioMoto ?? 0),
+        }
         : {
-            tipoMotor: "",
-            cilindrada: "",
-            transmision: "",
-            combustible: "",
-            frenos: "",
-            suspension: "",
-            precioMoto: null,
-          };
+          tipoMotor: "",
+          cilindrada: "",
+          transmision: "",
+          combustible: "",
+          frenos: "",
+          suspension: "",
+          precioMoto: null,
+        };
     const camionExtras =
       this.tipo_veiculo === "camiones"
         ? {
-            precioCamion: Number(this.auto?.precio ?? 0),
-            tipoCamion: String(this.auto?.tipoCamion ?? "").trim(),
-            capacidadCarga: Number(this.auto?.capacidadCarga ?? 0),
-            tipoCabina: String(this.auto?.tipoCabina ?? "").trim(),
-            combustibleCamion: String(this.auto?.combustible ?? "").trim(),
-          }
+          precioCamion: Number(this.auto?.precio ?? 0),
+          tipoCamion: String(this.auto?.tipoCamion ?? "").trim(),
+          capacidadCarga: Number(this.auto?.capacidadCarga ?? 0),
+          tipoCabina: String(this.auto?.tipoCabina ?? "").trim(),
+          combustibleCamion: String(this.auto?.combustible ?? "").trim(),
+        }
         : {
-            precioCamion: null,
-            tipoCamion: "",
-            capacidadCarga: null,
-            tipoCabina: "",
-            combustibleCamion: "",
-          };
+          precioCamion: null,
+          tipoCamion: "",
+          capacidadCarga: null,
+          tipoCabina: "",
+          combustibleCamion: "",
+        };
     return {
       tipo: this.tipo_veiculo,
       tipoSeleccionado: this.tipoSeleccionado,
       loteSeleccionado: this.loteSeleccionado ?? null,
       direccionSeleccionada: dirSel,
       ubicacionSeleccionada: ubicSel,
-
-      // Campos base
       kilometraje: this.auto?.kilometraje ?? null,
       color: this.normColor(this.auto?.color),
       moneda: this.auto?.moneda ?? null,
@@ -209,18 +214,14 @@ export class UpdateCarPage implements OnInit {
           ? this.auto.placas
           : "",
       descripcion: this.auto?.descripcion ?? "",
-
-      // Imágenes
       imagenPrincipalMostrada: this.imagenPrincipalMostrada ?? null,
       imagenes: (this.urlsImagenes || []).slice().sort(),
-
-      // Versiones/precio
       versiones:
         this.tipo_veiculo === "autos"
           ? (this.auto?.version || []).map((v: any) => ({
-              Name: v.Name,
-              Precio: Number(v.Precio),
-            }))
+            Name: v.Name,
+            Precio: Number(v.Precio),
+          }))
           : null,
 
       ...motoExtras,
@@ -247,8 +248,6 @@ export class UpdateCarPage implements OnInit {
     this.initializing = false;
   }
 
-  // =========================
-
   async obtenerVeiculo() {
     this.tipo_veiculo = this.route.snapshot.paramMap.get("tipo") ?? "";
     const id = this.route.snapshot.paramMap.get("id");
@@ -260,7 +259,6 @@ export class UpdateCarPage implements OnInit {
     } else if (this.tipo_veiculo === "renta") {
       this.rentaURL(id);
     } else if (this.tipo_veiculo === "camiones") {
-      // AÑADIR ESTA CONDICIÓN
       this.camionesURL(id);
     }
   }
@@ -270,7 +268,6 @@ export class UpdateCarPage implements OnInit {
       next: (res: any) => {
         this.auto = res;
 
-        // 🔒 Reglas de "nuevo"
         if (this.isNuevo) {
           this.auto.kilometraje = 0;
           this.auto.placas = "";
@@ -330,7 +327,6 @@ export class UpdateCarPage implements OnInit {
         this.auto = res || {};
         this.precioMoto = res?.precio ?? null;
 
-        // 🔒 Reglas de "nuevo" también para motos
         if (this.isNuevo) {
           this.auto.kilometraje = 0;
           this.auto.placas = "";
@@ -410,7 +406,7 @@ export class UpdateCarPage implements OnInit {
         this.auto.capacidadCarga = Number(res?.capacidadCarga ?? 0);
         this.auto.tipoCabina = String(res?.tipoCabina ?? "");
         this.auto.combustible = String(res?.combustible ?? "");
-        // Similar a autos/motos
+
         if (this.isNuevo) {
           this.auto.kilometraje = 0;
           this.auto.placas = "";
@@ -420,7 +416,6 @@ export class UpdateCarPage implements OnInit {
         this.urlsImagenes = [...this.auto.imagenes];
         this.urlsImagenesExistentes = [...res.imagenes];
 
-        // Manejar la ubicación del camión
         if (res.lote != null) {
           this.tipoSeleccionado = "lote";
           this.loteSeleccionado = res.lote._id;
@@ -463,12 +458,10 @@ export class UpdateCarPage implements OnInit {
   }
 
   async rentaURL(id: string) {
-    // Suponemos que es un auto en renta
     this.carsService.getCar(id).subscribe({
       next: (res: any) => {
         this.auto = res;
 
-        // Reglas de "nuevo"
         if (this.isNuevo) {
           this.auto.kilometraje = 0;
           this.auto.placas = "";
@@ -527,7 +520,6 @@ export class UpdateCarPage implements OnInit {
     const marca = this.auto.marca;
     const modelo = this.auto.modelo;
     const vers = version;
-
     this.carsService
       .EspesificacionesVersionFicha(anio, marca, modelo, vers)
       .subscribe({
@@ -559,7 +551,6 @@ export class UpdateCarPage implements OnInit {
 
   mostrarmapa() {
     const { lat, lng, ciudad, estado } = this.auto.ubicacion;
-
     const position = new google.maps.LatLng(lat, lng);
 
     setTimeout(() => {
@@ -590,7 +581,6 @@ export class UpdateCarPage implements OnInit {
       });
   }
 
-  // ##----- Imagenes -----
   actualizarImagenPrincipal(nuevaImagen: string) {
     this.generalService.confirmarAccion(
       "¿Deseas usar esta imagen como imagen principal del vehículo?",
@@ -600,11 +590,13 @@ export class UpdateCarPage implements OnInit {
       }
     );
   }
+
   selecionarUnaExistente(nuevaImagen: string) {
     this.imagenPrincipalMostrada = nuevaImagen;
     this.imagenPrincipal_sinFondo = nuevaImagen; // string (URL)
     this.markDirtyFromUI();
   }
+
   seleccionarImagen() {
     this.inputArchivo.nativeElement.click();
   }
@@ -732,7 +724,6 @@ export class UpdateCarPage implements OnInit {
     return resultado;
   }
 
-  // ##----- -----
   async alert(id: string) {
     this.generalService.confirmarAccion(
       "¿Estás seguro de eliminar este vehículo?",
@@ -787,8 +778,6 @@ export class UpdateCarPage implements OnInit {
     });
   }
 
-  // ## ----- Actualizar auto o moto
-
   verificarCambiosPrecio(): void {
     this.actualizarFlagCambios();
   }
@@ -813,7 +802,6 @@ export class UpdateCarPage implements OnInit {
         formData = await this.agregarCamposBasicosAlFormData_autos(formData);
         formData = await this.agregarUbicacionAlFormData_autos(formData);
         formData = await this.agregarVersionesAlFormData_autos(formData);
-        // 👉 marca qué campos van vacíos para que el backend los limpie si hace falta
         this.appendClearFields(formData, this.getCamposVaciosAutos());
         this.enviarDatos_autos(id, formData);
       } else if (this.tipo_veiculo === "motos") {
@@ -823,7 +811,6 @@ export class UpdateCarPage implements OnInit {
         this.appendClearFields(formData, this.getCamposVaciosMotos());
         this.enviarDatos_motos(id, formData);
       } else if (this.tipo_veiculo === "camiones") {
-        // AÑADIR ESTA CONDICIÓN
         formData = await this.agregarPrecioAlFormData_Camiones(formData);
         formData = await this.agregarCamposBasicosAlFormData_camiones(formData);
         formData = await this.agregarUbicacionAlFormData_autos(formData);
@@ -832,7 +819,6 @@ export class UpdateCarPage implements OnInit {
       }
     } catch (error) {
       this.generalService.loadingDismiss();
-
       let mensaje = "Error desconocido";
       if (typeof error === "string") {
         mensaje = error;
@@ -847,11 +833,9 @@ export class UpdateCarPage implements OnInit {
     }
   }
 
-  // 🔧 Actualizado: no enviar strings como archivos y no recomprimir de nuevo
   private async generarFormDataImagenes(): Promise<FormData> {
     const formData = new FormData();
 
-    // Imagen principal puede ser File (nueva) o string (URL existente)
     if (this.imagenPrincipal_sinFondo instanceof File) {
       formData.append("imagenPrincipal", this.imagenPrincipal_sinFondo);
     } else if (
@@ -859,10 +843,8 @@ export class UpdateCarPage implements OnInit {
       this.imagenPrincipal_sinFondo.trim()
     ) {
       formData.append("imagenPrincipal", this.imagenPrincipal_sinFondo);
-      // NO la metas a 'imagenes' si es string
     }
 
-    // Imágenes nuevas: ya están comprimidas en agregarImagen(); no las vuelvas a comprimir
     for (const file of this.imagenes) {
       formData.append("imagenes", file);
     }
@@ -873,7 +855,6 @@ export class UpdateCarPage implements OnInit {
         JSON.stringify(this.urlsImagenesExistentes)
       );
     }
-
     return formData;
   }
 
@@ -917,34 +898,39 @@ export class UpdateCarPage implements OnInit {
     });
   }
 
-  // ✅ AUTOS: siempre enviar campos, con reglas para "nuevo"
   private async agregarCamposBasicosAlFormData_autos(
     formData: FormData
   ): Promise<FormData> {
     const km = this.isNuevo ? 0 : this.auto?.kilometraje ?? "";
-    const colorValue = this.auto?.color;
+    let colorValue = this.auto?.color;
+    if (!colorValue || (typeof colorValue === "string" && colorValue.trim() === "")) {
+      colorValue = this.auto?.color ?? "";
+    }
+
     const color = Array.isArray(colorValue)
       ? colorValue.join(", ")
-      : (colorValue ?? "").toString();
+      : String(colorValue ?? "").trim();
+
+    if (color && color !== "null" && color !== "undefined") {
+      formData.append("color", color);
+    }
 
     const moneda = (this.auto?.moneda ?? "MXN").toString();
     const placas = this.isNuevo
       ? ""
       : this.auto?.placas && this.auto.placas !== "null"
-      ? this.auto.placas
-      : "";
+        ? this.auto.placas
+        : "";
     const descripcion = (this.auto?.descripcion ?? "").toString();
 
     formData.append("kilometraje", String(km));
-    formData.append("color", color);
     formData.append("moneda", moneda);
     formData.append("placas", placas);
     formData.append("descripcion", descripcion);
-
     return formData;
   }
 
-  // ✅ MOTO: siempre enviar campos; si es nueva, km=0 y placas=''
+
   private async agregarCamposBasicosAlFormData_motos(
     formData: FormData
   ): Promise<FormData> {
@@ -959,21 +945,17 @@ export class UpdateCarPage implements OnInit {
       ? colorValue.join(", ")
       : (colorValue ?? "").toString();
     formData.append("color", color);
-
     const moneda = (this.auto?.moneda ?? "MXN").toString();
     formData.append("moneda", moneda);
-
     const placasVal = this.isNuevo ? "" : String(this.auto?.placas ?? "");
     formData.append("placas", placasVal);
     formData.append("descripcion", String(this.auto?.descripcion ?? ""));
-
     formData.append("tipoMotor", String(this.auto?.tipoMotor ?? ""));
     formData.append("cilindrada", String(this.auto?.cilindrada ?? ""));
     formData.append("transmision", String(this.auto?.transmision ?? ""));
     formData.append("combustible", String(this.auto?.combustible ?? ""));
     formData.append("frenos", String(this.auto?.frenos ?? ""));
     formData.append("suspension", String(this.auto?.suspension ?? ""));
-
     return formData;
   }
 
@@ -985,19 +967,17 @@ export class UpdateCarPage implements OnInit {
     const color = Array.isArray(colorValue)
       ? colorValue.join(", ")
       : (colorValue ?? "").toString();
-
     const moneda = (this.auto?.moneda ?? "MXN").toString();
     const placas = this.isNuevo
       ? ""
       : this.auto?.placas && this.auto.placas !== "null"
-      ? this.auto.placas
-      : "";
+        ? this.auto.placas
+        : "";
     const descripcion = (this.auto?.descripcion ?? "").toString();
     const tipoCamion = (this.auto?.tipoCamion ?? "").toString().trim();
     const capacidadCarga = this.auto?.capacidadCarga ?? "";
     const tipoCabina = (this.auto?.tipoCabina ?? "").toString().trim();
     const combustible = (this.auto?.combustible ?? "").toString().trim();
-
     formData.append("kilometraje", String(km));
     formData.append("color", color);
     formData.append("moneda", moneda);
@@ -1133,10 +1113,21 @@ export class UpdateCarPage implements OnInit {
     });
   }
 
-  // 👉 helper para pasar al backend qué campos vaciar
   private appendClearFields(formData: FormData, fields: string[]) {
-    if (fields && fields.length) {
-      formData.append("clearFields", JSON.stringify(fields));
+    if (!fields || !fields.length) return;
+
+    const presentWithValue = new Set<string>();
+    formData.forEach((value, key) => {
+      const hasValue =
+        value instanceof Blob
+          ? true // si es archivo, consideramos que tiene valor
+          : String(value ?? "").trim() !== "";
+      if (hasValue) presentWithValue.add(key);
+    });
+
+    const filtered = fields.filter((f) => !presentWithValue.has(f));
+    if (filtered.length) {
+      formData.append("clearFields", JSON.stringify(filtered));
     }
   }
 
@@ -1145,7 +1136,6 @@ export class UpdateCarPage implements OnInit {
     const isEmpty = (v: any) =>
       v === undefined || v === null || String(v).trim() === "";
 
-    // En nuevo no deben existir placas
     if (this.isNuevo) {
       clears.push("placas");
     } else {
@@ -1153,8 +1143,7 @@ export class UpdateCarPage implements OnInit {
     }
 
     if (isEmpty(this.auto?.descripcion)) clears.push("descripcion");
-    // Si también quieres permitir borrar color en autos, descomenta:
-    // if (isEmpty(this.auto?.color)) clears.push('color');
+
     return clears;
   }
 
@@ -1163,7 +1152,6 @@ export class UpdateCarPage implements OnInit {
     const isEmpty = (v: any) =>
       v === undefined || v === null || String(v).trim() === "";
 
-    // En moto nueva no debe haber placas
     if (this.isNuevo) {
       clears.push("placas");
     } else {
@@ -1233,7 +1221,6 @@ export class UpdateCarPage implements OnInit {
       next: async (res: any) => {
         await this.restablecerDatos();
         this.router.navigate(["/mis-motos"]);
-        // ❌ quitamos reload para no perder estado
         this.generalService.alert(
           "Éxito",
           "Moto actualizada correctamente.",
@@ -1250,7 +1237,7 @@ export class UpdateCarPage implements OnInit {
       },
     });
   }
-  /*********enviar Datos ***************************************/
+
   enviarDatos_camiones(id: string, formData: FormData) {
     this.camionesService.actualizarCamion(id, formData).subscribe({
       next: async (res: any) => {
@@ -1272,8 +1259,6 @@ export class UpdateCarPage implements OnInit {
       },
     });
   }
-
-  // ------
 
   eliminarImagen_visual(imgUrl: string) {
     const indexNuevas = this.urlsImagenes.indexOf(imgUrl);
@@ -1303,7 +1288,6 @@ export class UpdateCarPage implements OnInit {
 
   eliminarVersion(index: number) {
     const versionEliminada = this.auto.version[index];
-
     this.generalService.confirmarAccion(
       "Eliminar versión",
       `¿Estás seguro de eliminar la versión "${versionEliminada.Name}"?`,
@@ -1315,7 +1299,6 @@ export class UpdateCarPage implements OnInit {
   }
 
   async restablecerDatos() {
-    // Vuelve al estado del servidor y rehace snapshot
     this.restablecer = false;
     this.imagenPrincipalMostrada = this.auto.imagenPrincipal;
     this.imagenPrincipal_sinFondo = null;
@@ -1382,7 +1365,6 @@ export class UpdateCarPage implements OnInit {
       ];
     }
 
-    // Recalcular snapshot base post-restablecer
     this.initialComparable = this.buildComparableState();
     this.restablecer = false;
   }
@@ -1411,7 +1393,6 @@ export class UpdateCarPage implements OnInit {
     });
   }
 
-  // fromInit=true => no marca sucio
   seleccionarLote(loteId: string, fromInit: boolean = false) {
     this.loteSeleccionado = loteId;
     const lote = this.lotes.find((l) => l._id === loteId);
@@ -1423,6 +1404,13 @@ export class UpdateCarPage implements OnInit {
   async seleccionarUbicacion() {
     const modal = await this.modalController.create({
       component: MapaComponent,
+      cssClass: 'mapa-modal-flotante',
+      backdropDismiss: false,
+      showBackdrop: true,
+      animated: true,
+      mode: 'ios',
+      breakpoints: [], // ❌ elimina el comportamiento de "sheet"
+      initialBreakpoint: undefined, // ❌ no queremos que se deslice
     });
 
     await modal.present();
@@ -1432,6 +1420,7 @@ export class UpdateCarPage implements OnInit {
     if (data) {
       this.ubicacionSeleccionada = data;
       this.markDirtyFromUI();
+
       if (this.ubicacionSeleccionada) {
         this.generalService
           .obtenerDireccionDesdeCoordenadas(
@@ -1442,12 +1431,13 @@ export class UpdateCarPage implements OnInit {
             this.direccionCompleta = direccion;
           })
           .catch((error) => {
-            this.direccionCompleta = "No se pudo obtener la dirección.";
+            this.direccionCompleta = 'No se pudo obtener la dirección.';
             console.warn(error);
           });
       }
     }
   }
+
 
   seleccionarTipo(tipo: "particular" | "lote") {
     this.tipoSeleccionado = tipo;
@@ -1509,12 +1499,10 @@ export class UpdateCarPage implements OnInit {
     this.markDirtyFromUI();
   }
 
-  // para marcar el formulario como sucio desde inputs simples
   markDirty() {
     this.markDirtyFromUI();
   }
 
-  // ==== Acciones ====
   onGuardarClick(): void {
     if (!this.auto?._id) return;
     if (!this.restablecer) {

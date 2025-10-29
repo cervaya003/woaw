@@ -4,56 +4,52 @@ import {
   ViewChild,
   ElementRef,
   AfterViewInit,
+  NgZone,
+  CUSTOM_ELEMENTS_SCHEMA,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { IonicModule, ModalController, IonSearchbar } from '@ionic/angular';
 import { Geolocation } from '@capacitor/geolocation';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { GeneralService } from '../../../services/general.service';
-import { NgZone } from '@angular/core';
-import { IonSearchbar } from '@ionic/angular';
 
 @Component({
   selector: 'app-mapa',
   templateUrl: './mapa.component.html',
   styleUrls: ['./mapa.component.scss'],
-  standalone: true, // Si usando componentes independientes (standalone)
+  standalone: true,
   imports: [IonicModule, CommonModule],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA], //esquema personalizado
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
-export class MapaComponent implements OnInit {
+export class MapaComponent implements OnInit, AfterViewInit {
   @ViewChild('mapContainer', { static: false }) mapContainer!: ElementRef;
+  @ViewChild('inputDireccion', { static: false }) inputDireccion!: IonSearchbar;
 
-  direccionCompleta: string = 'Selecciona la ubicación';
-  textoBoton: string = '...';
+  direccionCompleta = 'Selecciona la ubicación';
+  textoBoton = '...';
 
-  lat: number = 0;
-  lng: number = 0;
-  latLugar: number = 0;
-  lngLugar: number = 0;
+  lat = 0;
+  lng = 0;
+  latLugar = 0;
+  lngLugar = 0;
 
-  direccion: string = '';
-  direccionLugar: string = '';
-  mostrarBotonLimpiar: boolean = false;
-  ubicacionLugarInvalida: boolean = false;
+  direccion = '';
+  direccionLugar = '';
+  mostrarBotonLimpiar = false;
+  ubicacionLugarInvalida = false;
   ubicacionLugar: [string, string, number, number] = ['', '', 0, 0];
 
   map!: google.maps.Map;
   markerActual: google.maps.Marker | google.maps.Circle | null = null;
   markerLugar!: google.maps.Marker;
-
-  @ViewChild('inputDireccion', { static: false }) inputDireccion: any;
-
-  cargandoMapa: boolean = true;
+  cargandoMapa = true;
 
   constructor(
     private modalController: ModalController,
     private http: HttpClient,
     private generalService: GeneralService,
-    private zone: NgZone,
+    private zone: NgZone
   ) { }
 
   ngOnInit() { }
@@ -62,10 +58,21 @@ export class MapaComponent implements OnInit {
     await this.obtenerUbicacion();
   }
 
+  /** 🔹 Forzar render del mapa cuando la modal termina de abrirse */
+  ionViewDidEnter() {
+    setTimeout(() => {
+      if (this.map) {
+        google.maps.event.trigger(this.map, 'resize');
+        const center = this.map.getCenter();
+        if (center) this.map.setCenter(center);
+      }
+    }, 400);
+  }
+
+  /** 📍 Obtener ubicación actual del usuario */
   async obtenerUbicacion() {
     try {
       const position = await Geolocation.getCurrentPosition();
-
       this.lat = position.coords.latitude;
       this.lng = position.coords.longitude;
 
@@ -81,6 +88,7 @@ export class MapaComponent implements OnInit {
     }
   }
 
+  /** 🗺️ Crear el mapa inicial */
   obtenerDireccion() {
     const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${this.lat},${this.lng}&key=${environment.maps_key}`;
 
@@ -90,14 +98,13 @@ export class MapaComponent implements OnInit {
 
         const center: google.maps.LatLngLiteral = { lat: this.lat, lng: this.lng };
 
-        // Inicializa el mapa
         this.map = new google.maps.Map(this.mapContainer.nativeElement, {
           center,
           zoom: 15,
-          // streetViewControl: false, 
-          // mapTypeControl: true,
           draggableCursor: 'pointer',
           draggingCursor: 'grabbing',
+          streetViewControl: false,
+          mapTypeControl: false,
           styles: [
             {
               featureType: 'poi',
@@ -107,15 +114,15 @@ export class MapaComponent implements OnInit {
           ],
         });
 
+        // Dibuja el círculo verde actual
         if (this.markerActual) {
           this.markerActual.setMap(null);
           this.markerActual = null;
         }
 
-        // Dibuja CÍRCULO VERDE para la ubicación actual
         this.markerActual = new google.maps.Circle({
           map: this.map,
-          center: center,
+          center,
           radius: 50,
           fillColor: '#15ff00ff',
           fillOpacity: 0.45,
@@ -125,19 +132,15 @@ export class MapaComponent implements OnInit {
           clickable: false,
         });
 
-        setTimeout(() => {
-          this.cargandoMapa = false;
-        }, 500);
-
+        this.cargandoMapa = false;
         this.configurarClickEnMapa();
       }
     });
   }
 
+  /** 🔍 Configurar buscador con Autocomplete */
   async searchMap() {
-    // Obtén el <input> real dentro del ion-searchbar
     const inputEl = await this.inputDireccion.getInputElement();
-
     const autocomplete = new google.maps.places.Autocomplete(inputEl, {
       types: ['geocode'],
       componentRestrictions: { country: 'mx' },
@@ -151,7 +154,6 @@ export class MapaComponent implements OnInit {
       const lat = loc.lat();
       const lng = loc.lng();
 
-      // Actualiza UI en zona Angular
       this.zone.run(() => {
         this.textoBoton = '...';
         this.direccionCompleta = 'cargando...';
@@ -162,8 +164,8 @@ export class MapaComponent implements OnInit {
     });
   }
 
+  /** 📦 Obtener dirección al seleccionar punto en mapa o Autocomplete */
   obtenerDireccionDelLugar(lat: number, lng: number, location: any) {
-    // ✅ Estos cambios deben disparar UI aunque vengas de un click de Google Maps
     this.zone.run(() => {
       this.textoBoton = '...';
       this.direccionCompleta = 'cargando...';
@@ -171,7 +173,6 @@ export class MapaComponent implements OnInit {
     });
 
     const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${environment.maps_key}`;
-
     this.http.get(url).subscribe((res: any) => {
       if (res.status === 'OK' && res.results.length > 0) {
         const components = res.results[0].address_components;
@@ -183,7 +184,6 @@ export class MapaComponent implements OnInit {
           if (comp.types.includes('administrative_area_level_1')) estado = comp.long_name;
         }
 
-        // Puedes seguir usando tu util; también corre en zona:
         this.generalService.obtenerDireccionDesdeCoordenadas(lat, lng)
           .then((direccion) => {
             this.zone.run(() => {
@@ -193,26 +193,23 @@ export class MapaComponent implements OnInit {
               this.textoBoton = 'Guardar';
             });
           })
-          .catch((error) => {
-            console.warn(error);
+          .catch(() => {
             this.zone.run(() => {
               this.ubicacionLugarInvalida = false;
               this.direccionCompleta = 'No se pudo obtener la dirección.';
               this.textoBoton = 'Error';
             });
           });
-
       } else {
         this.zone.run(() => {
-          this.direccionLugar = 'No se pudo obtener la dirección del lugar.';
-          this.direccionCompleta = 'No se pudo obtener la dirección. ¡';
-          this.textoBoton = 'Error !';
+          this.direccionCompleta = 'No se pudo obtener la dirección.';
+          this.textoBoton = 'Error';
           this.ubicacionLugarInvalida = false;
         });
       }
     });
 
-    // Mapa/marker (esto no necesita zone; no afecta bindings directamente)
+    // Centrar mapa y marcar punto
     this.map.setCenter(location);
     if (this.markerLugar) this.markerLugar.setMap(null);
     this.markerLugar = new google.maps.Marker({
@@ -229,10 +226,8 @@ export class MapaComponent implements OnInit {
   configurarClickEnMapa() {
     this.map.addListener('click', (event: google.maps.MapMouseEvent) => {
       if (!event.latLng) return;
-
       const lat = event.latLng.lat();
       const lng = event.latLng.lng();
-
       this.limpiarInputDireccion();
       this.obtenerDireccionDelLugar(lat, lng, event.latLng);
     });
@@ -245,12 +240,10 @@ export class MapaComponent implements OnInit {
 
   limpiarInputDireccion(): void {
     if (this.markerLugar) this.markerLugar.setMap(null);
-
     this.ubicacionLugar = ['', '', 0, 0];
     this.ubicacionLugarInvalida = false;
     this.direccionCompleta = 'Selecciona la ubicación';
-
-    if (this.inputDireccion) this.inputDireccion.value = ''; // IonSearchbar
+    if (this.inputDireccion) this.inputDireccion.value = '';
     this.mostrarBotonLimpiar = false;
   }
 
@@ -267,6 +260,6 @@ export class MapaComponent implements OnInit {
   }
 
   cancelar() {
-    this.modalController.dismiss();
+    this.modalController.dismiss(null, 'cancel');
   }
 }

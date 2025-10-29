@@ -5,22 +5,12 @@
         <button class="btn-regresar" (click)="regresar()">
           <ion-icon name="arrow-back-outline"></ion-icon>
         </button>
-
-        <img src="/assets/icon/logo4.png" alt="Go Autos" class="logo" />
+        <img src="/assets/icon/logo4.png" alt="WOAW" class="logo" />
       </div>
     </ion-buttons>
 
-    <!-- 🔹 Buscador escritorio -->
-    <ion-searchbar *ngIf="!esDispositivoMovil" slot="end" [(ngModel)]="terminoBusqueda"
-      (ionInput)="filtrarPorBusqueda()" placeholder="marca, modelo, año o versión" debounce="100" animated
-      class="buscador-escritorio">
-    </ion-searchbar>
-  </ion-toolbar>
-
-  <!-- 🔹 Buscador móvil -->
-  <ion-toolbar color="dark" *ngIf="esDispositivoMovil">
-    <ion-searchbar [(ngModel)]="terminoBusqueda" (ionInput)="filtrarPorBusqueda()"
-      placeholder="marca, modelo, año o versión" debounce="100" animated class="buscador-movil">
+    <ion-searchbar slot="end" [(ngModel)]="terminoBusqueda" (ionInput)="filtrarPorBusqueda()"
+      placeholder="marca, modelo, año o versión" debounce="100" animated class="buscador-navbar">
     </ion-searchbar>
   </ion-toolbar>
 </ion-header>
@@ -32,32 +22,29 @@
     </ion-refresher-content>
   </ion-refresher>
 
-  <!-- Encabezado: ahora suma venta + renta -->
-  <app-acomodo [totalAutos]="totalVenta + totalRenta" (ordenCambio)="ordenarAutos($event)" [titulo]="'MIS AUTOS'">
+  <app-acomodo [totalAutos]="vistaActiva === 'venta' ? totalAutosVenta : totalAutosRenta"
+    [titulo]="vistaActiva === 'venta' ? 'MIS AUTOS EN VENTA' : 'MIS AUTOS EN RENTA'"
+    (ordenCambio)="ordenarAutos($event)">
   </app-acomodo>
 
-  <!-- Tabs Venta / Renta (totales dinámicos con filtros) -->
-  <ion-segment [(ngModel)]="vistaActiva" (ionChange)="onSegmentChange()">
+  <ion-segment [(ngModel)]="vistaActiva" (ionChange)="onSegmentChange()" class="segment-woaw">
     <ion-segment-button value="venta">
-      <ion-label>Autos venta ({{ totalVenta }})</ion-label>
+      <ion-label>Autos venta ({{ totalAutosVenta }})</ion-label>
     </ion-segment-button>
     <ion-segment-button value="renta">
-      <ion-label>Autos renta ({{ totalRenta }})</ion-label>
+      <ion-label>Autos renta ({{ totalAutosRenta }})</ion-label>
     </ion-segment-button>
   </ion-segment>
 
   <ion-grid class="contenedor-catalogo">
     <ion-row>
-      <!-- Filtros -->
       <ion-col size="12" size-md="3">
         <app-menu [filtros]="filtros" [filtrosAplicados]="filtrosAplicados"
           (mostrarOpciones)="mostrarOpciones($event.event, $event.tipo)" (limpiarFiltros)="resetearFiltros()">
         </app-menu>
       </ion-col>
 
-      <!-- Catálogo -->
       <ion-col size="12" size-md="9">
-        <!-- ======== VENTA ======== -->
         <div class="catalogo-autos" *ngIf="vistaActiva === 'venta'">
           <div *ngIf="autosVentaPaginados?.length === 0" class="mensaje-vacio">
             <ion-icon name="car-sport-outline" class="icono-mensaje"></ion-icon><br />
@@ -71,10 +58,9 @@
           </ng-container>
         </div>
 
-        <!-- Paginación venta -->
         <div class="contenedor-paginacion" *ngIf="totalPaginasVenta > 1 && vistaActiva === 'venta'">
           <p class="titulo-paginacion">más</p>
-          <div class="paginacion-scroll"> 
+          <div class="paginacion-scroll">
             <div class="paginacion">
               <button class="pagina" (click)="cambiarPagina('venta', paginaVentaActual - 1)"
                 [disabled]="paginaVentaActual === 1">‹</button>
@@ -93,9 +79,6 @@
           </div>
         </div>
 
-
-
-        <!-- ======== RENTA ======== -->
         <div class="catalogo-autos" *ngIf="vistaActiva === 'renta'">
           <div *ngIf="autosRentaPaginados?.length === 0" class="mensaje-vacio">
             <ion-icon name="car-sport-outline" class="icono-mensaje"></ion-icon><br />
@@ -109,8 +92,6 @@
           </ng-container>
         </div>
 
-
-        <!-- Paginación renta -->
         <div class="contenedor-paginacion" *ngIf="totalPaginasRenta > 1 && vistaActiva === 'renta'">
           <p class="titulo-paginacion">más</p>
           <div class="paginacion-scroll">
@@ -129,7 +110,6 @@
               <button class="pagina" (click)="cambiarPagina('renta', paginaRentaActual + 1)"
                 [disabled]="paginaRentaActual === totalPaginasRenta">›</button>
             </div>
-
           </div>
         </div>
 

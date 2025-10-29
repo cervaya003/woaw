@@ -1,35 +1,111 @@
-ion-item {
-  --padding-start: 0;
-  --inner-padding-end: 4px;
-
-  ion-input {
-    font-size: 14px;
-  }
-
-  ion-button {
-    margin-left: 6px;
-  }
+:host {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  max-width: 600px;
+  margin: auto;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  animation: modalFadeIn 0.25s ease-out;
 }
 
+/* ===== MODAL CENTRADA ===== */
+::ng-deep .mapa-modal-flotante {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
 
+::ng-deep .mapa-modal-flotante .modal-wrapper {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  width: 92% !important;
+  max-width: 600px !important;
+  height: auto !important;
+  max-height: 92dvh !important;
+  /* límite de alto: no pantalla completa */
+  background: #fff !important;
+  border-radius: 16px !important;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.25) !important;
+  overflow: hidden !important;
+  animation: popIn 0.25s ease-out;
+}
+
+/* ===== HEADER ===== */
+ion-header {
+  --background: #fff;
+  border-bottom: 1px solid #eee;
+  box-shadow: none !important;
+}
+
+ion-toolbar {
+  --background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 48px;
+}
+
+ion-title {
+  font-weight: 600;
+  font-size: 15px;
+  text-align: center;
+}
+
+ion-button ion-icon {
+  font-size: 20px;
+}
+
+/* ===== CONTENIDO ===== */
+ion-content {
+  --background: #fff;
+  --padding-start: 0;
+  --padding-end: 0;
+  --padding-top: 6px;
+  --padding-bottom: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+
+  /* hace que el scroll ocurra aquí si falta espacio,
+     dejando el footer y el header fijos dentro de la modal */
+  flex: 1 1 auto;
+  height: auto !important;
+  overflow: auto !important;
+}
+
+.texto-busqueda {
+  font-size: 12px;
+  color: #555;
+  margin: 4px 0 6px 14px;
+  align-self: flex-start;
+}
+
+/* ===== LEYENDA ===== */
 .legend-ubicacion {
   display: flex;
   align-items: center;
-  gap: 10px;
   flex-wrap: wrap;
-  margin: 6px 10px 0;
+  gap: 8px;
+  margin: 2px 10px 8px;
   font-size: 12px;
-  color: var(--ion-color-medium);
+  color: #666;
 }
 
 .legend-item {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 6px;
   padding: 4px 10px;
   border-radius: 9999px;
-  background: var(--ion-color-light, #f4f5f8);
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: #f7f7f7;
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .dot {
@@ -39,13 +115,125 @@ ion-item {
 }
 
 .dot-green {
-  background: #00C853;
-  /* verde intenso */
+  background: #00c853;
   box-shadow: 0 0 0 3px rgba(0, 200, 83, 0.15);
 }
 
 .pin {
   font-size: 14px;
-  color: #EA4335;
-  /* rojo Google */
+  color: #ea4335;
+}
+
+/* ===== MAPA ===== */
+.map-wrapper {
+  width: 92%;
+  max-width: 540px;
+  height: 270px;
+  /* web/base */
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f4f4f4;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+  margin: 8px auto;
+}
+
+.map-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.spinner-cargando {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+/* ===== FOOTER ===== */
+ion-footer {
+  --background: #fff;
+  border-top: 1px solid #eaeaea;
+  padding: 8px 10px;
+}
+
+ion-footer ion-toolbar {
+  --background: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 46px;
+  gap: 6px;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.direccion-footer {
+  font-size: 12px;
+  color: #555;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 70%;
+}
+
+ion-button[color="danger"] {
+  --background: #ff3b30;
+  --border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  height: 34px;
+  min-width: 90px;
+}
+
+/* ===== RESPONSIVE (móvil) ===== */
+@media (max-width: 768px) {
+  ::ng-deep .mapa-modal-flotante .modal-wrapper {
+    width: 94% !important;
+    max-width: 94% !important;
+    max-height: 92dvh !important;
+    /* asegura límite en móvil */
+  }
+
+  /* 🔥 Alargamos el mapa para comernos el hueco blanco
+     (restamos header/busca/leyenda/footer ≈ 220px) */
+  .map-wrapper {
+    height: clamp(360px, calc(92dvh - 200px), 650px);
+  }
+
+  .direccion-footer {
+    font-size: 11.5px;
+  }
+}
+
+/* ===== ANIMACIONES ===== */
+@keyframes modalFadeIn {
+  from {
+    transform: translateY(8px) scale(0.97);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -45%) scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+/* ===== FONDO DIFUMINADO ===== */
+::ng-deep ion-backdrop {
+  backdrop-filter: blur(3px);
+  background-color: rgba(0, 0, 0, 0.35);
 }

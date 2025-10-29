@@ -16,11 +16,7 @@ export class MisAutosPage implements OnInit {
   @ViewChild('pageContent') content!: IonContent;
 
   esDispositivoMovil = false;
-
-  // Segmento activo
   vistaActiva: 'venta' | 'renta' = 'venta';
-
-  // ==== Venta
   autosVentaStorage: any[] = [];
   autosVentaFiltrados: any[] = [];
   autosVentaPaginados: any[] = [];
@@ -28,8 +24,6 @@ export class MisAutosPage implements OnInit {
   paginaVentaActual = 1;
   totalPaginasVenta = 1;
   paginasVenta: number[] = [];
-
-  // ==== Renta
   autosRentaStorage: any[] = [];
   autosRentaFiltrados: any[] = [];
   autosRentaPaginados: any[] = [];
@@ -37,8 +31,6 @@ export class MisAutosPage implements OnInit {
   paginaRentaActual = 1;
   totalPaginasRenta = 1;
   paginasRenta: number[] = [];
-
-  // Filtros/estado global
   filtros = [
     { label: '$', tipo: 'precio' },
     { label: 'Marca', tipo: 'marca' },
@@ -46,15 +38,10 @@ export class MisAutosPage implements OnInit {
   filtrosAplicados: any = { precio: null, anio: null, color: null, marca: null };
   terminoBusqueda = '';
   ordenActivo: string | null = null;
-
-  // Sesión
   isLoggedIn = false;
   MyRole: string | null = null;
-
   autosFavoritosIds: Set<string> = new Set();
-  // Valor por defecto seguro para evitar NaN en la paginación
   itemsPorPagina: number = 12;
-
   idsMisAutos: string[] = []; // IDs de venta (para [esMio])
 
   constructor(
@@ -75,7 +62,6 @@ export class MisAutosPage implements OnInit {
       this.esDispositivoMovil = tipo === 'telefono' || tipo === 'tablet';
     });
 
-    // Cuando haya token, entonces pide los IDs de mis autos
     this.generalService.tokenExistente$.subscribe((estado) => {
       this.isLoggedIn = estado;
       if (estado) this.misAutosVentaIds();
@@ -84,25 +70,14 @@ export class MisAutosPage implements OnInit {
     this.generalService.tipoRol$.subscribe((rol) => (this.MyRole = rol));
     this.generalService.valorGlobal$.subscribe((valor) => {
       this.itemsPorPagina = valor || 12; // fallback seguro
-      // Recalcular paginaciones cuando cambie el tamaño
       this.calcularPaginacion('venta');
       this.calcularPaginacion('renta');
     });
 
-    // Datos
     this.cargarAutosVenta();
     this.cargarAutosRenta();
   }
 
-  // ==== Getters de totales (cuentan filtrados si existen, si no el storage)
-  get totalVenta(): number {
-    return this.autosVentaFiltrados.length || this.autosVentaStorage.length;
-  }
-  get totalRenta(): number {
-    return this.autosRentaFiltrados.length || this.autosRentaStorage.length;
-  }
-
-  // ====== Cargar datos
   misAutosVentaIds() {
     if (!this.isLoggedIn) return;
     this.carsService.misAutosId().subscribe({
@@ -139,7 +114,6 @@ export class MisAutosPage implements OnInit {
   cargarAutosRenta() {
     this.rentaService.misCoches().subscribe({
       next: (res: any[]) => {
-        // Normaliza renta para reutilizar app-cartas
         this.autosRentaStorage = (res || []).map((r: any) => {
           const porDia = r.precio?.porDia ?? r.precioPorDia ?? 0;
           const imagen = r.imagenPrincipal || r.imagenPrincipalUrl || '/assets/default-car.webp';
@@ -169,9 +143,7 @@ export class MisAutosPage implements OnInit {
     });
   }
 
-  // ====== UI
   onSegmentChange() {
-    // Reinicia búsqueda/paginación al cambiar
     this.paginaVentaActual = 1;
     this.paginaRentaActual = 1;
     this.aplicarFiltros();
@@ -189,7 +161,6 @@ export class MisAutosPage implements OnInit {
     this.router.navigate(['/home']);
   }
 
-  // ====== Filtros / Búsqueda / Orden
   async mostrarOpciones(ev: Event, tipo: string) {
     const popover = await this.popoverCtrl.create({
       component: ListComponent,
@@ -199,45 +170,60 @@ export class MisAutosPage implements OnInit {
     });
     await popover.present();
     const { data } = await popover.onDidDismiss();
-
     this.filtrosAplicados[tipo] = (data === null) ? null : data;
     this.aplicarFiltros();
   }
 
   aplicarFiltros() {
-    const source = this.vistaActiva === 'venta' ? this.autosVentaStorage : this.autosRentaStorage;
-    let lista = [...source];
+    const fuente = this.vistaActiva === 'venta' ? this.autosVentaStorage : this.autosRentaStorage;
+    const { precio, marca } = this.filtrosAplicados;
+    const filtrados = fuente.filter((auto) => {
+      const filtroPrecio = precio;
+      const filtroMarca = marca;
 
-    const { precio, anio, color, marca } = this.filtrosAplicados;
+      const coincidePrecio =
+        !filtroPrecio ||
+        (Array.isArray(filtroPrecio.rango) &&
+          filtroPrecio.rango.length === 2 &&
+          Number(auto.precioDesde) >= filtroPrecio.rango[0] &&
+          Number(auto.precioDesde) <= filtroPrecio.rango[1]);
 
-    // Precio defensivo: espera { rango: [min, max] }
-    if (precio?.rango?.length === 2) {
-      const [min, max] = precio.rango;
-      lista = lista.filter(
-        (a) => Number(a.precioDesde) >= min && Number(a.precioDesde) <= max
-      );
-    }
+      const coincideMarca =
+        !filtroMarca ||
+        (auto.marca &&
+          auto.marca.toLowerCase().trim() ===
+          String(filtroMarca.key || filtroMarca.label || filtroMarca)
+            .toLowerCase()
+            .trim());
 
-    if (anio) {
-      if (anio.anio === 2024) lista = lista.filter((a) => a.anio >= 2024);
-      else if (anio.anio === 2020) lista = lista.filter((a) => a.anio >= 2020 && a.anio <= 2023);
-      else if (anio.anio === 2010) lista = lista.filter((a) => a.anio < 2020);
-    }
-    if (color) {
-      lista = lista.filter((a) => (a.color || '').toLowerCase() === String(color.label || color).toLowerCase());
-    }
-    if (marca) {
-      lista = lista.filter((a) => (a.marca || '').toLowerCase() === String(marca.label || marca).toLowerCase());
-    }
+      return coincidePrecio && coincideMarca;
+    });
+    const listaFinal = filtrados.length > 0 ? filtrados : [];
 
     if (this.vistaActiva === 'venta') {
-      this.autosVentaFiltrados = lista;
+      this.autosVentaFiltrados = listaFinal;
+      this.totalAutosVenta = listaFinal.length;
       this.calcularPaginacion('venta');
     } else {
-      this.autosRentaFiltrados = lista;
+      this.autosRentaFiltrados = listaFinal;
+      this.totalAutosRenta = listaFinal.length;
       this.calcularPaginacion('renta');
     }
+
+    if (listaFinal.length === 0) {
+      if (this.vistaActiva === 'venta') {
+        this.autosVentaPaginados = [];
+        this.totalPaginasVenta = 1;
+        this.paginaVentaActual = 1;
+      } else {
+        this.autosRentaPaginados = [];
+        this.totalPaginasRenta = 1;
+        this.paginaRentaActual = 1;
+      }
+    }
   }
+
+
 
   filtrarPorBusqueda() {
     const termino = this.terminoBusqueda.trim().toLowerCase();
@@ -306,7 +292,6 @@ export class MisAutosPage implements OnInit {
     this.aplicarFiltros();
   }
 
-  // ====== Paginación
   calcularPaginacion(segmento: 'venta' | 'renta') {
     const base = segmento === 'venta'
       ? (this.autosVentaFiltrados.length ? this.autosVentaFiltrados : this.autosVentaStorage)
@@ -353,7 +338,6 @@ export class MisAutosPage implements OnInit {
     setTimeout(() => this.content.scrollToTop(400), 100);
   }
 
-  // Helpers UI
   esNumero(valor: any): valor is number { return typeof valor === 'number'; }
 
   get paginasReducidasVenta(): (number | string)[] {
@@ -378,6 +362,5 @@ export class MisAutosPage implements OnInit {
     return arr;
   }
 
-  // trackBy para listas
   trackById = (_: number, a: any) => a?._id || _;
 }
