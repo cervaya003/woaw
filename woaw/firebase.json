@@ -1,16 +1,23 @@
 {
   "hosting": {
     "public": "www",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "headers": [
+      {
+        "source": "/apple-app-site-association",
+        "headers": [{ "key": "Content-Type", "value": "application/json" }]
+      },
+      {
+        "source": "/.well-known/apple-app-site-association",
+        "headers": [{ "key": "Content-Type", "value": "application/json" }]
+      }
     ],
     "rewrites": [
       {
-        "source": "**",
-        "destination": "/index.html"
-      }
+        "source": "/.well-known/apple-app-site-association",
+        "destination": "/apple-app-site-association"
+      },
+      { "source": "**", "destination": "/index.html" }
     ]
   }
 }
