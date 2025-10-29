@@ -4,7 +4,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { GeneralService } from '../../../services/general.service';
 import { CamionesService } from '../../../services/camiones.service';
 import { ListComponent } from '../../../components/filtos/list/list.component';
-
+import { CarsService } from 'src/app/services/cars.service';
 @Component({
   selector: 'app-todos',
   templateUrl: './todos.page.html',
@@ -65,6 +65,7 @@ export class TodosPage implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private menuCtrl: MenuController,
+     private carsService: CarsService,  
   ) { }
 
   ngOnInit() {
@@ -131,6 +132,7 @@ export class TodosPage implements OnInit {
         
         return {
           ...camion,
+          _id: String(camion._id),
           precioDesde: precioDesde
         };
       });
@@ -145,21 +147,18 @@ export class TodosPage implements OnInit {
     }
   });
 }
-
-  getCamionesFavoritos() {
-    this.camionesService.getCamionesFavoritos().subscribe({
-      next: (res: any) => {
-        const vehicleIds = res.vehicles
-          .filter((vehicle: any) => vehicle.tipo === 'camion' || vehicle.categoria === 'camion')
-          .map((vehicle: any) => vehicle.vehicleId);
-        this.camionesFavoritosIds = new Set(vehicleIds);
-        this.aplicarFiltros();
-      },
-      error: (err) => {
-        console.error('Error al cargar favoritos:', err?.error?.message || 'Ocurrió un error inesperado');
-      }
-    });
-  }
+getCamionesFavoritos() {
+  this.carsService.getCarsFavoritos().subscribe({
+    next: (res: any) => {
+      const vehicleIds = (res?.vehicles || []).map((v: any) => String(v.vehicleId));
+      this.camionesFavoritosIds = new Set(vehicleIds);  // referencia nueva
+      this.aplicarFiltros();
+    },
+    error: (err) => {
+      console.error('Error al cargar favoritos:', err?.error?.message || 'Ocurrió un error inesperado');
+    }
+  });
+}
 
   doRefresh(event: any) {
     this.getCamionesAll();
@@ -314,6 +313,17 @@ if (precio) {
   regresar() {
     this.router.navigate(['/home']);
   }
+
+ handleRefrescarCamiones(ubicacion: string) {
+  // Cuando <app-cartas> emite tras agregar/quitar, refrescamos el Set
+  if (ubicacion === 'camiones') {
+    this.getCamionesFavoritos(); // crea un new Set(...) y dispara CD
+  }
+}
+
+
+
+  
 
   esNumero(valor: any): valor is number {
     return typeof valor === 'number';

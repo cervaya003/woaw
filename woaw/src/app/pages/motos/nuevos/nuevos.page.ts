@@ -6,10 +6,8 @@ import { ListComponent } from '../../../components/filtos/list/list.component';
 import { PopoverController } from '@ionic/angular';
 import { ModalController } from '@ionic/angular';
 import { ActivatedRoute, Router } from '@angular/router';
-
 import { IonContent } from '@ionic/angular';
 import { ViewChild } from '@angular/core';
-
 import { MotosService } from '../../../services/motos.service';
 
 @Component({
