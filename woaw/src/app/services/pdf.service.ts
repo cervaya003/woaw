@@ -19,7 +19,7 @@ export class PdfService {
 
         try {
             // Cargar imagen de encabezado como fondo
-            const headerResponse = await fetch('/assets/pdf/ENCABEZADO_COTIZACION.png');
+            const headerResponse = await fetch('/assets/pdf/ENCABEZADO_COTIZACION2.png');
             const headerBlob = await headerResponse.blob();
             const headerUrl = URL.createObjectURL(headerBlob);
 
@@ -30,13 +30,13 @@ export class PdfService {
             const logoResponse = await fetch('/assets/pdf/LOGO.png');
             const logoBlob = await logoResponse.blob();
             const logoUrl = URL.createObjectURL(logoBlob);
-            doc.addImage(logoUrl, 'PNG', margin, 5, 30, 25);
+            doc.addImage(logoUrl, 'PNG', margin - 2, 2, 30, 28);
 
             // Cargar y agregar logo sobre el encabezado - LADO DERECHO
             const logoCrabi = await fetch('/assets/pdf/LOGO-CRABI.png');
             const logoBlobCrabi = await logoCrabi.blob();
             const logoUrlCrabi = URL.createObjectURL(logoBlobCrabi);
-            doc.addImage(logoUrlCrabi, 'PNG', pageWidth - margin - 30, 33, 30, 25);
+            doc.addImage(logoUrlCrabi, 'PNG', pageWidth - margin - 30, 33, 30, 28);
 
         } catch (error) {
             // Fallback si hay error cargando las imágenes
@@ -50,10 +50,17 @@ export class PdfService {
         }
 
         // Fecha (siempre visible)
+        const columnaIzquierdaT = margin + 52;
+        doc.setFontSize(20);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(255, 255, 255);
+        doc.text(`COTIZACIÓN DE SEGURO`,columnaIzquierdaT, 22);
+
+        // Fecha (siempre visible)
         doc.setFontSize(9);
         doc.setFont('helvetica', 'normal');
         doc.setTextColor(255, 255, 255);
-        doc.text(`Generado: ${new Date().toLocaleDateString('es-MX')}`, pageWidth - margin, 22, { align: 'right' });
+        doc.text(`Generado: ${new Date().toLocaleDateString('es-MX')}`, pageWidth - margin, 32, { align: 'right' });
 
         yPosition = 45;
 
