@@ -40,7 +40,18 @@
                 "glob": "sitemap.xml",
                 "input": "src",
                 "output": "/"
-              }
+              },
+              {
+  "glob": "apple-app-site-association",
+  "input": "src",
+  "output": "/"
+},
+{
+  "glob": "apple-app-site-association",
+  "input": "src/.well-known",
+  "output": "/.well-known"
+}
+
             ],
             "styles": [
               "src/global.scss",

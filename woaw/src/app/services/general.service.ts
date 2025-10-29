@@ -225,15 +225,37 @@ export class GeneralService {
     }
   }
 
-  // Elimina token y notifica cambio
-  eliminarToken(): void {
+  private async tryUnregisterPushNow(): Promise<void> {
+  const api = `${environment.api_key}/push/unregister`;
+  const jwt = localStorage.getItem('token');
+  const fcm = localStorage.getItem('pushToken');
+  if (!jwt || !fcm) return;
+
+  try {
+    await this.http.post(api, { token: fcm }, {
+      headers: new HttpHeaders({
+        Authorization: `Bearer ${jwt}`,
+        'Content-Type': 'application/json'
+      })
+    }).toPromise();
+  } catch (e) {
+    console.warn('[Logout] unregister push falló (se limpiará igual)', e);
+  } finally {
+    localStorage.removeItem('pushToken');
+  }
+}
+
+eliminarToken(): void {
+  // ✅ intenta desregistrar push ANTES de borrar credenciales
+  this.tryUnregisterPushNow().finally(() => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     this.tokenSubject.next(false);
     this.rolSubject.next(null);
     this.router.navigate(['/home']);
     location.reload();
-  }
+  });
+}
 
   // Obtener token si lo necesitas
   obtenerToken(): string | null {

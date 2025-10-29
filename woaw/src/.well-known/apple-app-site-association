@@ -1,0 +1,11 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "ZBYC88GAFD.com.woaw.woaw",
+        "paths": [ "/search/*", "/ficha/*", "/*" ]
+      }
+    ]
+  }
+}
